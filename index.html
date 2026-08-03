@@ -1,0 +1,610 @@
+<!DOCTYPE html> 
+<html lang="pt-br"> 
+<head> 
+    <meta charset="UTF-8"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <title>Gestão de Produtividade de Leituras 2026</title> 
+
+
+     <!-- FAVICON CORRIGIDO EM BASE64 SEGURO CONTRA ERROS DE LEITURA -->
+   <!-- FAVICON CORRIGIDO EM BASE64 SEGURO E COMPATÍVEL COM TODOS OS NAVEGADORES -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzMiAzMicgd2lkdGg9JzMyJyBoZWlnaHQ9JzMyJz48cmVjdCB3aWR0aD0nMzInIGhlaWdodD0nMzInIHJ4PSc2JyBmaWxsPScjMGIwZjE1Jy8+PHRleHQgeD0nNTAlJyB5PSc1NSUnIGRvbWluYW50LWJhc2VsaW5lPSdtaWRkbGUnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJyBmb250LXdlaWdodD0nOTAwJyBmb250LXNpemU9JzEwJyBmaWxsPScjMDBmZjg4JyBsZXR0ZXItc3BhY2luZz0nMC41Jz5HUEw8L3RleHQ+PC9zdmc+">
+
+
+<!-- VÍNCULO DO MANIFESTO PARA ATIVAR O MODO PWA (APLICATIVO INSTALÁVEL) -->
+    <link rel="manifest" href="./manifest.json">
+
+    <style> 
+        :root { 
+            --bg: #030508; 
+            --surface: #0b0f15; 
+            --accent: #0070f3; 
+            --success: #00ff88; 
+            --danger: #ff4d4d; 
+            --warning: #ffcc00; 
+            --border: #1e2633; 
+            --text-p: #8899a6; 
+            --text-h: #ffffff; 
+            --grey-border: #333c4d; 
+            --brown-border: #5d4037; 
+            --purple: #9c27b0; 
+            --orange-neon: #ff8c00; 
+            --white-neon: #f8f9fa; 
+        } 
+        * { 
+            box-sizing: border-box; 
+        } 
+        body { 
+            font-family: 'Inter', system-ui, sans-serif; 
+            background-color: var(--bg); 
+            color: var(--text-p); 
+            margin: 0; 
+            padding: 20px; 
+            overflow: hidden; 
+            height: 100vh; 
+        } 
+        input { 
+            background: #000; 
+            color: white; 
+            border: 1px solid var(--border); 
+            padding: 10px; 
+            border-radius: 10px; 
+            outline: none; 
+            width: 100%; 
+            font-size: 13px; 
+            margin-bottom: 10px; 
+            transition: 0.3s; 
+        } 
+        input:focus { 
+            border-color: var(--accent) !important; 
+            box-shadow: 0 0 15px rgba(0, 112, 243, 0.4); 
+        } 
+        input[type="date"]::-webkit-calendar-picker-indicator { 
+            filter: invert(1); 
+            cursor: pointer; 
+            opacity: 1; 
+            display: block; 
+        } 
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { 
+            -webkit-appearance: none; 
+            margin: 0; 
+        } 
+        input[type=number] { 
+            -moz-appearance: textfield; 
+        } 
+        #loginScreen { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: radial-gradient(circle at center, #0b0f15 0%, #030508 100%); 
+            z-index: 9999; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+        } 
+        .login-box { 
+            background: rgba(11, 15, 21, 0.8); 
+            padding: 40px; 
+            border-radius: 24px; 
+            border: 1px solid var(--border); 
+            border-top: 4px solid var(--success); 
+            width: 380px; 
+            text-align: center; 
+            backdrop-filter: blur(10px); 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5); 
+        } 
+        .auth-btn { 
+            background: var(--success); 
+            color: black; 
+            width: 100%; 
+            padding: 14px; 
+            border-radius: 12px; 
+            font-weight: 900; 
+            cursor: pointer; 
+            border: none; 
+            text-transform: uppercase; 
+            margin-top: 10px; 
+            transition: 0.3s; 
+        } 
+        .auth-link { 
+            color: var(--accent); 
+            font-size: 11px; 
+            cursor: pointer; 
+            font-weight: 700; 
+            margin-top: 15px; 
+            display: inline-block; 
+            text-transform: uppercase; 
+        } 
+        .container { 
+            max-width: 1400px; 
+            margin: auto; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 15px; 
+            height: 100%; 
+        } 
+        header { 
+            background: var(--surface); 
+            padding: 15px 30px; 
+            border-radius: 20px; 
+            border: 1px solid var(--border); 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            height: 75px; 
+            flex-shrink: 0; 
+            position: relative; 
+        } 
+        .prog-area { 
+            width: 100%; 
+            flex-shrink: 0; 
+            padding: 0 5px; 
+        } 
+        .content-wrap { 
+            display: grid; 
+            grid-template-columns: 360px 1fr; 
+            gap: 20px; 
+            flex-grow: 1; 
+            overflow: hidden; 
+            padding-bottom: 10px; 
+        } 
+        aside, main { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 20px; 
+            height: 100%; 
+            overflow: hidden; 
+        } 
+        .observations { 
+            background: var(--surface); 
+            padding: 25px; 
+            border-radius: 20px; 
+            border: 1.5px solid #ffffff; 
+            height: 140px; 
+            flex-shrink: 0; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            gap: 12px; 
+        } 
+        .obs-item { 
+            font-size: 11px; 
+            color: #ffffff; 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+            font-weight: 600; 
+        } 
+        .dot { 
+            height: 8px; 
+            width: 8px; 
+            border-radius: 50%; 
+            display: inline-block; 
+        } 
+        .sidebar { 
+            background: linear-gradient(180deg, rgba(0, 112, 243, 0.08) 0%, var(--surface) 100%); 
+            padding: 24px; 
+            border-radius: 20px; 
+            border: 1.5px solid var(--accent); 
+            flex-grow: 1; 
+            display: flex; 
+            flex-direction: column; 
+            overflow: hidden; 
+        } 
+        .actions-footer { 
+            margin-top: auto; 
+            padding-top: 15px; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 8px; 
+        } 
+        .btn-add { 
+            background: var(--accent); 
+            color: #fff; 
+            width: 100%; 
+            padding: 14px; 
+            border-radius: 12px; 
+            font-weight: 900; 
+            cursor: pointer; 
+            border: none; 
+            text-transform: uppercase; 
+        } 
+        .btn-clear { 
+            background: transparent; 
+            color: var(--danger); 
+            width: 100%; 
+            padding: 10px; 
+            border-radius: 12px; 
+            font-weight: 800; 
+            cursor: pointer; 
+            border: 1px solid var(--danger); 
+            text-transform: uppercase; 
+            font-size: 10px; 
+        } 
+        .btn-clear-year { 
+            background: transparent; 
+            color: var(--purple); 
+            width: 100%; 
+            padding: 10px; 
+            border-radius: 12px; 
+            font-weight: 800; 
+            cursor: pointer; 
+            border: 1px solid var(--purple); 
+            text-transform: uppercase; 
+            font-size: 10px; 
+        } 
+        .summary-grid { 
+            display: grid; 
+            grid-template-columns: repeat(7, 1fr); 
+            gap: 15px; 
+            height: 140px; 
+            flex-shrink: 0; 
+        } 
+        .summary-card { 
+            background: var(--surface); 
+            padding: 12px; 
+            border-radius: 16px; 
+            border: 1.5px solid var(--grey-border); 
+            border-top: 5px solid; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            text-align: center; 
+            transition: 0.3s ease; 
+        } 
+        .summary-card:hover { 
+            transform: translateY(-5px); 
+            filter: brightness(1.1); 
+        } 
+        .summary-card p { font-size: 8.2px; font-weight: 800; text-transform: uppercase; margin: 0; } 
+        .summary-card h2 { margin: 8px 0 0; font-size: 1.05rem; color: var(--text-h); font-weight: 900; } 
+
+        .neon-leituras { border-top-color: var(--white-neon); box-shadow: 0 0 15px rgba(248, 249, 250, 0.2); } 
+        .neon-impedimentos { border-top-color: var(--orange-neon); box-shadow: 0 0 15px rgba(255, 140, 0, 0.2); } 
+        .neon-meta { border-top-color: var(--warning); box-shadow: 0 0 15px rgba(255, 204, 0, 0.2); } 
+        .neon-bonus { border-top-color: var(--accent); box-shadow: 0 0 15px rgba(0, 112, 243, 0.2); } 
+        .neon-descontos { border-top-color: var(--danger); box-shadow: 0 0 15px rgba(255, 77, 77, 0.2); } 
+        .neon-receber { border-top-color: var(--success); box-shadow: 0 0 20px rgba(0, 255, 136, 0.25); } 
+        .neon-acumulado { border-top-color: var(--purple); box-shadow: 0 0 15px rgba(156, 39, 176, 0.2); } 
+
+        .main-view { background: var(--surface); border-radius: 20px; border: 1.5px solid var(--brown-border); overflow: hidden; flex-grow: 1; display: flex; flex-direction: column; } 
+        .table-container { flex-grow: 1; overflow-y: auto; } 
+        table { width: 100%; border-collapse: collapse; } 
+        th, td { padding: 12px 5px; text-align: center; border-bottom: 1px solid var(--border); font-size: 12px; } 
+        th { background: #0d1117; color: var(--accent); font-size: 10px; text-transform: uppercase; position: sticky; top: 0; z-index: 5; } 
+
+        .month-grid { display: none; position: absolute; top: 70px; right: 180px; background: #0d1117; border: 1px solid var(--accent); padding: 15px; border-radius: 15px; grid-template-columns: repeat(3, 1fr); gap: 8px; z-index: 1000; } 
+        .month-grid.active { display: grid; } 
+        .month-item { background: #000; color: white; border: 1px solid var(--border); padding: 10px; border-radius: 8px; cursor: pointer; font-size: 11px; font-weight: bold; }
+        @media print { 
+            .container { 
+                display: block !important; 
+                width: 100% !important; 
+            }
+            header { 
+                border: none; 
+                border-bottom: 2px solid #000; 
+                height: auto; 
+                padding: 10px 0; 
+                margin-bottom: 10px; 
+            }
+            header h1 { 
+                color: #000 !important; 
+                font-size: 12pt !important; 
+                width: 100%; 
+                text-align: center; 
+            }
+            .content-wrap { 
+                display: block !important; 
+            }
+            .summary-grid { 
+                display: grid !important; 
+                grid-template-columns: repeat(4, 1fr) !important; 
+                height: auto !important; 
+                gap: 4px !important; 
+                margin-bottom: 10px; 
+            }
+            .summary-card { 
+                background: #fff !important; 
+                border: 1px solid #000 !important; 
+                box-shadow: none !important; 
+                color: #000 !important; 
+                padding: 4px !important; 
+            }
+            .summary-card h2, .summary-card p { 
+                color: #000 !important; 
+                margin: 1px 0 !important; 
+                font-size: 8pt !important; 
+            }
+            .main-view { 
+                border: 1px solid #000 !important; 
+            }
+            table { 
+                font-size: 7.5pt !important; 
+                width: 100% !important; 
+            }
+            td, th { 
+                border: 0.5px solid #000 !important; 
+                color: #000 !important; 
+                padding: 3px !important; 
+            }
+            .table-container { 
+                overflow: visible !important; 
+            }
+            .no-print, .prog-area, .actions-footer, th:last-child, td:last-child, aside { 
+                display: none !important; 
+            } 
+        } 
+    </style> 
+</head> 
+<body>
+<div id="loginScreen"> 
+    <div class="login-box"> 
+        <div style="background:var(--success); color:black; padding:10px; border-radius:12px; font-weight:900; margin-bottom:20px;">GPL 2026</div> 
+        <h2 id="authTitle" style="color:white; font-size:18px; margin-bottom:20px;">Acessar Conta</h2> 
+        <input type="text" id="userInput" placeholder="Usuário"> 
+        <input type="password" id="passInput" placeholder="Senha"> 
+        <input type="text" id="recoveryInput" placeholder="Dica de segurança" style="display:none;"> 
+        <button onclick="handleAuth()" id="authBtn" class="auth-btn">ENTRAR</button> 
+        <div style="display:flex; justify-content: space-between; gap: 10px;"> 
+            <span class="auth-link" id="authSwitch" onclick="toggleAuthMode()">Criar Conta</span> 
+            <span class="auth-link" style="color:var(--warning)" onclick="recoverPass()">Recuperar</span> 
+        </div> 
+    </div> 
+</div> 
+
+<div class="container"> 
+    <header> 
+        <div style="display: flex; align-items: center; gap: 15px;"> 
+            <div style="background:var(--success); color:black; padding:8px 15px; border-radius:10px; font-weight:900;" class="no-print">GPL</div> 
+            <h1 style="font-size: 16px; color: white; margin: 0;">Gestão de Produtividade de Leituras - <span id="userDisplay" style="color:var(--success)"></span></h1> 
+        </div> 
+        <div style="display: flex; gap: 10px; align-items: center;" class="no-print"> 
+            <button class="btn-add" style="padding: 10px 20px; font-size: 12px; width: 180px; margin: 0; background: var(--accent);" onclick="toggleMonthGrid()" id="currentMonthDisplay">JANEIRO 2026 ▾</button> 
+            <div id="monthGrid" class="month-grid"></div> 
+            <button onclick="window.print()" style="background:#1e2633; border:1px solid var(--border); color:white; padding:10px 20px; border-radius:10px; cursor:pointer; font-weight:800;">IMPRIMIR</button> 
+            <button onclick="logout()" style="background:var(--danger); border:none; color:white; padding:10px; border-radius:10px; cursor:pointer; font-weight:bold;">SAIR</button> 
+        </div> 
+    </header> 
+
+    <div id="progArea" class="prog-area no-print"> 
+        <div style="width:100%; background:#1e2633; height:8px; border-radius:10px; overflow:hidden; border:1px solid var(--border); margin-bottom:5px;"> 
+            <div id="barFill" style="height:100%; width:0%; background:linear-gradient(90deg, var(--accent), var(--success)); transition:0.8s;"></div> 
+        </div> 
+        <div style="display:flex; justify-content:space-between; font-size:10px; font-weight:bold; color:var(--text-p); text-transform: uppercase;"> 
+            <span id="barTxt">Progresso Meta: 0 / 8.000</span> 
+            <span id="barPerc" style="color:var(--success)">0%</span> 
+        </div> 
+    </div> 
+
+    <div class="content-wrap"> 
+        <aside class="no-print"> 
+            <div class="observations"> 
+                <div class="obs-item"><span class="dot" style="background:var(--success)"></span> Bônus de R$ 0,20 por cada leitura excedente a 8000 leituras</div> 
+                <div class="obs-item"><span class="dot" style="background:var(--danger)"></span> Desconto: R$ 1,50 p/ impedimento</div> 
+                <div class="obs-item"><span class="dot" style="background:var(--warning)"></span> Qualidade: Meta ≤ 0,50%</div> 
+            </div> 
+            <div class="sidebar"> 
+                <label style="font-size: 9px; font-weight: 800; color: var(--success); text-transform: uppercase; margin-bottom: 5px; display: block;">Pesquisar razão</label> 
+                <input type="text" id="searchRazao" placeholder="Filtrar tabela..." oninput="atualizarTabela()" style="border-color: var(--success); margin-bottom: 15px;"> 
+                <form id="gplForm"> 
+                    <div class="form-group" style="display:flex; align-items:center; gap:12px; margin-bottom:5px;"><label style="width:85px; font-size:10px; font-weight:800; color:var(--accent); text-transform:uppercase;">Data</label><input type="date" id="data" required></div> 
+                    <div class="form-group" style="display:flex; align-items:center; gap:12px; margin-bottom:5px;"><label style="width:85px; font-size:10px; font-weight:800; color:var(--accent); text-transform:uppercase;">Localidade</label><input type="text" id="localidade" required></div> 
+                    <div class="form-group" style="display:flex; align-items:center; gap:12px; margin-bottom:5px;"><label style="width:85px; font-size:10px; font-weight:800; color:var(--accent); text-transform:uppercase;">Razão</label><input type="text" id="razao" required></div> 
+                    <div class="form-group" style="display:flex; align-items:center; gap:12px; margin-bottom:5px;"><label style="width:85px; font-size:10px; font-weight:800; color:var(--accent); text-transform:uppercase;">Rotas</label><input type="text" id="rotas" required></div> 
+                    <div class="form-group" style="display:flex; align-items:center; gap:12px; margin-bottom:5px;"><label style="width:85px; font-size:10px; font-weight:800; color:var(--accent); text-transform:uppercase;">Leituras</label><input type="number" id="leituras" required></div> 
+                    <div class="form-group" style="display:flex; align-items:center; gap:12px; margin-bottom:5px;"><label style="width:85px; font-size:10px; font-weight:800; color:var(--accent); text-transform:uppercase;">Imped.</label><input type="number" id="imped" required></div> 
+                    <div class="actions-footer"> 
+                        <button type="submit" class="btn-add">Salvar Registro</button> 
+                        <button type="button" onclick="limparTudo()" class="btn-clear">Limpar Mês</button> 
+                        <button type="button" onclick="limparAno()" class="btn-clear-year">Limpar todos os dados</button> 
+                    </div> 
+                </form> 
+            </div> 
+        </aside> 
+
+        <main> 
+            <div class="summary-grid"> 
+                <div class="summary-card neon-leituras"><p>Leituras</p><h2 id="totL">0</h2></div> 
+                <div class="summary-card neon-impedimentos"><p>Impedimentos</p><h2 id="totI">0</h2></div> 
+                <div class="summary-card neon-meta"><p>Qualidade</p><h2 id="totMeta">0,00%</h2></div> 
+                <div class="summary-card neon-bonus"><p>Bônus</p><h2 id="totB">R$ 0,00</h2></div> 
+                <div class="summary-card neon-descontos"><p>Descontos</p><h2 id="totD">R$ 0,00</h2></div> 
+                <div class="summary-card neon-receber"><p>Receber Mês</p><h2 id="totNet">R$ 0,00</h2></div> 
+                <div class="summary-card neon-acumulado"><p>Acumulado Ano</p><h2 id="totAcumulado">R$ 0,00</h2></div> 
+            </div>
+            <div class="main-view"> 
+                <div class="table-container"> 
+                    <table> 
+                        <thead> 
+                            <tr><th>Data</th><th>Localidade</th><th>Razão</th><th>Rotas</th><th>Leituras</th><th>Imp.</th><th>%</th><th class="no-print">Ação</th></tr> 
+                        </thead> 
+                        <tbody id="tabelaCorpo"></tbody> 
+                    </table> 
+                </div> 
+            </div> 
+        </main> 
+    </div> 
+</div> 
+
+<script> 
+    let db = []; 
+    let currentUser = ""; 
+    
+    // Sincroniza dinamicamente a aplicação com o mês atual do dispositivo do usuário
+    let dataAtualDoSistema = new Date();
+    let viewDate = new Date(2026, dataAtualDoSistema.getMonth(), 1); 
+    
+    const msNomesCompletos = ["JANEIRO", "FEVEREIRO", "MARÇO", "ABRIL", "MAIO", "JUNHO", "JULHO", "AGOSTO", "SETEMBRO", "OUTUBRO", "NOVEMBRO", "DEZEMBRO"]; 
+    const fM = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); 
+
+    function animarContagem(id, final, isMoeda = false) { 
+        const el = document.getElementById(id); 
+        if(!el) return; 
+        let start = 0; 
+        const timer = setInterval(() => { 
+            start += final / 15; 
+            if(start >= final) { 
+                if(id === 'totMeta') { 
+                    el.innerText = final.toFixed(2) + "%"; 
+                    el.style.color = final <= 0.5 ? 'var(--success)' : 'var(--danger)'; 
+                } else { 
+                    el.innerText = isMoeda ? fM(final) : Math.floor(final).toLocaleString(); 
+                } 
+                clearInterval(timer); 
+            } else { 
+                el.innerText = isMoeda ? fM(start) : Math.floor(start).toLocaleString(); 
+            } 
+        }, 20); 
+    } 
+
+    function initSystem() { 
+        currentUser = sessionStorage.getItem('gpl_user_2026'); 
+        if(!currentUser) return; 
+        document.getElementById('loginScreen').style.display = 'none'; 
+        document.getElementById('userDisplay').innerText = currentUser; 
+        db = JSON.parse(localStorage.getItem(`GPL_DATA_${currentUser}`)) || []; 
+        
+        document.getElementById('currentMonthDisplay').innerText = `${msNomesCompletos[viewDate.getMonth()]} 2026 ▾`; 
+        
+        renderMonths(); 
+        atualizarTabela(); 
+    } 
+
+    function handleAuth() { 
+        const u = document.getElementById('userInput').value.trim().toUpperCase(); 
+        const p = document.getElementById('passInput').value; 
+        const r = document.getElementById('recoveryInput').value; 
+        let users = JSON.parse(localStorage.getItem('GPL_USERS_2026')) || {}; 
+        if(document.getElementById('authTitle').innerText.includes("Criar")) { 
+            if(!u || !p) return alert("Preencha Usuário e Senha"); 
+            users[u] = { pass: p, hint: r }; 
+            localStorage.setItem('GPL_USERS_2026', JSON.stringify(users)); 
+            alert("Conta Criada!"); toggleAuthMode(); 
+        } else { 
+            if(users[u] && users[u].pass === p) { sessionStorage.setItem('gpl_user_2026', u); initSystem(); } 
+            else alert("Dados incorretos!"); 
+        } 
+    } 
+
+    function toggleAuthMode() { 
+        const t = document.getElementById('authTitle'); 
+        const isLogin = t.innerText === "Acessar Conta"; 
+        t.innerText = isLogin ? "Criar Novo Usuário" : "Acessar Conta"; 
+        document.getElementById('recoveryInput').style.display = isLogin ? "block" : "none"; 
+    } 
+
+    function recoverPass() { 
+        const u = document.getElementById('userInput').value.toUpperCase(); 
+        let users = JSON.parse(localStorage.getItem('GPL_USERS_2026')) || {}; 
+        if(users[u]) alert("Sua dica: " + users[u].hint); 
+        else alert("Usuário não encontrado."); 
+    }
+    function renderMonths() { 
+        const ms = ["JAN", "FEV", "MAR", "ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ"]; 
+        document.getElementById('monthGrid').innerHTML = ms.map((m, i) => `<div class="month-item" onclick="selectMonth(${i})">${m}</div>`).join(''); 
+    } 
+
+    function toggleMonthGrid() { document.getElementById('monthGrid').classList.toggle('active'); } 
+     
+    function selectMonth(m) { 
+        viewDate.setMonth(m); 
+        document.getElementById('currentMonthDisplay').innerText = `${msNomesCompletos[m]} 2026 ▾`; 
+        toggleMonthGrid(); 
+        atualizarTabela(); 
+    } 
+
+    function atualizarTabela() { 
+        const mesF = "2026-" + String(viewDate.getMonth() + 1).padStart(2, '0'); 
+        const busca = document.getElementById('searchRazao').value.toUpperCase(); 
+        const regs = db.filter(i => i.data.startsWith(mesF) && i.razao.includes(busca)).sort((a,b) => new Date(a.data) - new Date(b.data)); 
+         
+        let sL=0, sI=0; 
+
+        document.getElementById('tabelaCorpo').innerHTML = regs.map(i => { 
+            const calcPercentual = i.leituras > 0 ? (i.imped / i.leituras) * 100 : 0; 
+            sL += i.leituras; sI += i.imped; 
+            return `<tr><td>${i.data.split('-').reverse().slice(0,2).join('/')}</td><td>${i.localidade}</td><td>${i.razao}</td><td>${i.rotas}</td><td>${i.leituras.toLocaleString()}</td><td>${i.imped}</td><td><span style="color:${calcPercentual <= 0.5 ? 'var(--success)' : 'var(--danger)'}; font-weight:900;">${calcPercentual.toFixed(2)}%</span></td><td class="no-print"><button onclick="remover(${i.id})" style="background:none; border:none; color:var(--danger); cursor:pointer;">✕</button></td></tr>`; 
+        }).join(''); 
+
+        const sB = sL > 8000 ? (sL - 8000) * 0.20 : 0; 
+        const sD = sI * 1.50; 
+        const net = sB - sD; 
+
+        animarContagem('totL', sL); animarContagem('totI', sI); 
+        animarContagem('totMeta', sL > 0 ? (sI/sL*100) : 0); 
+        animarContagem('totB', sB, true); animarContagem('totD', sD, true); 
+        animarContagem('totNet', net < 0 ? 0 : net, true); 
+
+        const perc = Math.min((sL/8000)*100, 100); 
+        document.getElementById('barFill').style.width = perc + "%"; 
+        document.getElementById('barPerc').innerText = Math.floor(perc) + "%"; 
+        document.getElementById('barTxt').innerText = `Progresso Meta: ${sL.toLocaleString()} / 8.000`; 
+
+        let acum = 0; 
+        for(let m=0; m<12; m++) { 
+            const f = "2026-" + String(m+1).padStart(2,'0'); 
+            const r = db.filter(x => x.data.startsWith(f)); 
+            const tl = r.reduce((a,c) => a+c.leituras, 0); 
+            const ti = r.reduce((a,c) => a+c.imped, 0); 
+            acum += (tl > 8000 ? (tl-8000)*0.20 : 0) - (ti*1.50); 
+        } 
+        animarContagem('totAcumulado', acum < 0 ? 0 : acum, true); 
+    } 
+
+    document.getElementById('gplForm').onsubmit = (e) => { 
+        e.preventDefault(); 
+        db.push({ 
+            id: Date.now(), data: document.getElementById('data').value, 
+            localidade: document.getElementById('localidade').value.toUpperCase(), 
+            razao: document.getElementById('razao').value.toUpperCase(), 
+            rotas: document.getElementById('rotas').value.toUpperCase(), 
+            leituras: Number(document.getElementById('leituras').value), 
+            imped: Number(document.getElementById('imped').value) 
+        }); 
+        localStorage.setItem(`GPL_DATA_${currentUser}`, JSON.stringify(db)); 
+        atualizarTabela(); e.target.reset(); document.getElementById('data').focus(); 
+    }; 
+
+    function remover(id) { if(confirm("Excluir?")) { db = db.filter(i => i.id !== id); localStorage.setItem(`GPL_DATA_${currentUser}`, JSON.stringify(db)); atualizarTabela(); } } 
+    function limparTudo() { if(confirm("Deseja limpar todos os registros deste mês?")) { const mesF = "2026-" + String(viewDate.getMonth() + 1).padStart(2, '0'); db = db.filter(i => !i.data.startsWith(mesF)); localStorage.setItem(`GPL_DATA_${currentUser}`, JSON.stringify(db)); atualizarTabela(); } } 
+     
+    function limparAno() { 
+        if(confirm("ATENÇÃO: Você está prestes a apagar TODOS os registros de 2026!")) { 
+            if(confirm("Tem certeza absoluta? Esta ação não pode ser desfeita.")) { 
+                db = []; 
+                localStorage.setItem(`GPL_DATA_${currentUser}`, JSON.stringify(db)); 
+                atualizarTabela(); 
+                alert("Todos os dados de 2026 foram removidos."); 
+            } 
+        } 
+    } 
+
+    window.addEventListener('click', (e) => {
+        const grid = document.getElementById('monthGrid');
+        const displayBtn = document.getElementById('currentMonthDisplay');
+        if (grid && grid.classList.contains('active') && e.target !== displayBtn && !grid.contains(e.target)) {
+            grid.classList.remove('active');
+        }
+    });
+
+    function logout() { sessionStorage.clear(); location.reload(); } 
+
+// DISPARADOR DE INICIALIZAÇÃO E REGISTRO DO SERVICE WORKER (SW)
+    window.onload = function() {
+        initSystem();
+        
+        // Registra o Service Worker para habilitar o modo Offline e cache persistente
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js')
+                .then(() => console.log('Service Worker GPL ativo e rodando offline!'))
+                .catch((err) => console.log('Falha ao registrar o SW:', err));
+        }
+    }; 
+
+    window.onload = initSystem; 
+</script> 
+</body> 
+</html>
