@@ -47,11 +47,11 @@
             background: #000; 
             color: white; 
             border: 1px solid var(--border); 
-            padding: 10px 12px; 
+            padding: 12px; 
             border-radius: 9px; 
             outline: none; 
             width: 100%; 
-            font-size: 16px !important; /* Impede zoom que trava o toque */
+            font-size: 16px !important; /* Impede zoom no iOS/Android que desconfigura a tela */
             margin-bottom: 6px; 
             transition: 0.3s; 
             touch-action: manipulation;
@@ -379,8 +379,8 @@
         .month-grid.active { display: grid; } 
         .month-item { background: #000; color: white; border: 1px solid var(--border); padding: 10px; border-radius: 8px; cursor: pointer; font-size: 11px; font-weight: bold; text-align: center; }
 
-        /* REGRAS REVISADAS PARA DISPOSITIVOS MÓVEIS (MODO RETRATO E PAISAGEM PEQUENA) */
-        @media (max-width: 850px) {
+        /* MODO RETRATO EXCLUSIVO (850PX OU MENOS) */
+        @media (max-width: 850px) and (orientation: portrait) {
             body { 
                 padding: 4px; 
                 height: 100vh;
@@ -390,7 +390,7 @@
             header > div { width: 100%; justify-content: center; }
 
             .mobile-tabs { display: flex; }
-            .top-dashboard { grid-template-columns: 1fr; flex-grow: 1; }
+            .top-dashboard { grid-template-columns: 1fr; }
             .summary-grid { grid-template-columns: repeat(2, 1fr); }
             
             .content-wrap { 
@@ -400,28 +400,36 @@
                 height: 100%; 
             }
 
-            /* TODAS AS ABAS FICAM NA MESMA POSIÇÃO EXATA NO TOPO */
+            /* ALINHAMENTO FIXO DE ABAS NO TOPO */
             aside, main, #secResumo {
                 position: absolute;
                 top: 0;
                 left: 0;
                 right: 0;
-                bottom: 0;
                 width: 100%;
                 height: 100%;
             }
 
             .sidebar {
                 height: 100% !important;
-                overflow-y: auto !important; /* Rolagem liberada no formulário */
+                overflow-y: auto !important; /* Libera rolagem para o teclado */
                 padding: 12px;
-                padding-bottom: 40px;
+                padding-bottom: 80px; /* Garante que o botão salvar fique acessível acima do teclado */
             }
 
             .main-view, .table-container {
                 height: 100% !important;
-                overflow-y: auto !important; /* Rolagem liberada na tabela */
+                overflow-y: auto !important;
             }
+        }
+
+        /* MODO PAISAGEM */
+        @media (max-width: 850px) and (orientation: landscape) {
+            body { padding: 4px; height: auto !important; overflow-y: auto !important; }
+            .mobile-tabs { display: flex; }
+            .content-wrap { display: block; }
+            .sidebar { height: auto !important; padding: 12px; }
+            .table-container { max-height: 350px !important; }
         }
 
         @media print { 
@@ -486,9 +494,9 @@
 
     <!-- MENU DE ABAS AUTOMÁTICO EM CELULARES -->
     <div class="mobile-tabs no-print">
-        <button type="button" class="tab-btn active" onclick="switchTab('resumo')">Resumo</button>
-        <button type="button" class="tab-btn" onclick="switchTab('novo')">Novo Registro</button>
-        <button type="button" class="tab-btn" onclick="switchTab('tabela')">Tabela</button>
+        <button type="button" class="tab-btn active" onclick="switchTab('resumo', event)">Resumo</button>
+        <button type="button" class="tab-btn" onclick="switchTab('novo', event)">Novo Registro</button>
+        <button type="button" class="tab-btn" onclick="switchTab('tabela', event)">Tabela</button>
     </div>
 
     <!-- BLOCO SUPERIOR: OBSERVAÇÕES + CARDS DE RESUMO -->
@@ -522,8 +530,8 @@
                             <div class="form-group"><label>Localidade</label><input type="text" id="localidade" required></div> 
                             <div class="form-group"><label>Razão</label><input type="text" id="razao" required></div> 
                             <div class="form-group"><label>Rotas</label><input type="text" id="rotas" required></div> 
-                            <div class="form-group"><label>Leituras</label><input type="number" id="leituras" required></div> 
-                            <div class="form-group"><label>Imped.</label><input type="number" id="imped" required></div> 
+                            <div class="form-group"><label>Leituras</label><input type="number" id="leituras" inputmode="numeric" required></div> 
+                            <div class="form-group"><label>Imped.</label><input type="number" id="imped" inputmode="numeric" required></div> 
                             <button type="submit" id="btnSubmitForm" style="display:none;"></button>
                         </form>
                     </div>
@@ -572,7 +580,11 @@
         document.getElementById('headerAppName').innerText = `Gestão de Produtividade de Leituras ${anoAtual}`;
     }
 
-    function switchTab(tabName) {
+    function switchTab(tabName, e) {
+        if (e) {
+            e.stopPropagation(); // BLOQUEIA A PROPAGAÇÃO QUE FAZIA VOLTAR AO RESUMO
+        }
+
         if(window.innerWidth > 850) return;
 
         const tabs = document.querySelectorAll('.tab-btn');
@@ -582,7 +594,6 @@
         const secForm = document.getElementById('secForm');
         const secTabela = document.getElementById('secTabela');
 
-        // DIRETO VIA ESTILO JS PARA GARANTIR ALINHAMENTO NO TOPO DA TELA
         secResumo.style.display = 'none';
         secForm.style.display = 'none';
         secTabela.style.display = 'none';
