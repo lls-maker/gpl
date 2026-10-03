@@ -2,12 +2,12 @@
 <html lang="pt-br"> 
 <head> 
     <meta charset="UTF-8"> 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"> 
     <meta name="theme-color" content="#030508">
     <title id="pageTitle">Gestão de Produtividade de Leituras</title> 
 
     <!-- FAVICON -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzMiAzMicgd2lidGg9JzMyJyBoZWlnaHQ9JzMyJz48cmVjdCB3aWR0aD0nMzInIGhlaWdodD0nMzInIHJ4PSc2JyBmaWxsPScjMGIwZjE1Jy8+PHRleHQgeD0nNTAlJScgeT0nNTUlJyBkb21pbmFudC1iYXNlbGluZT0nbWlkZGxlJyB0ZXh0LWFuY2hvcj0nbWlkZGxlJyBmb250LWZhbWlseT0nc2Fucy1zZXJpZicgZm9udC13ZWlnaHQ9JzkwMCcgZm9udC1zaXplPScxMCcgZmlsbD0nIzAwZmY4OCcgbGV0dGVyLXNwYWNpbmc9JzAuNSc+R1BMPC90ZXh0Pjwvc3ZnPg==">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzMiAzMicgd2lidGg9JzMyJyBoZWlnaHQ9JzMyJz48cmVjdCB3aWR0aD0nMzInIGhlaWdodD0nMzInIHJ4PSc2JyBmaWxsPScjMGIwZjE1Jy8+PHRleHQgeD0nNTAlJyB5PSc1NSUnIGRvbWluYW50LWJhc2VsaW5lPSdtaWRkbGUnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJyBmb250LXdlaWdodD0nOTAwJyBmb250LXNpemU9JzEwJyBmaWxsPScjMDBmZjg4JyBsZXR0ZXItc3BhY2luZz0nMC41Jz5HUEw8L3RleHQ+PC9zdmc+">
 
     <!-- MANIFESTO PWA -->
     <link rel="manifest" href="./manifest.json">
@@ -37,7 +37,7 @@
             background-color: var(--bg); 
             color: var(--text-p); 
             margin: 0; 
-            padding: 10px; 
+            padding: 8px; 
             min-height: 100vh; 
             display: flex;
             justify-content: center;
@@ -47,12 +47,12 @@
             background: #000; 
             color: white; 
             border: 1px solid var(--border); 
-            padding: 12px; 
+            padding: 10px 12px; 
             border-radius: 9px; 
             outline: none; 
             width: 100%; 
-            font-size: 16px !important; /* Impede zoom que trava toques no mobile */
-            margin-bottom: 8px; 
+            font-size: 16px !important; /* Impede zoom que trava o toque */
+            margin-bottom: 6px; 
             transition: 0.3s; 
             touch-action: manipulation;
         } 
@@ -123,17 +123,17 @@
         .container { 
             max-width: 1450px; 
             width: 100%; 
-            min-height: 94vh; 
+            height: 96vh; 
             margin: auto; 
             display: flex; 
             flex-direction: column; 
-            gap: 12px; 
+            gap: 8px; 
         } 
         
         header { 
             background: var(--surface); 
-            padding: 12px 18px; 
-            border-radius: 20px; 
+            padding: 10px 16px; 
+            border-radius: 16px; 
             border: 1px solid var(--border); 
             display: flex; 
             justify-content: space-between; 
@@ -154,11 +154,11 @@
         .mobile-tabs {
             display: none;
             gap: 5px;
-            margin-top: 4px;
+            flex-shrink: 0;
         }
         .tab-btn {
             flex: 1;
-            padding: 12px;
+            padding: 10px;
             background: var(--surface);
             border: 1px solid var(--border);
             color: var(--text-p);
@@ -179,7 +179,6 @@
             grid-template-columns: 320px 1fr;
             gap: 12px;
             flex-shrink: 0;
-            margin-top: 4px;
         }
 
         .observations { 
@@ -246,6 +245,8 @@
             grid-template-columns: 320px 1fr; 
             gap: 12px; 
             flex-grow: 1; 
+            min-height: 0;
+            position: relative;
         } 
         aside, main { 
             display: flex; 
@@ -263,7 +264,7 @@
             justify-content: space-between; 
         } 
         .form-content-area {
-            margin-top: 10px; 
+            margin-top: 6px; 
         }
         .form-group {
             display: flex; 
@@ -365,7 +366,7 @@
         
         .table-container { 
             flex-grow: 1; 
-            max-height: 550px; 
+            height: 100%;
             overflow: auto; 
             -webkit-overflow-scrolling: touch;
         } 
@@ -378,31 +379,48 @@
         .month-grid.active { display: grid; } 
         .month-item { background: #000; color: white; border: 1px solid var(--border); padding: 10px; border-radius: 8px; cursor: pointer; font-size: 11px; font-weight: bold; text-align: center; }
 
-        /* REGRAS DIRETA PARA DISPOSITIVOS MÓVEIS */
+        /* REGRAS REVISADAS PARA DISPOSITIVOS MÓVEIS (MODO RETRATO E PAISAGEM PEQUENA) */
         @media (max-width: 850px) {
             body { 
-                padding: 5px; 
-                height: auto !important;
-                min-height: 100vh;
-                overflow-y: auto !important;
+                padding: 4px; 
+                height: 100vh;
+                overflow: hidden;
             }
-            header { flex-direction: column; text-align: center; }
+            header { flex-direction: column; text-align: center; padding: 6px 10px; }
             header > div { width: 100%; justify-content: center; }
 
             .mobile-tabs { display: flex; }
-            .top-dashboard { grid-template-columns: 1fr; }
+            .top-dashboard { grid-template-columns: 1fr; flex-grow: 1; }
             .summary-grid { grid-template-columns: repeat(2, 1fr); }
-            .content-wrap { grid-template-columns: 1fr; height: auto !important; }
+            
+            .content-wrap { 
+                display: block; 
+                position: relative; 
+                flex-grow: 1; 
+                height: 100%; 
+            }
 
-            aside, main, .sidebar, .container {
-                height: auto !important;
-                min-height: auto !important;
-                max-height: none !important;
-                overflow: visible !important;
+            /* TODAS AS ABAS FICAM NA MESMA POSIÇÃO EXATA NO TOPO */
+            aside, main, #secResumo {
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                width: 100%;
+                height: 100%;
             }
 
             .sidebar {
-                padding-bottom: 30px;
+                height: 100% !important;
+                overflow-y: auto !important; /* Rolagem liberada no formulário */
+                padding: 12px;
+                padding-bottom: 40px;
+            }
+
+            .main-view, .table-container {
+                height: 100% !important;
+                overflow-y: auto !important; /* Rolagem liberada na tabela */
             }
         }
 
@@ -564,7 +582,7 @@
         const secForm = document.getElementById('secForm');
         const secTabela = document.getElementById('secTabela');
 
-        // DIRETO VIA ESTILO PARA EVITAR BLOQUEIO DE FOCO NO CELULAR
+        // DIRETO VIA ESTILO JS PARA GARANTIR ALINHAMENTO NO TOPO DA TELA
         secResumo.style.display = 'none';
         secForm.style.display = 'none';
         secTabela.style.display = 'none';
