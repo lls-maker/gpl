@@ -36,7 +36,7 @@
             background-color: var(--bg); 
             color: var(--text-p); 
             margin: 0; 
-            padding: clamp(6px, 1.5vw, 15px); 
+            padding: 10px; 
             min-height: 100vh; 
             display: flex;
             justify-content: center;
@@ -128,7 +128,6 @@
             gap: 12px; 
         } 
         
-        /* HEADER AUTO-AJUSTÁVEL PARA QUALQUER LARGURA */
         header { 
             background: var(--surface); 
             padding: 12px 18px; 
@@ -142,14 +141,6 @@
             flex-shrink: 0; 
             position: relative; 
         } 
-        header > div {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
-            justify-content: center;
-            width: auto;
-        }
 
         .prog-area { 
             width: 100%; 
@@ -157,10 +148,33 @@
             padding: 0 5px; 
         } 
         
-        /* DASHBOARD AUTO-REORGANIZÁVEL */
+        /* MENU DE ABAS EXCLUSIVO PARA SMARTPHONES */
+        .mobile-tabs {
+            display: none;
+            gap: 5px;
+            margin-top: 4px;
+        }
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text-p);
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 11px;
+            text-transform: uppercase;
+            cursor: pointer;
+        }
+        .tab-btn.active {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+        }
+
         .top-dashboard {
-            display: flex;
-            flex-wrap: wrap;
+            display: grid;
+            grid-template-columns: 320px 1fr;
             gap: 12px;
             flex-shrink: 0;
             margin-top: 4px;
@@ -175,7 +189,7 @@
             flex-direction: column; 
             justify-content: center; 
             gap: 8px; 
-            flex: 1 1 280px; 
+            height: 100%;
         } 
         .obs-item { 
             font-size: 11px; 
@@ -193,12 +207,10 @@
             flex-shrink: 0;
         } 
 
-        /* CARDS AUTO-DISTRIBUÍDOS COM AUTO-FIT */
         .summary-grid { 
             display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); 
+            grid-template-columns: repeat(7, 1fr); 
             gap: 10px; 
-            flex: 3 1 500px;
         } 
         .summary-card { 
             background: var(--surface); 
@@ -217,7 +229,7 @@
             filter: brightness(1.1); 
         } 
         .summary-card p { font-size: 8px; font-weight: 800; text-transform: uppercase; margin: 0; } 
-        .summary-card h2 { margin: 6px 0 0; font-size: clamp(0.85rem, 1.2vw, 1.1rem); color: var(--text-h); font-weight: 900; } 
+        .summary-card h2 { margin: 6px 0 0; font-size: 1rem; color: var(--text-h); font-weight: 900; } 
 
         .neon-leituras { border-top-color: var(--white-neon); box-shadow: 0 0 15px rgba(248, 249, 250, 0.15); } 
         .neon-impedimentos { border-top-color: var(--orange-neon); box-shadow: 0 0 15px rgba(255, 140, 0, 0.15); } 
@@ -227,23 +239,16 @@
         .neon-receber { border-top-color: var(--success); box-shadow: 0 0 20px rgba(0, 255, 136, 0.2); } 
         .neon-acumulado { border-top-color: var(--purple); box-shadow: 0 0 15px rgba(156, 39, 176, 0.15); } 
 
-        /* LAYOUT PRINCIPAL DINÂMICO (FLEXWRAP AUTOMÁTICO) */
         .content-wrap { 
-            display: flex; 
-            flex-wrap: wrap;
+            display: grid; 
+            grid-template-columns: 320px 1fr; 
             gap: 12px; 
             flex-grow: 1; 
         } 
-        aside {
-            flex: 1 1 290px;
-            display: flex;
-            flex-direction: column;
-        }
-        main { 
-            flex: 3 1 450px;
+        aside, main { 
             display: flex; 
             flex-direction: column; 
-            min-width: 0;
+            height: 100%; 
         } 
         .sidebar { 
             background: linear-gradient(180deg, rgba(0, 112, 243, 0.08) 0%, var(--surface) 100%); 
@@ -260,21 +265,17 @@
         }
         .form-group {
             display: flex; 
-            flex-wrap: wrap;
             align-items: center; 
-            gap: 4px; 
+            gap: 8px; 
             margin-bottom: 6px;
         }
         .form-group label {
-            flex: 1 0 70px; 
+            width: 80px; 
+            flex-shrink: 0; 
             font-size: 10px; 
             font-weight: 800; 
             color: var(--accent); 
             text-transform: uppercase; 
-        }
-        .form-group input {
-            flex: 2 0 150px;
-            margin-bottom: 0;
         }
         .actions-footer { 
             margin-top: 10px; 
@@ -375,6 +376,23 @@
         .month-grid.active { display: grid; } 
         .month-item { background: #000; color: white; border: 1px solid var(--border); padding: 10px; border-radius: 8px; cursor: pointer; font-size: 11px; font-weight: bold; text-align: center; }
 
+        /* REGRAS DE ADAPTAÇÃO PARA DISPOSITIVOS MÓVEIS VIA ABAS */
+        @media (max-width: 850px) {
+            body { padding: 5px; }
+            header { flex-direction: column; text-align: center; }
+            header > div { width: 100%; justify-content: center; }
+
+            .mobile-tabs { display: flex; }
+            .top-dashboard { grid-template-columns: 1fr; }
+            .summary-grid { grid-template-columns: repeat(2, 1fr); }
+            .content-wrap { grid-template-columns: 1fr; }
+
+            /* Ocultar/Exibir seções baseado na aba ativa no celular */
+            .top-dashboard.tab-hidden, aside.tab-hidden, main.tab-hidden {
+                display: none !important;
+            }
+        }
+
         @media print { 
             body { height: auto !important; overflow: visible !important; display: block !important; background: #fff !important; color: #000 !important; }
             .container { display: block !important; width: 100% !important; height: auto !important; }
@@ -435,8 +453,15 @@
         </div> 
     </div> 
 
+    <!-- MENU DE ABAS AUTOMÁTICO EM CELULARES -->
+    <div class="mobile-tabs no-print">
+        <button class="tab-btn active" onclick="switchTab('resumo')">Resumo</button>
+        <button class="tab-btn" onclick="switchTab('novo')">Novo Registro</button>
+        <button class="tab-btn" onclick="switchTab('tabela')">Tabela</button>
+    </div>
+
     <!-- BLOCO SUPERIOR: OBSERVAÇÕES + CARDS DE RESUMO -->
-    <div class="top-dashboard">
+    <div class="top-dashboard" id="secResumo">
         <div class="observations no-print"> 
             <div class="obs-item"><span class="dot" style="background:var(--success)"></span> Bônus de R$ 0,20 por cada leitura excedente a 8000 leituras</div> 
             <div class="obs-item"><span class="dot" style="background:var(--danger)"></span> Desconto: R$ 1,50 p/ impedimento</div> 
@@ -454,7 +479,7 @@
     </div>
 
     <div class="content-wrap"> 
-        <aside class="no-print"> 
+        <aside class="no-print tab-hidden" id="secForm"> 
             <div class="sidebar"> 
                 <div>
                     <label style="font-size: 9px; font-weight: 800; color: var(--success); text-transform: uppercase; margin-bottom: 3px; display: block;">Pesquisar razão</label> 
@@ -484,7 +509,7 @@
             </div> 
         </aside> 
 
-        <main> 
+        <main id="secTabela" class="tab-hidden"> 
             <div class="main-view"> 
                 <div class="table-container"> 
                     <table> 
@@ -508,6 +533,28 @@
     
     const msNomesCompletos = ["JANEIRO", "FEVEREIRO", "MARÇO", "ABRIL", "MAIO", "JUNHO", "JULHO", "AGOSTO", "SETEMBRO", "OUTUBRO", "NOVEMBRO", "DEZEMBRO"]; 
     const fM = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); 
+
+    function switchTab(tabName) {
+        if(window.innerWidth > 850) return; // Só aplica controle de abas em telas de smartphone
+
+        const tabs = document.querySelectorAll('.tab-btn');
+        tabs.forEach(t => t.classList.remove('active'));
+
+        document.getElementById('secResumo').classList.add('tab-hidden');
+        document.getElementById('secForm').classList.add('tab-hidden');
+        document.getElementById('secTabela').classList.add('tab-hidden');
+
+        if(tabName === 'resumo') {
+            tabs[0].classList.add('active');
+            document.getElementById('secResumo').classList.remove('tab-hidden');
+        } else if(tabName === 'novo') {
+            tabs[1].classList.add('active');
+            document.getElementById('secForm').classList.remove('tab-hidden');
+        } else if(tabName === 'tabela') {
+            tabs[2].classList.add('active');
+            document.getElementById('secTabela').classList.remove('tab-hidden');
+        }
+    }
 
     function animarContagem(id, final, isMoeda = false) { 
         const el = document.getElementById(id); 
@@ -540,6 +587,10 @@
         
         renderMonths(); 
         atualizarTabela(); 
+
+        if(window.innerWidth <= 850) {
+            switchTab('resumo');
+        }
     } 
 
     function handleAuth() { 
@@ -640,6 +691,10 @@
         }); 
         localStorage.setItem(`GPL_DATA_${currentUser}`, JSON.stringify(db)); 
         atualizarTabela(); e.target.reset(); document.getElementById('data').focus(); 
+        
+        if(window.innerWidth <= 850) {
+            switchTab('tabela');
+        }
     }; 
 
     function remover(id) { if(confirm("Excluir?")) { db = db.filter(i => i.id !== id); localStorage.setItem(`GPL_DATA_${currentUser}`, JSON.stringify(db)); atualizarTabela(); } } 
@@ -705,6 +760,16 @@
         const displayBtn = document.getElementById('currentMonthDisplay');
         if (grid && grid.classList.contains('active') && e.target !== displayBtn && !grid.contains(e.target)) {
             grid.classList.remove('active');
+        }
+    });
+
+    window.addEventListener('resize', () => {
+        if(window.innerWidth > 850) {
+            document.getElementById('secResumo').classList.remove('tab-hidden');
+            document.getElementById('secForm').classList.remove('tab-hidden');
+            document.getElementById('secTabela').classList.remove('tab-hidden');
+        } else {
+            switchTab('resumo');
         }
     });
 
