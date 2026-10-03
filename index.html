@@ -7,7 +7,7 @@
     <title id="pageTitle">Gestão de Produtividade de Leituras</title> 
 
     <!-- FAVICON -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzMiAzMicgd2lidGg9JzMyJyBoZWlnaHQ9JzMyJz48cmVjdCB3aWR0aD0nMzInIGhlaWdodD0nMzInIHJ4PSc2JyBmaWxsPScjMGIwZjE1Jy8+PHRleHQgeD0nNTAlJyB5PSc1NSUnIGRvbWluYW50LWJhc2VsaW5lPSdtaWRkbGUnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJyBmb250LXdlaWdodD0nOTAwJyBmb250LXNpemU9JzEwJyBmaWxsPScjM00mZjg4JyBsZXR0ZXItc3BhY2luZz0nMC41Jz5HUEw8L3RleHQ+PC9zdmc+">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzMiAzMicgd2lidGg9JzMyJyBoZWlnaHQ9JzMyJz48cmVjdCB3aWR0aD0nMzInIGhlaWdodD0nMzInIHJ4PSc2JyBmaWxsPScjMGIwZjE1Jy8+PHRleHQgeD0nNTAlJyB5PSc1NSUnIGRvbWluYW50LWJhc2VsaW5lPSdtaWRkbGUnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJyBmb250LXdlaWdodD0nOTAwJyBmb250LXNpemU9JzEwJyBmaWxsPScjMDBmZjg4JyBsZXR0ZXItc3BhY2luZz0nMC41Jz5HUEw8L3RleHQ+PC9zdmc+">
 
     <!-- MANIFESTO PWA -->
     <link rel="manifest" href="./manifest.json">
@@ -39,10 +39,10 @@
             background-color: var(--bg); 
             color: var(--text-p); 
             font-family: system-ui, -apple-system, sans-serif; 
-            overflow-x: hidden;
+            overflow: hidden; /* TRAVA A PÁGINA INTEIRA CONTRA SCROLL GLOBAL */
         }
         body { 
-            padding: 8px; 
+            padding: 6px; 
             display: flex;
             justify-content: center;
             align-items: flex-start;
@@ -51,7 +51,7 @@
             background: #000; 
             color: white; 
             border: 1px solid var(--border); 
-            padding: 12px; 
+            padding: 10px 12px; 
             border-radius: 9px; 
             outline: none; 
             width: 100%; 
@@ -128,17 +128,17 @@
         .container { 
             max-width: 1450px; 
             width: 100%; 
-            height: 100%; 
+            height: 100vh; 
             margin: 0 auto; 
             display: flex; 
             flex-direction: column; 
-            gap: 8px; 
-            justify-content: flex-start; /* GARANTE QUE FICARÁ TUDO CRAVADO NO TOPO */
+            gap: 6px; 
+            justify-content: flex-start;
         } 
         
         header { 
             background: var(--surface); 
-            padding: 10px 16px; 
+            padding: 8px 14px; 
             border-radius: 16px; 
             border: 1px solid var(--border); 
             display: flex; 
@@ -385,41 +385,43 @@
         .month-grid.active { display: grid; } 
         .month-item { background: #000; color: white; border: 1px solid var(--border); padding: 10px; border-radius: 8px; cursor: pointer; font-size: 11px; font-weight: bold; text-align: center; }
 
-        /* REGRA DEFINITIVA PARA MÓVEIS EM AMBOS OS MODOS */
+        /* REGRA EXCLUSIVA MOBILE: TELA FIXA + ROLAGEM INTERNA SOMENTE NAS ABAS */
         @media (max-width: 850px) {
-            body { 
-                padding: 4px; 
-                display: block !important;
-                height: auto !important;
-            }
             header { flex-direction: column; text-align: center; padding: 6px 10px; }
             header > div { width: 100%; justify-content: center; }
 
             .mobile-tabs { display: flex; }
-            .top-dashboard { grid-template-columns: 1fr; width: 100%; }
+            .top-dashboard { grid-template-columns: 1fr; width: 100%; flex-grow: 1; overflow-y: auto; }
             .summary-grid { grid-template-columns: repeat(2, 1fr); }
             
             .content-wrap { 
-                display: block; 
+                display: flex; 
+                flex-direction: column;
+                flex-grow: 1;
+                min-height: 0;
                 width: 100%;
-                height: auto;
             }
 
             aside, main, #secResumo {
                 width: 100%;
-                position: relative;
+                height: 100% !important;
+                min-height: 0;
             }
 
             .sidebar {
-                height: auto !important;
+                height: 100% !important;
+                overflow-y: auto !important; /* ROLA APENAS O FORMULÁRIO */
                 padding: 12px;
-                padding-bottom: 30px;
+                padding-bottom: 40px;
             }
 
-            .main-view, .table-container {
-                height: auto !important;
-                max-height: 500px !important;
-                overflow-y: auto !important;
+            .main-view {
+                height: 100% !important;
+            }
+
+            .table-container {
+                height: 100% !important;
+                overflow-y: auto !important; /* ROLA APENAS A TABELA */
             }
         }
 
