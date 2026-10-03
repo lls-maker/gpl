@@ -3,11 +3,11 @@
 <head> 
     <meta charset="UTF-8"> 
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"> 
-    <meta name="theme-color" content="#0b0f15">
+    <meta name="theme-color" content="#030508">
     <title>Gestão de Produtividade de Leituras 2026</title> 
 
     <!-- FAVICON -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzMiAzMicgd2lidGg9JzMyJyBoZWlnaHQ9JzMyJz48cmVjdCB3aWR0aD0nMzInIGhlaWdodD0nMzInIHJ4PSc2JyBmaWxsPScjMGIwZjE1Jy8+PHRleHQgeD0nNTAlJyB5PSc1NSUnIGRvbWluYW50LWJhc2VsaW5lPSdtaWRkbGUnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJyBmb250LXdlaWdodD0nOTAwJyBmb250LXNpemU9JzEwJyBmaWxsPScjMDBmZjg4JyBsZXR0ZXItc3BhY2luZz0nMC41Jz5HUEw8L3RleHQ+PC9zdmc+">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzMiAzMicgd2lidGg9JzMyJyBoZWlnaHQ9JzMyJz48cmVjdCB3aWR0aD0nMzInIGhlaWdodD0nMzInIHJ4PSc2JyBmaWxsPScjMGIwZjE1Jy8+PHRleHQgeD0nNTAl%'eT0nNTUnIGRvbWluYW50LWJhc2VsaW5lPSdtaWRkbGUnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJyBmb250LXdlaWdodD0nOTAwJyBmb250LXNpemU9JzEwJyBmaWxsPScjMDBmZjg4JyBsZXR0ZXItc3BhY2luZz0nMC41Jz5HUEw8L3RleHQ+PC9zdmc+">
 
     <!-- MANIFESTO PWA -->
     <link rel="manifest" href="./manifest.json">
@@ -20,7 +20,7 @@
             --success: #00ff88; 
             --danger: #ff4d4d; 
             --warning: #ffcc00; 
-            --border: #1e2633;
+            --border: #1e2633; 
             --text-p: #8899a6; 
             --text-h: #ffffff; 
             --grey-border: #333c4d; 
@@ -379,24 +379,36 @@
 
         /* REGRAS DE ADAPTAÇÃO PARA DISPOSITIVOS MÓVEIS VIA ABAS */
         @media (max-width: 850px) {
-            body { padding: 5px; }
+            body { 
+                padding: 5px; 
+                height: auto !important; 
+                min-height: 100vh;
+                overflow-y: auto !important; 
+            }
+
             header { flex-direction: column; text-align: center; }
             header > div { width: 100%; justify-content: center; }
 
             .mobile-tabs { display: flex; }
             .top-dashboard { grid-template-columns: 1fr; }
             .summary-grid { grid-template-columns: repeat(2, 1fr); }
-            .content-wrap { grid-template-columns: 1fr; }
+            .content-wrap { grid-template-columns: 1fr; height: auto !important; }
 
-            /* Permite rolagem no modo retrato na aba do formulário */
-            .container, .content-wrap, aside, .sidebar {
+            /* CORREÇÃO DO FORMULÁRIO EM MODO RETRATO */
+            .container, aside, main, .sidebar, .form-content-area {
                 height: auto !important;
                 min-height: auto !important;
+                max-height: none !important;
                 overflow: visible !important;
             }
 
             .sidebar {
-                padding-bottom: 25px;
+                padding: 16px;
+                padding-bottom: 40px; /* Garante espaço extra para os botões no final da tela */
+            }
+
+            .form-group input {
+                font-size: 16px !important; /* Evita zoom automático que trava o toque */
             }
 
             /* Ocultar/Exibir seções baseado na aba ativa no celular */
