@@ -2,13 +2,13 @@
 <html lang="pt-br"> 
 <head> 
     <meta charset="UTF-8"> 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"> 
     <title>Gestão de Produtividade de Leituras 2026</title> 
 
-    <!-- FAVICON CORRIGIDO EM BASE64 SEGURO E COMPATÍVEL COM TODOS OS NAVEGADORES -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzMiAzMicgd2lidGg9JzMyJyBoZWlnaHQ9JzMyJz48cmVjdCB3aWR0aD0nMzInIGhlaWdodD0nMzInIHJ4PSc2JyBmaWxsPScjMGIwZjE1Jy8+PHRleHQgeD0nNTAlJyB5PSc1NSUnIGRvbWluYW50LWJhc2VsaW5lPSdtaWRkbGUnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJyBmb250LXdlaWdodD0nOTAwJyBmb250LXNpemU9JzEwJyBmaWxsPScjM0BmZjg4JyBsZXR0ZXItc3BhY2luZz0nMC41Jz5HUEw8L3RleHQ+PC9zdmc+">
+    <!-- FAVICON -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzMiAzMicgd2lidGg9JzMyJyBoZWlnaHQ9JzMyJz48cmVjdCB3aWR0aD0nMzInIGhlaWdodD0nMzInIHJ4PSc2JyBmaWxsPScjMGIwZjE1Jy8+PHRleHQgeD0nNTAlJyB5PSc1NSUnIGRvbWluYW50LWJhc2VsaW5lPSdtaWRkbGUnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJyBmb250LXdlaWdodD0nOTAwJyBmb250LXNpemU9JzEwJyBmaWxsPScjMDBmZjg4JyBsZXR0ZXItc3BhY2luZz0nMC41Jz5HUEw8L3RleHQ+PC9zdmc+">
 
-    <!-- VÍNCULO DO MANIFESTO PARA ATIVAR O MODO PWA (APLICATIVO INSTALÁVEL) -->
+    <!-- MANIFESTO PWA -->
     <link rel="manifest" href="./manifest.json">
 
     <style> 
@@ -32,11 +32,11 @@
             box-sizing: border-box; 
         } 
         body { 
-            font-family: 'Inter', system-ui, sans-serif; 
+            font-family: 'Inter', system-ui, -apple-system, sans-serif; 
             background-color: var(--bg); 
             color: var(--text-p); 
             margin: 0; 
-            padding: 10px; 
+            padding: clamp(6px, 1.5vw, 15px); 
             min-height: 100vh; 
             display: flex;
             justify-content: center;
@@ -46,11 +46,11 @@
             background: #000; 
             color: white; 
             border: 1px solid var(--border); 
-            padding: 8px 10px; 
+            padding: 10px 12px; 
             border-radius: 9px; 
             outline: none; 
             width: 100%; 
-            font-size: 12px; 
+            font-size: 13px; 
             margin-bottom: 6px; 
             transition: 0.3s; 
         } 
@@ -85,8 +85,8 @@
             padding: 15px;
         } 
         .login-box { 
-            background: rgba(11, 15, 21, 0.8); 
-            padding: 30px; 
+            background: rgba(11, 15, 21, 0.85); 
+            padding: 30px 20px; 
             border-radius: 24px; 
             border: 1px solid var(--border); 
             border-top: 4px solid var(--success); 
@@ -127,9 +127,11 @@
             flex-direction: column; 
             gap: 12px; 
         } 
+        
+        /* HEADER AUTO-AJUSTÁVEL PARA QUALQUER LARGURA */
         header { 
             background: var(--surface); 
-            padding: 12px 25px; 
+            padding: 12px 18px; 
             border-radius: 20px; 
             border: 1px solid var(--border); 
             display: flex; 
@@ -140,18 +142,28 @@
             flex-shrink: 0; 
             position: relative; 
         } 
+        header > div {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            width: auto;
+        }
+
         .prog-area { 
             width: 100%; 
             flex-shrink: 0; 
             padding: 0 5px; 
         } 
         
+        /* DASHBOARD AUTO-REORGANIZÁVEL */
         .top-dashboard {
-            display: grid;
-            grid-template-columns: 320px 1fr;
-            gap: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
             flex-shrink: 0;
-            margin-top: 12px;
+            margin-top: 4px;
         }
 
         .observations { 
@@ -163,7 +175,7 @@
             flex-direction: column; 
             justify-content: center; 
             gap: 8px; 
-            height: 100%;
+            flex: 1 1 280px; 
         } 
         .obs-item { 
             font-size: 11px; 
@@ -181,10 +193,12 @@
             flex-shrink: 0;
         } 
 
+        /* CARDS AUTO-DISTRIBUÍDOS COM AUTO-FIT */
         .summary-grid { 
             display: grid; 
             grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); 
-            gap: 12px; 
+            gap: 10px; 
+            flex: 3 1 500px;
         } 
         .summary-card { 
             background: var(--surface); 
@@ -203,30 +217,37 @@
             filter: brightness(1.1); 
         } 
         .summary-card p { font-size: 8px; font-weight: 800; text-transform: uppercase; margin: 0; } 
-        .summary-card h2 { margin: 6px 0 0; font-size: 1rem; color: var(--text-h); font-weight: 900; } 
+        .summary-card h2 { margin: 6px 0 0; font-size: clamp(0.85rem, 1.2vw, 1.1rem); color: var(--text-h); font-weight: 900; } 
 
-        .neon-leituras { border-top-color: var(--white-neon); box-shadow: 0 0 15px rgba(248, 249, 250, 0.2); } 
-        .neon-impedimentos { border-top-color: var(--orange-neon); box-shadow: 0 0 15px rgba(255, 140, 0, 0.2); } 
-        .neon-meta { border-top-color: var(--warning); box-shadow: 0 0 15px rgba(255, 204, 0, 0.2); } 
-        .neon-bonus { border-top-color: var(--accent); box-shadow: 0 0 15px rgba(0, 112, 243, 0.2); } 
-        .neon-descontos { border-top-color: var(--danger); box-shadow: 0 0 15px rgba(255, 77, 77, 0.2); } 
-        .neon-receber { border-top-color: var(--success); box-shadow: 0 0 20px rgba(0, 255, 136, 0.25); } 
-        .neon-acumulado { border-top-color: var(--purple); box-shadow: 0 0 15px rgba(156, 39, 176, 0.2); } 
+        .neon-leituras { border-top-color: var(--white-neon); box-shadow: 0 0 15px rgba(248, 249, 250, 0.15); } 
+        .neon-impedimentos { border-top-color: var(--orange-neon); box-shadow: 0 0 15px rgba(255, 140, 0, 0.15); } 
+        .neon-meta { border-top-color: var(--warning); box-shadow: 0 0 15px rgba(255, 204, 0, 0.15); } 
+        .neon-bonus { border-top-color: var(--accent); box-shadow: 0 0 15px rgba(0, 112, 243, 0.15); } 
+        .neon-descontos { border-top-color: var(--danger); box-shadow: 0 0 15px rgba(255, 77, 77, 0.15); } 
+        .neon-receber { border-top-color: var(--success); box-shadow: 0 0 20px rgba(0, 255, 136, 0.2); } 
+        .neon-acumulado { border-top-color: var(--purple); box-shadow: 0 0 15px rgba(156, 39, 176, 0.15); } 
 
+        /* LAYOUT PRINCIPAL DINÂMICO (FLEXWRAP AUTOMÁTICO) */
         .content-wrap { 
-            display: grid; 
-            grid-template-columns: 320px 1fr; 
-            gap: 15px; 
+            display: flex; 
+            flex-wrap: wrap;
+            gap: 12px; 
             flex-grow: 1; 
         } 
-        aside, main { 
+        aside {
+            flex: 1 1 290px;
+            display: flex;
+            flex-direction: column;
+        }
+        main { 
+            flex: 3 1 450px;
             display: flex; 
             flex-direction: column; 
-            height: 100%; 
+            min-width: 0;
         } 
         .sidebar { 
             background: linear-gradient(180deg, rgba(0, 112, 243, 0.08) 0%, var(--surface) 100%); 
-            padding: 14px 18px 14px 18px; 
+            padding: 16px; 
             border-radius: 20px; 
             border: 1.5px solid var(--accent); 
             height: 100%; 
@@ -235,21 +256,25 @@
             justify-content: space-between; 
         } 
         .form-content-area {
-            margin-top: 14px; 
+            margin-top: 10px; 
         }
         .form-group {
             display: flex; 
+            flex-wrap: wrap;
             align-items: center; 
-            gap: 8px; 
-            margin-bottom: 5px;
+            gap: 4px; 
+            margin-bottom: 6px;
         }
         .form-group label {
-            width: 80px; 
-            flex-shrink: 0; 
+            flex: 1 0 70px; 
             font-size: 10px; 
             font-weight: 800; 
             color: var(--accent); 
             text-transform: uppercase; 
+        }
+        .form-group input {
+            flex: 2 0 150px;
+            margin-bottom: 0;
         }
         .actions-footer { 
             margin-top: 10px; 
@@ -261,7 +286,7 @@
             background: var(--accent); 
             color: #fff; 
             width: 100%; 
-            padding: 11px; 
+            padding: 12px; 
             border-radius: 12px; 
             font-weight: 900; 
             cursor: pointer; 
@@ -338,58 +363,17 @@
         .table-container { 
             flex-grow: 1; 
             max-height: 550px; 
-            overflow-y: auto; 
-            overflow-x: auto; 
+            overflow: auto; 
+            -webkit-overflow-scrolling: touch;
         } 
 
-        table { width: 100%; border-collapse: collapse; min-width: 600px; } 
+        table { width: 100%; border-collapse: collapse; min-width: 480px; } 
         th, td { padding: 9px 5px; text-align: center; border-bottom: 1px solid var(--border); font-size: 12px; height: 39.5px; } 
         th { background: #0d1117; color: var(--accent); font-size: 10px; text-transform: uppercase; position: sticky; top: 0; z-index: 5; } 
 
-        .month-grid { display: none; position: absolute; top: 70px; right: 20px; background: #0d1117; border: 1px solid var(--accent); padding: 15px; border-radius: 15px; grid-template-columns: repeat(3, 1fr); gap: 8px; z-index: 1000; } 
+        .month-grid { display: none; position: absolute; top: 65px; right: 20px; background: #0d1117; border: 1px solid var(--accent); padding: 15px; border-radius: 15px; grid-template-columns: repeat(3, 1fr); gap: 8px; z-index: 1000; box-shadow: 0 10px 30px rgba(0,0,0,0.8); } 
         .month-grid.active { display: grid; } 
-        .month-item { background: #000; color: white; border: 1px solid var(--border); padding: 10px; border-radius: 8px; cursor: pointer; font-size: 11px; font-weight: bold; }
-
-        /* REGRAS DE RESPONSIVIDADE PARA QUALQUER TELA E ORIENTAÇÃO */
-        @media (max-width: 992px) {
-            .top-dashboard {
-                grid-template-columns: 1fr;
-            }
-            .content-wrap {
-                grid-template-columns: 1fr;
-            }
-            header {
-                justify-content: center;
-                text-align: center;
-            }
-            header > div {
-                flex-wrap: wrap;
-                justify-content: center;
-            }
-            .month-grid {
-                right: 50%;
-                transform: translateX(50%);
-            }
-        }
-
-        @media (max-width: 576px) {
-            body {
-                padding: 5px;
-            }
-            header h1 {
-                font-size: 14px;
-            }
-            .summary-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            .summary-card h2 {
-                font-size: 0.9rem;
-            }
-            .btn-add, .btn-clear, .btn-clear-year, .btn-backup, .btn-import {
-                padding: 10px;
-                font-size: 10px;
-            }
-        }
+        .month-item { background: #000; color: white; border: 1px solid var(--border); padding: 10px; border-radius: 8px; cursor: pointer; font-size: 11px; font-weight: bold; text-align: center; }
 
         @media print { 
             body { height: auto !important; overflow: visible !important; display: block !important; background: #fff !important; color: #000 !important; }
@@ -431,12 +415,12 @@
     <header> 
         <div style="display: flex; align-items: center; gap: 15px;"> 
             <div style="background:var(--success); color:black; padding:8px 15px; border-radius:10px; font-weight:900;" class="no-print">GPL</div> 
-            <h1 style="font-size: 16px; color: white; margin: 0;">Gestão de Produtividade de Leituras - <span id="userDisplay" style="color:var(--success)"></span></h1> 
+            <h1 style="font-size: 15px; color: white; margin: 0;">Gestão de Produtividade de Leituras - <span id="userDisplay" style="color:var(--success)"></span></h1> 
         </div> 
-        <div style="display: flex; gap: 10px; align-items: center;" class="no-print"> 
-            <button class="btn-add" style="padding: 10px 20px; font-size: 12px; width: 180px; margin: 0; background: var(--accent);" onclick="toggleMonthGrid()" id="currentMonthDisplay">SETEMBRO 2026 ▾</button> 
+        <div style="display: flex; gap: 8px; align-items: center;" class="no-print"> 
+            <button class="btn-add" style="padding: 10px 15px; font-size: 11px; width: 150px; margin: 0; background: var(--accent);" onclick="toggleMonthGrid()" id="currentMonthDisplay">SETEMBRO 2026 ▾</button> 
             <div id="monthGrid" class="month-grid"></div> 
-            <button onclick="window.print()" style="background:#1e2633; border:1px solid var(--border); color:white; padding:10px 20px; border-radius:10px; cursor:pointer; font-weight:800;">IMPRIMIR</button> 
+            <button onclick="window.print()" style="background:#1e2633; border:1px solid var(--border); color:white; padding:10px 15px; border-radius:10px; cursor:pointer; font-weight:800;">IMPRIMIR</button> 
             <button onclick="logout()" style="background:var(--danger); border:none; color:white; padding:10px; border-radius:10px; cursor:pointer; font-weight:bold;">SAIR</button> 
         </div> 
     </header> 
