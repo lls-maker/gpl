@@ -317,16 +317,6 @@
 <script> 
     let db = []; 
     let currentUser = ""; 
-    
-    // CONFIGURAÇÕES DO REPOSITÓRIO GITHUB COM SEU TOKEN FINE-GRAINED
-    const GITHUB_CONFIG = {
-        owner: "lls-maker",
-        repo: "gpl",
-        path: "dados/registros.json",
-        token: "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"
-    };
-
-    let fileSha = ""; 
 
     let dataAtualDoSistema = new Date();
     let viewDate = new Date(dataAtualDoSistema.getFullYear(), dataAtualDoSistema.getMonth(), 1); 
@@ -387,99 +377,44 @@
         }, 20); 
     } 
 
-    async function initSystem() { 
+    function initSystem() { 
         currentUser = sessionStorage.getItem('gpl_user'); 
         if(!currentUser) return; 
+        
         document.getElementById('loginScreen').style.display = 'none'; 
         document.getElementById('userDisplay').innerText = currentUser; 
         
+        // CARREGA DADOS DO LOCALSTORAGE
+        db = JSON.parse(localStorage.getItem(`GPL_DATA_${currentUser}`)) || [];
+
         atualizarAnoDinamicoNoTitulo();
         document.getElementById('currentMonthDisplay').innerText = `${msNomesCompletos[viewDate.getMonth()]} ${viewDate.getFullYear()} ▾`; 
         
         renderMonths(); 
-        await carregarDadosDoGitHub();
+        atualizarTabela();
 
         if(window.innerWidth <= 800) {
             switchTab('resumo');
         }
     } 
 
-    // --- LEITURA DO BANCO VIA GITHUB API ---
-    async function carregarDadosDoGitHub() {
-        const url = `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.path}`;
-        
-        try {
-            const res = await fetch(url, {
-                headers: {
-                    'Authorization': `Bearer ${GITHUB_CONFIG.token}`,
-                    'Accept': 'application/vnd.github.v3+json'
-                }
-            });
-
-            if (res.ok) {
-                const data = await res.json();
-                fileSha = data.sha;
-                const contentDecoded = decodeURIComponent(escape(atob(data.content)));
-                db = JSON.parse(contentDecoded);
-            } else {
-                db = JSON.parse(localStorage.getItem(`GPL_DATA_${currentUser}`)) || [];
-            }
-        } catch (err) {
-            console.warn("Usando localStorage offline:", err);
-            db = JSON.parse(localStorage.getItem(`GPL_DATA_${currentUser}`)) || [];
-        }
-        atualizarTabela();
-    }
-
-    // --- GRAVAÇÃO DO BANCO VIA GITHUB API ---
-    async function salvarDadosNoGitHub() {
-        const url = `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.path}`;
-        const contentEncoded = btoa(unescape(encodeURIComponent(JSON.stringify(db, null, 2))));
-
-        const payload = {
-            message: `Atualização de dados por ${currentUser}`,
-            content: contentEncoded,
-            sha: fileSha || undefined
-        };
-
-        try {
-            const res = await fetch(url, {
-                method: 'PUT',
-                headers: {
-                    'Authorization': `Bearer ${GITHUB_CONFIG.token}`,
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/vnd.github.v3+json'
-                },
-                body: JSON.stringify(payload)
-            });
-
-            if (res.ok) {
-                const resData = await res.json();
-                fileSha = resData.content.sha;
-                localStorage.setItem(`GPL_DATA_${currentUser}`, JSON.stringify(db));
-            } else {
-                alert("Erro ao sincronizar com o GitHub. Salvo localmente.");
-                localStorage.setItem(`GPL_DATA_${currentUser}`, JSON.stringify(db));
-            }
-        } catch (err) {
-            alert("Modo offline: salvo apenas no dispositivo.");
-            localStorage.setItem(`GPL_DATA_${currentUser}`, JSON.stringify(db));
-        }
-    }
-
     function handleAuth() { 
         const u = document.getElementById('userInput').value.trim().toUpperCase(); 
         const p = document.getElementById('passInput').value; 
         const r = document.getElementById('recoveryInput').value; 
+        
         let users = JSON.parse(localStorage.getItem('GPL_USERS')) || {}; 
+
         if(document.getElementById('authTitle').innerText.includes("Criar")) { 
             if(!u || !p) return alert("Preencha Usuário e Senha"); 
             users[u] = { pass: p, hint: r }; 
             localStorage.setItem('GPL_USERS', JSON.stringify(users)); 
             alert("Conta Criada!"); toggleAuthMode(); 
         } else { 
-            if(users[u] && users[u].pass === p) { sessionStorage.setItem('gpl_user', u); initSystem(); } 
-            else alert("Dados incorretos!"); 
+            if(users[u] && users[u].pass === p) { 
+                sessionStorage.setItem('gpl_user', u); 
+                initSystem(); 
+            } else alert("Dados incorretos!"); 
         } 
     } 
 
@@ -554,7 +489,7 @@
         animarContagem('totAcumulado', acum, true); 
     } 
 
-    async function salvarFormulario(e) { 
+    function salvarFormulario(e) { 
         e.preventDefault(); 
         db.push({ 
             id: Date.now(), 
@@ -567,7 +502,7 @@
             imped: Number(document.getElementById('imped').value) 
         }); 
 
-        await salvarDadosNoGitHub();
+        localStorage.setItem(`GPL_DATA_${currentUser}`, JSON.stringify(db));
         atualizarTabela(); 
         document.getElementById('gplForm').reset(); 
         
@@ -576,30 +511,30 @@
         }
     }
 
-    async function remover(id) { 
-        if(confirm("Excluir?")) { 
+    function remover(id) { 
+        if(confirm("Excluir registro?")) { 
             db = db.filter(i => i.id !== id); 
-            await salvarDadosNoGitHub();
+            localStorage.setItem(`GPL_DATA_${currentUser}`, JSON.stringify(db));
             atualizarTabela(); 
         } 
     } 
     
-    async function limparTudo() { 
+    function limparTudo() { 
         if(confirm("Deseja limpar todos os registros deste mês?")) { 
             const anoAtual = viewDate.getFullYear();
             const mesF = anoAtual + "-" + String(viewDate.getMonth() + 1).padStart(2, '0'); 
             db = db.filter(i => !i.data.startsWith(mesF)); 
-            await salvarDadosNoGitHub();
+            localStorage.setItem(`GPL_DATA_${currentUser}`, JSON.stringify(db));
             atualizarTabela(); 
         } 
     } 
      
-    async function limparAno() { 
+    function limparAno() { 
         const anoAtual = viewDate.getFullYear();
         if(confirm(`ATENÇÃO: Você está prestes a apagar TODOS os registros de ${anoAtual}!`)) { 
             if(confirm("Tem certeza absoluta? Esta ação não pode ser desfeita.")) { 
                 db = db.filter(i => !i.data.startsWith(String(anoAtual))); 
-                await salvarDadosNoGitHub();
+                localStorage.setItem(`GPL_DATA_${currentUser}`, JSON.stringify(db));
                 atualizarTabela(); 
                 alert(`Todos os dados de ${anoAtual} foram removidos.`); 
             } 
@@ -624,13 +559,13 @@
         if (!file) return;
 
         const reader = new FileReader();
-        reader.onload = async function(e) {
+        reader.onload = function(e) {
             try {
                 const importedData = JSON.parse(e.target.result);
                 if (Array.isArray(importedData)) {
                     if (confirm(`Deseja substituir os dados atuais pelo arquivo "${file.name}"?`)) {
                         db = importedData;
-                        await salvarDadosNoGitHub();
+                        localStorage.setItem(`GPL_DATA_${currentUser}`, JSON.stringify(db));
                         atualizarTabela();
                         alert("Backup restaurado com sucesso!");
                     }
