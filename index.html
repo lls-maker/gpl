@@ -2,12 +2,12 @@
 <html lang="pt-br"> 
 <head> 
     <meta charset="UTF-8"> 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
     <meta name="theme-color" content="#030508">
     <title id="pageTitle">Gestão de Produtividade de Leituras</title> 
 
     <!-- FAVICON -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzMiAzMicgd2lidGg9JzMyJyBoZWlnaHQ9JzMyJz48cmVjdCB3aWR0aD0nMzInIGhlaWdodD0nMzInIHJ4PSc2JyBmaWxsPScjMGIwZjE1Jy8+PHRleHQgeD0nNTAl%'eT0nNTUnIGRvbWluYW50LWJhc2VsaW5lPSdtaWRkbGUnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJyBmb250LXdlaWdodD0nOTAwJyBmb250LXNpemU9JzEwJyBmaWxsPScjMDBmZjg4JyBsZXR0ZXItc3BhY2luZz0nMC41Jz5HUEw8L3RleHQ+PC9zdmc+">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzMiAzMicgd2lidGg9JzMyJyBoZWlnaHQ9JzMyJz48cmVjdCB3aWR0aD0nMzInIGhlaWdodD0nMzInIHJ4PSc2JyBmaWxsPScjMGIwZjE1Jy8+PHRleHQgeD0nNTAlJyB5PSc1NSUnIGRvbWluYW50LWJhc2VsaW5lPSdtaWRkbGUnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJyBmb250LXdlaWdodD0nOTAwJyBmb250LXNpemU9JzEwJyBmaWxsPScjMDBmZjg4JyBsZXR0ZXItc3BhY2luZz0nMC41Jz5HUEw8L3RleHQ+PC9zdmc+">
 
     <!-- MANIFESTO PWA -->
     <link rel="manifest" href="./manifest.json">
@@ -32,16 +32,13 @@
         * { 
             box-sizing: border-box; 
         } 
-        html, body { 
-            height: 100%;
-            overflow: hidden; /* Fixa a tela inteira sem rolagem global */
-        }
         body { 
             font-family: system-ui, -apple-system, sans-serif; 
             background-color: var(--bg); 
             color: var(--text-p); 
             margin: 0; 
             padding: 10px; 
+            min-height: 100vh; 
             display: flex;
             justify-content: center;
             align-items: flex-start;
@@ -54,11 +51,10 @@
             border-radius: 9px; 
             outline: none; 
             width: 100%; 
-            font-size: 16px; 
+            font-size: 16px !important; /* Evita que o iOS/Android dê zoom automático e trave o toque */
             margin-bottom: 6px; 
             transition: 0.3s; 
-            -webkit-user-select: text;
-            user-select: text;
+            touch-action: manipulation;
         } 
         input:focus { 
             border-color: var(--accent) !important; 
@@ -127,17 +123,17 @@
         .container { 
             max-width: 1450px; 
             width: 100%; 
-            height: 100%; 
+            min-height: 94vh; 
             margin: auto; 
             display: flex; 
             flex-direction: column; 
-            gap: 8px; 
+            gap: 12px; 
         } 
         
         header { 
             background: var(--surface); 
-            padding: 10px 16px; 
-            border-radius: 16px; 
+            padding: 12px 18px; 
+            border-radius: 20px; 
             border: 1px solid var(--border); 
             display: flex; 
             justify-content: space-between; 
@@ -151,14 +147,14 @@
         .prog-area { 
             width: 100%; 
             flex-shrink: 0; 
-            padding: 0 2px; 
+            padding: 0 5px; 
         } 
         
         /* MENU DE ABAS EXCLUSIVO PARA SMARTPHONES */
         .mobile-tabs {
             display: none;
             gap: 5px;
-            flex-shrink: 0;
+            margin-top: 4px;
         }
         .tab-btn {
             flex: 1;
@@ -183,6 +179,7 @@
             grid-template-columns: 320px 1fr;
             gap: 12px;
             flex-shrink: 0;
+            margin-top: 4px;
         }
 
         .observations { 
@@ -249,13 +246,11 @@
             grid-template-columns: 320px 1fr; 
             gap: 12px; 
             flex-grow: 1; 
-            min-height: 0; /* Permite que o container filho assuma o scroll interno */
         } 
         aside, main { 
             display: flex; 
             flex-direction: column; 
             height: 100%; 
-            min-height: 0;
         } 
         .sidebar { 
             background: linear-gradient(180deg, rgba(0, 112, 243, 0.08) 0%, var(--surface) 100%); 
@@ -266,10 +261,9 @@
             display: flex; 
             flex-direction: column; 
             justify-content: space-between; 
-            overflow-y: auto; /* Rola internamente no desktop se necessário */
         } 
         .form-content-area {
-            margin-top: 6px; 
+            margin-top: 10px; 
         }
         .form-group {
             display: flex; 
@@ -371,7 +365,7 @@
         
         .table-container { 
             flex-grow: 1; 
-            height: 100%;
+            max-height: 550px; 
             overflow: auto; 
             -webkit-overflow-scrolling: touch;
         } 
@@ -384,41 +378,31 @@
         .month-grid.active { display: grid; } 
         .month-item { background: #000; color: white; border: 1px solid var(--border); padding: 10px; border-radius: 8px; cursor: pointer; font-size: 11px; font-weight: bold; text-align: center; }
 
-        /* AJUSTES PARA CELULAR EM MODO RETRATO */
+        /* REGRAS DE ADAPTAÇÃO PARA MÓVEIS */
         @media (max-width: 850px) {
-            body { padding: 4px; }
-            header { flex-direction: column; text-align: center; padding: 8px; }
+            body { 
+                padding: 5px; 
+                height: auto !important;
+                min-height: 100vh;
+                overflow-y: auto !important;
+            }
+            header { flex-direction: column; text-align: center; }
             header > div { width: 100%; justify-content: center; }
 
             .mobile-tabs { display: flex; }
             .top-dashboard { grid-template-columns: 1fr; }
             .summary-grid { grid-template-columns: repeat(2, 1fr); }
-            .content-wrap { grid-template-columns: 1fr; height: 100%; }
+            .content-wrap { grid-template-columns: 1fr; height: auto !important; }
 
-            /* ALINHAMENTO COMPLETO NO TOPO PARA AS ABAS EM CELULAR */
-            aside, main {
-                height: 100% !important;
-                justify-content: flex-start !important;
+            aside, main, .sidebar, .container {
+                height: auto !important;
+                min-height: auto !important;
+                max-height: none !important;
+                overflow: visible !important;
             }
 
             .sidebar {
-                height: 100% !important;
-                overflow-y: auto !important; /* Rolagem interna apenas para o formulário */
-                padding: 12px;
                 padding-bottom: 30px;
-            }
-
-            .main-view {
-                height: 100% !important;
-            }
-
-            .table-container {
-                height: 100% !important;
-                overflow-y: auto !important; /* Rolagem apenas no card da tabela */
-            }
-
-            .form-group input {
-                font-size: 16px !important;
             }
 
             .top-dashboard.tab-hidden, aside.tab-hidden, main.tab-hidden {
@@ -590,6 +574,11 @@
         } else if(tabName === 'novo') {
             tabs[1].classList.add('active');
             document.getElementById('secForm').classList.remove('tab-hidden');
+            
+            // GARANTE O FOCO CORRETO AO ABRIR O FORMULÁRIO NO MOBILE
+            setTimeout(() => {
+                document.getElementById('data').focus();
+            }, 100);
         } else if(tabName === 'tabela') {
             tabs[2].classList.add('active');
             document.getElementById('secTabela').classList.remove('tab-hidden');
