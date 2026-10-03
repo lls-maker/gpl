@@ -318,12 +318,12 @@
     let db = []; 
     let currentUser = ""; 
     
-    // CONFIGURAÇÕES DO SEU REPOSITÓRIO GITHUB
+    // CONFIGURAÇÕES DO REPOSITÓRIO GITHUB COM SEU TOKEN FINE-GRAINED
     const GITHUB_CONFIG = {
         owner: "lls-maker",
         repo: "gpl",
         path: "dados/registros.json",
-        token: "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"
+        token: "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"
     };
 
     let fileSha = ""; 
@@ -411,7 +411,7 @@
         try {
             const res = await fetch(url, {
                 headers: {
-                    'Authorization': `token ${GITHUB_CONFIG.token}`,
+                    'Authorization': `Bearer ${GITHUB_CONFIG.token}`,
                     'Accept': 'application/vnd.github.v3+json'
                 }
             });
@@ -446,7 +446,7 @@
             const res = await fetch(url, {
                 method: 'PUT',
                 headers: {
-                    'Authorization': `token ${GITHUB_CONFIG.token}`,
+                    'Authorization': `Bearer ${GITHUB_CONFIG.token}`,
                     'Content-Type': 'application/json',
                     'Accept': 'application/vnd.github.v3+json'
                 },
