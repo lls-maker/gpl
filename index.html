@@ -7,7 +7,7 @@
     <title id="pageTitle">Gestão de Produtividade de Leituras</title> 
 
     <!-- FAVICON -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzMiAzMicgd2lidGg9JzMyJyBoZWlnaHQ9JzMyJz48cmVjdCB3aWR0aD0nMzInIGhlaWdodD0nMzInIHJ4PSc2JyBmaWxsPScjMGIwZjE1Jy8+PHRleHQgeD0nNTAlJyB5PSc1NSUnIGRvbWluYW50LWJhc2VsaW5lPSdtaWRkbGUnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJyBmb250LXdlaWdodD0nOTAwJyBmb250LXNpemU9JzEwJyBmaWxsPScjMDBmZjg4JyBsZXR0ZXItc3BhY2luZz0nMC41Jz5HUEw8L3RleHQ+PC9zdmc+">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzMiAzMicgd2lidGg9JzMyJyBoZWlnaHQ9JzMyJz48cmVjdCB3aWR0aD0nMzInIGhlaWdodD0nMzInIHJ4PSc2JyBmaWxsPScjMGIwZjE1Jy8+PHRleHQgeD0nNTAlJScgeT0nNTUlJyBkb21pbmFudC1iYXNlbGluZT0nbWlkZGxlJyB0ZXh0LWFuY2hvcj0nbWlkZGxlJyBmb250LWZhbWlseT0nc2Fucy1zZXJpZicgZm9udC13ZWlnaHQ9JzkwMCcgZm9udC1zaXplPScxMCcgZmlsbD0nIzAwZmY4OCcgbGV0dGVyLXNwYWNpbmc9JzAuNSc+R1BMPC90ZXh0Pjwvc3ZnPg==">
 
     <!-- MANIFESTO PWA -->
     <link rel="manifest" href="./manifest.json">
@@ -47,12 +47,12 @@
             background: #000; 
             color: white; 
             border: 1px solid var(--border); 
-            padding: 10px 12px; 
+            padding: 12px; 
             border-radius: 9px; 
             outline: none; 
             width: 100%; 
-            font-size: 16px !important; /* Evita que o iOS/Android dê zoom automático e trave o toque */
-            margin-bottom: 6px; 
+            font-size: 16px !important; /* Impede zoom que trava toques no mobile */
+            margin-bottom: 8px; 
             transition: 0.3s; 
             touch-action: manipulation;
         } 
@@ -158,7 +158,7 @@
         }
         .tab-btn {
             flex: 1;
-            padding: 10px;
+            padding: 12px;
             background: var(--surface);
             border: 1px solid var(--border);
             color: var(--text-p);
@@ -378,7 +378,7 @@
         .month-grid.active { display: grid; } 
         .month-item { background: #000; color: white; border: 1px solid var(--border); padding: 10px; border-radius: 8px; cursor: pointer; font-size: 11px; font-weight: bold; text-align: center; }
 
-        /* REGRAS DE ADAPTAÇÃO PARA MÓVEIS */
+        /* REGRAS DIRETA PARA DISPOSITIVOS MÓVEIS */
         @media (max-width: 850px) {
             body { 
                 padding: 5px; 
@@ -403,10 +403,6 @@
 
             .sidebar {
                 padding-bottom: 30px;
-            }
-
-            .top-dashboard.tab-hidden, aside.tab-hidden, main.tab-hidden {
-                display: none !important;
             }
         }
 
@@ -496,7 +492,7 @@
     </div>
 
     <div class="content-wrap"> 
-        <aside class="no-print tab-hidden" id="secForm"> 
+        <aside class="no-print" id="secForm"> 
             <div class="sidebar"> 
                 <div>
                     <label style="font-size: 9px; font-weight: 800; color: var(--success); text-transform: uppercase; margin-bottom: 3px; display: block;">Pesquisar razão</label> 
@@ -527,7 +523,7 @@
             </div> 
         </aside> 
 
-        <main id="secTabela" class="tab-hidden"> 
+        <main id="secTabela"> 
             <div class="main-view"> 
                 <div class="table-container"> 
                     <table> 
@@ -564,24 +560,24 @@
         const tabs = document.querySelectorAll('.tab-btn');
         tabs.forEach(t => t.classList.remove('active'));
 
-        document.getElementById('secResumo').classList.add('tab-hidden');
-        document.getElementById('secForm').classList.add('tab-hidden');
-        document.getElementById('secTabela').classList.add('tab-hidden');
+        const secResumo = document.getElementById('secResumo');
+        const secForm = document.getElementById('secForm');
+        const secTabela = document.getElementById('secTabela');
+
+        // DIRETO VIA ESTILO PARA EVITAR BLOQUEIO DE FOCO NO CELULAR
+        secResumo.style.display = 'none';
+        secForm.style.display = 'none';
+        secTabela.style.display = 'none';
 
         if(tabName === 'resumo') {
             tabs[0].classList.add('active');
-            document.getElementById('secResumo').classList.remove('tab-hidden');
+            secResumo.style.display = 'grid';
         } else if(tabName === 'novo') {
             tabs[1].classList.add('active');
-            document.getElementById('secForm').classList.remove('tab-hidden');
-            
-            // GARANTE O FOCO CORRETO AO ABRIR O FORMULÁRIO NO MOBILE
-            setTimeout(() => {
-                document.getElementById('data').focus();
-            }, 100);
+            secForm.style.display = 'flex';
         } else if(tabName === 'tabela') {
             tabs[2].classList.add('active');
-            document.getElementById('secTabela').classList.remove('tab-hidden');
+            secTabela.style.display = 'flex';
         }
     }
 
@@ -808,10 +804,14 @@
     });
 
     window.addEventListener('resize', () => {
+        const secResumo = document.getElementById('secResumo');
+        const secForm = document.getElementById('secForm');
+        const secTabela = document.getElementById('secTabela');
+
         if(window.innerWidth > 850) {
-            document.getElementById('secResumo').classList.remove('tab-hidden');
-            document.getElementById('secForm').classList.remove('tab-hidden');
-            document.getElementById('secTabela').classList.remove('tab-hidden');
+            secResumo.style.display = 'grid';
+            secForm.style.display = 'flex';
+            secTabela.style.display = 'flex';
         } else {
             switchTab('resumo');
         }
