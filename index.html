@@ -4,7 +4,7 @@
     <meta charset="UTF-8"> 
     <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
     <meta name="theme-color" content="#030508">
-    <title>Gestão de Produtividade de Leituras</title> 
+    <title id="pageTitle">Gestão de Produtividade de Leituras</title> 
 
     <!-- FAVICON -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzMiAzMicgd2lidGg9JzMyJyBoZWlnaHQ9JzMyJz48cmVjdCB3aWR0aD0nMzInIGhlaWdodD0nMzInIHJ4PSc2JyBmaWxsPScjMGIwZjE1Jy8+PHRleHQgeD0nNTAlJyB5PSc1NSUnIGRvbWluYW50LWJhc2VsaW5lPSdtaWRkbGUnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJyBmb250LXdlaWdodD0nOTAwJyBmb250LXNpemU9JzEwJyBmaWxsPScjMDBmZjg4JyBsZXR0ZXItc3BhY2luZz0nMC41Jz5HUEw8L3RleHQ+PC9zdmc+">
@@ -457,7 +457,7 @@
     <header> 
         <div style="display: flex; align-items: center; gap: 15px;"> 
             <div style="background:var(--success); color:black; padding:8px 15px; border-radius:10px; font-weight:900;" class="no-print">GPL</div> 
-            <h1 style="font-size: 15px; color: white; margin: 0;">Gestão de Produtividade de Leituras - <span id="userDisplay" style="color:var(--success)"></span></h1> 
+            <h1 style="font-size: 15px; color: white; margin: 0;"><span id="headerAppName">Gestão de Produtividade de Leituras</span> - <span id="userDisplay" style="color:var(--success)"></span></h1> 
         </div> 
         <div style="display: flex; gap: 8px; align-items: center;" class="no-print"> 
             <button type="button" class="btn-add" style="padding: 10px 15px; font-size: 11px; width: 170px; margin: 0; background: var(--accent);" onclick="toggleMonthGrid()" id="currentMonthDisplay">SETEMBRO 2026 ▾</button> 
@@ -559,6 +559,12 @@
     const msNomesCompletos = ["JANEIRO", "FEVEREIRO", "MARÇO", "ABRIL", "MAIO", "JUNHO", "JULHO", "AGOSTO", "SETEMBRO", "OUTUBRO", "NOVEMBRO", "DEZEMBRO"]; 
     const fM = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); 
 
+    function atualizarAnoDinamicoNoTitulo() {
+        const anoAtual = viewDate.getFullYear();
+        document.getElementById('pageTitle').innerText = `Gestão de Produtividade de Leituras ${anoAtual}`;
+        document.getElementById('headerAppName').innerText = `Gestão de Produtividade de Leituras ${anoAtual}`;
+    }
+
     function switchTab(tabName) {
         if(window.innerWidth > 850) return;
 
@@ -608,6 +614,7 @@
         document.getElementById('userDisplay').innerText = currentUser; 
         db = JSON.parse(localStorage.getItem(`GPL_DATA_${currentUser}`)) || []; 
         
+        atualizarAnoDinamicoNoTitulo();
         document.getElementById('currentMonthDisplay').innerText = `${msNomesCompletos[viewDate.getMonth()]} ${viewDate.getFullYear()} ▾`; 
         
         renderMonths(); 
@@ -657,6 +664,7 @@
      
     function selectMonth(m) { 
         viewDate.setMonth(m); 
+        atualizarAnoDinamicoNoTitulo();
         document.getElementById('currentMonthDisplay').innerText = `${msNomesCompletos[m]} ${viewDate.getFullYear()} ▾`; 
         toggleMonthGrid(); 
         atualizarTabela(); 
