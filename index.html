@@ -2,7 +2,7 @@
 <html lang="pt-br"> 
 <head> 
     <meta charset="UTF-8"> 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
     <meta name="theme-color" content="#030508">
     <title>Gestão de Produtividade de Leituras</title> 
 
@@ -51,9 +51,11 @@
             border-radius: 9px; 
             outline: none; 
             width: 100%; 
-            font-size: 14px; 
+            font-size: 16px; 
             margin-bottom: 6px; 
             transition: 0.3s; 
+            -webkit-user-select: text;
+            user-select: text;
         } 
         input:focus { 
             border-color: var(--accent) !important; 
@@ -444,7 +446,7 @@
         <input type="password" id="passInput" placeholder="Senha"> 
         <input type="text" id="recoveryInput" placeholder="Dica de segurança" style="display:none;"> 
         <button type="button" onclick="handleAuth()" id="authBtn" class="auth-btn">ENTRAR</button> 
-        <div style="display:flex; justify- continental; gap: 10px;"> 
+        <div style="display:flex; justify-content: space-between; gap: 10px;"> 
             <span class="auth-link" id="authSwitch" onclick="toggleAuthMode()">Criar Conta</span> 
             <span class="auth-link" style="color:var(--warning)" onclick="recoverPass()">Recuperar</span> 
         </div> 
