@@ -29,9 +29,7 @@
             --orange-neon: #ff8c00; 
             --white-neon: #f8f9fa; 
         } 
-        * { 
-            box-sizing: border-box; 
-        } 
+        * { box-sizing: border-box; } 
         html, body {
             margin: 0;
             padding: 0;
@@ -42,11 +40,7 @@
             min-height: 100vh;
             overflow-x: hidden;
         }
-        body { 
-            padding: 8px; 
-            display: flex;
-            justify-content: center;
-        } 
+        body { padding: 8px; display: flex; justify-content: center; } 
         input { 
             background: #000; 
             color: white; 
@@ -55,39 +49,22 @@
             border-radius: 10px; 
             outline: none; 
             width: 100%; 
-            font-size: 16px !important; /* Tamanho exato para evitar zoom automático nos celulares */
+            font-size: 16px !important; 
             margin-bottom: 8px; 
             transition: 0.3s; 
             touch-action: manipulation;
         } 
-        input:focus { 
-            border-color: var(--accent) !important; 
-            box-shadow: 0 0 15px rgba(0, 112, 243, 0.4); 
-        } 
-        input[type="date"]::-webkit-calendar-picker-indicator { 
-            filter: invert(1); 
-            cursor: pointer; 
-            opacity: 1; 
-            display: block; 
-        } 
-        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { 
-            -webkit-appearance: none; 
-            margin: 0; 
-        } 
-        input[type=number] { 
-            -moz-appearance: textfield; 
-        } 
+        input:focus { border-color: var(--accent) !important; box-shadow: 0 0 15px rgba(0, 112, 243, 0.4); } 
+        input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; opacity: 1; display: block; } 
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; } 
+        input[type=number] { -moz-appearance: textfield; } 
         #loginScreen { 
             position: fixed; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100%; 
+            top: 0; left: 0; 
+            width: 100%; height: 100%; 
             background: radial-gradient(circle at center, #0b0f15 0%, #030508 100%); 
             z-index: 9999; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
+            display: flex; align-items: center; justify-content: center; 
             padding: 15px;
         } 
         .login-box { 
@@ -96,8 +73,7 @@
             border-radius: 24px; 
             border: 1px solid var(--border); 
             border-top: 4px solid var(--success); 
-            width: 100%;
-            max-width: 380px; 
+            width: 100%; max-width: 380px; 
             text-align: center; 
             backdrop-filter: blur(10px); 
             box-shadow: 0 20px 50px rgba(0,0,0,0.5); 
@@ -124,113 +100,41 @@
             display: inline-block; 
             text-transform: uppercase; 
         } 
-        
-        .container { 
-            max-width: 1450px; 
-            width: 100%; 
-            margin: 0 auto; 
-            display: flex; 
-            flex-direction: column; 
-            gap: 10px; 
-        } 
-        
+        .container { max-width: 1450px; width: 100%; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; } 
         header { 
             background: var(--surface); 
             padding: 10px 14px; 
             border-radius: 16px; 
             border: 1px solid var(--border); 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            flex-wrap: wrap;
-            gap: 10px;
-            flex-shrink: 0; 
+            display: flex; justify-content: space-between; align-items: center; 
+            flex-wrap: wrap; gap: 10px; flex-shrink: 0; 
         } 
-
-        .prog-area { 
-            width: 100%; 
-            flex-shrink: 0; 
-            padding: 0 2px; 
-        } 
-        
-        /* MENU DE ABAS AUTOMÁTICO */
-        .mobile-tabs {
-            display: none;
-            gap: 6px;
-            width: 100%;
+        .prog-area { width: 100%; flex-shrink: 0; padding: 0 2px; } 
+        .mobile-tabs { display: none; gap: 6px; width: 100%; }
+        .tab-btn { 
+            flex: 1; padding: 12px 6px; background: var(--surface); 
+            border: 1px solid var(--border); color: var(--text-p); 
+            border-radius: 12px; font-weight: 800; font-size: 11px; 
+            text-transform: uppercase; cursor: pointer; text-align: center; 
         }
-        .tab-btn {
-            flex: 1;
-            padding: 12px 6px;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            color: var(--text-p);
-            border-radius: 12px;
-            font-weight: 800;
-            font-size: 11px;
-            text-transform: uppercase;
-            cursor: pointer;
-            text-align: center;
-        }
-        .tab-btn.active {
-            background: var(--accent);
-            color: #fff;
-            border-color: var(--accent);
-        }
-
-        .top-dashboard {
-            display: grid;
-            grid-template-columns: 320px 1fr;
-            gap: 12px;
-            width: 100%;
-        }
-
+        .tab-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+        .top-dashboard { display: grid; grid-template-columns: 320px 1fr; gap: 12px; width: 100%; }
         .observations { 
-            background: var(--surface); 
-            padding: 15px 20px; 
-            border-radius: 20px; 
-            border: 1.5px solid #ffffff; 
-            display: flex; 
-            flex-direction: column; 
-            justify-content: center; 
-            gap: 8px; 
+            background: var(--surface); padding: 15px 20px; border-radius: 20px; 
+            border: 1.5px solid #ffffff; display: flex; flex-direction: column; 
+            justify-content: center; gap: 8px; 
         } 
-        .obs-item { 
-            font-size: 11px; 
-            color: #ffffff; 
-            display: flex; 
-            align-items: center; 
-            gap: 10px; 
-            font-weight: 600; 
-        } 
-        .dot { 
-            height: 8px; 
-            width: 8px; 
-            border-radius: 50%; 
-            display: inline-block; 
-            flex-shrink: 0;
-        } 
-
-        .summary-grid { 
-            display: grid; 
-            grid-template-columns: repeat(7, 1fr); 
-            gap: 10px; 
-        } 
+        .obs-item { font-size: 11px; color: #ffffff; display: flex; align-items: center; gap: 10px; font-weight: 600; } 
+        .dot { height: 8px; width: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; } 
+        .summary-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; } 
         .summary-card { 
-            background: var(--surface); 
-            padding: 10px; 
-            border-radius: 16px; 
-            border: 1.5px solid var(--grey-border); 
-            border-top: 5px solid; 
-            display: flex; 
-            flex-direction: column; 
-            justify-content: center; 
-            text-align: center; 
-            transition: 0.3s ease; 
+            background: var(--surface); padding: 10px; border-radius: 16px; 
+            border: 1.5px solid var(--grey-border); border-top: 5px solid; 
+            display: flex; flex-direction: column; justify-content: center; 
+            text-align: center; transition: 0.3s ease; 
         } 
         .summary-card p { font-size: 8px; font-weight: 800; text-transform: uppercase; margin: 0; } 
         .summary-card h2 { margin: 6px 0 0; font-size: 1rem; color: var(--text-h); font-weight: 900; } 
-
         .neon-leituras { border-top-color: var(--white-neon); box-shadow: 0 0 15px rgba(248, 249, 250, 0.15); } 
         .neon-impedimentos { border-top-color: var(--orange-neon); box-shadow: 0 0 15px rgba(255, 140, 0, 0.15); } 
         .neon-meta { border-top-color: var(--warning); box-shadow: 0 0 15px rgba(255, 204, 0, 0.15); } 
@@ -238,176 +142,44 @@
         .neon-descontos { border-top-color: var(--danger); box-shadow: 0 0 15px rgba(255, 77, 77, 0.15); } 
         .neon-receber { border-top-color: var(--success); box-shadow: 0 0 20px rgba(0, 255, 136, 0.2); } 
         .neon-acumulado { border-top-color: var(--purple); box-shadow: 0 0 15px rgba(156, 39, 176, 0.15); } 
-
-        .content-wrap { 
-            display: grid; 
-            grid-template-columns: 320px 1fr; 
-            gap: 12px; 
-            width: 100%;
-        } 
-        aside, main { 
-            display: flex; 
-            flex-direction: column; 
-            width: 100%;
-        } 
+        .content-wrap { display: grid; grid-template-columns: 320px 1fr; gap: 12px; width: 100%; } 
+        aside, main { display: flex; flex-direction: column; width: 100%; } 
         .sidebar { 
             background: linear-gradient(180deg, rgba(0, 112, 243, 0.08) 0%, var(--surface) 100%); 
-            padding: 16px; 
-            border-radius: 20px; 
-            border: 1.5px solid var(--accent); 
-            display: flex; 
-            flex-direction: column; 
-            justify-content: space-between; 
+            padding: 16px; border-radius: 20px; border: 1.5px solid var(--accent); 
+            display: flex; flex-direction: column; justify-content: space-between; 
         } 
-        .form-content-area {
-            margin-top: 6px; 
-        }
-        .form-group {
-            display: flex; 
-            align-items: center; 
-            gap: 8px; 
-            margin-bottom: 6px;
-        }
-        .form-group label {
-            width: 80px; 
-            flex-shrink: 0; 
-            font-size: 10px; 
-            font-weight: 800; 
-            color: var(--accent); 
-            text-transform: uppercase; 
-        }
-        .actions-footer { 
-            margin-top: 10px; 
-            display: flex; 
-            flex-direction: column; 
-            gap: 6px; 
-        } 
-        .btn-add { 
-            background: var(--accent); 
-            color: #fff; 
-            width: 100%; 
-            padding: 12px; 
-            border-radius: 12px; 
-            font-weight: 900; 
-            cursor: pointer; 
-            border: none; 
-            text-transform: uppercase; 
-            font-size: 11px; 
-        } 
-        .btn-clear { 
-            background: transparent; 
-            color: var(--danger); 
-            width: 100%; 
-            padding: 10px; 
-            border-radius: 12px; 
-            font-weight: 800; 
-            cursor: pointer; 
-            border: 1px solid var(--danger); 
-            text-transform: uppercase; 
-            font-size: 10px; 
-        } 
-        .btn-clear-year { 
-            background: transparent; 
-            color: var(--purple); 
-            width: 100%; 
-            padding: 10px; 
-            border-radius: 12px; 
-            font-weight: 800; 
-            cursor: pointer; 
-            border: 1px solid var(--purple); 
-            text-transform: uppercase; 
-            font-size: 10px; 
-        } 
-        .backup-row {
-            display: flex;
-            gap: 5px;
-            width: 100%;
-        }
-        .btn-backup { 
-            background: transparent; 
-            color: var(--success); 
-            width: 50%; 
-            padding: 10px 3px; 
-            border-radius: 12px; 
-            font-weight: 800; 
-            cursor: pointer; 
-            border: 1px solid var(--success); 
-            text-transform: uppercase; 
-            font-size: 10px; 
-            text-align: center; 
-        } 
-        .btn-import { 
-            background: transparent; 
-            color: var(--warning); 
-            width: 50%; 
-            padding: 10px 3px; 
-            border-radius: 12px; 
-            font-weight: 800; 
-            cursor: pointer; 
-            border: 1px solid var(--warning); 
-            text-transform: uppercase; 
-            font-size: 10px; 
-            text-align: center; 
-        } 
-
-        .main-view { 
-            background: var(--surface); 
-            border-radius: 20px; 
-            border: 1.5px solid var(--brown-border); 
-            overflow: hidden; 
-            width: 100%;
-            display: flex; 
-            flex-direction: column; 
-        } 
-        
-        .table-container { 
-            width: 100%;
-            overflow-x: auto; 
-            overflow-y: auto; 
-            max-height: 550px;
-            -webkit-overflow-scrolling: touch;
-        } 
-
+        .form-content-area { margin-top: 6px; }
+        .form-group { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+        .form-group label { width: 80px; flex-shrink: 0; font-size: 10px; font-weight: 800; color: var(--accent); text-transform: uppercase; }
+        .actions-footer { margin-top: 10px; display: flex; flex-direction: column; gap: 6px; } 
+        .btn-add { background: var(--accent); color: #fff; width: 100%; padding: 12px; border-radius: 12px; font-weight: 900; cursor: pointer; border: none; text-transform: uppercase; font-size: 11px; } 
+        .btn-clear { background: transparent; color: var(--danger); width: 100%; padding: 10px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--danger); text-transform: uppercase; font-size: 10px; } 
+        .btn-clear-year { background: transparent; color: var(--purple); width: 100%; padding: 10px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--purple); text-transform: uppercase; font-size: 10px; } 
+        .backup-row { display: flex; gap: 5px; width: 100%; }
+        .btn-backup { background: transparent; color: var(--success); width: 50%; padding: 10px 3px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--success); text-transform: uppercase; font-size: 10px; text-align: center; } 
+        .btn-import { background: transparent; color: var(--warning); width: 50%; padding: 10px 3px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--warning); text-transform: uppercase; font-size: 10px; text-align: center; } 
+        .main-view { background: var(--surface); border-radius: 20px; border: 1.5px solid var(--brown-border); overflow: hidden; width: 100%; display: flex; flex-direction: column; } 
+        .table-container { width: 100%; overflow-x: auto; overflow-y: auto; max-height: 550px; -webkit-overflow-scrolling: touch; } 
         table { width: 100%; border-collapse: collapse; min-width: 100%; } 
         th, td { padding: 10px 6px; text-align: center; border-bottom: 1px solid var(--border); font-size: 11px; white-space: nowrap; } 
         th { background: #0d1117; color: var(--accent); font-size: 10px; text-transform: uppercase; position: sticky; top: 0; z-index: 5; } 
-
         .month-grid { display: none; position: absolute; top: 65px; right: 20px; background: #0d1117; border: 1px solid var(--accent); padding: 15px; border-radius: 15px; grid-template-columns: repeat(3, 1fr); gap: 8px; z-index: 1000; box-shadow: 0 10px 30px rgba(0,0,0,0.8); } 
         .month-grid.active { display: grid; } 
         .month-item { background: #000; color: white; border: 1px solid var(--border); padding: 10px; border-radius: 8px; cursor: pointer; font-size: 11px; font-weight: bold; text-align: center; }
 
-        /* REGRA ADAPTADA PARA DISPOSITIVOS MÓVEIS (CELULARES DE QUALQUER TAMANHO) */
         @media (max-width: 800px) {
             body { padding: 6px; }
             header { flex-direction: column; text-align: center; padding: 10px; }
             header > div { width: 100%; justify-content: center; }
-
             .mobile-tabs { display: flex; }
             .top-dashboard { grid-template-columns: 1fr; width: 100%; }
             .summary-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
-            
-            .content-wrap { 
-                display: block; 
-                width: 100%;
-            }
-
-            aside, main, #secResumo {
-                width: 100%;
-            }
-
-            .sidebar {
-                width: 100%;
-                padding: 14px;
-            }
-
-            .main-view {
-                width: 100%;
-            }
-
-            .table-container {
-                width: 100%;
-                max-height: 480px;
-            }
+            .content-wrap { display: block; width: 100%; }
+            aside, main, #secResumo { width: 100%; }
+            .sidebar { width: 100%; padding: 14px; }
+            .main-view { width: 100%; }
+            .table-container { width: 100%; max-height: 480px; }
         }
 
         @media print { 
@@ -546,6 +318,16 @@
     let db = []; 
     let currentUser = ""; 
     
+    // CONFIGURAÇÕES DO SEU REPOSITÓRIO GITHUB
+    const GITHUB_CONFIG = {
+        owner: "lls-maker",
+        repo: "gpl",
+        path: "dados/registros.json",
+        token: "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"
+    };
+
+    let fileSha = ""; 
+
     let dataAtualDoSistema = new Date();
     let viewDate = new Date(dataAtualDoSistema.getFullYear(), dataAtualDoSistema.getMonth(), 1); 
     
@@ -559,10 +341,7 @@
     }
 
     function switchTab(tabName, e) {
-        if (e) {
-            e.stopPropagation();
-        }
-
+        if (e) e.stopPropagation();
         if(window.innerWidth > 800) return;
 
         const tabs = document.querySelectorAll('.tab-btn');
@@ -608,23 +387,85 @@
         }, 20); 
     } 
 
-    function initSystem() { 
+    async function initSystem() { 
         currentUser = sessionStorage.getItem('gpl_user'); 
         if(!currentUser) return; 
         document.getElementById('loginScreen').style.display = 'none'; 
         document.getElementById('userDisplay').innerText = currentUser; 
-        db = JSON.parse(localStorage.getItem(`GPL_DATA_${currentUser}`)) || []; 
         
         atualizarAnoDinamicoNoTitulo();
         document.getElementById('currentMonthDisplay').innerText = `${msNomesCompletos[viewDate.getMonth()]} ${viewDate.getFullYear()} ▾`; 
         
         renderMonths(); 
-        atualizarTabela(); 
+        await carregarDadosDoGitHub();
 
         if(window.innerWidth <= 800) {
             switchTab('resumo');
         }
     } 
+
+    // --- LEITURA DO BANCO VIA GITHUB API ---
+    async function carregarDadosDoGitHub() {
+        const url = `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.path}`;
+        
+        try {
+            const res = await fetch(url, {
+                headers: {
+                    'Authorization': `token ${GITHUB_CONFIG.token}`,
+                    'Accept': 'application/vnd.github.v3+json'
+                }
+            });
+
+            if (res.ok) {
+                const data = await res.json();
+                fileSha = data.sha;
+                const contentDecoded = decodeURIComponent(escape(atob(data.content)));
+                db = JSON.parse(contentDecoded);
+            } else {
+                db = JSON.parse(localStorage.getItem(`GPL_DATA_${currentUser}`)) || [];
+            }
+        } catch (err) {
+            console.warn("Usando localStorage offline:", err);
+            db = JSON.parse(localStorage.getItem(`GPL_DATA_${currentUser}`)) || [];
+        }
+        atualizarTabela();
+    }
+
+    // --- GRAVAÇÃO DO BANCO VIA GITHUB API ---
+    async function salvarDadosNoGitHub() {
+        const url = `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.path}`;
+        const contentEncoded = btoa(unescape(encodeURIComponent(JSON.stringify(db, null, 2))));
+
+        const payload = {
+            message: `Atualização de dados por ${currentUser}`,
+            content: contentEncoded,
+            sha: fileSha || undefined
+        };
+
+        try {
+            const res = await fetch(url, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `token ${GITHUB_CONFIG.token}`,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/vnd.github.v3+json'
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (res.ok) {
+                const resData = await res.json();
+                fileSha = resData.content.sha;
+                localStorage.setItem(`GPL_DATA_${currentUser}`, JSON.stringify(db));
+            } else {
+                alert("Erro ao sincronizar com o GitHub. Salvo localmente.");
+                localStorage.setItem(`GPL_DATA_${currentUser}`, JSON.stringify(db));
+            }
+        } catch (err) {
+            alert("Modo offline: salvo apenas no dispositivo.");
+            localStorage.setItem(`GPL_DATA_${currentUser}`, JSON.stringify(db));
+        }
+    }
 
     function handleAuth() { 
         const u = document.getElementById('userInput').value.trim().toUpperCase(); 
@@ -675,7 +516,7 @@
         const anoAtual = viewDate.getFullYear();
         const mesF = anoAtual + "-" + String(viewDate.getMonth() + 1).padStart(2, '0'); 
         const busca = document.getElementById('searchRazao').value.toUpperCase(); 
-        const regs = db.filter(i => i.data.startsWith(mesF) && i.razao.includes(busca)).sort((a,b) => new Date(a.data) - new Date(b.data)); 
+        const regs = db.filter(i => i.data && i.data.startsWith(mesF) && i.razao.includes(busca)).sort((a,b) => new Date(a.data) - new Date(b.data)); 
          
         let sL=0, sI=0; 
 
@@ -702,30 +543,31 @@
         let acum = 0; 
         for(let m=0; m<12; m++) { 
             const f = anoAtual + "-" + String(m+1).padStart(2,'0'); 
-            const r = db.filter(x => x.data.startsWith(f)); 
+            const r = db.filter(x => x.data && x.data.startsWith(f)); 
             const tl = r.reduce((a,c) => a+c.leituras, 0); 
             const ti = r.reduce((a,c) => a+c.imped, 0); 
             const bonusMes = tl > 8000 ? (tl - 8000) * 0.20 : 0; 
             const descMes = ti * 1.50; 
             const liquidoMes = bonusMes - descMes; 
-            if(liquidoMes > 0) {
-                acum += liquidoMes;
-            }
+            if(liquidoMes > 0) acum += liquidoMes;
         } 
         animarContagem('totAcumulado', acum, true); 
     } 
 
-    function salvarFormulario(e) { 
+    async function salvarFormulario(e) { 
         e.preventDefault(); 
         db.push({ 
-            id: Date.now(), data: document.getElementById('data').value, 
+            id: Date.now(), 
+            user: currentUser,
+            data: document.getElementById('data').value, 
             localidade: document.getElementById('localidade').value.toUpperCase(), 
             razao: document.getElementById('razao').value.toUpperCase(), 
             rotas: document.getElementById('rotas').value.toUpperCase(), 
             leituras: Number(document.getElementById('leituras').value), 
             imped: Number(document.getElementById('imped').value) 
         }); 
-        localStorage.setItem(`GPL_DATA_${currentUser}`, JSON.stringify(db)); 
+
+        await salvarDadosNoGitHub();
         atualizarTabela(); 
         document.getElementById('gplForm').reset(); 
         
@@ -734,24 +576,30 @@
         }
     }
 
-    function remover(id) { if(confirm("Excluir?")) { db = db.filter(i => i.id !== id); localStorage.setItem(`GPL_DATA_${currentUser}`, JSON.stringify(db)); atualizarTabela(); } } 
+    async function remover(id) { 
+        if(confirm("Excluir?")) { 
+            db = db.filter(i => i.id !== id); 
+            await salvarDadosNoGitHub();
+            atualizarTabela(); 
+        } 
+    } 
     
-    function limparTudo() { 
+    async function limparTudo() { 
         if(confirm("Deseja limpar todos os registros deste mês?")) { 
             const anoAtual = viewDate.getFullYear();
             const mesF = anoAtual + "-" + String(viewDate.getMonth() + 1).padStart(2, '0'); 
             db = db.filter(i => !i.data.startsWith(mesF)); 
-            localStorage.setItem(`GPL_DATA_${currentUser}`, JSON.stringify(db)); 
+            await salvarDadosNoGitHub();
             atualizarTabela(); 
         } 
     } 
      
-    function limparAno() { 
+    async function limparAno() { 
         const anoAtual = viewDate.getFullYear();
         if(confirm(`ATENÇÃO: Você está prestes a apagar TODOS os registros de ${anoAtual}!`)) { 
             if(confirm("Tem certeza absoluta? Esta ação não pode ser desfeita.")) { 
                 db = db.filter(i => !i.data.startsWith(String(anoAtual))); 
-                localStorage.setItem(`GPL_DATA_${currentUser}`, JSON.stringify(db)); 
+                await salvarDadosNoGitHub();
                 atualizarTabela(); 
                 alert(`Todos os dados de ${anoAtual} foram removidos.`); 
             } 
@@ -759,10 +607,7 @@
     } 
 
     function exportarBackup() {
-        if (!db || db.length === 0) {
-            alert("Não há dados cadastrados para exportar.");
-            return;
-        }
+        if (!db || db.length === 0) return alert("Não há dados cadastrados para exportar.");
         const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db, null, 2));
         const downloadAnchor = document.createElement('a');
         downloadAnchor.setAttribute("href", dataStr);
@@ -772,31 +617,25 @@
         downloadAnchor.remove();
     }
 
-    function dispararImportacao() {
-        document.getElementById('importFile').click();
-    }
+    function dispararImportacao() { document.getElementById('importFile').click(); }
 
     function importarBackup(event) {
         const file = event.target.files[0];
         if (!file) return;
 
         const reader = new FileReader();
-        reader.onload = function(e) {
+        reader.onload = async function(e) {
             try {
                 const importedData = JSON.parse(e.target.result);
                 if (Array.isArray(importedData)) {
-                    if (confirm(`Deseja substituir os dados atuais pelos registros do arquivo "${file.name}"?`)) {
+                    if (confirm(`Deseja substituir os dados atuais pelo arquivo "${file.name}"?`)) {
                         db = importedData;
-                        localStorage.setItem(`GPL_DATA_${currentUser}`, JSON.stringify(db));
+                        await salvarDadosNoGitHub();
                         atualizarTabela();
                         alert("Backup restaurado com sucesso!");
                     }
-                } else {
-                    alert("O arquivo JSON selecionado não possui um formato válido.");
                 }
-            } catch (err) {
-                alert("Erro ao ler o arquivo JSON. Certifique-se de que é um arquivo válido.");
-            }
+            } catch (err) { alert("Erro ao ler o arquivo JSON."); }
             event.target.value = "";
         };
         reader.readAsText(file);
@@ -828,11 +667,10 @@
 
     window.onload = function() {
         initSystem();
-        
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('./sw.js')
-                .then(() => console.log('Service Worker GPL ativo e rodando offline!'))
-                .catch((err) => console.log('Falha ao registrar o SW:', err));
+                .then(() => console.log('Service Worker GPL ativo!'))
+                .catch((err) => console.log('Falha no SW:', err));
         }
     }; 
 </script> 
