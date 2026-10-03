@@ -3,6 +3,7 @@
 <head> 
     <meta charset="UTF-8"> 
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"> 
+    <meta name="theme-color" content="#0b0f15">
     <title>Gestão de Produtividade de Leituras 2026</title> 
 
     <!-- FAVICON -->
@@ -387,6 +388,17 @@
             .summary-grid { grid-template-columns: repeat(2, 1fr); }
             .content-wrap { grid-template-columns: 1fr; }
 
+            /* Permite rolagem no modo retrato na aba do formulário */
+            .container, .content-wrap, aside, .sidebar {
+                height: auto !important;
+                min-height: auto !important;
+                overflow: visible !important;
+            }
+
+            .sidebar {
+                padding-bottom: 25px;
+            }
+
             /* Ocultar/Exibir seções baseado na aba ativa no celular */
             .top-dashboard.tab-hidden, aside.tab-hidden, main.tab-hidden {
                 display: none !important;
@@ -535,7 +547,7 @@
     const fM = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); 
 
     function switchTab(tabName) {
-        if(window.innerWidth > 850) return; // Só aplica controle de abas em telas de smartphone
+        if(window.innerWidth > 850) return;
 
         const tabs = document.querySelectorAll('.tab-btn');
         tabs.forEach(t => t.classList.remove('active'));
