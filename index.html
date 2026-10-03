@@ -33,7 +33,7 @@
             box-sizing: border-box; 
         } 
         body { 
-            font-family: 'Inter', system-ui, -apple-system, sans-serif; 
+            font-family: system-ui, -apple-system, sans-serif; 
             background-color: var(--bg); 
             color: var(--text-p); 
             margin: 0; 
@@ -51,7 +51,7 @@
             border-radius: 9px; 
             outline: none; 
             width: 100%; 
-            font-size: 13px; 
+            font-size: 14px; 
             margin-bottom: 6px; 
             transition: 0.3s; 
         } 
@@ -443,8 +443,8 @@
         <input type="text" id="userInput" placeholder="Usuário"> 
         <input type="password" id="passInput" placeholder="Senha"> 
         <input type="text" id="recoveryInput" placeholder="Dica de segurança" style="display:none;"> 
-        <button onclick="handleAuth()" id="authBtn" class="auth-btn">ENTRAR</button> 
-        <div style="display:flex; justify-content: space-between; gap: 10px;"> 
+        <button type="button" onclick="handleAuth()" id="authBtn" class="auth-btn">ENTRAR</button> 
+        <div style="display:flex; justify- continental; gap: 10px;"> 
             <span class="auth-link" id="authSwitch" onclick="toggleAuthMode()">Criar Conta</span> 
             <span class="auth-link" style="color:var(--warning)" onclick="recoverPass()">Recuperar</span> 
         </div> 
@@ -458,10 +458,10 @@
             <h1 style="font-size: 15px; color: white; margin: 0;">Gestão de Produtividade de Leituras - <span id="userDisplay" style="color:var(--success)"></span></h1> 
         </div> 
         <div style="display: flex; gap: 8px; align-items: center;" class="no-print"> 
-            <button class="btn-add" style="padding: 10px 15px; font-size: 11px; width: 170px; margin: 0; background: var(--accent);" onclick="toggleMonthGrid()" id="currentMonthDisplay">SETEMBRO 2026 ▾</button> 
+            <button type="button" class="btn-add" style="padding: 10px 15px; font-size: 11px; width: 170px; margin: 0; background: var(--accent);" onclick="toggleMonthGrid()" id="currentMonthDisplay">SETEMBRO 2026 ▾</button> 
             <div id="monthGrid" class="month-grid"></div> 
-            <button onclick="window.print()" style="background:#1e2633; border:1px solid var(--border); color:white; padding:10px 15px; border-radius:10px; cursor:pointer; font-weight:800;">IMPRIMIR</button> 
-            <button onclick="logout()" style="background:var(--danger); border:none; color:white; padding:10px; border-radius:10px; cursor:pointer; font-weight:bold;">SAIR</button> 
+            <button type="button" onclick="window.print()" style="background:#1e2633; border:1px solid var(--border); color:white; padding:10px 15px; border-radius:10px; cursor:pointer; font-weight:800;">IMPRIMIR</button> 
+            <button type="button" onclick="logout()" style="background:var(--danger); border:none; color:white; padding:10px; border-radius:10px; cursor:pointer; font-weight:bold;">SAIR</button> 
         </div> 
     </header> 
 
@@ -477,9 +477,9 @@
 
     <!-- MENU DE ABAS AUTOMÁTICO EM CELULARES -->
     <div class="mobile-tabs no-print">
-        <button class="tab-btn active" onclick="switchTab('resumo')">Resumo</button>
-        <button class="tab-btn" onclick="switchTab('novo')">Novo Registro</button>
-        <button class="tab-btn" onclick="switchTab('tabela')">Tabela</button>
+        <button type="button" class="tab-btn active" onclick="switchTab('resumo')">Resumo</button>
+        <button type="button" class="tab-btn" onclick="switchTab('novo')">Novo Registro</button>
+        <button type="button" class="tab-btn" onclick="switchTab('tabela')">Tabela</button>
     </div>
 
     <!-- BLOCO SUPERIOR: OBSERVAÇÕES + CARDS DE RESUMO -->
@@ -501,25 +501,26 @@
     </div>
 
     <div class="content-wrap"> 
-        aside class="no-print tab-hidden" id="secForm"> 
+        <aside class="no-print tab-hidden" id="secForm"> 
             <div class="sidebar"> 
                 <div>
                     <label style="font-size: 9px; font-weight: 800; color: var(--success); text-transform: uppercase; margin-bottom: 3px; display: block;">Pesquisar razão</label> 
                     <input type="text" id="searchRazao" placeholder="Filtrar tabela..." oninput="atualizarTabela()" style="border-color: var(--success); margin-bottom: 6px;"> 
                     
                     <div class="form-content-area">
-                        <form id="gplForm"> 
+                        <form id="gplForm" onsubmit="salvarFormulario(event)"> 
                             <div class="form-group"><label>Data</label><input type="date" id="data" required></div> 
                             <div class="form-group"><label>Localidade</label><input type="text" id="localidade" required></div> 
                             <div class="form-group"><label>Razão</label><input type="text" id="razao" required></div> 
                             <div class="form-group"><label>Rotas</label><input type="text" id="rotas" required></div> 
                             <div class="form-group"><label>Leituras</label><input type="number" id="leituras" required></div> 
                             <div class="form-group"><label>Imped.</label><input type="number" id="imped" required></div> 
+                            <button type="submit" id="btnSubmitForm" style="display:none;"></button>
                         </form>
                     </div>
                 </div>
                 <div class="actions-footer"> 
-                    <button type="button" onclick="document.getElementById('gplForm').requestSubmit()" class="btn-add">Salvar Registro</button> 
+                    <button type="button" onclick="document.getElementById('btnSubmitForm').click()" class="btn-add">Salvar Registro</button> 
                     <button type="button" onclick="limparTudo()" class="btn-clear">Limpar Mês</button> 
                     <button type="button" onclick="limparAno()" class="btn-clear-year">Limpar todos os dados</button> 
                     <div class="backup-row">
@@ -550,7 +551,6 @@
     let db = []; 
     let currentUser = ""; 
     
-    // OBTÉM DATA E ANO ATUAIS AUTOMATICAMENTE
     let dataAtualDoSistema = new Date();
     let viewDate = new Date(dataAtualDoSistema.getFullYear(), dataAtualDoSistema.getMonth(), 1); 
     
@@ -645,6 +645,7 @@
         if(users[u]) alert("Sua dica: " + users[u].hint); 
         else alert("Usuário não encontrado."); 
     }
+    
     function renderMonths() { 
         const ms = ["JAN", "FEV", "MAR", "ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ"]; 
         document.getElementById('monthGrid').innerHTML = ms.map((m, i) => `<div class="month-item" onclick="selectMonth(${i})">${m}</div>`).join(''); 
@@ -660,7 +661,6 @@
     } 
 
     function atualizarTabela() { 
-        // MONTA FORMATO AAAA-MM DINAMICAMENTE
         const anoAtual = viewDate.getFullYear();
         const mesF = anoAtual + "-" + String(viewDate.getMonth() + 1).padStart(2, '0'); 
         const busca = document.getElementById('searchRazao').value.toUpperCase(); 
@@ -671,7 +671,7 @@
         document.getElementById('tabelaCorpo').innerHTML = regs.map(i => { 
             const calcPercentual = i.leituras > 0 ? (i.imped / i.leituras) * 100 : 0; 
             sL += i.leituras; sI += i.imped; 
-            return `<tr><td>${i.data.split('-').reverse().slice(0,2).join('/')}</td><td>${i.localidade}</td><td>${i.razao}</td><td>${i.rotas}</td><td>${i.leituras.toLocaleString()}</td><td>${i.imped}</td><td><span style="color:${calcPercentual <= 0.5 ? 'var(--success)' : 'var(--danger)'}; font-weight:900;">${calcPercentual.toFixed(2)}%</span></td><td class="no-print"><button onclick="remover(${i.id})" style="background:none; border:none; color:var(--danger); cursor:pointer;">✕</button></td></tr>`; 
+            return `<tr><td>${i.data.split('-').reverse().slice(0,2).join('/')}</td><td>${i.localidade}</td><td>${i.razao}</td><td>${i.rotas}</td><td>${i.leituras.toLocaleString()}</td><td>${i.imped}</td><td><span style="color:${calcPercentual <= 0.5 ? 'var(--success)' : 'var(--danger)'}; font-weight:900;">${calcPercentual.toFixed(2)}%</span></td><td class="no-print"><button type="button" onclick="remover(${i.id})" style="background:none; border:none; color:var(--danger); cursor:pointer;">✕</button></td></tr>`; 
         }).join(''); 
 
         const sB = sL > 8000 ? (sL - 8000) * 0.20 : 0; 
@@ -704,7 +704,7 @@
         animarContagem('totAcumulado', acum, true); 
     } 
 
-    document.getElementById('gplForm').onsubmit = (e) => { 
+    function salvarFormulario(e) { 
         e.preventDefault(); 
         db.push({ 
             id: Date.now(), data: document.getElementById('data').value, 
@@ -715,12 +715,13 @@
             imped: Number(document.getElementById('imped').value) 
         }); 
         localStorage.setItem(`GPL_DATA_${currentUser}`, JSON.stringify(db)); 
-        atualizarTabela(); e.target.reset(); document.getElementById('data').focus(); 
+        atualizarTabela(); 
+        document.getElementById('gplForm').reset(); 
         
         if(window.innerWidth <= 850) {
             switchTab('tabela');
         }
-    }; 
+    }
 
     function remover(id) { if(confirm("Excluir?")) { db = db.filter(i => i.id !== id); localStorage.setItem(`GPL_DATA_${currentUser}`, JSON.stringify(db)); atualizarTabela(); } } 
     
