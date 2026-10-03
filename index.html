@@ -4,10 +4,10 @@
     <meta charset="UTF-8"> 
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"> 
     <meta name="theme-color" content="#030508">
-    <title>Gestão de Produtividade de Leituras 2026</title> 
+    <title>Gestão de Produtividade de Leituras</title> 
 
     <!-- FAVICON -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzMiAzMicgd2lidGg9JzMyJyBoZWlnaHQ9JzMyJz48cmVjdCB3aWR0aD0nMzInIGhlaWdodD0nMzInIHJ4PSc2JyBmaWxsPScjMGIwZjE1Jy8+PHRleHQgeD0nNTAl%'eT0nNTUnIGRvbWluYW50LWJhc2VsaW5lPSdtaWRkbGUnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJyBmb250LXdlaWdodD0nOTAwJyBmb250LXNpemU9JzEwJyBmaWxsPScjMDBmZjg4JyBsZXR0ZXItc3BhY2luZz0nMC41Jz5HUEw8L3RleHQ+PC9zdmc+">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzMiAzMicgd2lidGg9JzMyJyBoZWlnaHQ9JzMyJz48cmVjdCB3aWR0aD0nMzInIGhlaWdodD0nMzInIHJ4PSc2JyBmaWxsPScjMGIwZjE1Jy8+PHRleHQgeD0nNTAlJyB5PSc1NSUnIGRvbWluYW50LWJhc2VsaW5lPSdtaWRkbGUnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJyBmb250LXdlaWdodD0nOTAwJyBmb250LXNpemU9JzEwJyBmaWxsPScjMDBmZjg4JyBsZXR0ZXItc3BhY2luZz0nMC41Jz5HUEw8L3RleHQ+PC9zdmc+">
 
     <!-- MANIFESTO PWA -->
     <link rel="manifest" href="./manifest.json">
@@ -394,7 +394,6 @@
             .summary-grid { grid-template-columns: repeat(2, 1fr); }
             .content-wrap { grid-template-columns: 1fr; height: auto !important; }
 
-            /* CORREÇÃO DO FORMULÁRIO EM MODO RETRATO */
             .container, aside, main, .sidebar, .form-content-area {
                 height: auto !important;
                 min-height: auto !important;
@@ -404,14 +403,13 @@
 
             .sidebar {
                 padding: 16px;
-                padding-bottom: 40px; /* Garante espaço extra para os botões no final da tela */
+                padding-bottom: 40px;
             }
 
             .form-group input {
-                font-size: 16px !important; /* Evita zoom automático que trava o toque */
+                font-size: 16px !important;
             }
 
-            /* Ocultar/Exibir seções baseado na aba ativa no celular */
             .top-dashboard.tab-hidden, aside.tab-hidden, main.tab-hidden {
                 display: none !important;
             }
@@ -440,7 +438,7 @@
 <body>
 <div id="loginScreen"> 
     <div class="login-box"> 
-        <div style="background:var(--success); color:black; padding:10px; border-radius:12px; font-weight:900; margin-bottom:20px;">GPL 2026</div> 
+        <div style="background:var(--success); color:black; padding:10px; border-radius:12px; font-weight:900; margin-bottom:20px;">GPL</div> 
         <h2 id="authTitle" style="color:white; font-size:18px; margin-bottom:20px;">Acessar Conta</h2> 
         <input type="text" id="userInput" placeholder="Usuário"> 
         <input type="password" id="passInput" placeholder="Senha"> 
@@ -460,7 +458,7 @@
             <h1 style="font-size: 15px; color: white; margin: 0;">Gestão de Produtividade de Leituras - <span id="userDisplay" style="color:var(--success)"></span></h1> 
         </div> 
         <div style="display: flex; gap: 8px; align-items: center;" class="no-print"> 
-            <button class="btn-add" style="padding: 10px 15px; font-size: 11px; width: 150px; margin: 0; background: var(--accent);" onclick="toggleMonthGrid()" id="currentMonthDisplay">SETEMBRO 2026 ▾</button> 
+            <button class="btn-add" style="padding: 10px 15px; font-size: 11px; width: 170px; margin: 0; background: var(--accent);" onclick="toggleMonthGrid()" id="currentMonthDisplay">SETEMBRO 2026 ▾</button> 
             <div id="monthGrid" class="month-grid"></div> 
             <button onclick="window.print()" style="background:#1e2633; border:1px solid var(--border); color:white; padding:10px 15px; border-radius:10px; cursor:pointer; font-weight:800;">IMPRIMIR</button> 
             <button onclick="logout()" style="background:var(--danger); border:none; color:white; padding:10px; border-radius:10px; cursor:pointer; font-weight:bold;">SAIR</button> 
@@ -503,7 +501,7 @@
     </div>
 
     <div class="content-wrap"> 
-        <aside class="no-print tab-hidden" id="secForm"> 
+        aside class="no-print tab-hidden" id="secForm"> 
             <div class="sidebar"> 
                 <div>
                     <label style="font-size: 9px; font-weight: 800; color: var(--success); text-transform: uppercase; margin-bottom: 3px; display: block;">Pesquisar razão</label> 
@@ -552,8 +550,9 @@
     let db = []; 
     let currentUser = ""; 
     
+    // OBTÉM DATA E ANO ATUAIS AUTOMATICAMENTE
     let dataAtualDoSistema = new Date();
-    let viewDate = new Date(2026, dataAtualDoSistema.getMonth(), 1); 
+    let viewDate = new Date(dataAtualDoSistema.getFullYear(), dataAtualDoSistema.getMonth(), 1); 
     
     const msNomesCompletos = ["JANEIRO", "FEVEREIRO", "MARÇO", "ABRIL", "MAIO", "JUNHO", "JULHO", "AGOSTO", "SETEMBRO", "OUTUBRO", "NOVEMBRO", "DEZEMBRO"]; 
     const fM = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); 
@@ -601,13 +600,13 @@
     } 
 
     function initSystem() { 
-        currentUser = sessionStorage.getItem('gpl_user_2026'); 
+        currentUser = sessionStorage.getItem('gpl_user'); 
         if(!currentUser) return; 
         document.getElementById('loginScreen').style.display = 'none'; 
         document.getElementById('userDisplay').innerText = currentUser; 
         db = JSON.parse(localStorage.getItem(`GPL_DATA_${currentUser}`)) || []; 
         
-        document.getElementById('currentMonthDisplay').innerText = `${msNomesCompletos[viewDate.getMonth()]} 2026 ▾`; 
+        document.getElementById('currentMonthDisplay').innerText = `${msNomesCompletos[viewDate.getMonth()]} ${viewDate.getFullYear()} ▾`; 
         
         renderMonths(); 
         atualizarTabela(); 
@@ -621,14 +620,14 @@
         const u = document.getElementById('userInput').value.trim().toUpperCase(); 
         const p = document.getElementById('passInput').value; 
         const r = document.getElementById('recoveryInput').value; 
-        let users = JSON.parse(localStorage.getItem('GPL_USERS_2026')) || {}; 
+        let users = JSON.parse(localStorage.getItem('GPL_USERS')) || {}; 
         if(document.getElementById('authTitle').innerText.includes("Criar")) { 
             if(!u || !p) return alert("Preencha Usuário e Senha"); 
             users[u] = { pass: p, hint: r }; 
-            localStorage.setItem('GPL_USERS_2026', JSON.stringify(users)); 
+            localStorage.setItem('GPL_USERS', JSON.stringify(users)); 
             alert("Conta Criada!"); toggleAuthMode(); 
         } else { 
-            if(users[u] && users[u].pass === p) { sessionStorage.setItem('gpl_user_2026', u); initSystem(); } 
+            if(users[u] && users[u].pass === p) { sessionStorage.setItem('gpl_user', u); initSystem(); } 
             else alert("Dados incorretos!"); 
         } 
     } 
@@ -642,7 +641,7 @@
 
     function recoverPass() { 
         const u = document.getElementById('userInput').value.toUpperCase(); 
-        let users = JSON.parse(localStorage.getItem('GPL_USERS_2026')) || {}; 
+        let users = JSON.parse(localStorage.getItem('GPL_USERS')) || {}; 
         if(users[u]) alert("Sua dica: " + users[u].hint); 
         else alert("Usuário não encontrado."); 
     }
@@ -655,13 +654,15 @@
      
     function selectMonth(m) { 
         viewDate.setMonth(m); 
-        document.getElementById('currentMonthDisplay').innerText = `${msNomesCompletos[m]} 2026 ▾`; 
+        document.getElementById('currentMonthDisplay').innerText = `${msNomesCompletos[m]} ${viewDate.getFullYear()} ▾`; 
         toggleMonthGrid(); 
         atualizarTabela(); 
     } 
 
     function atualizarTabela() { 
-        const mesF = "2026-" + String(viewDate.getMonth() + 1).padStart(2, '0'); 
+        // MONTA FORMATO AAAA-MM DINAMICAMENTE
+        const anoAtual = viewDate.getFullYear();
+        const mesF = anoAtual + "-" + String(viewDate.getMonth() + 1).padStart(2, '0'); 
         const busca = document.getElementById('searchRazao').value.toUpperCase(); 
         const regs = db.filter(i => i.data.startsWith(mesF) && i.razao.includes(busca)).sort((a,b) => new Date(a.data) - new Date(b.data)); 
          
@@ -689,7 +690,7 @@
 
         let acum = 0; 
         for(let m=0; m<12; m++) { 
-            const f = "2026-" + String(m+1).padStart(2,'0'); 
+            const f = anoAtual + "-" + String(m+1).padStart(2,'0'); 
             const r = db.filter(x => x.data.startsWith(f)); 
             const tl = r.reduce((a,c) => a+c.leituras, 0); 
             const ti = r.reduce((a,c) => a+c.imped, 0); 
@@ -722,15 +723,25 @@
     }; 
 
     function remover(id) { if(confirm("Excluir?")) { db = db.filter(i => i.id !== id); localStorage.setItem(`GPL_DATA_${currentUser}`, JSON.stringify(db)); atualizarTabela(); } } 
-    function limparTudo() { if(confirm("Deseja limpar todos os registros deste mês?")) { const mesF = "2026-" + String(viewDate.getMonth() + 1).padStart(2, '0'); db = db.filter(i => !i.data.startsWith(mesF)); localStorage.setItem(`GPL_DATA_${currentUser}`, JSON.stringify(db)); atualizarTabela(); } } 
+    
+    function limparTudo() { 
+        if(confirm("Deseja limpar todos os registros deste mês?")) { 
+            const anoAtual = viewDate.getFullYear();
+            const mesF = anoAtual + "-" + String(viewDate.getMonth() + 1).padStart(2, '0'); 
+            db = db.filter(i => !i.data.startsWith(mesF)); 
+            localStorage.setItem(`GPL_DATA_${currentUser}`, JSON.stringify(db)); 
+            atualizarTabela(); 
+        } 
+    } 
      
     function limparAno() { 
-        if(confirm("ATENÇÃO: Você está prestes a apagar TODOS os registros de 2026!")) { 
+        const anoAtual = viewDate.getFullYear();
+        if(confirm(`ATENÇÃO: Você está prestes a apagar TODOS os registros de ${anoAtual}!`)) { 
             if(confirm("Tem certeza absoluta? Esta ação não pode ser desfeita.")) { 
-                db = []; 
+                db = db.filter(i => !i.data.startsWith(String(anoAtual))); 
                 localStorage.setItem(`GPL_DATA_${currentUser}`, JSON.stringify(db)); 
                 atualizarTabela(); 
-                alert("Todos os dados de 2026 foram removidos."); 
+                alert(`Todos os dados de ${anoAtual} foram removidos.`); 
             } 
         } 
     } 
@@ -743,7 +754,7 @@
         const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db, null, 2));
         const downloadAnchor = document.createElement('a');
         downloadAnchor.setAttribute("href", dataStr);
-        downloadAnchor.setAttribute("download", `backup_gpl_${currentUser.toLowerCase()}_2026.json`);
+        downloadAnchor.setAttribute("download", `backup_gpl_${currentUser.toLowerCase()}.json`);
         document.body.appendChild(downloadAnchor);
         downloadAnchor.click();
         downloadAnchor.remove();
