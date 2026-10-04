@@ -1,11 +1,12 @@
 const CACHE_NAME = 'gpl-2026-v2';
 
-// Apenas arquivos locais da aplicação (atualizado para usar o logo.svg)
+// Apenas arquivos locais da aplicação
 const ASSETS = [
     './',
     './index.html',
     './manifest.json',
-    './logo.svg'
+    './icon-192.png',
+    './icon-512.png'
 ];
 
 // Instalação: armazena os recursos essenciais em cache
