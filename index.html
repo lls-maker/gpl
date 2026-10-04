@@ -6,7 +6,7 @@
     <title>Gestão de Produtividade de Leituras 2026</title> 
 
     <!-- FAVICON CORRIGIDO EM BASE64 SEGURO E COMPATÍVEL COM TODOS OS NAVEGADORES -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzMiAzMicgd2lkdGg9JzMyJyBoZWlghtD0nMzInIHJ4PSc2JyBmaWxsPScjMGIwZjE1Jy8+PHRleHQgeD0nNTAlJyB5PSc1NSUnIGRvbWluYW50LWJhc2VsaW5lPSdtaWRkbGUnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJyBmb250LXdlaWdodD0nOTAwJyBmb250LXNpemU9JzEwJyBmaWxsPScjMDBmZjg4JyBsZXR0ZXItc3BhY2luZz0nMC41Jz5HUEw8L3RleHQ+PC9zdmc+">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzMiAzMicgd2lkdGg9JzMyJyBoZWlnaHQ9JzMyJz48cmVjdCB3aWR0aD0nMzInIGhlaWdodD0nMzInIHJ4PSc2JyBmaWxsPScjMGIwZjE1Jy8+PHRleHQgeD0nNTAlJyB5PSc1NSUnIGRvbWluYW50LWJhc2VsaW5lPSdtaWRkbGUnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJyBmb250LXdlaWdodD0nOTAwJyBmb250LXNpemU9JzEwJyBmaWxsPScjMDBmZjg4JyBsZXR0ZXItc3BhY2luZz0nMC41Jz5HUEw8L3RleHQ+PC9zdmc+">
 
     <!-- VÍNCULO DO MANIFESTO PARA ATIVAR O MODO PWA -->
     <link rel="manifest" href="./manifest.json">
@@ -31,7 +31,6 @@
         } 
         * { box-sizing: border-box; } 
 
-        /* CORREÇÃO DEFINITIVA: REMOVIDO O POSITION FIXED QUE FAZIA O CARD ESTICAR AO REABRIR */
         html, body {
             min-height: 100%;
             font-family: 'Inter', system-ui, sans-serif; 
@@ -172,9 +171,9 @@
         } 
         .table-container { max-height: 420px; overflow-y: auto; } 
 
+        /* ABA NL OCULTA NO DESKTOP, EXCLUSIVA PARA MOBILE */
         #tabNL {
-            display: flex;
-            flex-direction: column;
+            display: none;
         }
 
         table { width: 100%; border-collapse: collapse; } 
@@ -287,7 +286,7 @@
         </div> 
     </div> 
 
-    <!-- BARRA DE NAVEGAÇÃO SUPERIOR (ABAS COM NL) -->
+    <!-- BARRA DE NAVEGAÇÃO SUPERIOR (EXCLUSIVA PARA MOBILE) -->
     <nav class="mobile-nav-tabs no-print">
         <button class="mob-tab-btn active" onclick="switchMobileTab('tabDashboard', this)">📊 Dashboard</button>
         <button class="mob-tab-btn" onclick="switchMobileTab('tabFormulario', this)">➕ Novo</button>
@@ -314,7 +313,7 @@
     </div>
 
     <div class="content-wrap"> 
-        <!-- FORMULÁRIO -->
+        <!-- FORMULÁRIO (VISÍVEL NO DESKTOP E NA ABA "NOVO" NO MOBILE) -->
         <aside class="no-print mobile-tab-content" id="tabFormulario"> 
             <div class="sidebar"> 
                 <div>
@@ -345,7 +344,7 @@
             </div> 
         </aside> 
 
-        <!-- TABELA / REGISTROS -->
+        <!-- TABELA / REGISTROS (VISÍVEL NO DESKTOP E NA ABA "REGISTROS" NO MOBILE) -->
         <main class="mobile-tab-content" id="tabTabela"> 
             <div class="mobile-search-area no-print">
                 <input type="text" id="searchRazaoMob" placeholder="Pesquisar razão nos registros..." oninput="sincronizarBusca(this.value)" style="border-color: var(--success);">
@@ -362,7 +361,7 @@
             </div> 
         </main>
 
-        <!-- NOVA ABA: NOTA DE LEITURAS (NL) COM SCROLL -->
+        <!-- ABA EXCLUSIVA DE NOTA DE LEITURAS (NL) APENAS PARA MOBILE -->
         <section class="mobile-tab-content" id="tabNL">
             <div style="margin-bottom: 6px; flex-shrink: 0;">
                 <input type="text" id="searchNL" placeholder="Pesquisar Nota (Ex: 1101, cães, sem leitura)..." oninput="renderizarNL()" style="border-color: var(--success); font-size: 13px; padding: 10px;">
@@ -697,7 +696,7 @@
     }
 
     function importarBackup(event) {
-        The file = event.target.files[0];
+        const file = event.target.files[0];
         if (!file) return;
 
         const reader = new FileReader();
