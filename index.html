@@ -169,9 +169,6 @@
         .desktop-header-info { display: inline; }
         .mobile-nav-tabs, .mobile-search-area { display: none; }
 
-        /* ABA NL (Nota de Leituras) - No desktop pode ficar oculta ou integrada se preferir, mas para manter o grid adaptado criamos o slot */
-        .desktop-nl-container { display: none; }
-
         @media (max-width: 900px) {
             body { padding: 10px; overflow: hidden !important; }
             .container { height: 96vh; }
@@ -333,9 +330,9 @@
             </div> 
         </main>
 
-        <!-- NOVA ABA: NOTA DE LEITURAS (NL) -->
+        <!-- NOVA ABA: NOTA DE LEITURAS (NL) COM SCROLL -->
         <section class="mobile-tab-content" id="tabNL">
-            <div style="margin-bottom: 6px;">
+            <div style="margin-bottom: 6px; flex-shrink: 0;">
                 <input type="text" id="searchNL" placeholder="Pesquisar Nota (Ex: 1101, cães, sem leitura)..." oninput="renderizarNL()" style="border-color: var(--success); font-size: 13px; padding: 10px;">
             </div>
             <div class="main-view">
@@ -652,7 +649,7 @@
 
     function exportarBackup() {
         if (!db || db.length === 0) {
-            alert("Não há dados cadastrados para exportar.");
+            alert("Not há dados cadastrados para exportar.");
             return;
         }
         const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db, null, 2));
