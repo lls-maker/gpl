@@ -352,7 +352,7 @@
             text-transform: uppercase;
         }
 
-        /* BARRA DE ABAS MOBILE (OCULTA NO DESKTOP) */
+        /* BARRA DE ABAS SUPERIOR (OCULTA NO DESKTOP) */
         .mobile-nav-tabs {
             display: none;
         }
@@ -368,7 +368,7 @@
             }
             .container {
                 height: auto;
-                padding-bottom: 70px; 
+                padding-bottom: 20px; 
             }
             .top-dashboard {
                 display: flex !important;
@@ -381,15 +381,54 @@
                 display: block !important;
             }
             
-            /* No celular, esconde as seções e exibe apenas a ativa */
+            /* Sistema de abas superior padronizado */
+            .mobile-nav-tabs {
+                display: flex;
+                width: 100%;
+                background: var(--surface);
+                border: 1px solid var(--border);
+                border-radius: 14px;
+                z-index: 999;
+                justify-content: space-between;
+                padding: 6px;
+                margin-bottom: 12px;
+                gap: 6px;
+            }
+            .mob-tab-btn {
+                background: transparent;
+                border: none;
+                color: var(--text-p);
+                font-size: 10px;
+                font-weight: 800;
+                text-transform: uppercase;
+                cursor: pointer;
+                flex: 1;
+                padding: 10px 4px;
+                border-radius: 10px;
+                text-align: center;
+                transition: 0.3s;
+            }
+            .mob-tab-btn.active {
+                background: var(--accent);
+                color: #fff;
+            }
+
+            /* No celular, esconde as seções e exibe apenas a ativa com tamanho unificado */
             .mobile-tab-content {
                 display: none !important;
             }
             .mobile-tab-content.active-tab {
                 display: flex !important;
                 flex-direction: column;
-                height: auto;
+                min-height: 480px;
                 flex-grow: 1;
+            }
+
+            /* Ajuste de sidebar/formulário na aba mobile */
+            #tabFormulario .sidebar {
+                height: 100% !important;
+                justify-content: flex-start !important;
+                gap: 15px;
             }
 
             /* No celular, exibe a barra de pesquisa no topo da aba de Tabela */
@@ -398,38 +437,8 @@
                 margin-bottom: 8px;
             }
             
-            /* Barra inferior fixa para celular */
-            .mobile-nav-tabs {
-                display: flex;
-                position: fixed;
-                bottom: 0;
-                left: 0;
-                width: 100%;
-                background: var(--surface);
-                border-top: 1px solid var(--border);
-                z-index: 999;
-                justify-content: space-around;
-                padding: 10px 0;
-                backdrop-filter: blur(10px);
-            }
-            .mob-tab-btn {
-                background: none;
-                border: none;
-                color: var(--text-p);
-                font-size: 10px;
-                font-weight: 800;
-                text-transform: uppercase;
-                cursor: pointer;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                gap: 4px;
-            }
-            .mob-tab-btn.active {
-                color: var(--success);
-            }
             .table-container {
-                max-height: 450px !important;
+                max-height: 420px !important;
             }
         }
 
@@ -493,7 +502,20 @@
         </div> 
     </div> 
 
-    <!-- DASHBOARD (NO DESKTOP APARECE NORMALMENTE; NO MÓVEL É A ABA 1) -->
+    <!-- BARRA DE NAVEGAÇÃO SUPERIOR (APARECE APENAS NO MÓVEL) -->
+    <nav class="mobile-nav-tabs no-print">
+        <button class="mob-tab-btn active" onclick="switchMobileTab('tabDashboard', this)">
+            📊 Dashboard
+        </button>
+        <button class="mob-tab-btn" onclick="switchMobileTab('tabFormulario', this)">
+            ➕ Novo Registro
+        </button>
+        <button class="mob-tab-btn" onclick="switchMobileTab('tabTabela', this)">
+            📋 Tabela
+        </button>
+    </nav>
+
+    <!-- DASHBOARD (PADRÃO INICIAL ATIVO) -->
     <div class="top-dashboard mobile-tab-content active-tab" id="tabDashboard">
         <div class="observations no-print"> 
             <div class="obs-item"><span class="dot" style="background:var(--success)"></span> Bônus de R$ 0,20 por cada leitura excedente a 8000 leituras</div> 
@@ -512,7 +534,7 @@
     </div>
 
     <div class="content-wrap"> 
-        <!-- FORMULÁRIO (NO DESKTOP APARECE NA LATERAL COM O CAMPO DE PESQUISA ORIGINAL; NO MÓVEL É A ABA 2) -->
+        <!-- FORMULÁRIO -->
         <aside class="no-print mobile-tab-content" id="tabFormulario"> 
             <div class="sidebar"> 
                 <div>
@@ -543,9 +565,8 @@
             </div> 
         </aside> 
 
-        <!-- TABELA (NO DESKTOP APARECE AO LADO; NO MÓVEL É A ABA 3) -->
-        <main class="mobile-tab-content active-tab" id="tabTabela"> 
-            <!-- Barra de pesquisa exclusiva para o topo da Tabela no celular -->
+        <!-- TABELA -->
+        <main class="mobile-tab-content" id="tabTabela"> 
             <div class="mobile-search-area no-print">
                 <input type="text" id="searchRazaoMob" placeholder="Pesquisar razão na tabela..." oninput="sincronizarBusca(this.value)" style="border-color: var(--success);">
             </div>
@@ -562,19 +583,6 @@
         </main> 
     </div> 
 </div> 
-
-<!-- BARRA DE NAVEGAÇÃO INFERIOR (APARECE APENAS NO MÓVEL) -->
-<nav class="mobile-nav-tabs no-print">
-    <button class="mob-tab-btn" onclick="switchMobileTab('tabDashboard', this)">
-        📊 Dashboard
-    </button>
-    <button class="mob-tab-btn" onclick="switchMobileTab('tabFormulario', this)">
-        ➕ Novo Registro
-    </button>
-    <button class="mob-tab-btn active" onclick="switchMobileTab('tabTabela', this)">
-        📋 Tabela
-    </button>
-</nav>
 
 <script> 
     let db = []; 
