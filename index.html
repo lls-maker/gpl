@@ -882,12 +882,22 @@
     } 
 
     function exportarBackup() {
-        if (!db || db.length === 0) return alert("Sem dados para exportar.");
-        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db, null, 2));
+        if ((!db || db.length === 0) && Object.keys(calendarioDb).length === 0) {
+            return alert("Sem dados para exportar.");
+        }
+        
+        const dadosBackup = {
+            registros: db,
+            calendario: calendarioDb
+        };
+
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dadosBackup, null, 2));
         const dl = document.createElement('a');
         dl.setAttribute("href", dataStr);
         dl.setAttribute("download", `backup_gpl_${currentUser.toLowerCase()}_2026.json`);
-        document.body.appendChild(dl); dl.click(); dl.remove();
+        document.body.appendChild(dl); 
+        dl.click(); 
+        dl.remove();
     }
 
     function dispararImportacao() { document.getElementById('importFile').click(); }
@@ -899,15 +909,28 @@
         reader.onload = function(e) {
             try {
                 const importedData = JSON.parse(e.target.result);
-                if (Array.isArray(importedData)) {
-                    if (confirm(`Substituir dados atuais pelo arquivo "${file.name}"?`)) {
+                if (confirm(`Substituir dados atuais pelo arquivo "${file.name}"?`)) {
+                    if (importedData && !Array.isArray(importedData) && importedData.registros) {
+                        db = Array.isArray(importedData.registros) ? importedData.registros : [];
+                        calendarioDb = (typeof importedData.calendario === 'object' && importedData.calendario !== null) ? importedData.calendario : {};
+                    } else if (Array.isArray(importedData)) {
                         db = importedData;
-                        localStorage.setItem(`GPL_DATA_${currentUser}`, JSON.stringify(db));
-                        atualizarTabela();
-                        alert("Restaurado com sucesso!");
+                    } else {
+                        return alert("Arquivo inválido.");
                     }
-                } else { alert("Arquivo inválido."); }
-            } catch (err) { alert("Erro ao ler JSON."); }
+
+                    localStorage.setItem(`GPL_DATA_${currentUser}`, JSON.stringify(db));
+                    localStorage.setItem(`GPL_CAL_${currentUser}`, JSON.stringify(calendarioDb));
+                    
+                    atualizarTabela();
+                    renderizarCalendario();
+                    verificarSabadosAlertas();
+                    
+                    alert("Restaurado com sucesso!");
+                }
+            } catch (err) { 
+                alert("Erro ao ler JSON."); 
+            }
             event.target.value = "";
         };
         reader.readAsText(file);
