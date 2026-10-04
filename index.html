@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"> 
     <title>Gestão de Produtividade de Leituras 2026</title> 
 
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzMiAzMicgd2lkdGg9JzMyJyBoZWlnaHQ9JzMyJz48cmVjdCB3aWR0aD0nMzInIGhlaWdodD0nMzInIHJ4PSc2JyBmaWxsPScjMGIwZjE1Jy8+PHRleHQgeD0nNTAlJyB5PSc1NSUnIGRvbWluYW50LWJhc2VsaW5lPSdtaWRkbGUnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJyBmb250LXdlaWdodD0nOTAwJyBmb250LXNpemU9JzEwJyBmaWxsPScjMDBmZjg4JyBsZXR0ZXItc3BhY2luZz0nMC41Jz5HUEw8L3RleHQ+PC9zdmc+">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzMiAzMicgd2lkdGg9JzMyJyBoZWlnaHQ9JzMyJz48cmVjdCB3aWR0aD0nMzInIGhlaWdodD0nMzInIHJ4PSc2JyBmaWxsPScjMGIwZjE1Jy8+PHRleHQgeD0nNTAlJyB5PSc1NSUnIGRvbWluYW50LWJhc2VsaW5lPSdtaWRkbGUnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJyBmb250LXdlaWdodD0nOTAwJyBmb250LXdlaWdodD0nMTAwMCcgZm9udC1zaXplPScxMCcgZmlsbD0nIzAwZmY4OCcgbGV0dGVyLXNwYWNpbmdzPScwLjUnPkdQTDwvdGV4dD48L3N2Zz4=">
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#030508">
 
@@ -182,7 +182,7 @@
 
         .mobile-nav-tabs, .mobile-search-area { display: none; }
 
-        /* REGRAS EXCLUSIVAS PARA O MOBILE: CARDS MAIORES E TELA RIGIDAMENTE FIXA */
+        /* REGRAS EXCLUSIVAS PARA O MOBILE */
         @media (max-width: 900px) {
             html, body { 
                 padding: 4px; height: 100vh; overflow: hidden; position: fixed; width: 100%;
@@ -197,7 +197,6 @@
             .observations { display: flex !important; height: auto !important; padding: 8px 12px !important; }
             .obs-item { font-size: 10px !important; gap: 6px !important; }
             
-            /* CARDS MAIORES NO MOBILE */
             .summary-grid { grid-template-columns: repeat(4, 1fr) !important; gap: 6px !important; height: auto !important; }
             .summary-card { height: 60px !important; padding: 5px !important; border-radius: 14px !important; }
             .summary-card p { font-size: 8.5px !important; }
@@ -209,7 +208,7 @@
                 gap: 4px; flex-shrink: 0;
             }
             .mob-tab-btn {
-                background: transparent; border: none; color: var(--text-p); font-size: 9.5px;
+                background: transparent; border: none; color: var(--text-p); font-size: 8.5px;
                 font-weight: 800; text-transform: uppercase; cursor: pointer; flex: 1; padding: 8px 2px;
                 border-radius: 8px; text-align: center; transition: 0.3s;
             }
@@ -222,7 +221,6 @@
                 display: flex !important; flex-direction: column; flex-grow: 1; min-height: 0; overflow: hidden;
             }
 
-            /* CARD FIXO NA ABA DE NOVO REGISTRO */
             aside.mobile-tab-content .sidebar { 
                 height: 100% !important; 
                 max-height: 100% !important; 
@@ -239,7 +237,6 @@
             }
             .mobile-search-area { display: block !important; margin-bottom: 4px; flex-shrink: 0; }
             
-            /* CARD COM SCROLL NA ABA DE REGISTROS */
             .table-container { flex-grow: 1 !important; min-height: 0 !important; overflow-y: auto !important; }
             .main-view { min-height: 0 !important; height: 100% !important; flex-grow: 1; overflow: hidden; }
         }
@@ -276,12 +273,13 @@
 </div> 
 
 <div class="container"> 
-    <!-- CABEÇALHO COM: ÍCONE GPL, MÊS, IMPRIMIR E SAIR -->
+    <!-- CABEÇALHO COM: ÍCONE GPL, MÊS, BOTÃO NL ENTRE O MÊS E IMPRIMIR, IMPRIMIR E SAIR -->
     <header> 
         <div style="background:var(--success); color:black; padding:8px 14px; border-radius:10px; font-weight:900; font-size:13px;">GPL</div> 
         <div style="display: flex; gap: 8px; align-items: center;"> 
             <button class="header-btn" onclick="toggleMonthGrid()" id="currentMonthDisplay" style="background: var(--accent); border-color: var(--accent);">SETEMBRO</button> 
             <div id="monthGrid" class="month-grid"></div> 
+            <button class="header-btn" onclick="switchMobileTab('tabNL', document.getElementById('btnTabNL'))" style="background: var(--purple); border-color: var(--purple);">NL</button>
             <button class="header-btn" onclick="window.print()">IMPRIMIR</button> 
             <button class="header-btn" onclick="logout()" style="background:var(--danger); border-color:var(--danger);">SAIR</button> 
         </div> 
@@ -297,11 +295,12 @@
         </div> 
     </div> 
 
-    <!-- BARRA DE NAVEGAÇÃO NO TOPO (MOBILE) -->
+    <!-- BARRA DE NAVEGAÇÃO NO TOPO (MOBILE) COM A ABA NL -->
     <nav class="mobile-nav-tabs no-print">
-        <button class="mob-tab-btn active" id="btnTabDashboard" onclick="switchMobileTab('tabDashboard', this)">📊 Dashboard</button>
-        <button class="mob-tab-btn" id="btnTabFormulario" onclick="switchMobileTab('tabFormulario', this)">➕ Novo Registro</button>
-        <button class="mob-tab-btn" id="btnTabTabela" onclick="switchMobileTab('tabTabela', this)">📋 Registros</button>
+        <button class="mob-tab-btn active" id="btnTabDashboard" onclick="switchMobileTab('tabDashboard', this)">📊 Dash</button>
+        <button class="mob-tab-btn" id="btnTabFormulario" onclick="switchMobileTab('tabFormulario', this)">➕ Novo</button>
+        <button class="mob-tab-btn" id="btnTabTabela" onclick="switchMobileTab('tabTabela', this)">📋 Reg.</button>
+        <button class="mob-tab-btn" id="btnTabNL" onclick="switchMobileTab('tabNL', this)">🔍 NL</button>
     </nav>
 
     <!-- DASHBOARD -->
@@ -371,6 +370,23 @@
                 </div> 
             </div> 
         </main> 
+
+        <!-- ABA NL (NOTAS DE LEITURISTA) -->
+        <div class="mobile-tab-content" id="tabNL" style="flex-grow: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column;">
+            <div style="margin-bottom: 6px; flex-shrink: 0;">
+                <input type="text" id="searchNL" placeholder="Pesquisar por número ou descrição da nota..." oninput="filtrarNL()" style="border-color: var(--purple);">
+            </div>
+            <div class="main-view">
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr><th>Número</th><th>Status</th><th>Detalhe / Descrição</th></tr>
+                        </thead>
+                        <tbody id="nlCorpo"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div> 
 </div> 
 
@@ -380,6 +396,101 @@
     let dataAtualDoSistema = new Date();
     let viewDate = new Date(2026, dataAtualDoSistema.getMonth(), 1); 
     
+    const notasDeLeitura = [
+      { numero: '1101', status: 'Com leitura', detalhe: 'LEITURA DIFICULTADA POR CÃES/ANIMAIS' },
+      { numero: '1102', status: 'Com leitura', detalhe: 'MEDIDOR OBSTRUÍDO COM POSSIBILIDADE DE LEITURA' },
+      { numero: '1103', status: 'Com leitura', detalhe: 'FALTA PLACA/IDENTIF. MEDIDOR/QUADRO/APTO. /PRÉDIO' },
+      { numero: '1104', status: 'Com leitura', detalhe: 'MEDIÇÃO/QUADRO EM MAL ESTADO' },
+      { numero: '1107', status: 'Com leitura', detalhe: 'MED LOCAL IMPRÓPRIO PERIGOSO/CX MED ALTURA ANORMAL' },
+      { numero: '1110', status: 'Com leitura', detalhe: 'TAMPA ACRÍLICA EMBAÇADA' },
+      { numero: '1201', status: 'Com leitura', detalhe: 'MUDANÇA NOME LOGRADOURO' },
+      { numero: '1202', status: 'Com leitura', detalhe: 'MUDANÇA NUMERAÇÃO INTERNA, APTO OU VILA DE CASAS' },
+      { numero: '1203', status: 'Com leitura', detalhe: 'INSTALAÇÃO FORA DE SEQUÊNCIA' },
+      { numero: '1204', status: 'Com leitura', detalhe: 'Nº MEDIDOR/CONSTANTE DIFERENTE SEM SUBSTITUIÇÃO' },
+      { numero: '1205', status: 'Com leitura', detalhe: 'MEDIDOR SUBSTITUÍDO' },
+      { numero: '1206', status: 'Com leitura', detalhe: 'CÓDIGO DE CLASSE/RAMO DE NEGÓCIO INADEQUADO' },
+      { numero: '1207', status: 'Com leitura', detalhe: 'CLIENTE NÃO CADASTRADO/NOVA LIGAÇÃO' },
+      { numero: '1208', status: 'Com leitura', detalhe: 'SEQUÊNCIAMENTO DE ROTAS' },
+      { numero: '1209', status: 'Com leitura', detalhe: 'ROTA FECHADA' },
+      { numero: '1231', status: 'Com leitura', detalhe: 'INVERSÃO DE MEDIDORES ENTRE INSTALAÇÕES' },
+      { numero: '1234', status: 'Com leitura', detalhe: 'ENDEREÇO URBANO PARA ENTREGA DA FATURA RURAL' },
+      { numero: '1250', status: 'Com leitura', detalhe: 'INCLUSÃO/ALTERAÇÃO LOCAL INSTALAÇÃO DO EQUIPAMENTO' },
+      { numero: '1300', status: 'Com leitura', detalhe: 'REGISTRADOR NÃO CONSTA NO SGL' },
+      { numero: '1302', status: 'Com leitura', detalhe: 'RAMAL AÉREO COM OBSTÁCULOS' },
+      { numero: '1303', status: 'Com leitura', detalhe: 'FORNECIMENTO A TERCEIROS/INTERLIGAÇÃO' },
+      { numero: '1304', status: 'Com leitura', detalhe: 'CONSUMO EM INSTALAÇÃO DESLIGADA' },
+      { numero: '1320', status: 'Com leitura', detalhe: 'SITUAÇÃO DE RISCO PARA TERCEIROS NA REDE' },
+      { numero: '1326', status: 'Com leitura', detalhe: 'VESPEIRO NA MEDIÇÃO' },
+      { numero: '1327', status: 'Com leitura', detalhe: 'VIDRO VISOR DA CAIXA QUEBRADO' },
+      { numero: '1329', status: 'Com leitura', detalhe: 'MEDIDOR EMBAÇADO/SUJO' },
+      { numero: '1343', status: 'Com leitura', detalhe: 'ILUMINAÇÃO PÚBLICA ACESA DURANTE O DIA' },
+      { numero: '1349', status: 'Com leitura', detalhe: 'INSTALAÇÃO COM LIGAÇÃO PROVISÓRIA' },
+      { numero: '1351', status: 'Com leitura', detalhe: 'SUSPEITA DE MEDIDOR COM PONTEIROS DESREGULADOS' },
+      { numero: '1364', status: 'Com leitura', detalhe: 'VIDRO VISOR DA CAIXA EMBAÇADO' },
+      { numero: '1373', status: 'Com leitura', detalhe: 'INSTALAÇÃO INCENDIADA/DEMOLIDA' },
+      { numero: '1390', status: 'Com leitura', detalhe: 'MED POSICIONADO INADEQUADAMENTE NA CAIXA' },
+      { numero: '1501', status: 'Com leitura', detalhe: 'CAIXA DE MEDIÇÃO SEM TAMPA' },
+      { numero: '1503', status: 'Com leitura', detalhe: 'SUSPEITA DE IRREGULARIDADE' },
+      { numero: '1505', status: 'Com leitura', detalhe: 'SUSPEITA MED DEFEITUOSO/AVARIADO/MANIPULADO/PARADO' },
+      { numero: '1506', status: 'Com leitura', detalhe: 'MEDIDOR COM DISCO GIRANDO AO CONTRÁRIO/DESMARCAÇÃO' },
+      { numero: '1544', status: 'Com leitura', detalhe: 'NÃO IDENTIFICADO MOTIVO DO CONSUMO ZERO' },
+      { numero: '1546', status: 'Com leitura', detalhe: 'CONSUMO INCOMPATÍVEL COM O IMÓVEL' },
+      { numero: '1560', status: 'Com leitura', detalhe: 'DENÚNCIA DE UMA LIGAÇÃO CLANDESTINA' },
+      { numero: '1562', status: 'Com leitura', detalhe: 'INSTALAÇÃO DESLIGADA SEM CONSUMO' },
+      { numero: '1570', status: 'Com leitura', detalhe: 'DENÚNCIA DE VÁRIAS LIGAÇÕES CLANDESTINAS' },
+      { numero: '1600', status: 'Com leitura', detalhe: 'MEDIDOR EM CURTO OU INCENDIADO' },
+      { numero: '1800', status: 'Com leitura', detalhe: 'LEITURA PREVISTA NO CALENDÁRIO REAL - LEITURA NORMAL' },
+      { numero: '1801', status: 'Com leitura', detalhe: 'INSTALAÇÃO DESABITADA/VAZIA COM ACESSO À LEITURA' },
+      { numero: '1802', status: 'Com leitura', detalhe: 'LEITURA ATUAL MENOR QUE ANTERIOR SEM VIRADA' },
+      { numero: '1818', status: 'Com leitura', detalhe: 'TELEMETRIA IMPRESSÃO E ENTREGA' },
+      { numero: '1819', status: 'Com leitura', detalhe: 'LEITURA DE TELEMETRIA' },
+      { numero: '1828', status: 'Com leitura', detalhe: 'LEITURA CONFERIDA E CONFIRMADA' },
+      { numero: '1834', status: 'Com leitura', detalhe: 'LEITURA INFORMADA PELO CLIENTE' },
+      { numero: '1835', status: 'Com leitura', detalhe: 'PONTALETE UTILIZADO PARA OUTROS FINS' },
+      { numero: '1838', status: 'Com leitura', detalhe: 'ETIQUETA DESCOLANDO/SEM ETIQUETA' },
+      { numero: '1847', status: 'Com leitura', detalhe: 'LEITURA INFORMADA PELO CLIENTE FORA DE CICLO' },
+      { numero: '1897', status: 'Com leitura', detalhe: 'LEITURA COLETADA VIA APP DE MENSAGEM' },
+      { numero: '1898', status: 'Com leitura', detalhe: 'LEITURA INFORMADA PELO CLIENTE NO CICLO' },
+      { numero: '1901', status: 'Com leitura', detalhe: 'POSTE: CAIXA MEDIÇÃO: LENTE EMBAÇADA, CAIXA QUEBRADA' },
+      { numero: '1902', status: 'Com leitura', detalhe: 'POSTE: DEFEITO NO MEDIDOR: MAL POSICIONADO, EMBAÇADO' },
+      { numero: '1978', status: 'Com leitura', detalhe: 'MEDIDOR NO POSTE/CPREDE' },
+      { numero: '2000', status: 'Com leitura', detalhe: 'SUSPENSÃO DE MEDIDOR DEFEITUOSO DEVIDO A CHUVAS/ENCHENTES' },
+      { numero: '3201', status: 'Sem Leitura', detalhe: 'MEDIDOR RETIRADO' },
+      { numero: '3205', status: 'Sem Leitura', detalhe: 'ENDEREÇO INSTALAÇÃO NÃO LOCALIZADO' },
+      { numero: '3311', status: 'Sem Leitura', detalhe: 'MEDIDOR ELETRÔNICO APAGADO/CHAVE DISJUNTOR DESLIGADA' },
+      { numero: '3313', status: 'Sem Leitura', detalhe: 'INSETOS DENTRO DA CAIXA OU ENVOLVENDO O MEDIDOR' },
+      { numero: '3369', status: 'Sem Leitura', detalhe: 'MEDIDOR EMBAÇADO' },
+      { numero: '3370', status: 'Sem Leitura', detalhe: 'TAMPA ACRÍLICA EMBAÇADA' },
+      { numero: '3374', status: 'Sem Leitura', detalhe: 'VIDRO VISOR DA CAIXA EMBAÇADO' },
+      { numero: '3376', status: 'Sem Leitura', detalhe: 'MEDIDOR ELETRÔNICO DESPROGRAMADO' },
+      { numero: '3379', status: 'Sem Leitura', detalhe: 'MEDIDOR POSICIONADO INADEQUADAMENTE NA CAIXA' },
+      { numero: '3511', status: 'Sem Leitura', detalhe: 'SUSPEITA MED DEFEITUOSO/ AVARIADO/ MANIPULADO/PARADO' },
+      { numero: '3700', status: 'Sem Leitura', detalhe: 'MEDIDOR EM CURTO OU INCENDIADO' },
+      { numero: '3804', status: 'Sem Leitura', detalhe: 'MEDIDOR ELETRÔNICO APAGADO/FALTA ENERGIA NA REDE' },
+      { numero: '3868', status: 'Sem Leitura', detalhe: 'PROBLEMA OPERACIONAL CAUSA PARCEIRA VEÍCULO MCD FALTA TRANSMISSÃO' },
+      { numero: '3871', status: 'Sem Leitura', detalhe: 'PROBLEMA ADMINISTRATIVO (FALTOU LEITURISTA)' },
+      { numero: '3878', status: 'Sem Leitura', detalhe: 'INSTALAÇÕES SEM LEITURA PLANEJADA PARA O MÊS' },
+      { numero: '3901', status: 'Sem Leitura', detalhe: 'POSTE: CAIXA DE MEDIÇÃO: LENTE EMBAÇADA, CAIXA QUEBRADA' },
+      { numero: '3902', status: 'Sem Leitura', detalhe: 'POSTE: DEFEITO NO MEDIDOR: MAL POSICIONADO, EMBAÇADO' },
+      { numero: '3903', status: 'Sem Leitura', detalhe: 'POSTE: RISCO OU OBSTACULO NA REALIZAÇÃO DA LEITURA' },
+      { numero: '5101', status: 'Sem Leitura', detalhe: 'MEDIÇÃO/QUADRO SEM A POSSIBILIDADE DE ABRIR' },
+      { numero: '5102', status: 'Sem Leitura', detalhe: 'MEDIDOR OBSTRUÍDO SEM A POSSIBILIDADE LEITURA' },
+      { numero: '5103', status: 'Sem Leitura', detalhe: 'INSETOS NA CAIXA DO MEDIDOR EXTERNAMENTE' },
+      { numero: '5104', status: 'Sem Leitura', detalhe: 'CASA FECHADA/PORTÃO FECHADO/FALTA ACESSO A MEDIÇÃO' },
+      { numero: '5105', status: 'Sem Leitura', detalhe: 'CLIENTE NÃO PERMITIU ACESSO DO LEITURISTA AO MEDIDOR' },
+      { numero: '5106', status: 'Sem Leitura', detalhe: 'MED LOCAL IMPRÓPRIO PERIGOSO/CX MED ALTURA ANORMAL' },
+      { numero: '5108', status: 'Sem Leitura', detalhe: 'LEITURA IMPEDIDA POR CÃES/ANIMAIS' },
+      { numero: '5109', status: 'Sem Leitura', detalhe: 'INSTALAÇÃO DESABITADA/VAZIA SEM ACESSO À LEITURA' },
+      { numero: '5558', status: 'Sem Leitura', detalhe: 'SUSPEITA DE IRREGULARIDADE' },
+      { numero: '5800', status: 'Sem Leitura', detalhe: 'PADRÃO MEDIÇÃO INCENDIADO/DEMOLIDO' },
+      { numero: '5802', status: 'Sem Leitura', detalhe: 'INSTALAÇÃO INTERDITADA' },
+      { numero: '6801', status: 'Sem Leitura', detalhe: 'LEITURA IMPEDIDA POR CONDIÇÃO INSEGURA/ÁREA RISCO' },
+      { numero: '6820', status: 'Sem Leitura', detalhe: 'ESTRADA OU RUA INTRASITÁVEL' },
+      { numero: '6862', status: 'Sem Leitura', detalhe: 'GREVE NO SERVIÇO PÚBLICO' },
+      { numero: '6872', status: 'Sem Leitura', detalhe: 'CALAMIDADE DECRETADA ENCHENTE ALAGAM TERREMOTO VENDAVAL' },
+      { numero: '7000', status: 'Sem Leitura', detalhe: 'SUSPENSÃO DE MEDIDOR DEFEITUOSO DEVIDO A CHUVAS/ENCHENTES' }
+    ];
+
     const msNomesCompletos = ["JANEIRO", "FEVEREIRO", "MARÇO", "ABRIL", "MAIO", "JUNHO", "JULHO", "AGOSTO", "SETEMBRO", "OUTUBRO", "NOVEMBRO", "DEZEMBRO"]; 
     const fM = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); 
 
@@ -397,7 +508,8 @@
             let btnMap = {
                 'tabDashboard': 'btnTabDashboard',
                 'tabFormulario': 'btnTabFormulario',
-                'tabTabela': 'btnTabTabela'
+                'tabTabela': 'btnTabTabela',
+                'tabNL': 'btnTabNL'
             };
             let btnEl = document.getElementById(btnMap[savedTab]);
             if (btnEl) switchMobileTab(savedTab, btnEl);
@@ -408,6 +520,23 @@
         document.getElementById('searchRazao').value = val;
         document.getElementById('searchRazaoMob').value = val;
         atualizarTabela();
+    }
+
+    function renderizarNL(lista = notasDeLeitura) {
+        const corpo = document.getElementById('nlCorpo');
+        corpo.innerHTML = lista.map(item => `
+            <tr>
+                <td style="font-weight: bold; color: var(--accent);">${item.numero}</td>
+                <td><span style="color: ${item.status === 'Com leitura' ? 'var(--success)' : 'var(--warning)'}; font-weight: bold;">${item.status}</span></td>
+                <td style="text-align: left; font-size: 11.5px;">${item.detalhe}</td>
+            </tr>
+        `).join('');
+    }
+
+    function filtrarNL() {
+        const termo = document.getElementById('searchNL').value.toUpperCase();
+        const filtrado = notasDeLeitura.filter(i => i.numero.includes(termo) || i.detalhe.includes(termo));
+        renderizarNL(filtrado);
     }
 
     function animarContagem(id, final, isMoeda = false) { 
@@ -442,6 +571,7 @@
         document.getElementById('printMonth').innerText = nomeMes;
         
         renderMonths(); 
+        renderizarNL();
         atualizarTabela(); 
         restaurarAbaSalva();
     } 
@@ -605,7 +735,7 @@
         }
     });
 
-    // Logout ajustado para não destruir o state global da aba ativa se necessário
+    // Logout limpa somente a credencial de login, preservando a última aba ativa e estado
     function logout() { 
         sessionStorage.removeItem('gpl_user_2026'); 
         location.reload(); 
