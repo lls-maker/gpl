@@ -6,7 +6,7 @@
     <title>Gestão de Produtividade de Leituras 2026</title> 
 
     <!-- FAVICON CORRIGIDO EM BASE64 SEGURO E COMPATÍVEL COM TODOS OS NAVEGADORES -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzMiAzMicgd2lkdGg9JzMyJyBoZWlnaHQ9JzMyJz48cmVjdCB3aWR0aD0nMzInIGhlaWdodD0nMzInIHJ4PSc2JyBmaWxsPScjMGIwZjE1Jy8+PHRleHQgeD0nNTAlJyB5PSc1NSUnIGRvbWluYW50LWJhc2VsaW5lPSdtaWRkbGUnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJyBmb250LXdlaWdodD0nOTAwJyBmb250LXNpemU9JzEwJyBmaWxsPScjMDBmZjg4JyBsZXR0ZXItc3BhY2luZz0nMC41Jz5HUEw8L3RleHQ+PC9zdmc+">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzMiAzMicgd2lkdGg9JzMyJyBoZWlnaHQ9JzMyJz48cmVjdCB3aWR0aD0nMzInIGhlaWdodD0nMzInIGJ4PSc2JyBmaWxsPScjMGIwZjE1Jy8+PHRleHQgeD0nNTAlJyB5PSc1NSUnIGRvbWluYW50LWJhc2VsaW5lPSdtaWRkbGUnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJyBmb250LXdlaWdodD0nOTAwJyBmb250LXNpemU9JzEwJyBmaWxsPScjMDBmZjg4JyBsZXR0ZXItc3BhY2luZz0nMC41Jz5HUEw8L3RleHQ+PC9zdmc+">
 
     <!-- VÍNCULO DO MANIFESTO PARA ATIVAR O MODO PWA (APLICATIVO INSTALÁVEL) -->
     <link rel="manifest" href="./manifest.json">
@@ -36,7 +36,7 @@
             background-color: var(--bg); 
             color: var(--text-p); 
             margin: 0; 
-            padding: 10px; 
+            padding: 8px; 
             width: 100vw;
             height: 100vh; 
             overflow: hidden; 
@@ -125,13 +125,13 @@
             margin: auto; 
             display: flex; 
             flex-direction: column; 
-            gap: 8px; 
+            gap: 6px; 
             overflow: hidden; 
         } 
         header { 
             background: var(--surface); 
-            padding: 8px 20px; 
-            border-radius: 14px; 
+            padding: 8px 18px; 
+            border-radius: 12px; 
             border: 1px solid var(--border); 
             display: flex; 
             justify-content: space-between; 
@@ -156,13 +156,13 @@
         .observations { 
             background: var(--surface); 
             padding: 8px 14px; 
-            border-radius: 14px; 
+            border-radius: 12px; 
             border: 1.5px solid #ffffff; 
             display: flex; 
             flex-direction: column; 
             justify-content: center; 
             gap: 4px; 
-            height: 70px; 
+            height: 65px; 
         } 
         .obs-item { 
             font-size: 9.5px; 
@@ -184,12 +184,12 @@
             display: grid; 
             grid-template-columns: repeat(7, 1fr); 
             gap: 8px; 
-            height: 70px; 
+            height: 65px; 
         } 
         .summary-card { 
             background: var(--surface); 
             padding: 4px; 
-            border-radius: 14px; 
+            border-radius: 12px; 
             border: 1.5px solid var(--grey-border); 
             border-top: 4px solid; 
             display: flex; 
@@ -233,7 +233,7 @@
         .sidebar { 
             background: linear-gradient(180deg, rgba(0, 112, 243, 0.08) 0%, var(--surface) 100%); 
             padding: 10px 14px; 
-            border-radius: 14px; 
+            border-radius: 12px; 
             border: 1.5px solid var(--accent); 
             height: 100%; 
             display: flex; 
@@ -269,7 +269,7 @@
             color: #fff; 
             width: 100%; 
             padding: 8px; 
-            border-radius: 10px; 
+            border-radius: 9px; 
             font-weight: 900; 
             cursor: pointer; 
             border: none; 
@@ -281,7 +281,7 @@
             color: var(--danger); 
             width: 100%; 
             padding: 5px; 
-            border-radius: 10px; 
+            border-radius: 9px; 
             font-weight: 800; 
             cursor: pointer; 
             border: 1px solid var(--danger); 
@@ -293,7 +293,7 @@
             color: var(--purple); 
             width: 100%; 
             padding: 5px; 
-            border-radius: 10px; 
+            border-radius: 9px; 
             font-weight: 800; 
             cursor: pointer; 
             border: 1px solid var(--purple); 
@@ -310,7 +310,7 @@
             color: var(--success); 
             width: 50%; 
             padding: 5px 3px; 
-            border-radius: 10px; 
+            border-radius: 9px; 
             font-weight: 800; 
             cursor: pointer; 
             border: 1px solid var(--success); 
@@ -323,7 +323,7 @@
             color: var(--warning); 
             width: 50%; 
             padding: 5px 3px; 
-            border-radius: 10px; 
+            border-radius: 9px; 
             font-weight: 800; 
             cursor: pointer; 
             border: 1px solid var(--warning); 
@@ -334,7 +334,7 @@
 
         .main-view { 
             background: var(--surface); 
-            border-radius: 14px; 
+            border-radius: 12px; 
             border: 1.5px solid var(--brown-border); 
             height: 100%; 
             display: flex; 
@@ -353,7 +353,7 @@
         th, td { padding: 7px 5px; text-align: center; border-bottom: 1px solid var(--border); font-size: 11px; } 
         th { background: #0d1117; color: var(--accent); font-size: 9.5px; text-transform: uppercase; position: sticky; top: 0; z-index: 5; } 
 
-        .month-grid { display: none; position: absolute; top: 55px; right: 160px; background: #0d1117; border: 1px solid var(--accent); padding: 10px; border-radius: 12px; grid-template-columns: repeat(3, 1fr); gap: 6px; z-index: 1000; } 
+        .month-grid { display: none; position: absolute; top: 50px; right: 150px; background: #0d1117; border: 1px solid var(--accent); padding: 10px; border-radius: 12px; grid-template-columns: repeat(3, 1fr); gap: 6px; z-index: 1000; } 
         .month-grid.active { display: grid; } 
         .month-item { background: #000; color: white; border: 1px solid var(--border); padding: 7px; border-radius: 8px; cursor: pointer; font-size: 10px; font-weight: bold; text-align: center; }
         
@@ -361,7 +361,7 @@
             background: #1e2633;
             border: 1px solid var(--border);
             color: white;
-            padding: 7px 12px;
+            padding: 6px 12px;
             border-radius: 8px;
             cursor: pointer;
             font-weight: 800;
@@ -384,7 +384,6 @@
         @media (max-width: 900px) {
             body {
                 padding: 6px;
-                height: 100vh;
             }
             .container {
                 height: 100%; 
@@ -395,27 +394,7 @@
                 display: none !important;
             }
             .top-dashboard {
-                display: flex !important;
-                flex-direction: column;
-                gap: 6px;
-            }
-            .observations {
-                height: auto !important;
-                padding: 8px 10px !important;
-            }
-            .summary-grid {
-                grid-template-columns: repeat(2, 1fr) !important;
-                gap: 6px !important;
-                height: auto !important;
-            }
-            .summary-card {
-                height: 52px !important;
-            }
-            .content-wrap {
-                display: block !important;
-                flex-grow: 1;
-                min-height: 0;
-                position: relative;
+                display: none !important; /* No celular, o dashboard fica na aba específica dele */
             }
             
             .mobile-nav-tabs {
@@ -456,13 +435,15 @@
             .mobile-tab-content.active-tab {
                 display: flex !important;
                 flex-direction: column;
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100% !important;
+                flex-grow: 1;
                 min-height: 0;
                 overflow: hidden;
+            }
+
+            #tabDashboard.active-tab {
+                display: flex !important;
+                flex-direction: column;
+                gap: 8px;
             }
 
             #tabFormulario .sidebar {
@@ -517,7 +498,7 @@
 <div class="container"> 
     <header> 
         <div style="display: flex; align-items: center; gap: 10px;"> 
-            <div style="background:var(--success); color:black; padding:7px 10px; border-radius:8px; font-weight:900;" class="no-print">GPL</div> 
+            <div style="background:var(--success); color:black; padding:6px 10px; border-radius:8px; font-weight:900;" class="no-print">GPL</div> 
             <h1 style="font-size: 14px; color: white; margin: 0;"><span class="desktop-header-info">Gestão de Leituras - <span id="userDisplay" style="color:var(--success)"></span></span></h1> 
         </div> 
         <div style="display: flex; gap: 8px; align-items: center;" class="no-print"> 
