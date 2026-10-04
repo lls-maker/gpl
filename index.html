@@ -370,10 +370,6 @@
                 height: auto;
                 padding-bottom: 20px; 
             }
-            /* Título longo oculto no celular para ajustar perfeitamente na tela */
-            .header-title-text {
-                display: none !important;
-            }
             .top-dashboard {
                 display: flex !important;
                 flex-direction: column;
@@ -435,7 +431,7 @@
                 gap: 15px;
             }
 
-            /* No celular, exibe a barra de pesquisa no topo da aba de Tabela */
+            /* No celular, exibe a barra de pesquisa no topo da aba de Registros */
             .mobile-search-area {
                 display: block !important;
                 margin-bottom: 8px;
@@ -446,13 +442,12 @@
             }
         }
 
-        /* REGRAS DE IMPRESSÃO GLOBAL (FORÇA A EXIBIÇÃO DE TUDO INDEPENDENTE DA ABA) */
+        /* REGRAS DE IMPRESSÃO GLOBAL (EXCLUI O FORMULÁRIO E EXIBE DASHBOARD + REGISTROS) */
         @media print { 
             body { height: auto !important; overflow: visible !important; display: block !important; background: #fff !important; color: #000 !important; }
             .container { display: block !important; width: 100% !important; height: auto !important; }
             header { border: none; border-bottom: 2px solid #000; height: auto; padding: 10px 0; margin-bottom: 10px; background: #fff !important; }
-            .header-title-text { display: inline !important; color: #000 !important; font-size: 12pt !important; }
-            header h1 { width: 100%; text-align: center; }
+            header h1 { width: 100%; text-align: center; color: #000 !important; font-size: 12pt !important; }
             .content-wrap { display: block !important; }
             .top-dashboard { display: grid !important; grid-template-columns: 1fr !important; gap: 10px !important; margin-bottom: 15px; }
             .observations { display: none !important; }
@@ -464,10 +459,10 @@
             td, th { border: 0.5px solid #000 !important; color: #000 !important; padding: 4px !important; background: #fff !important; }
             th { background: #e9ecef !important; color: #000 !important; }
             .table-container { max-height: none !important; overflow: visible !important; }
-            .no-print, aside, .mobile-nav-tabs, .mobile-search-area { display: none !important; } 
+            .no-print, #tabFormulario, .mobile-nav-tabs, .mobile-search-area { display: none !important; } 
             
-            /* Força todas as abas/seções a aparecerem na impressão, mesmo estando ocultas na tela */
-            .mobile-tab-content { display: flex !important; flex-direction: column !important; }
+            /* Força Dashboard e Registros a aparecerem na impressão */
+            #tabDashboard, #tabTabela { display: flex !important; flex-direction: column !important; }
         } 
     </style> 
 </head> 
@@ -491,7 +486,7 @@
     <header> 
         <div style="display: flex; align-items: center; gap: 10px;"> 
             <div style="background:var(--success); color:black; padding:8px 12px; border-radius:10px; font-weight:900;" class="no-print">GPL</div> 
-            <h1 style="font-size: 15px; color: white; margin: 0;"><span class="header-title-text">Gestão de Leituras - </span><span id="userDisplay" style="color:var(--success)"></span></h1> 
+            <h1 style="font-size: 15px; color: white; margin: 0;">Gestão de Produtividade de Leituras</h1> 
         </div> 
         <div style="display: flex; gap: 8px; align-items: center;" class="no-print"> 
             <button class="header-btn" onclick="toggleMonthGrid()" id="currentMonthDisplay" style="background: var(--accent); border-color: var(--accent);">SETEMBRO 2026</button> 
@@ -520,7 +515,7 @@
             ➕ Novo Registro
         </button>
         <button class="mob-tab-btn" onclick="switchMobileTab('tabTabela', this)">
-            📋 Tabela
+            📋 Registros
         </button>
     </nav>
 
@@ -548,7 +543,7 @@
             <div class="sidebar"> 
                 <div>
                     <label style="font-size: 9px; font-weight: 800; color: var(--success); text-transform: uppercase; margin-bottom: 3px; display: block;" class="desktop-search-label">Pesquisar razão</label> 
-                    <input type="text" id="searchRazao" placeholder="Filtrar tabela..." oninput="sincronizarBusca(this.value)" style="border-color: var(--success); margin-bottom: 6px;" class="desktop-search-input"> 
+                    <input type="text" id="searchRazao" placeholder="Filtrar registros..." oninput="sincronizarBusca(this.value)" style="border-color: var(--success); margin-bottom: 6px;" class="desktop-search-input"> 
                     
                     <div class="form-content-area">
                         <form id="gplForm"> 
@@ -574,10 +569,10 @@
             </div> 
         </aside> 
 
-        <!-- TABELA -->
+        <!-- TABELA / REGISTROS -->
         <main class="mobile-tab-content" id="tabTabela"> 
             <div class="mobile-search-area no-print">
-                <input type="text" id="searchRazaoMob" placeholder="Pesquisar razão na tabela..." oninput="sincronizarBusca(this.value)" style="border-color: var(--success);">
+                <input type="text" id="searchRazaoMob" placeholder="Pesquisar razão nos registros..." oninput="sincronizarBusca(this.value)" style="border-color: var(--success);">
             </div>
             <div class="main-view"> 
                 <div class="table-container"> 
@@ -641,7 +636,6 @@
         currentUser = sessionStorage.getItem('gpl_user_2026'); 
         if(!currentUser) return; 
         document.getElementById('loginScreen').style.display = 'none'; 
-        document.getElementById('userDisplay').innerText = currentUser; 
         db = JSON.parse(localStorage.getItem(`GPL_DATA_${currentUser}`)) || []; 
         
         document.getElementById('currentMonthDisplay').innerText = `${msNomesCompletos[viewDate.getMonth()]} 2026`; 
