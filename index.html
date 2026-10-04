@@ -181,8 +181,10 @@
         }
 
         .mobile-nav-tabs, .mobile-search-area { display: none; }
+        .desktop-header-title { display: inline; }
+        .mobile-header-title { display: none; }
 
-        /* ABA NL NO COMPUTADOR (ISOLADA E PERFEITA NA ÁREA DE REGISTROS) */
+        /* ABA NL NO COMPUTADOR */
         .desktop-nl-view {
             display: none; 
             flex-direction: column; 
@@ -213,10 +215,11 @@
             .observations { display: flex !important; height: auto !important; padding: 8px 12px !important; }
             .obs-item { font-size: 10px !important; gap: 6px !important; }
             
+            /* CARDS DO DASHBOARD AUMENTADOS NO MOBILE */
             .summary-grid { grid-template-columns: repeat(4, 1fr) !important; gap: 6px !important; height: auto !important; }
-            .summary-card { height: 68px !important; padding: 6px !important; border-radius: 14px !important; }
-            .summary-card p { font-size: 9px !important; }
-            .summary-card h2 { font-size: 0.95rem !important; }
+            .summary-card { height: 78px !important; padding: 8px 4px !important; border-radius: 14px !important; }
+            .summary-card p { font-size: 9.5px !important; }
+            .summary-card h2 { font-size: 1.05rem !important; }
             
             .mobile-nav-tabs {
                 display: flex; width: 100%; background: var(--surface); border: 1px solid var(--border);
@@ -256,9 +259,11 @@
             .table-container { flex-grow: 1 !important; min-height: 0 !important; overflow-y: auto !important; }
             .main-view { min-height: 0 !important; height: 100% !important; flex-grow: 1; overflow: hidden; }
             .desktop-nl-view { display: none !important; }
-            
-            /* OCULTA BOTÃO NL DO CABEÇALHO NO MOBILE */
             .desktop-nl-header-btn { display: none !important; }
+
+            /* AJUSTE DOS TÍTULOS NO MOBILE: MOSTRA APENAS O NOME DO USUÁRIO */
+            .desktop-header-title { display: none !important; }
+            .mobile-header-title { display: inline !important; }
         }
 
         /* IMPRESSÃO ISOLADA */
@@ -320,11 +325,14 @@
 </div> 
 
 <div class="container"> 
-    <!-- CABEÇALHO SEM BOTÃO SAIR (MOBILE: SÓ ÍCONE, MÊS E IMPRIMIR) -->
+    <!-- CABEÇALHO -->
     <header> 
         <div style="display: flex; align-items: center; gap: 12px;">
             <div style="background:var(--success); color:black; padding:8px 14px; border-radius:10px; font-weight:900; font-size:13px;">GPL</div> 
-            <span style="font-size: 13px; font-weight: 800; color: white; text-transform: uppercase;">Gestão de Produção de Leituras - <span id="headerUserDisplay" style="color: var(--success);"></span></span>
+            <span style="font-size: 13px; font-weight: 800; color: white; text-transform: uppercase;">
+                <span class="desktop-header-title">Gestão de Produção de Leituras - <span id="headerUserDisplayDesk" style="color: var(--success);"></span></span>
+                <span class="mobile-header-title" id="headerUserDisplayMob" style="color: var(--success);"></span>
+            </span>
         </div>
         <div style="display: flex; gap: 8px; align-items: center;"> 
             <button class="header-btn" onclick="toggleMonthGrid()" id="currentMonthDisplay" style="background: var(--accent); border-color: var(--accent);">SETEMBRO</button> 
@@ -670,7 +678,8 @@
         currentUser = sessionStorage.getItem('gpl_user_2026'); 
         if(!currentUser) return; 
         document.getElementById('loginScreen').style.display = 'none'; 
-        document.getElementById('headerUserDisplay').innerText = currentUser;
+        document.getElementById('headerUserDisplayDesk').innerText = currentUser;
+        document.getElementById('headerUserDisplayMob').innerText = currentUser;
         document.getElementById('printUser').innerText = currentUser;
         db = JSON.parse(localStorage.getItem(`GPL_DATA_${currentUser}`)) || []; 
         
