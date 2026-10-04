@@ -6,7 +6,7 @@
     <title>Gestão de Produtividade de Leituras 2026</title> 
 
     <!-- FAVICON CORRIGIDO EM BASE64 SEGURO E COMPATÍVEL COM TODOS OS NAVEGADORES -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzMiAzMicgd2lkdGg9JzMyJyBoZWlnaHQ9JzMyJz48cmVjdCB3aWR0aD0nMzInIGhlaWdodD0nMzInIHJ4PSc2JyBmaWxsPScjMGIwZjE1Jy8+PHRleHQgeD0nNTAlJyB5PSc1NSUnIGRvbWluYW50LWJhc2VsaW5lPSdtaWRkbGUnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJyBmb250LXdlaWdodD0nOTAwJyBmb250LXNpemU9JzEwJyBmaWxsPScjMDBmZjg4JyBsZXR0ZXItc3BhY2luZz0nMC41Jz5HUEw8L3RleHQ+PC9zdmc+">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzMiAzMicgd2lkdGg9JzMyJyBoZWlnaHQ9JzMyJz48cmVjdCB3aWR0aD0nMzInIGhlaWdodD0nMzInJ4PSc2JyBmaWxsPScjMGIwZjE1Jy8+PHRleHQgeD0nNTAlJyB5PSc1NSUnIGRvbWluYW50LWJhc2VsaW5lPSdtaWRkbGUnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJyBmb250LXdlaWdodD0nOTAwJyBmb250LXNpemU9JzEwJyBmaWxsPScjMDBmZjg4JyBsZXR0ZXItc3BhY2luZz0nMC41Jz5HUEw8L3RleHQ+PC9zdmc+">
 
     <!-- VÍNCULO DO MANIFESTO PARA ATIVAR O MODO PWA (APLICATIVO INSTALÁVEL) -->
     <link rel="manifest" href="./manifest.json">
@@ -146,48 +146,51 @@
         
         .top-dashboard {
             display: grid;
-            grid-template-columns: 320px 1fr;
-            gap: 15px;
+            grid-template-columns: 280px 1fr; /* Largura reduzida da coluna de observações */
+            gap: 12px;
             flex-shrink: 0;
-            margin-top: 12px;
+            margin-top: 10px;
         }
 
-        /* CARD DE OBSERVAÇÕES DIMINUÍDO E MAIS COMPACTO */
+        /* CARD DE OBSERVAÇÕES EXPLICITAMENTE COMPACTO */
         .observations { 
             background: var(--surface); 
-            padding: 10px 14px; 
-            border-radius: 16px; 
-            border: 1.5px solid #ffffff; 
+            padding: 8px 12px !important; 
+            border-radius: 14px !important; 
+            border: 1px solid #ffffff !important; 
             display: flex; 
             flex-direction: column; 
-            justify-content: center; 
-            gap: 5px; 
-            height: 100%;
+            justify-content: space-around; 
+            gap: 3px !important; 
+            height: 65px !important; /* Altura fixa bem menor */
         } 
         .obs-item { 
-            font-size: 10px; 
+            font-size: 9.5px !important; 
             color: #ffffff; 
             display: flex; 
             align-items: center; 
-            gap: 8px; 
+            gap: 6px; 
             font-weight: 600; 
+            line-height: 1.1;
         } 
         .dot { 
-            height: 6px; 
-            width: 6px; 
+            height: 5px !important; 
+            width: 5px !important; 
             border-radius: 50%; 
             display: inline-block; 
+            flex-shrink: 0;
         } 
 
         .summary-grid { 
             display: grid; 
             grid-template-columns: repeat(7, 1fr); 
             gap: 12px; 
+            height: 65px !important; /* Altura padronizada com o card de observações */
         } 
         .summary-card { 
             background: var(--surface); 
-            padding: 10px; 
-            border-radius: 16px; 
+            padding: 6px; 
+            border-radius: 14px; 
             border: 1.5px solid var(--grey-border); 
             border-top: 5px solid; 
             display: flex; 
@@ -195,13 +198,14 @@
             justify-content: center; 
             text-align: center; 
             transition: 0.3s ease; 
+            height: 100%;
         } 
         .summary-card:hover { 
             transform: translateY(-3px); 
             filter: brightness(1.1); 
         } 
-        .summary-card p { font-size: 8px; font-weight: 800; text-transform: uppercase; margin: 0; } 
-        .summary-card h2 { margin: 6px 0 0; font-size: 1rem; color: var(--text-h); font-weight: 900; } 
+        .summary-card p { font-size: 7.5px; font-weight: 800; text-transform: uppercase; margin: 0; } 
+        .summary-card h2 { margin: 3px 0 0; font-size: 0.9rem; color: var(--text-h); font-weight: 900; } 
 
         .neon-leituras { border-top-color: var(--white-neon); box-shadow: 0 0 15px rgba(248, 249, 250, 0.2); } 
         .neon-impedimentos { border-top-color: var(--orange-neon); box-shadow: 0 0 15px rgba(255, 140, 0, 0.2); } 
@@ -382,9 +386,17 @@
                 display: flex !important;
                 flex-direction: column;
             }
+            .observations {
+                height: auto !important;
+                padding: 10px !important;
+            }
             .summary-grid {
                 grid-template-columns: repeat(2, 1fr) !important;
                 gap: 8px !important;
+                height: auto !important;
+            }
+            .summary-card {
+                height: 60px !important;
             }
             .content-wrap {
                 display: block !important;
@@ -799,7 +811,7 @@
                         alert("Backup restaurado com sucesso!");
                     }
                 } else {
-                    alert("O arquivo JSON selecionado não possui um formato válido.");
+                    alert("O arquivo JSON seleccionado não possui um formato válido.");
                 }
             } catch (err) {
                 alert("Erro ao ler o arquivo JSON. Certifique-se de que é um arquivo válido.");
