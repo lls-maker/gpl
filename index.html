@@ -182,9 +182,9 @@
 
         .mobile-nav-tabs, .mobile-search-area { display: none; }
 
-        /* ABA NL NO COMPUTADOR */
+        /* ABA NL NO COMPUTADOR (ISOLADA) */
         .desktop-nl-view {
-            display: none; flex-direction: column; height: 100%; min-height: 0; overflow: hidden; background: var(--surface); border-radius: 16px; border: 1.5px solid var(--purple); padding: 10px;
+            display: none; flex-direction: column; height: 100%; min-height: 0; overflow: hidden; background: var(--surface); border-radius: 16px; border: 1.5px solid var(--brown-border); padding: 10px;
         }
         .desktop-nl-view.active {
             display: flex !important;
@@ -360,24 +360,19 @@
         </div>
     </div>
 
-    <!-- CONTEÚDO PRINCIPAL -->
+    <!-- CONTEÚDO PRINCIPAL (BARRA DE PESQUISA RETIRADA DO CARD DE CADASTRO E ALOCADA NA ABA DE REGISTROS) -->
     <div class="content-wrap" id="mainContentWrap"> 
         <aside class="no-print mobile-tab-content" id="tabFormulario"> 
             <div class="sidebar"> 
-                <div>
-                    <label style="font-size: 10.5px; font-weight: 800; color: var(--success); text-transform: uppercase; margin-bottom: 4px; display: block;">Pesquisar razão</label> 
-                    <input type="text" id="searchRazao" placeholder="Filtrar registros..." oninput="sincronizarBusca(this.value)" style="border-color: var(--success); margin-bottom: 5px;"> 
-                    
-                    <div class="form-content-area">
-                        <form id="gplForm"> 
-                            <div class="form-group"><label>Data</label><input type="date" id="data" required></div> 
-                            <div class="form-group"><label>Localidade</label><input type="text" id="localidade" required></div> 
-                            <div class="form-group"><label>Razão</label><input type="text" id="razao" required></div> 
-                            <div class="form-group"><label>Rotas</label><input type="text" id="rotas" required></div> 
-                            <div class="form-group"><label>Leituras</label><input type="number" id="leituras" required></div> 
-                            <div class="form-group"><label>Imped.</label><input type="number" id="imped" required></div> 
-                        </form>
-                    </div>
+                <div class="form-content-area" style="padding-top: 5px;">
+                    <form id="gplForm"> 
+                        <div class="form-group"><label>Data</label><input type="date" id="data" required></div> 
+                        <div class="form-group"><label>Localidade</label><input type="text" id="localidade" required></div> 
+                        <div class="form-group"><label>Razão</label><input type="text" id="razao" required></div> 
+                        <div class="form-group"><label>Rotas</label><input type="text" id="rotas" required></div> 
+                        <div class="form-group"><label>Leituras</label><input type="number" id="leituras" required></div> 
+                        <div class="form-group"><label>Imped.</label><input type="number" id="imped" required></div> 
+                    </form>
                 </div>
                 <div class="actions-footer"> 
                     <button type="button" onclick="document.getElementById('gplForm').requestSubmit()" class="btn-add">Salvar Registro</button> 
@@ -393,8 +388,8 @@
         </aside> 
 
         <main class="mobile-tab-content" id="tabTabela"> 
-            <div class="mobile-search-area no-print">
-                <input type="text" id="searchRazaoMob" placeholder="Pesquisar razão nos registros..." oninput="sincronizarBusca(this.value)" style="border-color: var(--success);">
+            <div class="no-print" style="margin-bottom: 6px; flex-shrink: 0;">
+                <input type="text" id="searchRazao" placeholder="Pesquisar razão nos registros..." oninput="sincronizarBusca(this.value)" style="border-color: var(--success); margin-bottom: 0;">
             </div>
             <div class="main-view"> 
                 <div class="table-container"> 
@@ -408,7 +403,7 @@
             </div> 
         </main> 
 
-        <!-- ABA NL MOBILE (Borda Verde Padronizada) -->
+        <!-- ABA NL MOBILE -->
         <div class="mobile-tab-content" id="tabNL" style="flex-grow: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column;">
             <div style="margin-bottom: 6px; flex-shrink: 0;">
                 <input type="text" id="searchNLMob" placeholder="Pesquisar por número ou descrição da nota..." oninput="filtrarNL(this.value)" style="border-color: var(--success);">
@@ -426,7 +421,7 @@
         </div>
     </div> 
 
-    <!-- ABA NL COMPUTADOR (Borda Verde Padronizada) -->
+    <!-- ABA NL COMPUTADOR -->
     <div class="desktop-nl-view" id="desktopNLView">
         <div style="margin-bottom: 6px; flex-shrink: 0; display: flex; justify-content: space-between; align-items: center;">
             <input type="text" id="searchNLDesk" placeholder="Pesquisar por número ou descrição da nota..." oninput="filtrarNLDesk(this.value)" style="border-color: var(--success); margin-bottom: 0; width: calc(100% - 110px);">
@@ -613,7 +608,6 @@
 
     function sincronizarBusca(val) {
         document.getElementById('searchRazao').value = val;
-        document.getElementById('searchRazaoMob').value = val;
         atualizarTabela();
     }
 
