@@ -30,20 +30,18 @@
             --white-neon: #f8f9fa; 
         } 
         * { box-sizing: border-box; } 
-
-        html, body {
-            height: 100vh;
+        body { 
             font-family: 'Inter', system-ui, sans-serif; 
             background-color: var(--bg); 
             color: var(--text-p); 
             margin: 0; 
-            padding: 12px; 
+            padding: 15px; 
+            height: 100vh; 
+            overflow: hidden; 
             display: flex;
             justify-content: center;
             align-items: center;
-            overflow: hidden;
         } 
-
         input { 
             background: #000; 
             color: white; 
@@ -94,15 +92,8 @@
         } 
 
         .container { 
-            max-width: 1450px; 
-            width: 100%; 
-            height: 100%; 
-            max-height: 94vh; 
-            margin: auto; 
-            display: flex; 
-            flex-direction: column; 
-            gap: 10px; 
-            overflow: hidden; 
+            max-width: 1450px; width: 100%; height: 94vh; margin: auto; 
+            display: flex; flex-direction: column; gap: 12px; overflow: hidden; 
         } 
         header { 
             background: var(--surface); padding: 12px 25px; border-radius: 20px; 
@@ -112,24 +103,24 @@
         .prog-area { width: 100%; flex-shrink: 0; padding: 0 5px; } 
         
         .top-dashboard {
-            display: grid; grid-template-columns: 320px 1fr; gap: 12px; flex-shrink: 0; margin-top: 2px;
+            display: grid; grid-template-columns: 320px 1fr; gap: 12px; flex-shrink: 0; margin-top: 6px;
         }
         .observations { 
-            background: var(--surface); padding: 10px 18px; border-radius: 16px; 
+            background: var(--surface); padding: 12px 18px; border-radius: 16px; 
             border: 1.5px solid #ffffff; display: flex; flex-direction: column; 
-            justify-content: center; gap: 5px; height: 75px; 
+            justify-content: center; gap: 6px; height: 80px; 
         } 
         .obs-item { font-size: 10px; color: #ffffff; display: flex; align-items: center; gap: 8px; font-weight: 600; } 
         .dot { height: 6px; width: 6px; border-radius: 50%; display: inline-block; flex-shrink: 0; } 
 
-        .summary-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; height: 75px; } 
+        .summary-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; height: 80px; } 
         .summary-card { 
-            background: var(--surface); padding: 6px 4px; border-radius: 16px; 
+            background: var(--surface); padding: 8px 4px; border-radius: 16px; 
             border: 1.5px solid var(--grey-border); border-top: 5px solid; 
             display: flex; flex-direction: column; justify-content: center; text-align: center; height: 100%; 
         } 
         .summary-card p { font-size: 7.5px; font-weight: 800; text-transform: uppercase; margin: 0; } 
-        .summary-card h2 { margin: 3px 0 0; font-size: 0.9rem; color: var(--text-h); font-weight: 900; } 
+        .summary-card h2 { margin: 4px 0 0; font-size: 0.9rem; color: var(--text-h); font-weight: 900; } 
 
         .neon-leituras { border-top-color: var(--white-neon); } 
         .neon-impedimentos { border-top-color: var(--orange-neon); } 
@@ -140,43 +131,39 @@
         .neon-acumulado { border-top-color: var(--purple); } 
 
         .content-wrap { 
-            display: grid; grid-template-columns: 320px 1fr; gap: 15px; 
-            flex-grow: 1; min-height: 0; overflow: hidden; 
+            display: grid; grid-template-columns: 320px 1fr; gap: 15px; flex-grow: 1; overflow: hidden; 
         } 
-        aside, main { 
-            display: flex; flex-direction: column; height: 100%; 
-            min-height: 0; overflow: hidden; 
-        } 
-        
+        aside, main { display: flex; flex-direction: column; height: 100%; overflow: hidden; } 
         .sidebar { 
             background: linear-gradient(180deg, rgba(0, 112, 243, 0.08) 0%, var(--surface) 100%); 
-            padding: 16px 20px; border-radius: 20px; border: 1.5px solid var(--accent); 
-            height: 100%; display: flex; flex-direction: column; 
-            justify-content: space-between; overflow: hidden; 
+            padding: 14px 18px; border-radius: 20px; border: 1.5px solid var(--accent); 
+            height: 100%; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; 
         } 
-        .form-content-area { margin-top: 5px; }
-        .form-group { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+        .form-content-area { margin-top: 14px; }
+        .form-group { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
         .form-group label { width: 80px; flex-shrink: 0; font-size: 10px; font-weight: 800; color: var(--accent); text-transform: uppercase; }
         
-        .actions-footer { display: flex; flex-direction: column; gap: 5px; margin-top: 10px; flex-shrink: 0; } 
-        .btn-add { background: var(--accent); color: #fff; width: 100%; padding: 10px; border-radius: 12px; font-weight: 900; cursor: pointer; border: none; text-transform: uppercase; font-size: 11px; } 
-        .btn-clear { background: transparent; color: var(--danger); width: 100%; padding: 7px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--danger); text-transform: uppercase; font-size: 9px; } 
-        .btn-clear-year { background: transparent; color: var(--purple); width: 100%; padding: 7px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--purple); text-transform: uppercase; font-size: 9px; } 
+        .actions-footer { display: flex; flex-direction: column; gap: 6px; } 
+        .btn-add { background: var(--accent); color: #fff; width: 100%; padding: 11px; border-radius: 12px; font-weight: 900; cursor: pointer; border: none; text-transform: uppercase; font-size: 11px; } 
+        .btn-clear { background: transparent; color: var(--danger); width: 100%; padding: 8px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--danger); text-transform: uppercase; font-size: 9.5px; } 
+        .btn-clear-year { background: transparent; color: var(--purple); width: 100%; padding: 8px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--purple); text-transform: uppercase; font-size: 9.5px; } 
         .backup-row { display: flex; gap: 5px; width: 100%; }
-        .btn-backup { background: transparent; color: var(--success); width: 50%; padding: 7px 3px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--success); text-transform: uppercase; font-size: 9px; text-align: center; } 
-        .btn-import { background: transparent; color: var(--warning); width: 50%; padding: 7px 3px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--warning); text-transform: uppercase; font-size: 9px; text-align: center; } 
+        .btn-backup { background: transparent; color: var(--success); width: 50%; padding: 8px 3px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--success); text-transform: uppercase; font-size: 9.5px; text-align: center; } 
+        .btn-import { background: transparent; color: var(--warning); width: 50%; padding: 8px 3px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--warning); text-transform: uppercase; font-size: 9.5px; text-align: center; } 
 
-        .main-view { 
-            background: var(--surface); border-radius: 20px; border: 1.5px solid var(--brown-border); 
-            display: flex; flex-direction: column; flex-grow: 1; min-height: 0; overflow: hidden; 
-        } 
-        .table-container { flex-grow: 1; min-height: 0; overflow-y: auto; } 
+        .main-view { background: var(--surface); border-radius: 20px; border: 1.5px solid var(--brown-border); overflow: hidden; height: 100%; display: flex; flex-direction: column; } 
+        .table-container { flex-grow: 1; overflow-y: auto; } 
 
-        /* ABA NL DESATIVADA POR PADRÃO NO COMPUTADOR */
-        #tabNL { display: none !important; }
+        /* CORREÇÃO ESPECÍFICA PARA A ABA NL TER SCROLL FORÇADO */
+        #tabNL {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
 
         table { width: 100%; border-collapse: collapse; } 
-        th, td { padding: 8px 5px; text-align: center; border-bottom: 1px solid var(--border); font-size: 12px; } 
+        th, td { padding: 9px 5px; text-align: center; border-bottom: 1px solid var(--border); font-size: 12px; } 
         th { background: #0d1117; color: var(--accent); font-size: 10px; text-transform: uppercase; position: sticky; top: 0; z-index: 5; } 
 
         .month-grid { display: none; position: absolute; top: 70px; right: 180px; background: #0d1117; border: 1px solid var(--accent); padding: 15px; border-radius: 15px; grid-template-columns: repeat(3, 1fr); gap: 8px; z-index: 1000; } 
@@ -185,69 +172,54 @@
         
         .header-btn {
             background: #1e2633; border: 1px solid var(--border); color: white;
-            padding: 9px 14px; border-radius: 10px; cursor: pointer; font-weight: 800; font-size: 11px; text-transform: uppercase;
+            padding: 10px 15px; border-radius: 10px; cursor: pointer; font-weight: 800; font-size: 12px; text-transform: uppercase;
         }
         .desktop-header-info { display: inline; }
         .mobile-nav-tabs, .mobile-search-area { display: none; }
 
-        /* REGRAS EXCLUSIVAS PARA O CELULAR (MOBILE) */
         @media (max-width: 900px) {
-            html, body { padding: 6px; }
-            .container { height: 100%; max-height: none; gap: 8px; }
+            body { padding: 10px; overflow: hidden !important; }
+            .container { height: 96vh; }
             .desktop-header-info { display: none !important; }
-            .top-dashboard { display: flex !important; flex-direction: column; gap: 6px; }
-            .observations { height: auto !important; padding: 8px 10px !important; }
-            .summary-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 6px !important; height: auto !important; }
-            .summary-card { height: 55px !important; }
+            .top-dashboard { display: flex !important; flex-direction: column; gap: 8px; }
+            .observations { height: auto !important; padding: 10px 12px !important; }
+            .summary-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 8px !important; height: auto !important; }
+            .summary-card { height: 60px !important; }
             .content-wrap { display: block !important; }
             
             .mobile-nav-tabs {
                 display: flex; width: 100%; background: var(--surface); border: 1px solid var(--border);
-                border-radius: 14px; z-index: 999; justify-content: space-between; padding: 5px;
-                margin-bottom: 8px; gap: 4px; flex-shrink: 0;
+                border-radius: 14px; z-index: 999; justify-content: space-between; padding: 6px;
+                margin-bottom: 12px; gap: 4px; flex-shrink: 0;
             }
             .mob-tab-btn {
-                background: transparent; border: none; color: var(--text-p); font-size: 9px;
-                font-weight: 800; text-transform: uppercase; cursor: pointer; flex: 1; padding: 7px 2px;
+                background: transparent; border: none; color: var(--text-p); font-size: 9.5px;
+                font-weight: 800; text-transform: uppercase; cursor: pointer; flex: 1; padding: 8px 2px;
                 border-radius: 10px; text-align: center; transition: 0.3s;
             }
             .mob-tab-btn.active { background: var(--accent); color: #fff; }
 
             .mobile-tab-content { display: none !important; }
             .mobile-tab-content.active-tab {
-                display: flex !important; flex-direction: column; flex-grow: 1; min-height: 0; overflow: hidden;
+                display: flex !important; flex-direction: column; flex-grow: 1; overflow: hidden;
             }
-            
-            /* ATIVA A ABA NL APENAS NO MOBILE */
-            #tabNL.active-tab { display: flex !important; }
-
-            /* APENAS LIMITA O CARD DO FORMULÁRIO NA TELA DO MOBILE */
-            #tabFormulario .sidebar { 
-                height: 100% !important; 
-                max-height: 100% !important; 
-                overflow-y: auto !important; 
-            }
-            .mobile-search-area { display: block !important; margin-bottom: 6px; flex-shrink: 0; }
+            #tabFormulario .sidebar { height: 100% !important; justify-content: flex-start !important; gap: 15px; }
+            .mobile-search-area { display: block !important; margin-bottom: 8px; }
         }
 
-        /* REGRAS DE IMPRESSÃO OTIMIZADAS */
         @media print { 
-            html, body { height: auto !important; overflow: visible !important; background: #fff !important; color: #000 !important; position: static !important; }
-            .container { display: block !important; width: 100% !important; height: auto !important; max-height: none !important; }
-            
-            .no-print, .mobile-nav-tabs, .top-dashboard, .content-wrap > aside, #tabNL, #tabDashboard { display: none !important; } 
-            
+            body { height: auto !important; overflow: visible !important; background: #fff !important; color: #000 !important; }
+            .container { display: block !important; width: 100% !important; height: auto !important; }
             header { border: none; border-bottom: 2px solid #000; padding: 10px 0; background: #fff !important; }
-            header h1 { color: #000 !important; font-size: 12pt !important; display: block !important; }
-            .desktop-header-info { display: inline !important; }
-            
-            #tabTabela { display: flex !important; flex-direction: column !important; position: static !important; width: 100% !important; height: auto !important; }
-            
-            .main-view { border: 1px solid #000 !important; background: #fff !important; margin-top: 15px; height: auto !important; overflow: visible !important; }
+            header h1 { color: #000 !important; font-size: 12pt !important; }
+            .content-wrap { display: block !important; }
+            .main-view { border: 1px solid #000 !important; background: #fff !important; margin-top: 15px; }
             table { font-size: 8pt !important; width: 100% !important; }
-            td, th { border: 0.5px solid #000 !important; color: #000 !important; padding: 5px !important; background: #fff !important; }
+            td, th { border: 0.5px solid #000 !important; color: #000 !important; padding: 4px !important; background: #fff !important; }
             th { background: #e9ecef !important; color: #000 !important; }
             .table-container { max-height: none !important; overflow: visible !important; }
+            .no-print, .mobile-nav-tabs, .mobile-search-area, #tabNL { display: none !important; } 
+            #tabTabela { display: flex !important; flex-direction: column !important; }
         } 
     </style> 
 </head> 
@@ -291,7 +263,7 @@
         </div> 
     </div> 
 
-    <!-- BARRA DE NAVEGAÇÃO SUPERIOR (EXCLUSIVA PARA MOBILE) -->
+    <!-- BARRA DE NAVEGAÇÃO SUPERIOR (ABAS COM NL) -->
     <nav class="mobile-nav-tabs no-print">
         <button class="mob-tab-btn active" onclick="switchMobileTab('tabDashboard', this)">📊 Dashboard</button>
         <button class="mob-tab-btn" onclick="switchMobileTab('tabFormulario', this)">➕ Novo</button>
@@ -366,7 +338,7 @@
             </div> 
         </main>
 
-        <!-- ABA EXCLUSIVA DE NOTA DE LEITURAS (NL) APENAS PARA MOBILE -->
+        <!-- NOVA ABA: NOTA DE LEITURAS (NL) COM SCROLL FORÇADO -->
         <section class="mobile-tab-content" id="tabNL">
             <div style="margin-bottom: 6px; flex-shrink: 0;">
                 <input type="text" id="searchNL" placeholder="Pesquisar Nota (Ex: 1101, cães, sem leitura)..." oninput="renderizarNL()" style="border-color: var(--success); font-size: 13px; padding: 10px;">
@@ -399,6 +371,7 @@
     const msNomesCompletos = ["JANEIRO", "FEVEREIRO", "MARÇO", "ABRIL", "MAIO", "JUNHO", "JULHO", "AGOSTO", "SETEMBRO", "OUTUBRO", "NOVEMBRO", "DEZEMBRO"]; 
     const fM = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); 
 
+    // LISTA DE NOTAS DE LEITURA (NL)
     const notasDeLeitura = [
       { numero: '1101', status: 'Com leitura', detalhe: 'LEITURA DIFICULTADA POR CÃES/ANIMAIS' },
       { numero: '1102', status: 'Com leitura', detalhe: 'MEDIDOR OBSTRUÍDO COM POSSIBILIDADE DE LEITURA' },
