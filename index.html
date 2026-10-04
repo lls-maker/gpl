@@ -136,6 +136,26 @@
         .obs-item { font-size: 12px; color: #ffffff; display: flex; align-items: center; gap: 8px; font-weight: 700; } 
         .dot { height: 8px; width: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; } 
 
+        /* ALERTA DE SÁBADO NO DASHBOARD */
+        .alert-saturday-box {
+            background: rgba(255, 204, 0, 0.15);
+            border: 1.5px solid var(--warning);
+            padding: 10px 14px;
+            border-radius: 12px;
+            color: var(--warning);
+            font-size: 11.5px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            animation: pulseAlert 2s infinite;
+        }
+        @keyframes pulseAlert {
+            0% { opacity: 0.8; }
+            50% { opacity: 1; border-color: #fff; }
+            100% { opacity: 0.8; }
+        }
+
         .summary-grid { 
             display: grid; 
             grid-template-columns: repeat(2, 1fr); 
@@ -224,8 +244,8 @@
             gap: 4px; flex-shrink: 0;
         }
         .mob-tab-btn {
-            background: transparent; border: none; color: var(--text-p); font-size: 8.5px;
-            font-weight: 800; text-transform: uppercase; cursor: pointer; flex: 1; padding: 8px 2px;
+            background: transparent; border: none; color: var(--text-p); font-size: 8px;
+            font-weight: 800; text-transform: uppercase; cursor: pointer; flex: 1; padding: 8px 1px;
             border-radius: 8px; text-align: center; transition: 0.3s;
         }
         .mob-tab-btn.active { background: var(--accent); color: #fff; }
@@ -243,9 +263,7 @@
                 -webkit-print-color-adjust: exact !important; 
                 print-color-adjust: exact !important; 
             }
-            
             body::before { display: none !important; }
-            
             .container, header, .prog-area, .mobile-nav-tabs, .top-dashboard, .content-wrap, #loginScreen { display: none !important; } 
             
             #printAreaForced { 
@@ -329,11 +347,12 @@
         </div> 
     </div> 
 
-    <!-- BARRA DE NAVEGAÇÃO EM ABAS -->
+    <!-- BARRA DE NAVEGAÇÃO EM ABAS (INCLUINDO CALENDÁRIO) -->
     <nav class="mobile-nav-tabs no-print">
         <button class="mob-tab-btn active" id="btnTabDashboard" onclick="switchMobileTab('tabDashboard', this)">📊 Dash</button>
         <button class="mob-tab-btn" id="btnTabFormulario" onclick="switchMobileTab('tabFormulario', this)">➕ Novo</button>
         <button class="mob-tab-btn" id="btnTabTabela" onclick="switchMobileTab('tabTabela', this)">📋 Reg.</button>
+        <button class="mob-tab-btn" id="btnTabCal" onclick="switchMobileTab('tabCal', this)">📅 Cal</button>
         <button class="mob-tab-btn" id="btnTabNL" onclick="switchMobileTab('tabNL', this)">🔍 NL</button>
     </nav>
 
@@ -344,6 +363,10 @@
             <div class="obs-item"><span class="dot" style="background:var(--danger)"></span> Desconto: R$ 1,50 p/ impedimento</div> 
             <div class="obs-item"><span class="dot" style="background:var(--warning)"></span> Qualidade: Meta ≤ 0,50%</div> 
         </div> 
+
+        <!-- ALERTA DINÂMICO DE SÁBADO -->
+        <div id="saturdayAlertContainer" style="display:none;" class="no-print"></div>
+
         <div class="summary-grid"> 
             <div class="summary-card neon-leituras"><p>Leituras</p><h2 id="totL">0</h2></div> 
             <div class="summary-card neon-impedimentos"><p>Impedimentos</p><h2 id="totI">0</h2></div> 
@@ -398,6 +421,23 @@
             </div> 
         </main> 
 
+        <!-- ABA CALENDÁRIO / PRÓXIMA LEITURA -->
+        <div class="mobile-tab-content" id="tabCal" style="flex-direction: column;">
+            <div class="mobile-search-area">
+                <input type="text" id="searchCal" placeholder="Pesquisar razão..." oninput="filtrarCalendario(this.value)" style="border-color: var(--warning); margin-bottom: 4px;">
+            </div>
+            <div class="main-view">
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr><th>Razão</th><th>Data da Próxima Leitura</th></tr>
+                        </thead>
+                        <tbody id="calCorpo"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
         <!-- ABA NL -->
         <div class="mobile-tab-content" id="tabNL" style="flex-direction: column;">
             <div class="mobile-search-area">
@@ -430,9 +470,13 @@
 
 <script> 
     let db = []; 
+    let calendarioDb = {}; // Armazena as datas das 18 razões
     let currentUser = ""; 
     let dataAtualDoSistema = new Date();
     let viewDate = new Date(2026, dataAtualDoSistema.getMonth(), 1); 
+
+    // Lista padrão das 18 razões
+    const lista18Razoes = Array.from({length: 18}, (_, i) => `RAZÃO ${String(i + 1).padStart(2, '0')}`);
     
     const notasDeLeitura = [
       { numero: '1101', status: 'Com leitura', detalhe: 'LEITURA DIFICULTADA POR CÃES/ANIMAIS' },
@@ -545,7 +589,78 @@
 
     function sincronizarBusca(val) {
         document.getElementById('searchRazao').value = val;
+        document.getElementById('searchCal').value = val;
         atualizarTabela();
+        renderizarCalendario();
+    }
+
+    function sincronizarBuscaCal(val) {
+        document.getElementById('searchCal').value = val;
+        document.getElementById('searchRazao').value = val;
+        renderizarCalendario();
+        atualizarTabela();
+    }
+
+    function renderizarCalendario(filtro = '') {
+        const termo = filtro.toUpperCase();
+        const corpo = document.getElementById('calCorpo');
+        if(!corpo) return;
+
+        const html = lista18Razoes
+            .filter(razao => razao.includes(termo))
+            .map(razao => {
+                const dataSalva = calendarioDb[razao] || '';
+                return `
+                    <tr>
+                        <td style="font-weight: bold; color: var(--accent);">${razao}</td>
+                        <td>
+                            <input type="date" value="${dataSalva}" onchange="salvarDataCalendario('${razao}', this.value)" style="margin-bottom:0; font-size:11px;">
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+        corpo.innerHTML = html;
+    }
+
+    function filtrarCalendario(val) {
+        sincronizarBuscaCal(val);
+    }
+
+    function salvarDataCalendario(razao, data) {
+        calendarioDb[razao] = data;
+        localStorage.setItem(`GPL_CAL_${currentUser}`, JSON.stringify(calendarioDb));
+        verificarSabadosAlertas();
+    }
+
+    function verificarSabadosAlertas() {
+        const alertaContainer = document.getElementById('saturdayAlertContainer');
+        if(!alertaContainer) return;
+
+        let alertas = [];
+        for (const [razao, dataStr] of Object.entries(calendarioDb)) {
+            if (dataStr) {
+                // Cria o objeto data considerando o fuso local corretamente
+                const [ano, mes, dia] = dataStr.split('-');
+                const dataObj = new Date(ano, mes - 1, dia);
+                
+                // Dia 6 corresponde a Sábado (0 = Domingo, 6 = Sábado)
+                if (dataObj.getDay() === 6) {
+                    const dataFormatada = `${dia}/${mes}/${ano}`;
+                    alertas.push(`⚠️ Alerta: ${razao} está marcada para Sábado, dia ${dataFormatada}!`);
+                }
+            }
+        }
+
+        if (alertas.length > 0) {
+            alertaContainer.style.display = 'flex';
+            alertaContainer.innerHTML = `<div style="display:flex; flex-direction:column; gap:4px; width:100%;">` + 
+                alertas.map(a => `<div class="alert-saturday-box"><span>${a}</span></div>`).join('') + 
+                `</div>`;
+        } else {
+            alertaContainer.style.display = 'none';
+            alertaContainer.innerHTML = '';
+        }
     }
 
     function renderizarNL(lista = notasDeLeitura) {
@@ -605,7 +720,9 @@
         document.getElementById('loginScreen').style.display = 'none'; 
         document.getElementById('headerUserDisplay').innerText = currentUser;
         document.getElementById('printUser').innerText = currentUser;
+        
         db = JSON.parse(localStorage.getItem(`GPL_DATA_${currentUser}`)) || []; 
+        calendarioDb = JSON.parse(localStorage.getItem(`GPL_CAL_${currentUser}`)) || {};
         
         let nomeMes = msNomesCompletos[viewDate.getMonth()];
         document.getElementById('currentMonthDisplay').innerText = nomeMes; 
@@ -613,6 +730,8 @@
         
         renderMonths(); 
         renderizarNL();
+        renderizarCalendario();
+        verificarSabadosAlertas();
         atualizarTabela(); 
         
         const savedTab = sessionStorage.getItem('gpl_active_tab');
@@ -621,6 +740,7 @@
                 'tabDashboard': 'btnTabDashboard',
                 'tabFormulario': 'btnTabFormulario',
                 'tabTabela': 'btnTabTabela',
+                'tabCal': 'btnTabCal',
                 'tabNL': 'btnTabNL'
             };
             let btnEl = document.getElementById(btnMap[savedTab]);
@@ -775,7 +895,7 @@
         document.body.appendChild(dl); dl.click(); dl.remove();
     }
 
-    function dispararImportacao() { document.getElementById('importFile').click(); }
+    function dispararImportacao() { document.getElementById('importFile', style="display:none;").click(); }
 
     function importarBackup(event) {
         const file = event.target.files[0];
