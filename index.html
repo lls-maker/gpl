@@ -153,13 +153,13 @@
         .form-group { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
         .form-group label { width: 80px; flex-shrink: 0; font-size: 10.5px; font-weight: 800; color: var(--accent); text-transform: uppercase; }
         
-        .actions-footer { display: flex; flex-direction: column; gap: 5px; margin-top: 6px; flex-shrink: 0; } 
-        .btn-add { background: var(--accent); color: #fff; width: 100%; padding: 10px; border-radius: 10px; font-weight: 900; cursor: pointer; border: none; text-transform: uppercase; font-size: 11px; } 
-        .btn-clear { background: transparent; color: var(--danger); width: 100%; padding: 6px; border-radius: 10px; font-weight: 800; cursor: pointer; border: 1px solid var(--danger); text-transform: uppercase; font-size: 9px; } 
-        .btn-clear-year { background: transparent; color: var(--purple); width: 100%; padding: 6px; border-radius: 10px; font-weight: 800; cursor: pointer; border: 1px solid var(--purple); text-transform: uppercase; font-size: 9px; } 
-        .backup-row { display: flex; gap: 4px; width: 100%; }
-        .btn-backup { background: transparent; color: var(--success); width: 50%; padding: 6px 2px; border-radius: 10px; font-weight: 800; cursor: pointer; border: 1px solid var(--success); text-transform: uppercase; font-size: 9px; text-align: center; } 
-        .btn-import { background: transparent; color: var(--warning); width: 50%; padding: 6px 2px; border-radius: 10px; font-weight: 800; cursor: pointer; border: 1px solid var(--warning); text-transform: uppercase; font-size: 9px; text-align: center; } 
+        .actions-footer { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; flex-shrink: 0; } 
+        .btn-add { background: var(--accent); color: #fff; width: 100%; padding: 12px; border-radius: 12px; font-weight: 900; cursor: pointer; border: none; text-transform: uppercase; font-size: 11.5px; } 
+        .btn-clear { background: transparent; color: var(--danger); width: 100%; padding: 8px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--danger); text-transform: uppercase; font-size: 10px; } 
+        .btn-clear-year { background: transparent; color: var(--purple); width: 100%; padding: 8px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--purple); text-transform: uppercase; font-size: 10px; } 
+        .backup-row { display: flex; gap: 6px; width: 100%; }
+        .btn-backup { background: transparent; color: var(--success); width: 50%; padding: 8px 4px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--success); text-transform: uppercase; font-size: 10px; text-align: center; } 
+        .btn-import { background: transparent; color: var(--warning); width: 50%; padding: 8px 4px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--warning); text-transform: uppercase; font-size: 10px; text-align: center; } 
 
         .main-view { 
             background: var(--surface); border-radius: 16px; border: 1.5px solid var(--brown-border); 
@@ -182,7 +182,7 @@
 
         .mobile-nav-tabs, .mobile-search-area { display: none; }
 
-        /* ABA NL NO COMPUTADOR (COMPORTAMENTO PADRÃO DE ABA) */
+        /* ABA NL NO COMPUTADOR */
         .desktop-nl-view {
             display: none; flex-direction: column; height: 100%; min-height: 0; overflow: hidden; background: var(--surface); border-radius: 16px; border: 1.5px solid var(--purple); padding: 10px;
         }
@@ -206,9 +206,9 @@
             .obs-item { font-size: 10px !important; gap: 6px !important; }
             
             .summary-grid { grid-template-columns: repeat(4, 1fr) !important; gap: 6px !important; height: auto !important; }
-            .summary-card { height: 60px !important; padding: 5px !important; border-radius: 14px !important; }
-            .summary-card p { font-size: 8.5px !important; }
-            .summary-card h2 { font-size: 0.9rem !important; }
+            .summary-card { height: 68px !important; padding: 6px !important; border-radius: 14px !important; }
+            .summary-card p { font-size: 9px !important; }
+            .summary-card h2 { font-size: 0.95rem !important; }
             
             .mobile-nav-tabs {
                 display: flex; width: 100%; background: var(--surface); border: 1px solid var(--border);
@@ -250,7 +250,7 @@
             .desktop-nl-view { display: none !important; }
         }
 
-        /* IMPRESSÃO 100% ISOLADA: EXIBE APENAS A TABELA DE REGISTROS */
+        /* IMPRESSÃO ISOLADA */
         @media print { 
             html, body { height: auto !important; overflow: visible !important; background: #fff !important; color: #000 !important; position: static !important; display: block !important; }
             
@@ -309,12 +309,16 @@
 </div> 
 
 <div class="container"> 
-    <!-- CABEÇALHO LIMPO (COMPUTADOR: ÍCONE, MÊS, IMPRIMIR, SAIR) -->
+    <!-- CABEÇALHO -->
     <header> 
-        <div style="background:var(--success); color:black; padding:8px 14px; border-radius:10px; font-weight:900; font-size:13px;">GPL</div> 
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="background:var(--success); color:black; padding:8px 14px; border-radius:10px; font-weight:900; font-size:13px;">GPL</div> 
+            <span style="font-size: 13px; font-weight: 800; color: white; text-transform: uppercase;">Gestão de Produção de Leituras - <span id="headerUserDisplay" style="color: var(--success);"></span></span>
+        </div>
         <div style="display: flex; gap: 8px; align-items: center;"> 
             <button class="header-btn" onclick="toggleMonthGrid()" id="currentMonthDisplay" style="background: var(--accent); border-color: var(--accent);">SETEMBRO</button> 
             <div id="monthGrid" class="month-grid"></div> 
+            <button class="header-btn" onclick="toggleDesktopNL()" style="background: var(--purple); border-color: var(--purple);">NL</button>
             <button class="header-btn" onclick="window.print()">IMPRIMIR</button> 
             <button class="header-btn" onclick="logout()" style="background:var(--danger); border-color:var(--danger);">SAIR</button> 
         </div> 
@@ -330,7 +334,7 @@
         </div> 
     </div> 
 
-    <!-- BARRA DE NAVEGAÇÃO NO TOPO (MOBILE COM ABA NL) -->
+    <!-- BARRA DE NAVEGAÇÃO NO TOPO (MOBILE) -->
     <nav class="mobile-nav-tabs no-print">
         <button class="mob-tab-btn active" id="btnTabDashboard" onclick="switchMobileTab('tabDashboard', this)">📊 Dash</button>
         <button class="mob-tab-btn" id="btnTabFormulario" onclick="switchMobileTab('tabFormulario', this)">➕ Novo</button>
@@ -404,10 +408,10 @@
             </div> 
         </main> 
 
-        <!-- ABA NL MOBILE -->
+        <!-- ABA NL MOBILE (Borda Verde Padronizada) -->
         <div class="mobile-tab-content" id="tabNL" style="flex-grow: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column;">
             <div style="margin-bottom: 6px; flex-shrink: 0;">
-                <input type="text" id="searchNLMob" placeholder="Pesquisar por número ou descrição da nota..." oninput="filtrarNL(this.value)" style="border-color: var(--purple);">
+                <input type="text" id="searchNLMob" placeholder="Pesquisar por número ou descrição da nota..." oninput="filtrarNL(this.value)" style="border-color: var(--success);">
             </div>
             <div class="main-view">
                 <div class="table-container">
@@ -422,10 +426,10 @@
         </div>
     </div> 
 
-    <!-- ABA NL PARA COMPUTADOR (SUBSTITUI A TABELA QUANDO CLICADA) -->
+    <!-- ABA NL COMPUTADOR (Borda Verde Padronizada) -->
     <div class="desktop-nl-view" id="desktopNLView">
         <div style="margin-bottom: 6px; flex-shrink: 0; display: flex; justify-content: space-between; align-items: center;">
-            <input type="text" id="searchNLDesk" placeholder="Pesquisar por número ou descrição da nota..." oninput="filtrarNLDesk(this.value)" style="border-color: var(--purple); margin-bottom: 0; width: calc(100% - 110px);">
+            <input type="text" id="searchNLDesk" placeholder="Pesquisar por número ou descrição da nota..." oninput="filtrarNLDesk(this.value)" style="border-color: var(--success); margin-bottom: 0; width: calc(100% - 110px);">
             <button class="header-btn" onclick="fecharDesktopNL()" style="background: var(--danger); border-color: var(--danger);">VOLTAR</button>
         </div>
         <div class="table-container">
@@ -439,7 +443,7 @@
     </div>
 </div> 
 
-<!-- ÁREA EXCLUSIVA PARA IMPRESSÃO -->
+<!-- IMPRESSÃO -->
 <div id="printAreaForced" style="display:none;">
     <div class="print-header">Gestão de Produção de Leituras - <span id="printUser"></span> (<span id="printMonth"></span>/2026)</div>
     <table> 
@@ -555,13 +559,6 @@
     const fM = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); 
 
     function switchMobileTab(tabId, btnElement) {
-        if (window.innerWidth > 900 && tabId === 'tabNL') {
-            document.getElementById('mainContentWrap').style.display = 'none';
-            document.getElementById('desktopNLView').classList.add('active');
-            sessionStorage.setItem('gpl_desk_nl_open', 'true');
-            return;
-        }
-
         document.querySelectorAll('.mobile-tab-content').forEach(el => el.classList.remove('active-tab'));
         const target = document.getElementById(tabId);
         if(target) target.classList.add('active-tab');
@@ -572,6 +569,20 @@
         sessionStorage.setItem('gpl_active_tab', tabId);
     }
 
+    function toggleDesktopNL() {
+        const view = document.getElementById('desktopNLView');
+        const main = document.getElementById('mainContentWrap');
+        if (view.classList.contains('active')) {
+            view.classList.remove('active');
+            main.style.display = 'grid';
+            sessionStorage.removeItem('gpl_desk_nl_open');
+        } else {
+            view.classList.add('active');
+            main.style.display = 'none';
+            sessionStorage.setItem('gpl_desk_nl_open', 'true');
+        }
+    }
+
     function fecharDesktopNL() {
         document.getElementById('desktopNLView').classList.remove('active');
         document.getElementById('mainContentWrap').style.display = 'grid';
@@ -580,8 +591,7 @@
 
     function restaurarAbaSalva() {
         if (window.innerWidth > 900) {
-            const isDeskNLOpen = sessionStorage.getItem('gpl_desk_nl_open');
-            if (isDeskNLOpen === 'true') {
+            if (sessionStorage.getItem('gpl_desk_nl_open') === 'true') {
                 document.getElementById('mainContentWrap').style.display = 'none';
                 document.getElementById('desktopNLView').classList.add('active');
             }
@@ -656,6 +666,7 @@
         currentUser = sessionStorage.getItem('gpl_user_2026'); 
         if(!currentUser) return; 
         document.getElementById('loginScreen').style.display = 'none'; 
+        document.getElementById('headerUserDisplay').innerText = currentUser;
         document.getElementById('printUser').innerText = currentUser;
         db = JSON.parse(localStorage.getItem(`GPL_DATA_${currentUser}`)) || []; 
         
