@@ -154,6 +154,14 @@
         .main-view { background: var(--surface); border-radius: 20px; border: 1.5px solid var(--brown-border); overflow: hidden; height: 100%; display: flex; flex-direction: column; } 
         .table-container { flex-grow: 1; overflow-y: auto; } 
 
+        /* CORREÇÃO ESPECÍFICA PARA A ABA NL TER SCROLL FORÇADO */
+        #tabNL {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
         table { width: 100%; border-collapse: collapse; } 
         th, td { padding: 9px 5px; text-align: center; border-bottom: 1px solid var(--border); font-size: 12px; } 
         th { background: #0d1117; color: var(--accent); font-size: 10px; text-transform: uppercase; position: sticky; top: 0; z-index: 5; } 
@@ -330,7 +338,7 @@
             </div> 
         </main>
 
-        <!-- NOVA ABA: NOTA DE LEITURAS (NL) COM SCROLL -->
+        <!-- NOVA ABA: NOTA DE LEITURAS (NL) COM SCROLL FORÇADO -->
         <section class="mobile-tab-content" id="tabNL">
             <div style="margin-bottom: 6px; flex-shrink: 0;">
                 <input type="text" id="searchNL" placeholder="Pesquisar Nota (Ex: 1101, cães, sem leitura)..." oninput="renderizarNL()" style="border-color: var(--success); font-size: 13px; padding: 10px;">
@@ -649,7 +657,7 @@
 
     function exportarBackup() {
         if (!db || db.length === 0) {
-            alert("Not há dados cadastrados para exportar.");
+            alert("Não há dados cadastrados para exportar.");
             return;
         }
         const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db, null, 2));
