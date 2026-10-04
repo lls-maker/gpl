@@ -172,6 +172,9 @@
         } 
         .table-container { flex-grow: 1; min-height: 0; overflow-y: auto; } 
 
+        /* ABA NL DESATIVADA POR PADRÃO NO COMPUTADOR */
+        #tabNL { display: none !important; }
+
         table { width: 100%; border-collapse: collapse; } 
         th, td { padding: 8px 5px; text-align: center; border-bottom: 1px solid var(--border); font-size: 12px; } 
         th { background: #0d1117; color: var(--accent); font-size: 10px; text-transform: uppercase; position: sticky; top: 0; z-index: 5; } 
@@ -187,7 +190,7 @@
         .desktop-header-info { display: inline; }
         .mobile-nav-tabs, .mobile-search-area { display: none; }
 
-        /* REGRAS EXCLUSIVAS PARA O CELULAR (MOBILE) COM TRAVA DE ALTURA E SCROLL INTERNO NO CARD */
+        /* REGRAS EXCLUSIVAS PARA O CELULAR (MOBILE) */
         @media (max-width: 900px) {
             html, body { padding: 6px; }
             .container { height: 100%; max-height: none; gap: 8px; }
@@ -215,13 +218,14 @@
                 display: flex !important; flex-direction: column; flex-grow: 1; min-height: 0; overflow: hidden;
             }
             
-            /* TRAVA O CARD NA TELA E PERMITE SCROLL INTERNO QUANDO O TECLADO SUBIR */
+            /* ATIVA A ABA NL APENAS NO MOBILE */
+            #tabNL.active-tab { display: flex !important; }
+
+            /* APENAS LIMITA O CARD DO FORMULÁRIO NA TELA DO MOBILE */
             #tabFormulario .sidebar { 
                 height: 100% !important; 
-                max-height: 100% !important;
+                max-height: 100% !important; 
                 overflow-y: auto !important; 
-                justify-content: flex-start !important; 
-                gap: 12px; 
             }
             .mobile-search-area { display: block !important; margin-bottom: 6px; flex-shrink: 0; }
         }
