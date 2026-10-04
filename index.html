@@ -21,7 +21,650 @@
             --danger: #ff4d4d; 
             --warning: #ffcc00; 
             --border: #1e2633; 
+            --text-p: #8899a6; <!DOCTYPE html> 
+<html lang="pt-br"> 
+<head> 
+    <meta charset="UTF-8"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <title>Gestão de Produtividade de Leituras 2026</title> 
+
+    <!-- FAVICON CORRIGIDO EM BASE64 SEGURO E COMPATÍVEL COM TODOS OS NAVEGADORES -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzMiAzMicgd2lkdGg9JzMyJyBoZWlnaHQ9JzMyJz48cmVjdCB3aWR0aD0nMzInIGhlaWdodD0nMzInIHJ4PSc2JyBmaWxsPScjMGIwZjE1Jy8+PHRleHQgeD0nNTAlJyB5PSc1NSUnIGRvbWluYW50LWJhc2VsaW5lPSdtaWRkbGUnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJyBmb250LXdlaWdodD0nOTAwJyBmb250LXNpemU9JzEwJyBmaWxsPScjMDBmZjg4JyBsZXR0ZXItc3BhY2luZz0nMC41Jz5HUEw8L3RleHQ+PC9zdmc+">
+
+    <!-- VÍNCULO DO MANIFESTO PARA ATIVAR O MODO PWA -->
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#030508">
+
+    <style> 
+        :root { 
+            --bg: #030508; 
+            --surface: #0b0f15; 
+            --accent: #0070f3; 
+            --success: #00ff88; 
+            --danger: #ff4d4d; 
+            --warning: #ffcc00; 
+            --border: #1e2633; 
             --text-p: #8899a6; 
+            --text-h: #ffffff; 
+            --grey-border: #333c4d; 
+            --brown-border: #5d4037; 
+            --purple: #9c27b0; 
+            --orange-neon: #ff8c00; 
+            --white-neon: #f8f9fa; 
+        } 
+        * { box-sizing: border-box; } 
+
+        /* COMPUTADOR: PERMITE FLUXO NATURAL PARA OS LADOS E EVITA ESMAGAMENTO VERTICAL */
+        html, body {
+            min-height: 100vh;
+            font-family: 'Inter', system-ui, sans-serif; 
+            background-color: var(--bg); 
+            color: var(--text-p); 
+            margin: 0; 
+            padding: 15px; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        } 
+
+        input { 
+            background: #000; 
+            color: white; 
+            border: 1px solid var(--border); 
+            padding: 9px 12px; 
+            border-radius: 9px; 
+            outline: none; 
+            width: 100%; 
+            font-size: 12px; 
+            margin-bottom: 6px; 
+            transition: 0.3s; 
+        } 
+        input:focus { 
+            border-color: var(--accent) !important; 
+            box-shadow: 0 0 15px rgba(0, 112, 243, 0.4); 
+        } 
+        input[type="date"]::-webkit-calendar-picker-indicator { 
+            filter: invert(1); 
+            cursor: pointer; 
+            opacity: 1; 
+            display: block; 
+        } 
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { 
+            -webkit-appearance: none; 
+            margin: 0; 
+        } 
+        input[type=number] { -moz-appearance: textfield; } 
+
+        #loginScreen { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: radial-gradient(circle at center, #0b0f15 0%, #030508 100%); 
+            z-index: 9999; display: flex; align-items: center; justify-content: center; 
+        } 
+        .login-box { 
+            background: rgba(11, 15, 21, 0.8); padding: 40px; border-radius: 24px; 
+            border: 1px solid var(--border); border-top: 4px solid var(--success); 
+            width: 380px; text-align: center; backdrop-filter: blur(10px); 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5); 
+        } 
+        .auth-btn { 
+            background: var(--success); color: black; width: 100%; padding: 14px; 
+            border-radius: 12px; font-weight: 900; cursor: pointer; border: none; 
+            text-transform: uppercase; margin-top: 10px; transition: 0.3s; 
+        } 
+        .auth-link { 
+            color: var(--accent); font-size: 11px; cursor: pointer; 
+            font-weight: 700; margin-top: 15px; display: inline-block; text-transform: uppercase; 
+        } 
+
+        /* COMPUTADOR COM LARGURA AMPLIADA HORIZONTALMENTE E CONFORTÁVEL */
+        .container { 
+            max-width: 1750px; 
+            width: 100%; 
+            margin: auto; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 15px; 
+        } 
+        header { 
+            background: var(--surface); padding: 14px 25px; border-radius: 20px; 
+            border: 1px solid var(--border); display: flex; justify-content: space-between; 
+            align-items: center; flex-shrink: 0; position: relative; 
+        } 
+        .prog-area { width: 100%; flex-shrink: 0; padding: 0 5px; } 
+        
+        .top-dashboard {
+            display: grid; grid-template-columns: 340px 1fr; gap: 15px; flex-shrink: 0;
+        }
+        .observations { 
+            background: var(--surface); padding: 12px 20px; border-radius: 18px; 
+            border: 1.5px solid #ffffff; display: flex; flex-direction: column; 
+            justify-content: center; gap: 6px; height: 85px; 
+        } 
+        .obs-item { font-size: 11px; color: #ffffff; display: flex; align-items: center; gap: 10px; font-weight: 600; } 
+        .dot { height: 7px; width: 7px; border-radius: 50%; display: inline-block; flex-shrink: 0; } 
+
+        .summary-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 12px; height: 85px; } 
+        .summary-card { 
+            background: var(--surface); padding: 8px 6px; border-radius: 18px; 
+            border: 1.5px solid var(--grey-border); border-top: 5px solid; 
+            display: flex; flex-direction: column; justify-content: center; text-align: center; height: 100%; 
+            transition: 0.3s;
+        } 
+        .summary-card:hover { transform: translateY(-3px); filter: brightness(1.1); }
+        .summary-card p { font-size: 8px; font-weight: 800; text-transform: uppercase; margin: 0; } 
+        .summary-card h2 { margin: 4px 0 0; font-size: 1rem; color: var(--text-h); font-weight: 900; } 
+
+        .neon-leituras { border-top-color: var(--white-neon); } 
+        .neon-impedimentos { border-top-color: var(--orange-neon); } 
+        .neon-meta { border-top-color: var(--warning); } 
+        .neon-bonus { border-top-color: var(--accent); } 
+        .neon-descontos { border-top-color: var(--danger); } 
+        .neon-receber { border-top-color: var(--success); } 
+        .neon-acumulado { border-top-color: var(--purple); } 
+
+        .content-wrap { 
+            display: grid; grid-template-columns: 340px 1fr; gap: 15px; 
+            align-items: stretch;
+        } 
+        aside, main { 
+            display: flex; flex-direction: column; height: 100%; 
+        } 
+        
+        .sidebar { 
+            background: linear-gradient(180deg, rgba(0, 112, 243, 0.08) 0%, var(--surface) 100%); 
+            padding: 18px 22px; border-radius: 20px; border: 1.5px solid var(--accent); 
+            height: 100%; display: flex; flex-direction: column; 
+            justify-content: space-between; 
+        } 
+        .form-content-area { margin-top: 6px; }
+        .form-group { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+        .form-group label { width: 85px; flex-shrink: 0; font-size: 11px; font-weight: 800; color: var(--accent); text-transform: uppercase; }
+        
+        .actions-footer { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; flex-shrink: 0; } 
+        .btn-add { background: var(--accent); color: #fff; width: 100%; padding: 12px; border-radius: 12px; font-weight: 900; cursor: pointer; border: none; text-transform: uppercase; font-size: 11.5px; } 
+        .btn-clear { background: transparent; color: var(--danger); width: 100%; padding: 8px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--danger); text-transform: uppercase; font-size: 9.5px; } 
+        .btn-clear-year { background: transparent; color: var(--purple); width: 100%; padding: 8px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--purple); text-transform: uppercase; font-size: 9.5px; } 
+        .backup-row { display: flex; gap: 6px; width: 100%; }
+        .btn-backup { background: transparent; color: var(--success); width: 50%; padding: 8px 4px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--success); text-transform: uppercase; font-size: 9.5px; text-align: center; } 
+        .btn-import { background: transparent; color: var(--warning); width: 50%; padding: 8px 4px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--warning); text-transform: uppercase; font-size: 9.5px; text-align: center; } 
+
+        .main-view { 
+            background: var(--surface); border-radius: 20px; border: 1.5px solid var(--brown-border); 
+            display: flex; flex-direction: column; height: 100%; min-height: 520px; overflow: hidden; 
+        } 
+        .table-container { flex-grow: 1; overflow-y: auto; } 
+
+        table { width: 100%; border-collapse: collapse; } 
+        th, td { padding: 10px 8px; text-align: center; border-bottom: 1px solid var(--border); font-size: 12.5px; } 
+        th { background: #0d1117; color: var(--accent); font-size: 10.5px; text-transform: uppercase; position: sticky; top: 0; z-index: 5; } 
+
+        .month-grid { display: none; position: absolute; top: 70px; right: 25px; background: #0d1117; border: 1px solid var(--accent); padding: 15px; border-radius: 15px; grid-template-columns: repeat(3, 1fr); gap: 8px; z-index: 1000; } 
+        .month-grid.active { display: grid; } 
+        .month-item { background: #000; color: white; border: 1px solid var(--border); padding: 10px; border-radius: 8px; cursor: pointer; font-size: 11px; font-weight: bold; }
+        
+        .header-btn {
+            background: #1e2633; border: 1px solid var(--border); color: white;
+            padding: 9px 14px; border-radius: 10px; cursor: pointer; font-weight: 800; font-size: 11.5px; text-transform: uppercase;
+        }
+
+        .mobile-nav-tabs, .mobile-search-area { display: none; }
+        .desktop-header-title { display: inline; }
+        .mobile-header-title { display: none; }
+
+        /* REGRAS EXCLUSIVAS PARA O MOBILE (TRAVADO NA TELA, ABAS NO TOPO, SEM VAZAR) */
+        @media (max-width: 900px) {
+            html, body { 
+                padding: 6px; height: 100vh; overflow: hidden; display: flex; align-items: flex-start; 
+            }
+            .container { 
+                height: 100vh; max-height: 100vh; gap: 6px; 
+                display: flex; flex-direction: column; overflow: hidden; max-width: none;
+            }
+            .desktop-header-title { display: none !important; }
+            .mobile-header-title { display: inline !important; }
+            
+            header { padding: 8px 12px; }
+            
+            .top-dashboard { display: flex !important; flex-direction: column; gap: 4px; }
+            .observations { display: flex !important; height: auto !important; padding: 6px 10px !important; }
+            .obs-item { font-size: 9px !important; gap: 6px !important; }
+            .summary-grid { grid-template-columns: repeat(4, 1fr) !important; gap: 5px !important; height: auto !important; }
+            .summary-card { height: 48px !important; padding: 3px !important; }
+            .summary-card h2 { font-size: 0.75rem !important; }
+            
+            /* BARRA DE ABAS NO TOPO (LOGO ABAIXO DA BARRA DE METAS NO MOBILE) */
+            .mobile-nav-tabs {
+                display: flex; width: 100%; background: var(--surface); border: 1px solid var(--border);
+                border-radius: 12px; z-index: 9; justify-content: space-between; padding: 4px;
+                gap: 4px; flex-shrink: 0;
+            }
+            .mob-tab-btn {
+                background: transparent; border: none; color: var(--text-p); font-size: 9px;
+                font-weight: 800; text-transform: uppercase; cursor: pointer; flex: 1; padding: 8px 4px;
+                border-radius: 9px; text-align: center; transition: 0.3s;
+            }
+            .mob-tab-btn.active { background: var(--accent); color: #fff; }
+
+            .content-wrap { display: block !important; flex-grow: 1; min-height: 0; overflow: hidden; }
+            
+            .mobile-tab-content { display: none !important; height: 100%; }
+            .mobile-tab-content.active-tab {
+                display: flex !important; flex-direction: column; flex-grow: 1; min-height: 0; overflow: hidden;
+            }
+
+            aside.mobile-tab-content .sidebar { 
+                height: 100% !important; 
+                max-height: 100% !important; 
+                overflow-y: auto !important; 
+                padding: 10px !important;
+            }
+            .mobile-search-area { display: block !important; margin-bottom: 5px; flex-shrink: 0; }
+            .table-container { flex-grow: 1 !important; min-height: 0 !important; overflow-y: auto !important; }
+            .main-view { min-height: 0 !important; height: 100% !important; }
+        }
+
+        /* REGRAS DE IMPRESSÃO UNIVERSAL: EXibe SEMPRE O CABEÇALHO COMPLETO COM USUÁRIO E APENAS A TABELA */
+        @media print { 
+            html, body { height: auto !important; overflow: visible !important; background: #fff !important; color: #000 !important; position: static !important; display: block !important; }
+            .container { display: block !important; width: 100% !important; height: auto !important; max-height: none !important; }
+            
+            .desktop-header-title { display: inline !important; }
+            .mobile-header-title { display: none !important; }
+            .no-print, .mobile-nav-tabs, .top-dashboard, .content-wrap > aside { display: none !important; } 
+            
+            header { border: none; border-bottom: 2px solid #000; padding: 10px 0; background: #fff !important; margin-bottom: 10px; }
+            header h1 { color: #000 !important; font-size: 13pt !important; display: block !important; }
+            
+            #tabTabela { display: flex !important; flex-direction: column !important; position: static !important; width: 100% !important; height: auto !important; }
+            
+            .main-view { border: 1px solid #000 !important; background: #fff !important; margin-top: 5px; height: auto !important; overflow: visible !important; min-height: 0 !important; }
+            table { font-size: 8.5pt !important; width: 100% !important; }
+            td, th { border: 0.5px solid #000 !important; color: #000 !important; padding: 5px !important; background: #fff !important; }
+            th { background: #e9ecef !important; color: #000 !important; }
+            .table-container { max-height: none !important; overflow: visible !important; }
+        } 
+    </style> 
+</head> 
+<body>
+<div id="loginScreen"> 
+    <div class="login-box"> 
+        <div style="background:var(--success); color:black; padding:10px; border-radius:12px; font-weight:900; margin-bottom:20px;">GPL 2026</div> 
+        <h2 id="authTitle" style="color:white; font-size:18px; margin-bottom:20px;">Acessar Conta</h2> 
+        <input type="text" id="userInput" placeholder="Usuário"> 
+        <input type="password" id="passInput" placeholder="Senha"> 
+        <input type="text" id="recoveryInput" placeholder="Dica de segurança" style="display:none;"> 
+        <button onclick="handleAuth()" id="authBtn" class="auth-btn">ENTRAR</button> 
+        <div style="display:flex; justify-content: space-between; gap: 10px;"> 
+            <span class="auth-link" id="authSwitch" onclick="toggleAuthMode()">Criar Conta</span> 
+            <span class="auth-link" style="color:var(--warning)" onclick="recoverPass()">Recuperar</span> 
+        </div> 
+    </div> 
+</div> 
+
+<div class="container"> 
+    <header> 
+        <div style="display: flex; align-items: center; gap: 12px;"> 
+            <div style="background:var(--success); color:black; padding:8px 14px; border-radius:10px; font-weight:900;">GPL</div> 
+            <h1 style="font-size: 16px; color: white; margin: 0;">
+                <span class="desktop-header-title">Gestão de Produção de Leituras - <span id="userDisplay" style="color:var(--success)"></span></span>
+                <span class="mobile-header-title">GPL 2026</span>
+            </h1> 
+        </div> 
+        <div style="display: flex; gap: 8px; align-items: center;"> 
+            <button class="header-btn" onclick="toggleMonthGrid()" id="currentMonthDisplay" style="background: var(--accent); border-color: var(--accent);">SETEMBRO</button> 
+            <div id="monthGrid" class="month-grid"></div> 
+            <button class="header-btn" onclick="window.print()">IMPRIMIR</button> 
+            <button class="header-btn" onclick="logout()" style="background:var(--danger); border-color:var(--danger);">SAIR</button> 
+        </div> 
+    </header> 
+
+    <div id="progArea" class="prog-area"> 
+        <div style="width:100%; background:#1e2633; height:8px; border-radius:10px; overflow:hidden; border:1px solid var(--border); margin-bottom:3px;"> 
+            <div id="barFill" style="height:100%; width:0%; background:linear-gradient(90deg, var(--accent), var(--success)); transition:0.8s;"></div> 
+        </div> 
+        <div style="display:flex; justify-content:space-between; font-size:10px; font-weight:bold; color:var(--text-p); text-transform: uppercase;"> 
+            <span id="barTxt">Progresso Meta: 0 / 8.000</span> 
+            <span id="barPerc" style="color:var(--success)">0%</span> 
+        </div> 
+    </div> 
+
+    <!-- BARRA DE NAVEGAÇÃO NO TOPO (LOGO ABAIXO DA BARRA DE METAS NO MOBILE) -->
+    <nav class="mobile-nav-tabs no-print">
+        <button class="mob-tab-btn active" id="btnTabDashboard" onclick="switchMobileTab('tabDashboard', this)">📊 Dashboard</button>
+        <button class="mob-tab-btn" id="btnTabFormulario" onclick="switchMobileTab('tabFormulario', this)">➕ Novo Registro</button>
+        <button class="mob-tab-btn" id="btnTabTabela" onclick="switchMobileTab('tabTabela', this)">📋 Registros</button>
+    </nav>
+
+    <!-- DASHBOARD -->
+    <div class="top-dashboard mobile-tab-content active-tab" id="tabDashboard">
+        <div class="observations no-print"> 
+            <div class="obs-item"><span class="dot" style="background:var(--success)"></span> Bônus de R$ 0,20 por cada leitura excedente a 8000 leituras</div> 
+            <div class="obs-item"><span class="dot" style="background:var(--danger)"></span> Desconto: R$ 1,50 p/ impedimento</div> 
+            <div class="obs-item"><span class="dot" style="background:var(--warning)"></span> Qualidade: Meta ≤ 0,50%</div> 
+        </div> 
+        <div class="summary-grid"> 
+            <div class="summary-card neon-leituras"><p>Leituras</p><h2 id="totL">0</h2></div> 
+            <div class="summary-card neon-impedimentos"><p>Impedimentos</p><h2 id="totI">0</h2></div> 
+            <div class="summary-card neon-meta"><p>Qualidade</p><h2 id="totMeta">0,00%</h2></div> 
+            <div class="summary-card neon-bonus"><p>Bônus</p><h2 id="totB">R$ 0,00</h2></div> 
+            <div class="summary-card neon-descontos"><p>Descontos</p><h2 id="totD">R$ 0,00</h2></div> 
+            <div class="summary-card neon-receber"><p>Receber Mês</p><h2 id="totNet">R$ 0,00</h2></div> 
+            <div class="summary-card neon-acumulado"><p>Acumulado Ano</p><h2 id="totAcumulado">R$ 0,00</h2></div> 
+        </div>
+    </div>
+
+    <div class="content-wrap"> 
+        <!-- FORMULÁRIO -->
+        <aside class="no-print mobile-tab-content" id="tabFormulario"> 
+            <div class="sidebar"> 
+                <div>
+                    <label style="font-size: 10.5px; font-weight: 800; color: var(--success); text-transform: uppercase; margin-bottom: 5px; display: block;">Pesquisar razão</label> 
+                    <input type="text" id="searchRazao" placeholder="Filtrar registros..." oninput="sincronizarBusca(this.value)" style="border-color: var(--success); margin-bottom: 8px;"> 
+                    
+                    <div class="form-content-area">
+                        <form id="gplForm"> 
+                            <div class="form-group"><label>Data</label><input type="date" id="data" required></div> 
+                            <div class="form-group"><label>Localidade</label><input type="text" id="localidade" required></div> 
+                            <div class="form-group"><label>Razão</label><input type="text" id="razao" required></div> 
+                            <div class="form-group"><label>Rotas</label><input type="text" id="rotas" required></div> 
+                            <div class="form-group"><label>Leituras</label><input type="number" id="leituras" required></div> 
+                            <div class="form-group"><label>Imped.</label><input type="number" id="imped" required></div> 
+                        </form>
+                    </div>
+                </div>
+                <div class="actions-footer"> 
+                    <button type="button" onclick="document.getElementById('gplForm').requestSubmit()" class="btn-add">Salvar Registro</button> 
+                    <button type="button" onclick="limparTudo()" class="btn-clear">Limpar Mês</button> 
+                    <button type="button" onclick="limparAno()" class="btn-clear-year">Limpar todos os dados</button> 
+                    <div class="backup-row">
+                        <button type="button" onclick="exportarBackup()" class="btn-backup">Backup</button>
+                        <button type="button" onclick="dispararImportacao()" class="btn-import">Restaurar</button>
+                        <input type="file" id="importFile" accept=".json" style="display:none;" onchange="importarBackup(event)">
+                    </div>
+                </div> 
+            </div> 
+        </aside> 
+
+        <!-- TABELA / REGISTROS -->
+        <main class="mobile-tab-content" id="tabTabela"> 
+            <div class="mobile-search-area no-print">
+                <input type="text" id="searchRazaoMob" placeholder="Pesquisar razão nos registros..." oninput="sincronizarBusca(this.value)" style="border-color: var(--success);">
+            </div>
+            <div class="main-view"> 
+                <div class="table-container"> 
+                    <table> 
+                        <thead> 
+                            <tr><th>Data</th><th>Localidade</th><th>Razão</th><th>Rotas</th><th>Leituras</th><th>Imp.</th><th>%</th><th class="no-print">Ação</th></tr> 
+                        </thead> 
+                        <tbody id="tabelaCorpo"></tbody> 
+                    </table> 
+                </div> 
+            </div> 
+        </main> 
+    </div> 
+</div> 
+
+<script> 
+    let db = []; 
+    let currentUser = ""; 
+    
+    let dataAtualDoSistema = new Date();
+    let viewDate = new Date(2026, dataAtualDoSistema.getMonth(), 1); 
+    
+    const msNomesCompletos = ["JANEIRO", "FEVEREIRO", "MARÇO", "ABRIL", "MAIO", "JUNHO", "JULHO", "AGOSTO", "SETEMBRO", "OUTUBRO", "NOVEMBRO", "DEZEMBRO"]; 
+    const fM = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); 
+
+    function switchMobileTab(tabId, btnElement) {
+        document.querySelectorAll('.mobile-tab-content').forEach(el => el.classList.remove('active-tab'));
+        document.getElementById(tabId).classList.add('active-tab');
+
+        document.querySelectorAll('.mob-tab-btn').forEach(btn => btn.classList.remove('active'));
+        btnElement.classList.add('active');
+
+        // Salva a aba ativa na memória do navegador para persistir se atualizar ou sair/entrar
+        sessionStorage.setItem('gpl_active_tab', tabId);
+    }
+
+    function restaurarAbaSalva() {
+        const savedTab = sessionStorage.getItem('gpl_active_tab');
+        if (savedTab && document.getElementById(savedTab)) {
+            let btnMap = {
+                'tabDashboard': 'btnTabDashboard',
+                'tabFormulario': 'btnTabFormulario',
+                'tabTabela': 'btnTabTabela'
+            };
+            let btnEl = document.getElementById(btnMap[savedTab]);
+            if (btnEl) {
+                switchMobileTab(savedTab, btnEl);
+            }
+        }
+    }
+
+    function sincronizarBusca(val) {
+        document.getElementById('searchRazao').value = val;
+        document.getElementById('searchRazaoMob').value = val;
+        atualizarTabela();
+    }
+
+    function animarContagem(id, final, isMoeda = false) { 
+        const el = document.getElementById(id); 
+        if(!el) return; 
+        let start = 0; 
+        const timer = setInterval(() => { 
+            start += final / 15; 
+            if(start >= final) { 
+                if(id === 'totMeta') { 
+                    el.innerText = final.toFixed(2) + "%"; 
+                    el.style.color = final <= 0.5 ? 'var(--success)' : 'var(--danger)'; 
+                } else { 
+                    el.innerText = isMoeda ? fM(final) : Math.floor(final).toLocaleString(); 
+                } 
+                clearInterval(timer); 
+            } else { 
+                el.innerText = isMoeda ? fM(start) : Math.floor(start).toLocaleString(); 
+            } 
+        }, 20); 
+    } 
+
+    function initSystem() { 
+        currentUser = sessionStorage.getItem('gpl_user_2026'); 
+        if(!currentUser) return; 
+        document.getElementById('loginScreen').style.display = 'none'; 
+        document.getElementById('userDisplay').innerText = currentUser; 
+        db = JSON.parse(localStorage.getItem(`GPL_DATA_${currentUser}`)) || []; 
+        
+        document.getElementById('currentMonthDisplay').innerText = msNomesCompletos[viewDate.getMonth()]; 
+        
+        renderMonths(); 
+        atualizarTabela(); 
+        restaurarAbaSalva();
+    } 
+
+    function handleAuth() { 
+        const u = document.getElementById('userInput').value.trim().toUpperCase(); 
+        const p = document.getElementById('passInput').value; 
+        const r = document.getElementById('recoveryInput').value; 
+        let users = JSON.parse(localStorage.getItem('GPL_USERS_2026')) || {}; 
+        if(document.getElementById('authTitle').innerText.includes("Criar")) { 
+            if(!u || !p) return alert("Preencha Usuário e Senha"); 
+            users[u] = { pass: p, hint: r }; 
+            localStorage.setItem('GPL_USERS_2026', JSON.stringify(users)); 
+            alert("Conta Criada!"); toggleAuthMode(); 
+        } else { 
+            if(users[u] && users[u].pass === p) { sessionStorage.setItem('gpl_user_2026', u); initSystem(); } 
+            else alert("Dados incorretos!"); 
+        } 
+    } 
+
+    function toggleAuthMode() { 
+        const t = document.getElementById('authTitle'); 
+        const isLogin = t.innerText === "Acessar Conta"; 
+        t.innerText = isLogin ? "Criar Novo Usuário" : "Acessar Conta"; 
+        document.getElementById('recoveryInput').style.display = isLogin ? "block" : "none"; 
+    } 
+
+    function recoverPass() { 
+        const u = document.getElementById('userInput').value.toUpperCase(); 
+        let users = JSON.parse(localStorage.getItem('GPL_USERS_2026')) || {}; 
+        if(users[u]) alert("Sua dica: " + users[u].hint); 
+        else alert("Usuário não encontrado."); 
+    }
+
+    function renderMonths() { 
+        const ms = ["JAN", "FEV", "MAR", "ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ"]; 
+        document.getElementById('monthGrid').innerHTML = ms.map((m, i) => `<div class="month-item" onclick="selectMonth(${i})">${m}</div>`).join(''); 
+    } 
+
+    function toggleMonthGrid() { document.getElementById('monthGrid').classList.toggle('active'); } 
+     
+    function selectMonth(m) { 
+        viewDate.setMonth(m); 
+        document.getElementById('currentMonthDisplay').innerText = msNomesCompletos[m]; 
+        toggleMonthGrid(); 
+        atualizarTabela(); 
+    } 
+
+    function atualizarTabela() { 
+        const mesF = "2026-" + String(viewDate.getMonth() + 1).padStart(2, '0'); 
+        const busca = document.getElementById('searchRazao').value.toUpperCase(); 
+        const regs = db.filter(i => i.data.startsWith(mesF) && i.razao.includes(busca)).sort((a,b) => new Date(a.data) - new Date(b.data)); 
+         
+        let sL=0, sI=0; 
+
+        document.getElementById('tabelaCorpo').innerHTML = regs.map(i => { 
+            const calcPercentual = i.leituras > 0 ? (i.imped / i.leituras) * 100 : 0; 
+            sL += i.leituras; sI += i.imped; 
+            return `<tr><td>${i.data.split('-').reverse().slice(0,2).join('/')}</td><td>${i.localidade}</td><td>${i.razao}</td><td>${i.rotas}</td><td>${i.leituras.toLocaleString()}</td><td>${i.imped}</td><td><span style="color:${calcPercentual <= 0.5 ? 'var(--success)' : 'var(--danger)'}; font-weight:900;">${calcPercentual.toFixed(2)}%</span></td><td class="no-print"><button onclick="remover(${i.id})" style="background:none; border:none; color:var(--danger); cursor:pointer;">✕</button></td></tr>`; 
+        }).join(''); 
+
+        const sB = sL > 8000 ? (sL - 8000) * 0.20 : 0; 
+        const sD = sI * 1.50; 
+        const net = sB - sD; 
+
+        animarContagem('totL', sL); animarContagem('totI', sI); 
+        animarContagem('totMeta', sL > 0 ? (sI/sL*100) : 0); 
+        animarContagem('totB', sB, true); animarContagem('totD', sD, true); 
+        animarContagem('totNet', net < 0 ? 0 : net, true); 
+
+        const perc = Math.min((sL/8000)*100, 100); 
+        document.getElementById('barFill').style.width = perc + "%"; 
+        document.getElementById('barPerc').innerText = Math.floor(perc) + "%"; 
+        document.getElementById('barTxt').innerText = `Progresso Meta: ${sL.toLocaleString()} / 8.000`; 
+
+        let acum = 0; 
+        for(let m=0; m<12; m++) { 
+            const f = "2026-" + String(m+1).padStart(2,'0'); 
+            const r = db.filter(x => x.data.startsWith(f)); 
+            const tl = r.reduce((a,c) => a+c.leituras, 0); 
+            const ti = r.reduce((a,c) => a+c.imped, 0); 
+            const bonusMes = tl > 8000 ? (tl - 8000) * 0.20 : 0; 
+            const descMes = ti * 1.50; 
+            const liquidoMes = bonusMes - descMes; 
+            if(liquidoMes > 0) {
+                acum += liquidoMes;
+            }
+        } 
+        animarContagem('totAcumulado', acum, true); 
+    } 
+
+    document.getElementById('gplForm').onsubmit = (e) => { 
+        e.preventDefault(); 
+        db.push({ 
+            id: Date.now(), data: document.getElementById('data').value, 
+            localidade: document.getElementById('localidade').value.toUpperCase(), 
+            razao: document.getElementById('razao').value.toUpperCase(), 
+            rotas: document.getElementById('rotas').value.toUpperCase(), 
+            leituras: Number(document.getElementById('leituras').value), 
+            imped: Number(document.getElementById('imped').value) 
+        }); 
+        localStorage.setItem(`GPL_DATA_${currentUser}`, JSON.stringify(db)); 
+        atualizarTabela(); e.target.reset(); document.getElementById('data').focus(); 
+        
+        if (window.innerWidth <= 900) {
+            switchMobileTab('tabTabela', document.getElementById('btnTabTabela'));
+        }
+    }; 
+
+    function remover(id) { if(confirm("Excluir?")) { db = db.filter(i => i.id !== id); localStorage.setItem(`GPL_DATA_${currentUser}`, JSON.stringify(db)); atualizarTabela(); } } 
+    function limparTudo() { if(confirm("Deseja limpar todos os registros deste mês?")) { const mesF = "2026-" + String(viewDate.getMonth() + 1).padStart(2, '0'); db = db.filter(i => !i.data.startsWith(mesF)); localStorage.setItem(`GPL_DATA_${currentUser}`, JSON.stringify(db)); atualizarTabela(); } } 
+     
+    function limparAno() { 
+        if(confirm("ATENÇÃO: Você está prestes a apagar TODOS os registros de 2026!")) { 
+            if(confirm("Tem certeza absoluta? Esta ação não pode ser desfeita.")) { 
+                db = []; 
+                localStorage.setItem(`GPL_DATA_${currentUser}`, JSON.stringify(db)); 
+                atualizarTabela(); 
+                alert("Todos os dados de 2026 foram removidos."); 
+            } 
+        } 
+    } 
+
+    function exportarBackup() {
+        if (!db || db.length === 0) {
+            alert("Não há dados cadastrados para exportar.");
+            return;
+        }
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db, null, 2));
+        const downloadAnchor = document.createElement('a');
+        downloadAnchor.setAttribute("href", dataStr);
+        downloadAnchor.setAttribute("download", `backup_gpl_${currentUser.toLowerCase()}_2026.json`);
+        document.body.appendChild(downloadAnchor);
+        downloadAnchor.click();
+        downloadAnchor.remove();
+    }
+
+    function dispararImportacao() {
+        document.getElementById('importFile').click();
+    }
+
+    function importarBackup(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const importedData = JSON.parse(e.target.result);
+                if (Array.isArray(importedData)) {
+                    if (confirm(`Deseja substituir os dados atuais pelos registros do arquivo "${file.name}"?`)) {
+                        db = importedData;
+                        localStorage.setItem(`GPL_DATA_${currentUser}`, JSON.stringify(db));
+                        atualizarTabela();
+                        alert("Backup restaurado com sucesso!");
+                    }
+                } else {
+                    alert("O arquivo JSON selecionado não possui um formato válido.");
+                }
+            } catch (err) {
+                alert("Erro ao ler o arquivo JSON. Certifique-se de que é um arquivo válido.");
+            }
+            event.target.value = "";
+        };
+        reader.readAsText(file);
+    }
+
+    window.addEventListener('click', (e) => {
+        const grid = document.getElementById('monthGrid');
+        const displayBtn = document.getElementById('currentMonthDisplay');
+        if (grid && grid.classList.contains('active') && e.target !== displayBtn && !grid.contains(e.target)) {
+            grid.classList.remove('active');
+        }
+    });
+
+    function logout() { sessionStorage.clear(); location.reload(); } 
+
+    window.onload = function() {
+        initSystem();
+        
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js')
+                .then(() => console.log('Service Worker GPL ativo e rodando offline!'))
+                .catch((err) => console.log('Falha ao registrar o SW:', err));
+        }
+    }; 
+</script> 
+</body> 
+</html>
             --text-h: #ffffff; 
             --grey-border: #333c4d; 
             --brown-border: #5d4037; 
