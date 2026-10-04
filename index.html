@@ -345,13 +345,13 @@
         </div> 
     </div> 
 
-    <!-- BARRA DE NAVEGAÇÃO EM ABAS (ORDEM: Dash, Novo, Reg., Cal, NL) -->
+    <!-- ORDEM EXATA SOLICITADA: Dash, Novo, Reg, NL, Cal -->
     <nav class="mobile-nav-tabs no-print">
         <button class="mob-tab-btn active" id="btnTabDashboard" onclick="switchMobileTab('tabDashboard', this)">📊 Dash</button>
         <button class="mob-tab-btn" id="btnTabFormulario" onclick="switchMobileTab('tabFormulario', this)">➕ Novo</button>
-        <button class="mob-tab-btn" id="btnTabTabela" onclick="switchMobileTab('tabTabela', this)">📋 Reg.</button>
-        <button class="mob-tab-btn" id="btnTabCal" onclick="switchMobileTab('tabCal', this)">📅 Cal</button>
+        <button class="mob-tab-btn" id="btnTabTabela" onclick="switchMobileTab('tabTabela', this)">📋 Reg</button>
         <button class="mob-tab-btn" id="btnTabNL" onclick="switchMobileTab('tabNL', this)">🔍 NL</button>
+        <button class="mob-tab-btn" id="btnTabCal" onclick="switchMobileTab('tabCal', this)">📅 Cal</button>
     </nav>
 
     <!-- DASHBOARD -->
@@ -419,24 +419,7 @@
             </div> 
         </main> 
 
-        <!-- ABA CALENDÁRIO (POSIÇÃO ANTERIOR A NL) -->
-        <div class="mobile-tab-content" id="tabCal" style="flex-direction: column;">
-            <div class="mobile-search-area">
-                <input type="text" id="searchCal" placeholder="Pesquisar razão..." oninput="filtrarCalendario(this.value)" style="border-color: var(--success); margin-bottom: 0;">
-            </div>
-            <div class="main-view">
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr><th>Razão</th><th>Data da Próxima Leitura</th></tr>
-                        </thead>
-                        <tbody id="calCorpo"></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- ABA NL (POSIÇÃO FINAL) -->
+        <!-- ABA NL -->
         <div class="mobile-tab-content" id="tabNL" style="flex-direction: column;">
             <div class="mobile-search-area">
                 <input type="text" id="searchNL" placeholder="Pesquisar por número ou descrição da nota..." oninput="filtrarNL(this.value)" style="border-color: var(--success);">
@@ -448,6 +431,23 @@
                             <tr><th>Número</th><th>Status</th><th>Detalhe / Descrição</th></tr>
                         </thead>
                         <tbody id="nlCorpo"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ABA CALENDÁRIO -->
+        <div class="mobile-tab-content" id="tabCal" style="flex-direction: column;">
+            <div class="mobile-search-area">
+                <input type="text" id="searchCal" placeholder="Pesquisar razão..." oninput="filtrarCalendario(this.value)" style="border-color: var(--success); margin-bottom: 0;">
+            </div>
+            <div class="main-view">
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr><th>Razão</th><th>Data da Próxima Leitura</th></tr>
+                        </thead>
+                        <tbody id="calCorpo"></tbody>
                     </table>
                 </div>
             </div>
@@ -564,7 +564,7 @@
       { numero: '5800', status: 'Sem Leitura', detalhe: 'PADRÃO MEDIÇÃO INCENDIADO/DEMOLIDO' },
       { numero: '5802', status: 'Sem Leitura', detalhe: 'INSTALAÇÃO INTERDITADA' },
       { numero: '6801', status: 'Sem Leitura', detalhe: 'LEITURA IMPEDIDA POR CONDIÇÃO INSEGURA/ÁREA RISCO' },
-      { numero: '6820', status: 'Sem Leitura', detalhe: 'ESTRADA أو RUA INTRASITÁVEL' },
+      { numero: '6820', status: 'Sem Leitura', detalhe: 'ESTRADA OU RUA INTRASITÁVEL' },
       { numero: '6862', status: 'Sem Leitura', detalhe: 'GREVE NO SERVIÇO PÚBLICO' },
       { numero: '6872', status: 'Sem Leitura', detalhe: 'CALAMIDADE DECRETADA ENCHENTE ALAGAM TERREMOTO VENDAVAL' },
       { numero: '7000', status: 'Sem Leitura', detalhe: 'SUSPENSÃO DE MEDIDOR DEFEITUOSO DEVIDO A CHUVAS/ENCHENTES' }
@@ -642,7 +642,7 @@
                 
                 if (dataObj.getDay() === 6) {
                     const dataFormatada = `${dia}/${mes}/${ano}`;
-                    alertas.push(`⚠️️ Alerta: ${razao} está marcada para Sábado, dia ${dataFormatada}!`);
+                    alertas.push(`⚠️ Alerta: ${razao} está marcada para Sábado, dia ${dataFormatada}!`);
                 }
             }
         }
@@ -735,8 +735,8 @@
                 'tabDashboard': 'btnTabDashboard',
                 'tabFormulario': 'btnTabFormulario',
                 'tabTabela': 'btnTabTabela',
-                'tabCal': 'btnTabCal',
-                'tabNL': 'btnTabNL'
+                'tabNL': 'btnTabNL',
+                'tabCal': 'btnTabCal'
             };
             let btnEl = document.getElementById(btnMap[savedTab]);
             if (btnEl) switchMobileTab(savedTab, btnEl);
