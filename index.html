@@ -382,6 +382,7 @@
             <div class="sidebar"> 
                 <div class="form-content-area" style="padding-top: 5px;">
                     <form id="gplForm"> 
+                        <input type="hidden" id="editId">
                         <div class="form-group"><label>Data</label><input type="date" id="data" required></div> 
                         <div class="form-group"><label>Localidade</label><input type="text" id="localidade" required></div> 
                         <div class="form-group"><label>Razão</label><input type="text" id="razao" required></div> 
@@ -391,7 +392,8 @@
                     </form>
                 </div>
                 <div class="actions-footer"> 
-                    <button type="button" onclick="document.getElementById('gplForm').requestSubmit()" class="btn-add">Salvar Registro</button> 
+                    <button type="button" onclick="document.getElementById('gplForm').requestSubmit()" class="btn-add" id="btnSalvarRegistro">Salvar Registro</button> 
+                    <button type="button" onclick="limparFormulario()" class="btn-clear" style="color: var(--warning); border-color: var(--warning);" id="btnCancelarEdicao" style="display:none;">Cancelar Edição</button>
                     <button type="button" onclick="limparTudo()" class="btn-clear">Limpar Mês</button> 
                     <button type="button" onclick="limparAno()" class="btn-clear-year">Limpar todos os dados</button> 
                     <div class="backup-row">
@@ -812,7 +814,19 @@
         const htmlRegistros = regs.map(i => { 
             const calcPercentual = i.leituras > 0 ? (i.imped / i.leituras) * 100 : 0; 
             sL += i.leituras; sI += i.imped; 
-            return `<tr><td>${i.data.split('-').reverse().slice(0,2).join('/')}</td><td>${i.localidade}</td><td>${i.razao}</td><td>${i.rotas}</td><td>${i.leituras.toLocaleString()}</td><td>${i.imped}</td><td><span style="color:${calcPercentual <= 0.5 ? 'var(--success)' : 'var(--danger)'}; font-weight:900;">${calcPercentual.toFixed(2)}%</span></td><td class="no-print"><button onclick="remover(${i.id})" style="background:none; border:none; color:var(--danger); cursor:pointer;">✕</button></td></tr>`; 
+            return `<tr>
+                <td>${i.data.split('-').reverse().slice(0,2).join('/')}</td>
+                <td>${i.localidade}</td>
+                <td>${i.razao}</td>
+                <td>${i.rotas}</td>
+                <td>${i.leituras.toLocaleString()}</td>
+                <td>${i.imped}</td>
+                <td><span style="color:${calcPercentual <= 0.5 ? 'var(--success)' : 'var(--danger)'}; font-weight:900;">${calcPercentual.toFixed(2)}%</span></td>
+                <td class="no-print" style="white-space: nowrap;">
+                    <button onclick="editar(${i.id})" title="Editar" style="background:none; border:none; color:var(--accent); cursor:pointer; margin-right:6px; font-size:13px;">✏️</button>
+                    <button onclick="remover(${i.id})" title="Excluir" style="background:none; border:none; color:var(--danger); cursor:pointer; font-size:13px;">✕</button>
+                </td>
+            </tr>`; 
         }).join('');
 
         document.getElementById('tabelaCorpo').innerHTML = htmlRegistros; 
@@ -854,18 +868,61 @@
 
     document.getElementById('gplForm').onsubmit = (e) => { 
         e.preventDefault(); 
-        db.push({ 
-            id: Date.now(), data: document.getElementById('data').value, 
+        const editId = document.getElementById('editId').value;
+        const dadosForm = {
+            data: document.getElementById('data').value, 
             localidade: document.getElementById('localidade').value.toUpperCase(), 
             razao: document.getElementById('razao').value.toUpperCase(), 
             rotas: document.getElementById('rotas').value.toUpperCase(), 
             leituras: Number(document.getElementById('leituras').value), 
-            imped: Number(document.getElementById('imped').value) 
-        }); 
+            imped: Number(document.getElementById('imped').value)
+        };
+
+        if (editId) {
+            // Atualiza o registro existente
+            const index = db.findIndex(i => i.id == editId);
+            if (index !== -1) {
+                db[index] = { id: Number(editId), ...dadosForm };
+            }
+        } else {
+            // Cria um novo registro
+            db.push({ 
+                id: Date.now(), 
+                ...dadosForm
+            }); 
+        }
+
         localStorage.setItem(`GPL_DATA_${currentUser}`, JSON.stringify(db)); 
-        atualizarTabela(); e.target.reset(); document.getElementById('data').focus(); 
+        limparFormulario();
+        atualizarTabela(); 
         switchMobileTab('tabTabela', document.getElementById('btnTabTabela'));
     }; 
+
+    function editar(id) {
+        const item = db.find(i => i.id === id);
+        if (!item) return;
+
+        document.getElementById('editId').value = item.id;
+        document.getElementById('data').value = item.data;
+        document.getElementById('localidade').value = item.localidade;
+        document.getElementById('razao').value = item.razao;
+        document.getElementById('rotas').value = item.rotas;
+        document.getElementById('leituras').value = item.leituras;
+        document.getElementById('imped').value = item.imped;
+
+        document.getElementById('btnSalvarRegistro').innerText = "Atualizar Registro";
+        document.getElementById('btnCancelarEdicao').style.display = "block";
+
+        // Muda automaticamente para a aba de formulário (Novo / Editar)
+        switchMobileTab('tabFormulario', document.getElementById('btnTabFormulario'));
+    }
+
+    function limparFormulario() {
+        document.getElementById('gplForm').reset();
+        document.getElementById('editId').value = "";
+        document.getElementById('btnSalvarRegistro').innerText = "Salvar Registro";
+        document.getElementById('btnCancelarEdicao').style.display = "none";
+    }
 
     function remover(id) { if(confirm("Excluir?")) { db = db.filter(i => i.id !== id); localStorage.setItem(`GPL_DATA_${currentUser}`, JSON.stringify(db)); atualizarTabela(); } } 
     function limparTudo() { if(confirm("Deseja limpar todos os registros deste mês?")) { const mesF = "2026-" + String(viewDate.getMonth() + 1).padStart(2, '0'); db = db.filter(i => !i.data.startsWith(mesF)); localStorage.setItem(`GPL_DATA_${currentUser}`, JSON.stringify(db)); atualizarTabela(); } } 
@@ -933,7 +990,7 @@
             }
             event.target.value = "";
         };
-        reader.readAsText(file);
+        reader.readAsTest(file);
     }
 
     window.addEventListener('click', (e) => {
