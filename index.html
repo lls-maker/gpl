@@ -6,7 +6,7 @@
     <title>Gestão de Produtividade de Leituras 2026</title> 
 
     <!-- FAVICON CORRIGIDO EM BASE64 SEGURO E COMPATÍVEL COM TODOS OS NAVEGADORES -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzMiAzMicgd2lkdGg9JzMyJyBoZWlnaHQ9JzMyJz48cmVjdCB3aWR0aD0nMzInIGhlaWdodD0nMzInIHJ4PSc2JyBmaWxsPScjMGIwZjE1Jy8+PHRleHQgeD0nNTAlJyB5PSc1NSUnIGRvbWluYW50LWJhc2VsaW5lPSdtaWRkbGUnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJyBmb250LXdlaWdodD0nOTAwJyBmb250LXNpemU9JzEwJyBmaWxsPScjMDBmZjg4JyBsZXR0ZXItc3BhY2luZz0nMC41Jz5HUEw8L3RleHQ+PC9zdmc+">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzMiAzMicgd2lkdGg9JzMyJyBoZWlnaHQ9JzMyJz48cmVjdCB3aWR0aD0nMzInIGhlaWdodD0nMzInJ4PSc2JyBmaWxsPScjMGIwZjE1Jy8+PHRleHQgeD0nNTAlJyB5PSc1NSUnIGRvbWluYW50LWJhc2VsaW5lPSdtaWRkbGUnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJyBmb250LXdlaWdodD0nOTAwJyBmb250LXNpemU9JzEwJyBmaWxsPScjMDBmZjg4JyBsZXR0ZXItc3BhY2luZz0nMC41Jz5HUEw8L3RleHQ+PC9zdmc+">
 
     <!-- VÍNCULO DO MANIFESTO PARA ATIVAR O MODO PWA (APLICATIVO INSTALÁVEL) -->
     <link rel="manifest" href="./manifest.json">
@@ -38,7 +38,7 @@
             margin: 0; 
             padding: 15px; 
             height: 100vh; 
-            overflow: hidden; /* TRAVA A ROLAGEM GERAL NO MOBILE E DESKTOP */
+            overflow: hidden; 
             display: flex;
             justify-content: center;
             align-items: center;
@@ -152,7 +152,6 @@
             margin-top: 12px;
         }
 
-        /* CARD DE OBSERVAÇÕES ORIGINAL COM TAMANHO PADRÃO RESTAURADO */
         .observations { 
             background: var(--surface); 
             padding: 15px 20px; 
@@ -382,8 +381,10 @@
                 display: flex !important;
                 flex-direction: column;
             }
+            /* GRADE DE CARDS PADRONIZADA NO MOBILE (2 COLUNAS EQUILIBRADAS) */
             .summary-grid {
                 grid-template-columns: repeat(2, 1fr) !important;
+                gap: 8px !important;
             }
             .content-wrap {
                 display: block !important;
