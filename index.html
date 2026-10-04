@@ -6,7 +6,7 @@
     <title>Gestão de Produtividade de Leituras 2026</title> 
 
     <!-- FAVICON CORRIGIDO EM BASE64 SEGURO E COMPATÍVEL COM TODOS OS NAVEGADORES -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzMiAzMicgd2lkdGg9JzMyJyBoZWlnaHQ9JzMyJz48cmVjdCB3aWR0aD0nMzInIGhlaWdodD0nMzInIHJ4PSc2JyBmaWxsPScjMGIwZjE1Jy8+PHRleHQgeD0nNTAlJyB5PSc1NSUnIGRvbWluYW50LWJhc2VsaW5lPSdtaWRkbGUnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJyBmb250LXdlaWdodD0nOTAwJyBmb250LXNpemU9JzEwJyBmaWxsPScjMDBmZjg4JyBsZXR0ZXItc3BhY2luZz0nMC41Jz5HUEw8L3RleHQ+PC9zdmc+">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzMiAzMicgd2lkdGg9JzMyJyBoZWlghtD0nMzInIGJyPSc2JyBmaWxsPScjMGIwZjE1Jy8+PHRleHQgeD0nNTAlJyB5PSc1NSUnIGRvbWluYW50LWJhc2VsaW5lPSdtaWRkbGUnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJyBmb250LXdlaWdodD0nOTAwJyBmb250LXNpemU9JzEwJyBmaWxsPScjMDBmZjg4JyBsZXR0ZXItc3BhY2luZz0nMC41Jz5HUEw8L3RleHQ+PC9zdmc+">
 
     <!-- VÍNCULO DO MANIFESTO PARA ATIVAR O MODO PWA -->
     <link rel="manifest" href="./manifest.json">
@@ -31,13 +31,14 @@
         } 
         * { box-sizing: border-box; } 
 
+        /* LAYOUT DESKTOP ORIGINAL, AMPLO E CONFORTÁVEL */
         html, body {
-            min-height: 100%;
+            min-height: 100vh;
             font-family: 'Inter', system-ui, sans-serif; 
             background-color: var(--bg); 
             color: var(--text-p); 
             margin: 0; 
-            padding: 10px; 
+            padding: 20px; 
             display: flex;
             justify-content: center;
             align-items: center;
@@ -47,17 +48,17 @@
             background: #000; 
             color: white; 
             border: 1px solid var(--border); 
-            padding: 7px 10px; 
-            border-radius: 8px; 
+            padding: 10px 12px; 
+            border-radius: 10px; 
             outline: none; 
             width: 100%; 
-            font-size: 12px; 
-            margin-bottom: 4px; 
+            font-size: 13px; 
+            margin-bottom: 8px; 
             transition: 0.3s; 
         } 
         input:focus { 
             border-color: var(--accent) !important; 
-            box-shadow: 0 0 12px rgba(0, 112, 243, 0.4); 
+            box-shadow: 0 0 15px rgba(0, 112, 243, 0.4); 
         } 
         input[type="date"]::-webkit-calendar-picker-indicator { 
             filter: invert(1); 
@@ -98,34 +99,34 @@
             margin: auto; 
             display: flex; 
             flex-direction: column; 
-            gap: 8px; 
+            gap: 15px; 
         } 
         header { 
-            background: var(--surface); padding: 10px 20px; border-radius: 16px; 
+            background: var(--surface); padding: 16px 25px; border-radius: 20px; 
             border: 1px solid var(--border); display: flex; justify-content: space-between; 
             align-items: center; flex-shrink: 0; position: relative; 
         } 
-        .prog-area { width: 100%; flex-shrink: 0; padding: 0 2px; } 
+        .prog-area { width: 100%; flex-shrink: 0; padding: 0 5px; } 
         
         .top-dashboard {
-            display: grid; grid-template-columns: 320px 1fr; gap: 10px; flex-shrink: 0;
+            display: grid; grid-template-columns: 320px 1fr; gap: 15px; flex-shrink: 0;
         }
         .observations { 
-            background: var(--surface); padding: 8px 15px; border-radius: 14px; 
+            background: var(--surface); padding: 12px 20px; border-radius: 16px; 
             border: 1.5px solid #ffffff; display: flex; flex-direction: column; 
-            justify-content: center; gap: 4px; height: 70px; 
+            justify-content: center; gap: 6px; height: 85px; 
         } 
-        .obs-item { font-size: 9.5px; color: #ffffff; display: flex; align-items: center; gap: 8px; font-weight: 600; } 
-        .dot { height: 5px; width: 5px; border-radius: 50%; display: inline-block; flex-shrink: 0; } 
+        .obs-item { font-size: 11px; color: #ffffff; display: flex; align-items: center; gap: 10px; font-weight: 600; } 
+        .dot { height: 7px; width: 7px; border-radius: 50%; display: inline-block; flex-shrink: 0; } 
 
-        .summary-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; height: 70px; } 
+        .summary-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 12px; height: 85px; } 
         .summary-card { 
-            background: var(--surface); padding: 4px 2px; border-radius: 14px; 
-            border: 1.5px solid var(--grey-border); border-top: 4px solid; 
+            background: var(--surface); padding: 8px 6px; border-radius: 16px; 
+            border: 1.5px solid var(--grey-border); border-top: 5px solid; 
             display: flex; flex-direction: column; justify-content: center; text-align: center; height: 100%; 
         } 
-        .summary-card p { font-size: 7px; font-weight: 800; text-transform: uppercase; margin: 0; } 
-        .summary-card h2 { margin: 2px 0 0; font-size: 0.85rem; color: var(--text-h); font-weight: 900; } 
+        .summary-card p { font-size: 8px; font-weight: 800; text-transform: uppercase; margin: 0; } 
+        .summary-card h2 { margin: 4px 0 0; font-size: 1rem; color: var(--text-h); font-weight: 900; } 
 
         .neon-leituras { border-top-color: var(--white-neon); } 
         .neon-impedimentos { border-top-color: var(--orange-neon); } 
@@ -136,7 +137,7 @@
         .neon-acumulado { border-top-color: var(--purple); } 
 
         .content-wrap { 
-            display: grid; grid-template-columns: 320px 1fr; gap: 12px; 
+            display: grid; grid-template-columns: 320px 1fr; gap: 15px; 
         } 
         aside, main { 
             display: flex; flex-direction: column; 
@@ -144,72 +145,72 @@
         
         .sidebar { 
             background: linear-gradient(180deg, rgba(0, 112, 243, 0.08) 0%, var(--surface) 100%); 
-            padding: 10px 14px; border-radius: 16px; border: 1.5px solid var(--accent); 
+            padding: 18px; border-radius: 20px; border: 1.5px solid var(--accent); 
             display: flex; flex-direction: column; 
             justify-content: space-between; 
         } 
         .form-content-area { 
-            margin-top: 2px; 
+            margin-top: 5px; 
             display: flex;
             flex-direction: column;
             justify-content: center;
         }
-        .form-group { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
-        .form-group label { width: 75px; flex-shrink: 0; font-size: 9.5px; font-weight: 800; color: var(--accent); text-transform: uppercase; }
+        .form-group { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+        .form-group label { width: 85px; flex-shrink: 0; font-size: 11px; font-weight: 800; color: var(--accent); text-transform: uppercase; }
         
-        .actions-footer { display: flex; flex-direction: column; gap: 4px; margin-top: 4px; flex-shrink: 0; } 
-        .btn-add { background: var(--accent); color: #fff; width: 100%; padding: 8px; border-radius: 10px; font-weight: 900; cursor: pointer; border: none; text-transform: uppercase; font-size: 10.5px; } 
-        .btn-clear { background: transparent; color: var(--danger); width: 100%; padding: 5px; border-radius: 10px; font-weight: 800; cursor: pointer; border: 1px solid var(--danger); text-transform: uppercase; font-size: 8.5px; } 
-        .btn-clear-year { background: transparent; color: var(--purple); width: 100%; padding: 5px; border-radius: 10px; font-weight: 800; cursor: pointer; border: 1px solid var(--purple); text-transform: uppercase; font-size: 8.5px; } 
-        .backup-row { display: flex; gap: 4px; width: 100%; }
-        .btn-backup { background: transparent; color: var(--success); width: 50%; padding: 5px 2px; border-radius: 10px; font-weight: 800; cursor: pointer; border: 1px solid var(--success); text-transform: uppercase; font-size: 8.5px; text-align: center; } 
-        .btn-import { background: transparent; color: var(--warning); width: 50%; padding: 5px 2px; border-radius: 10px; font-weight: 800; cursor: pointer; border: 1px solid var(--warning); text-transform: uppercase; font-size: 8.5px; text-align: center; } 
+        .actions-footer { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; flex-shrink: 0; } 
+        .btn-add { background: var(--accent); color: #fff; width: 100%; padding: 12px; border-radius: 12px; font-weight: 900; cursor: pointer; border: none; text-transform: uppercase; font-size: 11.5px; } 
+        .btn-clear { background: transparent; color: var(--danger); width: 100%; padding: 8px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--danger); text-transform: uppercase; font-size: 9.5px; } 
+        .btn-clear-year { background: transparent; color: var(--purple); width: 100%; padding: 8px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--purple); text-transform: uppercase; font-size: 9.5px; } 
+        .backup-row { display: flex; gap: 6px; width: 100%; }
+        .btn-backup { background: transparent; color: var(--success); width: 50%; padding: 8px 4px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--success); text-transform: uppercase; font-size: 9.5px; text-align: center; } 
+        .btn-import { background: transparent; color: var(--warning); width: 50%; padding: 8px 4px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--warning); text-transform: uppercase; font-size: 9.5px; text-align: center; } 
 
         .main-view { 
-            background: var(--surface); border-radius: 16px; border: 1.5px solid var(--brown-border); 
+            background: var(--surface); border-radius: 20px; border: 1.5px solid var(--brown-border); 
             display: flex; flex-direction: column; 
         } 
-        .table-container { max-height: 420px; overflow-y: auto; } 
+        .table-container { max-height: 520px; overflow-y: auto; } 
 
-        /* ABA NL OCULTA NO DESKTOP, EXCLUSIVA PARA MOBILE */
         #tabNL {
             display: none;
         }
 
         table { width: 100%; border-collapse: collapse; } 
-        th, td { padding: 7px 4px; text-align: center; border-bottom: 1px solid var(--border); font-size: 11.5px; } 
-        th { background: #0d1117; color: var(--accent); font-size: 9.5px; text-transform: uppercase; position: sticky; top: 0; z-index: 5; } 
+        th, td { padding: 10px 8px; text-align: center; border-bottom: 1px solid var(--border); font-size: 13px; } 
+        th { background: #0d1117; color: var(--accent); font-size: 10.5px; text-transform: uppercase; position: sticky; top: 0; z-index: 5; } 
 
-        .month-grid { display: none; position: absolute; top: 60px; right: 150px; background: #0d1117; border: 1px solid var(--accent); padding: 12px; border-radius: 12px; grid-template-columns: repeat(3, 1fr); gap: 6px; z-index: 1000; } 
+        .month-grid { display: none; position: absolute; top: 70px; right: 180px; background: #0d1117; border: 1px solid var(--accent); padding: 15px; border-radius: 15px; grid-template-columns: repeat(3, 1fr); gap: 8px; z-index: 1000; } 
         .month-grid.active { display: grid; } 
-        .month-item { background: #000; color: white; border: 1px solid var(--border); padding: 8px; border-radius: 6px; cursor: pointer; font-size: 10px; font-weight: bold; }
+        .month-item { background: #000; color: white; border: 1px solid var(--border); padding: 10px; border-radius: 8px; cursor: pointer; font-size: 11px; font-weight: bold; }
         
         .header-btn {
             background: #1e2633; border: 1px solid var(--border); color: white;
-            padding: 8px 12px; border-radius: 8px; cursor: pointer; font-weight: 800; font-size: 10.5px; text-transform: uppercase;
+            padding: 10px 16px; border-radius: 10px; cursor: pointer; font-weight: 800; font-size: 11.5px; text-transform: uppercase;
         }
         .desktop-header-info { display: inline; }
         .mobile-nav-tabs, .mobile-search-area { display: none; }
 
+        /* ADAPTAÇÕES EXCLUSIVAS PARA CELULAR (MOBILE) */
         @media (max-width: 900px) {
-            html, body { padding: 4px; align-items: flex-start; }
-            .container { gap: 6px; }
+            html, body { padding: 8px; align-items: flex-start; }
+            .container { gap: 8px; }
             .desktop-header-info { display: none !important; }
-            .top-dashboard { display: flex !important; flex-direction: column; gap: 4px; }
-            .observations { height: auto !important; padding: 6px 8px !important; }
-            .summary-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 4px !important; height: auto !important; }
-            .summary-card { height: 48px !important; }
+            .top-dashboard { display: flex !important; flex-direction: column; gap: 6px; }
+            .observations { height: auto !important; padding: 8px 12px !important; }
+            .summary-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 6px !important; height: auto !important; }
+            .summary-card { height: 55px !important; }
             .content-wrap { display: block !important; }
             
             .mobile-nav-tabs {
                 display: flex; width: 100%; background: var(--surface); border: 1px solid var(--border);
-                border-radius: 12px; z-index: 999; justify-content: space-between; padding: 4px;
-                margin-bottom: 6px; gap: 3px; flex-shrink: 0;
+                border-radius: 14px; z-index: 999; justify-content: space-between; padding: 6px;
+                margin-bottom: 8px; gap: 4px; flex-shrink: 0;
             }
             .mob-tab-btn {
-                background: transparent; border: none; color: var(--text-p); font-size: 8.5px;
-                font-weight: 800; text-transform: uppercase; cursor: pointer; flex: 1; padding: 6px 2px;
-                border-radius: 8px; text-align: center; transition: 0.3s;
+                background: transparent; border: none; color: var(--text-p); font-size: 9px;
+                font-weight: 800; text-transform: uppercase; cursor: pointer; flex: 1; padding: 8px 4px;
+                border-radius: 10px; text-align: center; transition: 0.3s;
             }
             .mob-tab-btn.active { background: var(--accent); color: #fff; }
 
@@ -218,11 +219,11 @@
                 display: flex !important; flex-direction: column;
             }
             #tabFormulario .sidebar { 
-                gap: 6px; 
-                padding: 10px 12px;
+                gap: 10px; 
+                padding: 14px;
             }
-            .table-container { max-height: 62vh; overflow-y: auto; }
-            .mobile-search-area { display: block !important; margin-bottom: 4px; flex-shrink: 0; }
+            .table-container { max-height: 65vh; overflow-y: auto; }
+            .mobile-search-area { display: block !important; margin-bottom: 6px; flex-shrink: 0; }
         }
 
         /* REGRAS DE IMPRESSÃO OTIMIZADAS */
@@ -277,10 +278,10 @@
     </header> 
 
     <div id="progArea" class="prog-area no-print"> 
-        <div style="width:100%; background:#1e2633; height:7px; border-radius:10px; overflow:hidden; border:1px solid var(--border); margin-bottom:2px;"> 
+        <div style="width:100%; background:#1e2633; height:8px; border-radius:10px; overflow:hidden; border:1px solid var(--border); margin-bottom:3px;"> 
             <div id="barFill" style="height:100%; width:0%; background:linear-gradient(90deg, var(--accent), var(--success)); transition:0.8s;"></div> 
         </div> 
-        <div style="display:flex; justify-content:space-between; font-size:9.5px; font-weight:bold; color:var(--text-p); text-transform: uppercase;"> 
+        <div style="display:flex; justify-content:space-between; font-size:10px; font-weight:bold; color:var(--text-p); text-transform: uppercase;"> 
             <span id="barTxt">Progresso Meta: 0 / 8.000</span> 
             <span id="barPerc" style="color:var(--success)">0%</span> 
         </div> 
@@ -313,12 +314,12 @@
     </div>
 
     <div class="content-wrap"> 
-        <!-- FORMULÁRIO (VISÍVEL NO DESKTOP E NA ABA "NOVO" NO MOBILE) -->
+        <!-- FORMULÁRIO -->
         <aside class="no-print mobile-tab-content" id="tabFormulario"> 
             <div class="sidebar"> 
                 <div>
-                    <label style="font-size: 9px; font-weight: 800; color: var(--success); text-transform: uppercase; margin-bottom: 2px; display: block;" class="desktop-search-label">Pesquisar razão</label> 
-                    <input type="text" id="searchRazao" placeholder="Filtrar registros..." oninput="sincronizarBusca(this.value)" style="border-color: var(--success); margin-bottom: 4px;" class="desktop-search-input"> 
+                    <label style="font-size: 10px; font-weight: 800; color: var(--success); text-transform: uppercase; margin-bottom: 4px; display: block;" class="desktop-search-label">Pesquisar razão</label> 
+                    <input type="text" id="searchRazao" placeholder="Filtrar registros..." oninput="sincronizarBusca(this.value)" style="border-color: var(--success); margin-bottom: 8px;" class="desktop-search-input"> 
                     
                     <div class="form-content-area">
                         <form id="gplForm"> 
@@ -344,7 +345,7 @@
             </div> 
         </aside> 
 
-        <!-- TABELA / REGISTROS (VISÍVEL NO DESKTOP E NA ABA "REGISTROS" NO MOBILE) -->
+        <!-- TABELA / REGISTROS -->
         <main class="mobile-tab-content" id="tabTabela"> 
             <div class="mobile-search-area no-print">
                 <input type="text" id="searchRazaoMob" placeholder="Pesquisar razão nos registros..." oninput="sincronizarBusca(this.value)" style="border-color: var(--success);">
@@ -363,7 +364,7 @@
 
         <!-- ABA EXCLUSIVA DE NOTA DE LEITURAS (NL) APENAS PARA MOBILE -->
         <section class="mobile-tab-content" id="tabNL">
-            <div style="margin-bottom: 6px; flex-shrink: 0;">
+            <div style="margin-bottom: 8px; flex-shrink: 0;">
                 <input type="text" id="searchNL" placeholder="Pesquisar Nota (Ex: 1101, cães, sem leitura)..." oninput="renderizarNL()" style="border-color: var(--success); font-size: 13px; padding: 10px;">
             </div>
             <div class="main-view">
