@@ -184,9 +184,9 @@
         .desktop-header-title { display: inline; }
         .mobile-header-title { display: none; }
 
-        /* ABA NL NO COMPUTADOR */
+        /* ABA NL NO COMPUTADOR (OCULTA POR PADRÃO, SÓ APARECE COM .active) */
         .desktop-nl-view {
-            display: none; 
+            display: none !important; 
             flex-direction: column; 
             height: 100%; 
             min-height: 0; 
@@ -261,7 +261,6 @@
             .desktop-nl-view { display: none !important; }
             .desktop-nl-header-btn { display: none !important; }
 
-            /* AJUSTE DOS TÍTULOS NO MOBILE: MOSTRA APENAS O NOME DO USUÁRIO */
             .desktop-header-title { display: none !important; }
             .mobile-header-title { display: inline !important; }
         }
