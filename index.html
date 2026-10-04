@@ -352,8 +352,8 @@
             text-transform: uppercase;
         }
 
-        /* CLASSE PARA OCULTAR O TÍTULO COMPLETO NO MOBILE */
-        .desktop-title {
+        /* CLASSE PARA OCULTAR O TÍTULO E O USUÁRIO NO MOBILE */
+        .desktop-header-info {
             display: inline;
         }
 
@@ -375,8 +375,8 @@
                 height: auto;
                 padding-bottom: 20px; 
             }
-            /* Oculta totalmente o texto longo no celular */
-            .desktop-title {
+            /* Oculta totalmente o texto longo e o nome do usuário no celular */
+            .desktop-header-info {
                 display: none !important;
             }
             .top-dashboard {
@@ -457,7 +457,7 @@
             .container { display: block !important; width: 100% !important; height: auto !important; }
             header { border: none; border-bottom: 2px solid #000; height: auto; padding: 10px 0; margin-bottom: 10px; background: #fff !important; }
             header h1 { width: 100%; text-align: center; color: #000 !important; font-size: 12pt !important; }
-            .desktop-title { display: inline !important; }
+            .desktop-header-info { display: inline !important; color: #000 !important; }
             .content-wrap { display: block !important; }
             .main-view { border: 1px solid #000 !important; background: #fff !important; margin-top: 15px; }
             table { font-size: 8pt !important; width: 100% !important; }
@@ -490,7 +490,7 @@
     <header> 
         <div style="display: flex; align-items: center; gap: 10px;"> 
             <div style="background:var(--success); color:black; padding:8px 12px; border-radius:10px; font-weight:900;" class="no-print">GPL</div> 
-            <h1 style="font-size: 15px; color: white; margin: 0;"><span class="desktop-title">Gestão de Produtividade de Leituras - </span><span id="userDisplay" style="color:var(--success)"></span></h1> 
+            <h1 style="font-size: 15px; color: white; margin: 0;"><span class="desktop-header-info">Gestão de Leituras - <span id="userDisplay" style="color:var(--success)"></span></span></h1> 
         </div> 
         <div style="display: flex; gap: 8px; align-items: center;" class="no-print"> 
             <button class="header-btn" onclick="toggleMonthGrid()" id="currentMonthDisplay" style="background: var(--accent); border-color: var(--accent);">SETEMBRO</button> 
