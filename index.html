@@ -182,9 +182,17 @@
 
         .mobile-nav-tabs, .mobile-search-area { display: none; }
 
-        /* ABA NL NO COMPUTADOR (ISOLADA) */
+        /* ABA NL NO COMPUTADOR (ISOLADA E PERFEITA NA ÁREA DE REGISTROS) */
         .desktop-nl-view {
-            display: none; flex-direction: column; height: 100%; min-height: 0; overflow: hidden; background: var(--surface); border-radius: 16px; border: 1.5px solid var(--brown-border); padding: 10px;
+            display: none; 
+            flex-direction: column; 
+            height: 100%; 
+            min-height: 0; 
+            overflow: hidden; 
+            background: var(--surface); 
+            border-radius: 16px; 
+            border: 1.5px solid var(--brown-border); 
+            padding: 10px;
         }
         .desktop-nl-view.active {
             display: flex !important;
@@ -248,6 +256,9 @@
             .table-container { flex-grow: 1 !important; min-height: 0 !important; overflow-y: auto !important; }
             .main-view { min-height: 0 !important; height: 100% !important; flex-grow: 1; overflow: hidden; }
             .desktop-nl-view { display: none !important; }
+            
+            /* OCULTA BOTÃO NL DO CABEÇALHO NO MOBILE */
+            .desktop-nl-header-btn { display: none !important; }
         }
 
         /* IMPRESSÃO ISOLADA */
@@ -309,7 +320,7 @@
 </div> 
 
 <div class="container"> 
-    <!-- CABEÇALHO -->
+    <!-- CABEÇALHO SEM BOTÃO SAIR (MOBILE: SÓ ÍCONE, MÊS E IMPRIMIR) -->
     <header> 
         <div style="display: flex; align-items: center; gap: 12px;">
             <div style="background:var(--success); color:black; padding:8px 14px; border-radius:10px; font-weight:900; font-size:13px;">GPL</div> 
@@ -318,9 +329,8 @@
         <div style="display: flex; gap: 8px; align-items: center;"> 
             <button class="header-btn" onclick="toggleMonthGrid()" id="currentMonthDisplay" style="background: var(--accent); border-color: var(--accent);">SETEMBRO</button> 
             <div id="monthGrid" class="month-grid"></div> 
-            <button class="header-btn" onclick="toggleDesktopNL()" style="background: var(--purple); border-color: var(--purple);">NL</button>
+            <button class="header-btn desktop-nl-header-btn" onclick="toggleDesktopNL()" style="background: var(--purple); border-color: var(--purple);">NL</button>
             <button class="header-btn" onclick="window.print()">IMPRIMIR</button> 
-            <button class="header-btn" onclick="logout()" style="background:var(--danger); border-color:var(--danger);">SAIR</button> 
         </div> 
     </header> 
 
@@ -360,7 +370,7 @@
         </div>
     </div>
 
-    <!-- CONTEÚDO PRINCIPAL (BARRA DE PESQUISA RETIRADA DO CARD DE CADASTRO E ALOCADA NA ABA DE REGISTROS) -->
+    <!-- CONTEÚDO PRINCIPAL -->
     <div class="content-wrap" id="mainContentWrap"> 
         <aside class="no-print mobile-tab-content" id="tabFormulario"> 
             <div class="sidebar"> 
@@ -566,28 +576,28 @@
 
     function toggleDesktopNL() {
         const view = document.getElementById('desktopNLView');
-        const main = document.getElementById('mainContentWrap');
+        const tabelaTab = document.getElementById('tabTabela');
         if (view.classList.contains('active')) {
             view.classList.remove('active');
-            main.style.display = 'grid';
+            tabelaTab.style.display = 'flex';
             sessionStorage.removeItem('gpl_desk_nl_open');
         } else {
             view.classList.add('active');
-            main.style.display = 'none';
+            tabelaTab.style.display = 'none';
             sessionStorage.setItem('gpl_desk_nl_open', 'true');
         }
     }
 
     function fecharDesktopNL() {
         document.getElementById('desktopNLView').classList.remove('active');
-        document.getElementById('mainContentWrap').style.display = 'grid';
+        document.getElementById('tabTabela').style.display = 'flex';
         sessionStorage.removeItem('gpl_desk_nl_open');
     }
 
     function restaurarAbaSalva() {
         if (window.innerWidth > 900) {
             if (sessionStorage.getItem('gpl_desk_nl_open') === 'true') {
-                document.getElementById('mainContentWrap').style.display = 'none';
+                document.getElementById('tabTabela').style.display = 'none';
                 document.getElementById('desktopNLView').classList.add('active');
             }
             return;
@@ -840,12 +850,6 @@
             grid.classList.remove('active');
         }
     });
-
-    function logout() { 
-        sessionStorage.removeItem('gpl_user_2026'); 
-        sessionStorage.removeItem('gpl_desk_nl_open');
-        location.reload(); 
-    } 
 
     window.onload = function() {
         initSystem();
