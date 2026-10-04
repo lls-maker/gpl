@@ -1,6 +1,7 @@
 {
   "name": "Gestão de Produtividade de Leituras",
   "short_name": "GPL 2026",
+  "description": "Painel de controle e produtividade de leituras para 2026.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
