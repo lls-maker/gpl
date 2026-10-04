@@ -183,22 +183,7 @@
         .mobile-nav-tabs, .mobile-search-area { display: none; }
         .desktop-header-title { display: inline; }
         .mobile-header-title { display: none; }
-
-        /* ABA NL NO COMPUTADOR (OCULTA POR PADRÃO, SÓ APARECE COM .active) */
-        .desktop-nl-view {
-            display: none !important; 
-            flex-direction: column; 
-            height: 100%; 
-            min-height: 0; 
-            overflow: hidden; 
-            background: var(--surface); 
-            border-radius: 16px; 
-            border: 1.5px solid var(--brown-border); 
-            padding: 10px;
-        }
-        .desktop-nl-view.active {
-            display: flex !important;
-        }
+        .desktop-nl-header-btn { display: none !important; } /* REMOVIDO NO COMPUTADOR */
 
         /* REGRAS EXCLUSIVAS PARA O MOBILE */
         @media (max-width: 900px) {
@@ -215,7 +200,6 @@
             .observations { display: flex !important; height: auto !important; padding: 8px 12px !important; }
             .obs-item { font-size: 10px !important; gap: 6px !important; }
             
-            /* CARDS DO DASHBOARD AUMENTADOS NO MOBILE */
             .summary-grid { grid-template-columns: repeat(4, 1fr) !important; gap: 6px !important; height: auto !important; }
             .summary-card { height: 78px !important; padding: 8px 4px !important; border-radius: 14px !important; }
             .summary-card p { font-size: 9.5px !important; }
@@ -258,7 +242,8 @@
             
             .table-container { flex-grow: 1 !important; min-height: 0 !important; overflow-y: auto !important; }
             .main-view { min-height: 0 !important; height: 100% !important; flex-grow: 1; overflow: hidden; }
-            .desktop-nl-view { display: none !important; }
+            
+            /* RESTAURA O BOTÃO NL APENAS NO MOBILE */
             .desktop-nl-header-btn { display: none !important; }
 
             .desktop-header-title { display: none !important; }
@@ -269,7 +254,7 @@
         @media print { 
             html, body { height: auto !important; overflow: visible !important; background: #fff !important; color: #000 !important; position: static !important; display: block !important; }
             
-            .container, header, .prog-area, .mobile-nav-tabs, .top-dashboard, .content-wrap, #loginScreen, .desktop-nl-view { display: none !important; } 
+            .container, header, .prog-area, .mobile-nav-tabs, .top-dashboard, .content-wrap, #loginScreen { display: none !important; } 
             
             #printAreaForced { 
                 display: block !important; 
@@ -336,7 +321,6 @@
         <div style="display: flex; gap: 8px; align-items: center;"> 
             <button class="header-btn" onclick="toggleMonthGrid()" id="currentMonthDisplay" style="background: var(--accent); border-color: var(--accent);">SETEMBRO</button> 
             <div id="monthGrid" class="month-grid"></div> 
-            <button class="header-btn desktop-nl-header-btn" onclick="toggleDesktopNL()" style="background: var(--purple); border-color: var(--purple);">NL</button>
             <button class="header-btn" onclick="window.print()">IMPRIMIR</button> 
         </div> 
     </header> 
@@ -420,7 +404,7 @@
             </div> 
         </main> 
 
-        <!-- ABA NL MOBILE -->
+        <!-- ABA NL MOBILE (APENAS PARA CELULAR) -->
         <div class="mobile-tab-content" id="tabNL" style="flex-grow: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column;">
             <div style="margin-bottom: 6px; flex-shrink: 0;">
                 <input type="text" id="searchNLMob" placeholder="Pesquisar por número ou descrição da nota..." oninput="filtrarNL(this.value)" style="border-color: var(--success);">
@@ -437,22 +421,6 @@
             </div>
         </div>
     </div> 
-
-    <!-- ABA NL COMPUTADOR -->
-    <div class="desktop-nl-view" id="desktopNLView">
-        <div style="margin-bottom: 6px; flex-shrink: 0; display: flex; justify-content: space-between; align-items: center;">
-            <input type="text" id="searchNLDesk" placeholder="Pesquisar por número ou descrição da nota..." oninput="filtrarNLDesk(this.value)" style="border-color: var(--success); margin-bottom: 0; width: calc(100% - 110px);">
-            <button class="header-btn" onclick="fecharDesktopNL()" style="background: var(--danger); border-color: var(--danger);">VOLTAR</button>
-        </div>
-        <div class="table-container">
-            <table>
-                <thead>
-                    <tr><th>Número</th><th>Status</th><th>Detalhe / Descrição</th></tr>
-                </thead>
-                <tbody id="nlCorpoDesk"></tbody>
-            </table>
-        </div>
-    </div>
 </div> 
 
 <!-- IMPRESSÃO -->
@@ -581,48 +549,6 @@
         sessionStorage.setItem('gpl_active_tab', tabId);
     }
 
-    function toggleDesktopNL() {
-        const view = document.getElementById('desktopNLView');
-        const tabelaTab = document.getElementById('tabTabela');
-        if (view.classList.contains('active')) {
-            view.classList.remove('active');
-            tabelaTab.style.display = 'flex';
-            sessionStorage.removeItem('gpl_desk_nl_open');
-        } else {
-            view.classList.add('active');
-            tabelaTab.style.display = 'none';
-            sessionStorage.setItem('gpl_desk_nl_open', 'true');
-        }
-    }
-
-    function fecharDesktopNL() {
-        document.getElementById('desktopNLView').classList.remove('active');
-        document.getElementById('tabTabela').style.display = 'flex';
-        sessionStorage.removeItem('gpl_desk_nl_open');
-    }
-
-    function restaurarAbaSalva() {
-        if (window.innerWidth > 900) {
-            if (sessionStorage.getItem('gpl_desk_nl_open') === 'true') {
-                document.getElementById('tabTabela').style.display = 'none';
-                document.getElementById('desktopNLView').classList.add('active');
-            }
-            return;
-        }
-
-        const savedTab = sessionStorage.getItem('gpl_active_tab');
-        if (savedTab && document.getElementById(savedTab)) {
-            let btnMap = {
-                'tabDashboard': 'btnTabDashboard',
-                'tabFormulario': 'btnTabFormulario',
-                'tabTabela': 'btnTabTabela',
-                'tabNL': 'btnTabNL'
-            };
-            let btnEl = document.getElementById(btnMap[savedTab]);
-            if (btnEl) switchMobileTab(savedTab, btnEl);
-        }
-    }
-
     function sincronizarBusca(val) {
         document.getElementById('searchRazao').value = val;
         atualizarTabela();
@@ -637,20 +563,14 @@
             </tr>
         `).join('');
 
-        document.getElementById('nlCorpoMob').innerHTML = htmlContent;
-        document.getElementById('nlCorpoDesk').innerHTML = htmlContent;
+        const elMob = document.getElementById('nlCorpoMob');
+        if(elMob) elMob.innerHTML = htmlContent;
     }
 
     function filtrarNL(val) {
         const termo = val.toUpperCase();
-        document.getElementById('searchNLMob').value = val;
-        document.getElementById('searchNLDesk').value = val;
         const filtrado = notasDeLeitura.filter(i => i.numero.includes(termo) || i.detalhe.includes(termo));
         renderizarNL(filtrado);
-    }
-
-    function filtrarNLDesk(val) {
-        filtrarNL(val);
     }
 
     function animarContagem(id, final, isMoeda = false) { 
@@ -689,7 +609,20 @@
         renderMonths(); 
         renderizarNL();
         atualizarTabela(); 
-        restaurarAbaSalva();
+        
+        if (window.innerWidth <= 900) {
+            const savedTab = sessionStorage.getItem('gpl_active_tab');
+            if (savedTab && document.getElementById(savedTab)) {
+                let btnMap = {
+                    'tabDashboard': 'btnTabDashboard',
+                    'tabFormulario': 'btnTabFormulario',
+                    'tabTabela': 'btnTabTabela',
+                    'tabNL': 'btnTabNL'
+                };
+                let btnEl = document.getElementById(btnMap[savedTab]);
+                if (btnEl) switchMobileTab(savedTab, btnEl);
+            }
+        }
     } 
 
     function handleAuth() { 
