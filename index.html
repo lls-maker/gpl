@@ -1000,6 +1000,29 @@
     window.onload = function() {
         initSystem();
     }; 
+
+    window.onload = function() {
+    initSystem();
+
+    // Navegação por Enter / Próximo nos campos do formulário
+    const form = document.getElementById("gplForm");
+    if (form) {
+        const inputs = Array.from(form.querySelectorAll("input"));
+        inputs.forEach((input, index) => {
+            input.addEventListener("keydown", (e) => {
+                if (e.key === "Enter") {
+                    e.preventDefault();
+                    const nextInput = inputs[index + 1];
+                    if (nextInput) {
+                        nextInput.focus();
+                    } else {
+                        form.requestSubmit();
+                    }
+                }
+            });
+        });
+    }
+};
 </script> 
 </body> 
 </html>
