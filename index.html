@@ -182,11 +182,11 @@
 
         .mobile-nav-tabs, .mobile-search-area { display: none; }
 
-        /* ABA NL INDEPENDENTE NO COMPUTADOR */
-        .desktop-nl-wrap {
-            display: none; flex-direction: column; width: 100%; height: 100%; min-height: 0; overflow: hidden;
+        /* ABA NL NO COMPUTADOR (COMPORTAMENTO PADRÃO DE ABA) */
+        .desktop-nl-view {
+            display: none; flex-direction: column; height: 100%; min-height: 0; overflow: hidden; background: var(--surface); border-radius: 16px; border: 1.5px solid var(--purple); padding: 10px;
         }
-        .desktop-nl-wrap.active {
+        .desktop-nl-view.active {
             display: flex !important;
         }
 
@@ -247,17 +247,15 @@
             
             .table-container { flex-grow: 1 !important; min-height: 0 !important; overflow-y: auto !important; }
             .main-view { min-height: 0 !important; height: 100% !important; flex-grow: 1; overflow: hidden; }
-            .desktop-nl-wrap { display: none !important; }
+            .desktop-nl-view { display: none !important; }
         }
 
-        /* IMPRESSÃO 100% ISOLADA: EXIBE APENAS A TABELA DE REGISTROS, INDEPENDENTE DA ABA ATUAL */
+        /* IMPRESSÃO 100% ISOLADA: EXIBE APENAS A TABELA DE REGISTROS */
         @media print { 
             html, body { height: auto !important; overflow: visible !important; background: #fff !important; color: #000 !important; position: static !important; display: block !important; }
             
-            /* OCULTA TUDO DO SISTEMA */
-            .container, header, .prog-area, .mobile-nav-tabs, .top-dashboard, .content-wrap, #loginScreen, .desktop-nl-wrap { display: none !important; } 
+            .container, header, .prog-area, .mobile-nav-tabs, .top-dashboard, .content-wrap, #loginScreen, .desktop-nl-view { display: none !important; } 
             
-            /* FORÇA A EXIBIÇÃO EXCLUSIVA DA TABELA DE REGISTROS PARA IMPRESSÃO */
             #printAreaForced { 
                 display: block !important; 
                 width: 100% !important; 
@@ -311,13 +309,12 @@
 </div> 
 
 <div class="container"> 
-    <!-- CABEÇALHO -->
+    <!-- CABEÇALHO LIMPO (COMPUTADOR: ÍCONE, MÊS, IMPRIMIR, SAIR) -->
     <header> 
         <div style="background:var(--success); color:black; padding:8px 14px; border-radius:10px; font-weight:900; font-size:13px;">GPL</div> 
         <div style="display: flex; gap: 8px; align-items: center;"> 
             <button class="header-btn" onclick="toggleMonthGrid()" id="currentMonthDisplay" style="background: var(--accent); border-color: var(--accent);">SETEMBRO</button> 
             <div id="monthGrid" class="month-grid"></div> 
-            <button class="header-btn" onclick="toggleDesktopNL()" style="background: var(--purple); border-color: var(--purple);">NL</button>
             <button class="header-btn" onclick="window.print()">IMPRIMIR</button> 
             <button class="header-btn" onclick="logout()" style="background:var(--danger); border-color:var(--danger);">SAIR</button> 
         </div> 
@@ -333,7 +330,7 @@
         </div> 
     </div> 
 
-    <!-- BARRA DE NAVEGAÇÃO NO TOPO (MOBILE) -->
+    <!-- BARRA DE NAVEGAÇÃO NO TOPO (MOBILE COM ABA NL) -->
     <nav class="mobile-nav-tabs no-print">
         <button class="mob-tab-btn active" id="btnTabDashboard" onclick="switchMobileTab('tabDashboard', this)">📊 Dash</button>
         <button class="mob-tab-btn" id="btnTabFormulario" onclick="switchMobileTab('tabFormulario', this)">➕ Novo</button>
@@ -359,7 +356,7 @@
         </div>
     </div>
 
-    <!-- CONTEÚDO PRINCIPAL (DASHBOARD / FORMULÁRIO / TABELA) -->
+    <!-- CONTEÚDO PRINCIPAL -->
     <div class="content-wrap" id="mainContentWrap"> 
         <aside class="no-print mobile-tab-content" id="tabFormulario"> 
             <div class="sidebar"> 
@@ -425,25 +422,24 @@
         </div>
     </div> 
 
-    <!-- CARD INDEPENDENTE NL PARA COMPUTADOR -->
-    <div class="desktop-nl-wrap" id="desktopNLCard">
-        <div style="margin-bottom: 6px; flex-shrink: 0;">
-            <input type="text" id="searchNLDesk" placeholder="Pesquisar por número ou descrição da nota..." oninput="filtrarNLDesk(this.value)" style="border-color: var(--purple);">
+    <!-- ABA NL PARA COMPUTADOR (SUBSTITUI A TABELA QUANDO CLICADA) -->
+    <div class="desktop-nl-view" id="desktopNLView">
+        <div style="margin-bottom: 6px; flex-shrink: 0; display: flex; justify-content: space-between; align-items: center;">
+            <input type="text" id="searchNLDesk" placeholder="Pesquisar por número ou descrição da nota..." oninput="filtrarNLDesk(this.value)" style="border-color: var(--purple); margin-bottom: 0; width: calc(100% - 110px);">
+            <button class="header-btn" onclick="fecharDesktopNL()" style="background: var(--danger); border-color: var(--danger);">VOLTAR</button>
         </div>
-        <div class="main-view">
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr><th>Número</th><th>Status</th><th>Detalhe / Descrição</th></tr>
-                    </thead>
-                    <tbody id="nlCorpoDesk"></tbody>
-                </table>
-            </div>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr><th>Número</th><th>Status</th><th>Detalhe / Descrição</th></tr>
+                </thead>
+                <tbody id="nlCorpoDesk"></tbody>
+            </table>
         </div>
     </div>
 </div> 
 
-<!-- ÁREA EXCLUSIVA E FORÇADA PARA IMPRESSÃO -->
+<!-- ÁREA EXCLUSIVA PARA IMPRESSÃO -->
 <div id="printAreaForced" style="display:none;">
     <div class="print-header">Gestão de Produção de Leituras - <span id="printUser"></span> (<span id="printMonth"></span>/2026)</div>
     <table> 
@@ -559,34 +555,35 @@
     const fM = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); 
 
     function switchMobileTab(tabId, btnElement) {
+        if (window.innerWidth > 900 && tabId === 'tabNL') {
+            document.getElementById('mainContentWrap').style.display = 'none';
+            document.getElementById('desktopNLView').classList.add('active');
+            sessionStorage.setItem('gpl_desk_nl_open', 'true');
+            return;
+        }
+
         document.querySelectorAll('.mobile-tab-content').forEach(el => el.classList.remove('active-tab'));
-        document.getElementById(tabId).classList.add('active-tab');
+        const target = document.getElementById(tabId);
+        if(target) target.classList.add('active-tab');
+        
         document.querySelectorAll('.mob-tab-btn').forEach(btn => btn.classList.remove('active'));
         if(btnElement) btnElement.classList.add('active');
+        
         sessionStorage.setItem('gpl_active_tab', tabId);
     }
 
-    function toggleDesktopNL() {
-        const deskCard = document.getElementById('desktopNLCard');
-        const mainContent = document.getElementById('mainContentWrap');
-        
-        if (deskCard.classList.contains('active')) {
-            deskCard.classList.remove('active');
-            mainContent.style.display = 'grid';
-            sessionStorage.removeItem('gpl_desk_nl_open');
-        } else {
-            deskCard.classList.add('active');
-            mainContent.style.display = 'none';
-            sessionStorage.setItem('gpl_desk_nl_open', 'true');
-        }
+    function fecharDesktopNL() {
+        document.getElementById('desktopNLView').classList.remove('active');
+        document.getElementById('mainContentWrap').style.display = 'grid';
+        sessionStorage.removeItem('gpl_desk_nl_open');
     }
 
     function restaurarAbaSalva() {
         if (window.innerWidth > 900) {
             const isDeskNLOpen = sessionStorage.getItem('gpl_desk_nl_open');
             if (isDeskNLOpen === 'true') {
-                document.getElementById('desktopNLCard').classList.add('active');
                 document.getElementById('mainContentWrap').style.display = 'none';
+                document.getElementById('desktopNLView').classList.add('active');
             }
             return;
         }
@@ -733,7 +730,6 @@
 
         document.getElementById('tabelaCorpo').innerHTML = htmlRegistros; 
 
-        // Tabela limpa exclusiva para impressão universal
         const htmlPrintRegistros = regs.map(i => { 
             const calcPercentual = i.leituras > 0 ? (i.imped / i.leituras) * 100 : 0; 
             return `<tr><td>${i.data.split('-').reverse().slice(0,2).join('/')}</td><td>${i.localidade}</td><td>${i.razao}</td><td>${i.rotas}</td><td>${i.leituras.toLocaleString()}</td><td>${i.imped}</td><td>${calcPercentual.toFixed(2)}%</td></tr>`; 
