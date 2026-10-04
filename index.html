@@ -6,7 +6,7 @@
     <title>Gestão de Produtividade de Leituras 2026</title> 
 
     <!-- FAVICON CORRIGIDO EM BASE64 SEGURO E COMPATÍVEL COM TODOS OS NAVEGADORES -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzMiAzMicgd2lkdGg9JzMyJyBoZWlnaHQ9JzMyJz48cmVjdCB3aWR0aD0nMzInIGhlaWdodD0nMzInIGJ4PSc2JyBmaWxsPScjMGIwZjE1Jy8+PHRleHQgeD0nNTAlJyB5PSc1NSUnIGRvbWluYW50LWJhc2VsaW5lPSdtaWRkbGUnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJyBmb250LXdlaWdodD0nOTAwJyBmb250LXNpemU9JzEwJyBmaWxsPScjMDBmZjg4JyBsZXR0ZXItc3BhY2luZz0n0u1Jz5HUEw8L3RleHQ+PC9zdmc+">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzMiAzMicgd2lkdGg9JzMyJyBoZWlnaHQ9JzMyJz48cmVjdCB3aWR0aD0nMzInIGhlaWdodD0nMzInIHJ4PSc2JyBmaWxsPScjMGIwZjE1Jy8+PHRleHQgeD0nNTAlJyB5PSc1NSUnIGRvbWluYW50LWJhc2VsaW5lPSdtaWRkbGUnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJyBmb250LXdlaWdodD0nOTAwJyBmb250LXNpemU9JzEwJyBmaWxsPScjMDBmZjg4JyBsZXR0ZXItc3BhY2luZz0nMC41Jz5HUEw8L3RleHQ+PC9zdmc+">
 
     <!-- VÍNCULO DO MANIFESTO PARA ATIVAR O MODO PWA (APLICATIVO INSTALÁVEL) -->
     <link rel="manifest" href="./manifest.json">
@@ -36,7 +36,8 @@
             background-color: var(--bg); 
             color: var(--text-p); 
             margin: 0; 
-            padding: 12px; 
+            padding: 10px; 
+            width: 100vw;
             height: 100vh; 
             overflow: hidden; 
             display: flex;
@@ -52,7 +53,7 @@
             outline: none; 
             width: 100%; 
             font-size: 12px; 
-            margin-bottom: 5px; 
+            margin-bottom: 4px; 
             transition: 0.3s; 
         } 
         input:focus { 
@@ -120,17 +121,17 @@
         .container { 
             max-width: 1450px; 
             width: 100%; 
-            height: 96vh; 
+            height: 100%; 
             margin: auto; 
             display: flex; 
             flex-direction: column; 
-            gap: 10px; 
+            gap: 8px; 
             overflow: hidden; 
         } 
         header { 
             background: var(--surface); 
-            padding: 10px 20px; 
-            border-radius: 16px; 
+            padding: 8px 20px; 
+            border-radius: 14px; 
             border: 1px solid var(--border); 
             display: flex; 
             justify-content: space-between; 
@@ -141,27 +142,27 @@
         .prog-area { 
             width: 100%; 
             flex-shrink: 0; 
-            padding: 0 4px; 
+            padding: 0 2px; 
         } 
         
         /* DASHBOARD */
         .top-dashboard {
             display: grid;
             grid-template-columns: 320px 1fr;
-            gap: 10px;
+            gap: 8px;
             flex-shrink: 0;
         }
 
         .observations { 
             background: var(--surface); 
-            padding: 10px 16px; 
+            padding: 8px 14px; 
             border-radius: 14px; 
             border: 1.5px solid #ffffff; 
             display: flex; 
             flex-direction: column; 
             justify-content: center; 
-            gap: 5px; 
-            height: 75px; 
+            gap: 4px; 
+            height: 70px; 
         } 
         .obs-item { 
             font-size: 9.5px; 
@@ -183,11 +184,11 @@
             display: grid; 
             grid-template-columns: repeat(7, 1fr); 
             gap: 8px; 
-            height: 75px; 
+            height: 70px; 
         } 
         .summary-card { 
             background: var(--surface); 
-            padding: 6px 4px; 
+            padding: 4px; 
             border-radius: 14px; 
             border: 1.5px solid var(--grey-border); 
             border-top: 4px solid; 
@@ -205,21 +206,21 @@
         .summary-card p { font-size: 7px; font-weight: 800; text-transform: uppercase; margin: 0; } 
         .summary-card h2 { margin: 3px 0 0; font-size: 0.85rem; color: var(--text-h); font-weight: 900; } 
 
-        .neon-leituras { border-top-color: var(--white-neon); box-shadow: 0 0 12px rgba(248, 249, 250, 0.15); } 
-        .neon-impedimentos { border-top-color: var(--orange-neon); box-shadow: 0 0 12px rgba(255, 140, 0, 0.15); } 
-        .neon-meta { border-top-color: var(--warning); box-shadow: 0 0 12px rgba(255, 204, 0, 0.15); } 
-        .neon-bonus { border-top-color: var(--accent); box-shadow: 0 0 12px rgba(0, 112, 243, 0.15); } 
-        .neon-descontos { border-top-color: var(--danger); box-shadow: 0 0 12px rgba(255, 77, 77, 0.15); } 
-        .neon-receber { border-top-color: var(--success); box-shadow: 0 0 15px rgba(0, 255, 136, 0.2); } 
-        .neon-acumulado { border-top-color: var(--purple); box-shadow: 0 0 12px rgba(156, 39, 176, 0.15); } 
+        .neon-leituras { border-top-color: var(--white-neon); box-shadow: 0 0 10px rgba(248, 249, 250, 0.15); } 
+        .neon-impedimentos { border-top-color: var(--orange-neon); box-shadow: 0 0 10px rgba(255, 140, 0, 0.15); } 
+        .neon-meta { border-top-color: var(--warning); box-shadow: 0 0 10px rgba(255, 204, 0, 0.15); } 
+        .neon-bonus { border-top-color: var(--accent); box-shadow: 0 0 10px rgba(0, 112, 243, 0.15); } 
+        .neon-descontos { border-top-color: var(--danger); box-shadow: 0 0 10px rgba(255, 77, 77, 0.15); } 
+        .neon-receber { border-top-color: var(--success); box-shadow: 0 0 12px rgba(0, 255, 136, 0.2); } 
+        .neon-acumulado { border-top-color: var(--purple); box-shadow: 0 0 10px rgba(156, 39, 176, 0.15); } 
 
-        /* ÁREA DE CONTEÚDO PRINCIPAL (TRAVADA DENTRO DA TELA) */
+        /* ÁREA DE CONTEÚDO PRINCIPAL PREENCHENDO EXATAMENTE O RESTANTE DA TELA */
         .content-wrap { 
             display: grid; 
             grid-template-columns: 320px 1fr; 
-            gap: 10px; 
+            gap: 8px; 
             flex-grow: 1; 
-            min-height: 0; /* Essencial para o flex/grid respeitar o limite da tela */
+            min-height: 0; 
             overflow: hidden; 
         } 
         aside, main { 
@@ -231,8 +232,8 @@
         } 
         .sidebar { 
             background: linear-gradient(180deg, rgba(0, 112, 243, 0.08) 0%, var(--surface) 100%); 
-            padding: 12px 15px; 
-            border-radius: 16px; 
+            padding: 10px 14px; 
+            border-radius: 14px; 
             border: 1.5px solid var(--accent); 
             height: 100%; 
             display: flex; 
@@ -241,13 +242,13 @@
             overflow: hidden; 
         } 
         .form-content-area {
-            margin-top: 10px; 
+            margin-top: 6px; 
         }
         .form-group {
             display: flex; 
             align-items: center; 
             gap: 8px; 
-            margin-bottom: 4px;
+            margin-bottom: 3px;
         }
         .form-group label {
             width: 75px; 
@@ -261,25 +262,25 @@
             margin-top: 0px; 
             display: flex; 
             flex-direction: column; 
-            gap: 5px; 
+            gap: 4px; 
         } 
         .btn-add { 
             background: var(--accent); 
             color: #fff; 
             width: 100%; 
-            padding: 10px; 
+            padding: 9px; 
             border-radius: 10px; 
             font-weight: 900; 
             cursor: pointer; 
             border: none; 
             text-transform: uppercase; 
-            font-size: 10.5px; 
+            font-size: 10px; 
         } 
         .btn-clear { 
             background: transparent; 
             color: var(--danger); 
             width: 100%; 
-            padding: 7px; 
+            padding: 6px; 
             border-radius: 10px; 
             font-weight: 800; 
             cursor: pointer; 
@@ -291,7 +292,7 @@
             background: transparent; 
             color: var(--purple); 
             width: 100%; 
-            padding: 7px; 
+            padding: 6px; 
             border-radius: 10px; 
             font-weight: 800; 
             cursor: pointer; 
@@ -300,15 +301,15 @@
             font-size: 9px; 
         } 
         .backup-row {
-            display: flex;
-            gap: 5px;
-            width: 100%;
-        }
+            display: flex; 
+            gap: 5px; 
+            width: 100%; 
+        } 
         .btn-backup { 
             background: transparent; 
             color: var(--success); 
             width: 50%; 
-            padding: 7px 3px; 
+            padding: 6px 3px; 
             border-radius: 10px; 
             font-weight: 800; 
             cursor: pointer; 
@@ -321,7 +322,7 @@
             background: transparent; 
             color: var(--warning); 
             width: 50%; 
-            padding: 7px 3px; 
+            padding: 6px 3px; 
             border-radius: 10px; 
             font-weight: 800; 
             cursor: pointer; 
@@ -333,7 +334,7 @@
 
         .main-view { 
             background: var(--surface); 
-            border-radius: 16px; 
+            border-radius: 14px; 
             border: 1.5px solid var(--brown-border); 
             height: 100%; 
             display: flex; 
@@ -349,19 +350,19 @@
         } 
 
         table { width: 100%; border-collapse: collapse; } 
-        th, td { padding: 8px 5px; text-align: center; border-bottom: 1px solid var(--border); font-size: 11.5px; } 
+        th, td { padding: 7px 5px; text-align: center; border-bottom: 1px solid var(--border); font-size: 11px; } 
         th { background: #0d1117; color: var(--accent); font-size: 9.5px; text-transform: uppercase; position: sticky; top: 0; z-index: 5; } 
 
-        .month-grid { display: none; position: absolute; top: 60px; right: 170px; background: #0d1117; border: 1px solid var(--accent); padding: 12px; border-radius: 14px; grid-template-columns: repeat(3, 1fr); gap: 6px; z-index: 1000; } 
+        .month-grid { display: none; position: absolute; top: 55px; right: 160px; background: #0d1117; border: 1px solid var(--accent); padding: 10px; border-radius: 12px; grid-template-columns: repeat(3, 1fr); gap: 6px; z-index: 1000; } 
         .month-grid.active { display: grid; } 
-        .month-item { background: #000; color: white; border: 1px solid var(--border); padding: 8px; border-radius: 8px; cursor: pointer; font-size: 10px; font-weight: bold; text-align: center; }
+        .month-item { background: #000; color: white; border: 1px solid var(--border); padding: 7px; border-radius: 8px; cursor: pointer; font-size: 10px; font-weight: bold; text-align: center; }
         
         .header-btn {
             background: #1e2633;
             border: 1px solid var(--border);
             color: white;
-            padding: 8px 12px;
-            border-radius: 9px;
+            padding: 7px 12px;
+            border-radius: 8px;
             cursor: pointer;
             font-weight: 800;
             font-size: 11px;
@@ -382,11 +383,10 @@
         /* COMPORTAMENTO EXCLUSIVO PARA TELAS DE CELULAR/TABLET (MAX-WIDTH: 900px) */
         @media (max-width: 900px) {
             body {
-                padding: 8px;
-                overflow: hidden !important;
+                padding: 6px;
             }
             .container {
-                height: 98vh; 
+                height: 100%; 
             }
             .desktop-header-info {
                 display: none !important;
@@ -406,7 +406,7 @@
                 height: auto !important;
             }
             .summary-card {
-                height: 55px !important;
+                height: 52px !important;
             }
             .content-wrap {
                 display: block !important;
@@ -423,7 +423,7 @@
                 z-index: 999;
                 justify-content: space-between;
                 padding: 4px;
-                margin-bottom: 6px;
+                margin-bottom: 4px;
                 gap: 4px;
                 flex-shrink: 0;
             }
@@ -436,7 +436,7 @@
                 text-transform: uppercase;
                 cursor: pointer;
                 flex: 1;
-                padding: 8px 2px;
+                padding: 7px 2px;
                 border-radius: 9px;
                 text-align: center;
                 transition: 0.3s;
@@ -460,12 +460,12 @@
             #tabFormulario .sidebar {
                 height: 100% !important;
                 justify-content: flex-start !important;
-                gap: 10px;
+                gap: 8px;
             }
 
             .mobile-search-area {
                 display: block !important;
-                margin-bottom: 6px;
+                margin-bottom: 5px;
                 flex-shrink: 0;
             }
         }
@@ -508,7 +508,7 @@
 <div class="container"> 
     <header> 
         <div style="display: flex; align-items: center; gap: 10px;"> 
-            <div style="background:var(--success); color:black; padding:8px 12px; border-radius:10px; font-weight:900;" class="no-print">GPL</div> 
+            <div style="background:var(--success); color:black; padding:7px 10px; border-radius:8px; font-weight:900;" class="no-print">GPL</div> 
             <h1 style="font-size: 14px; color: white; margin: 0;"><span class="desktop-header-info">Gestão de Leituras - <span id="userDisplay" style="color:var(--success)"></span></span></h1> 
         </div> 
         <div style="display: flex; gap: 8px; align-items: center;" class="no-print"> 
@@ -520,10 +520,10 @@
     </header> 
 
     <div id="progArea" class="prog-area no-print"> 
-        <div style="width:100%; background:#1e2633; height:7px; border-radius:10px; overflow:hidden; border:1px solid var(--border); margin-bottom:3px;"> 
+        <div style="width:100%; background:#1e2633; height:6px; border-radius:10px; overflow:hidden; border:1px solid var(--border); margin-bottom:2px;"> 
             <div id="barFill" style="height:100%; width:0%; background:linear-gradient(90deg, var(--accent), var(--success)); transition:0.8s;"></div> 
         </div> 
-        <div style="display:flex; justify-content:space-between; font-size:9.5px; font-weight:bold; color:var(--text-p); text-transform: uppercase;"> 
+        <div style="display:flex; justify-content:space-between; font-size:9px; font-weight:bold; color:var(--text-p); text-transform: uppercase;"> 
             <span id="barTxt">Progresso Meta: 0 / 8.000</span> 
             <span id="barPerc" style="color:var(--success)">0%</span> 
         </div> 
@@ -565,8 +565,8 @@
         <aside class="no-print mobile-tab-content" id="tabFormulario"> 
             <div class="sidebar"> 
                 <div>
-                    <label style="font-size: 9px; font-weight: 800; color: var(--success); text-transform: uppercase; margin-bottom: 3px; display: block;" class="desktop-search-label">Pesquisar razão</label> 
-                    <input type="text" id="searchRazao" placeholder="Filtrar registros..." oninput="sincronizarBusca(this.value)" style="border-color: var(--success); margin-bottom: 5px;" class="desktop-search-input"> 
+                    <label style="font-size: 9px; font-weight: 800; color: var(--success); text-transform: uppercase; margin-bottom: 2px; display: block;" class="desktop-search-label">Pesquisar razão</label> 
+                    <input type="text" id="searchRazao" placeholder="Filtrar registros..." oninput="sincronizarBusca(this.value)" style="border-color: var(--success); margin-bottom: 4px;" class="desktop-search-input"> 
                     
                     <div class="form-content-area">
                         <form id="gplForm"> 
@@ -842,8 +842,6 @@
             grid.classList.remove('active');
         }
     });
-
-    function logout() { sessionStorage.clear(); location.reload(); } 
 
     window.onload = function() {
         initSystem();
