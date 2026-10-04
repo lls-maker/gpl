@@ -8,8 +8,9 @@
     <!-- FAVICON CORRIGIDO EM BASE64 SEGURO E COMPATÍVEL COM TODOS OS NAVEGADORES -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzMiAzMicgd2lkdGg9JzMyJyBoZWlnaHQ9JzMyJz48cmVjdCB3aWR0aD0nMzInIGhlaWdodD0nMzInIHJ4PSc2JyBmaWxsPScjMGIwZjE1Jy8+PHRleHQgeD0nNTAlJyB5PSc1NSUnIGRvbWluYW50LWJhc2VsaW5lPSdtaWRkbGUnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJyBmb250LXdlaWdodD0nOTAwJyBmb250LXNpemU9JzEwJyBmaWxsPScjMDBmZjg4JyBsZXR0ZXItc3BhY2luZz0nMC41Jz5HUEw8L3RleHQ+PC9zdmc+">
 
-    <!-- VÍNCULO DO MANIFESTO PARA ATIVAR O MODO PWA (APLICATIVO INSTALÁVEL) -->
+    <!-- VÍNCULO DO MANIFESTO PARA ATIVAR O MODO PWA -->
     <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#030508">
 
     <style> 
         :root { 
@@ -28,9 +29,7 @@
             --orange-neon: #ff8c00; 
             --white-neon: #f8f9fa; 
         } 
-        * { 
-            box-sizing: border-box; 
-        } 
+        * { box-sizing: border-box; } 
         body { 
             font-family: 'Inter', system-ui, sans-serif; 
             background-color: var(--bg); 
@@ -69,276 +68,94 @@
             -webkit-appearance: none; 
             margin: 0; 
         } 
-        input[type=number] { 
-            -moz-appearance: textfield; 
-        } 
+        input[type=number] { -moz-appearance: textfield; } 
+
         #loginScreen { 
-            position: fixed; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100%; 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: radial-gradient(circle at center, #0b0f15 0%, #030508 100%); 
-            z-index: 9999; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
+            z-index: 9999; display: flex; align-items: center; justify-content: center; 
         } 
         .login-box { 
-            background: rgba(11, 15, 21, 0.8); 
-            padding: 40px; 
-            border-radius: 24px; 
-            border: 1px solid var(--border); 
-            border-top: 4px solid var(--success); 
-            width: 380px; 
-            text-align: center; 
-            backdrop-filter: blur(10px); 
+            background: rgba(11, 15, 21, 0.8); padding: 40px; border-radius: 24px; 
+            border: 1px solid var(--border); border-top: 4px solid var(--success); 
+            width: 380px; text-align: center; backdrop-filter: blur(10px); 
             box-shadow: 0 20px 50px rgba(0,0,0,0.5); 
         } 
         .auth-btn { 
-            background: var(--success); 
-            color: black; 
-            width: 100%; 
-            padding: 14px; 
-            border-radius: 12px; 
-            font-weight: 900; 
-            cursor: pointer; 
-            border: none; 
-            text-transform: uppercase; 
-            margin-top: 10px; 
-            transition: 0.3s; 
+            background: var(--success); color: black; width: 100%; padding: 14px; 
+            border-radius: 12px; font-weight: 900; cursor: pointer; border: none; 
+            text-transform: uppercase; margin-top: 10px; transition: 0.3s; 
         } 
         .auth-link { 
-            color: var(--accent); 
-            font-size: 11px; 
-            cursor: pointer; 
-            font-weight: 700; 
-            margin-top: 15px; 
-            display: inline-block; 
-            text-transform: uppercase; 
+            color: var(--accent); font-size: 11px; cursor: pointer; 
+            font-weight: 700; margin-top: 15px; display: inline-block; text-transform: uppercase; 
         } 
+
         .container { 
-            max-width: 1450px; 
-            width: 100%; 
-            height: 94vh; 
-            margin: auto; 
-            display: flex; 
-            flex-direction: column; 
-            gap: 12px; 
-            overflow: hidden; 
+            max-width: 1450px; width: 100%; height: 94vh; margin: auto; 
+            display: flex; flex-direction: column; gap: 12px; overflow: hidden; 
         } 
         header { 
-            background: var(--surface); 
-            padding: 12px 25px; 
-            border-radius: 20px; 
-            border: 1px solid var(--border); 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            flex-shrink: 0; 
-            position: relative; 
+            background: var(--surface); padding: 12px 25px; border-radius: 20px; 
+            border: 1px solid var(--border); display: flex; justify-content: space-between; 
+            align-items: center; flex-shrink: 0; position: relative; 
         } 
-        .prog-area { 
-            width: 100%; 
-            flex-shrink: 0; 
-            padding: 0 5px; 
-        } 
+        .prog-area { width: 100%; flex-shrink: 0; padding: 0 5px; } 
         
-        /* DASHBOARD REESTRUTURADO E HARMONIOSO */
         .top-dashboard {
-            display: grid;
-            grid-template-columns: 320px 1fr;
-            gap: 12px;
-            flex-shrink: 0;
-            margin-top: 6px;
+            display: grid; grid-template-columns: 320px 1fr; gap: 12px; flex-shrink: 0; margin-top: 6px;
         }
-
         .observations { 
-            background: var(--surface); 
-            padding: 12px 18px; 
-            border-radius: 16px; 
-            border: 1.5px solid #ffffff; 
-            display: flex; 
-            flex-direction: column; 
-            justify-content: center; 
-            gap: 6px; 
-            height: 80px; /* Altura fixa controlada para alinhar com os cards */
+            background: var(--surface); padding: 12px 18px; border-radius: 16px; 
+            border: 1.5px solid #ffffff; display: flex; flex-direction: column; 
+            justify-content: center; gap: 6px; height: 80px; 
         } 
-        .obs-item { 
-            font-size: 10px; 
-            color: #ffffff; 
-            display: flex; 
-            align-items: center; 
-            gap: 8px; 
-            font-weight: 600; 
-        } 
-        .dot { 
-            height: 6px; 
-            width: 6px; 
-            border-radius: 50%; 
-            display: inline-block; 
-            flex-shrink: 0; 
-        } 
+        .obs-item { font-size: 10px; color: #ffffff; display: flex; align-items: center; gap: 8px; font-weight: 600; } 
+        .dot { height: 6px; width: 6px; border-radius: 50%; display: inline-block; flex-shrink: 0; } 
 
-        .summary-grid { 
-            display: grid; 
-            grid-template-columns: repeat(7, 1fr); 
-            gap: 10px; 
-            height: 80px; /* Altura exata para bater com as observações */
-        } 
+        .summary-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; height: 80px; } 
         .summary-card { 
-            background: var(--surface); 
-            padding: 8px 4px; 
-            border-radius: 16px; 
-            border: 1.5px solid var(--grey-border); 
-            border-top: 5px solid; 
-            display: flex; 
-            flex-direction: column; 
-            justify-content: center; 
-            text-align: center; 
-            transition: 0.3s ease; 
-            height: 100%;
-        } 
-        .summary-card:hover { 
-            transform: translateY(-3px); 
-            filter: brightness(1.1); 
+            background: var(--surface); padding: 8px 4px; border-radius: 16px; 
+            border: 1.5px solid var(--grey-border); border-top: 5px solid; 
+            display: flex; flex-direction: column; justify-content: center; text-align: center; height: 100%; 
         } 
         .summary-card p { font-size: 7.5px; font-weight: 800; text-transform: uppercase; margin: 0; } 
         .summary-card h2 { margin: 4px 0 0; font-size: 0.9rem; color: var(--text-h); font-weight: 900; } 
 
-        .neon-leituras { border-top-color: var(--white-neon); box-shadow: 0 0 15px rgba(248, 249, 250, 0.2); } 
-        .neon-impedimentos { border-top-color: var(--orange-neon); box-shadow: 0 0 15px rgba(255, 140, 0, 0.2); } 
-        .neon-meta { border-top-color: var(--warning); box-shadow: 0 0 15px rgba(255, 204, 0, 0.2); } 
-        .neon-bonus { border-top-color: var(--accent); box-shadow: 0 0 15px rgba(0, 112, 243, 0.2); } 
-        .neon-descontos { border-top-color: var(--danger); box-shadow: 0 0 15px rgba(255, 77, 77, 0.2); } 
-        .neon-receber { border-top-color: var(--success); box-shadow: 0 0 20px rgba(0, 255, 136, 0.25); } 
-        .neon-acumulado { border-top-color: var(--purple); box-shadow: 0 0 15px rgba(156, 39, 176, 0.2); } 
+        .neon-leituras { border-top-color: var(--white-neon); } 
+        .neon-impedimentos { border-top-color: var(--orange-neon); } 
+        .neon-meta { border-top-color: var(--warning); } 
+        .neon-bonus { border-top-color: var(--accent); } 
+        .neon-descontos { border-top-color: var(--danger); } 
+        .neon-receber { border-top-color: var(--success); } 
+        .neon-acumulado { border-top-color: var(--purple); } 
 
         .content-wrap { 
-            display: grid; 
-            grid-template-columns: 320px 1fr; 
-            gap: 15px; 
-            flex-grow: 1; 
-            overflow: hidden; 
+            display: grid; grid-template-columns: 320px 1fr; gap: 15px; flex-grow: 1; overflow: hidden; 
         } 
-        aside, main { 
-            display: flex; 
-            flex-direction: column; 
-            height: 100%; 
-            overflow: hidden; 
-        } 
+        aside, main { display: flex; flex-direction: column; height: 100%; overflow: hidden; } 
         .sidebar { 
             background: linear-gradient(180deg, rgba(0, 112, 243, 0.08) 0%, var(--surface) 100%); 
-            padding: 14px 18px; 
-            border-radius: 20px; 
-            border: 1.5px solid var(--accent); 
-            height: 100%; 
-            display: flex; 
-            flex-direction: column; 
-            justify-content: space-between; 
-            overflow: hidden; 
+            padding: 14px 18px; border-radius: 20px; border: 1.5px solid var(--accent); 
+            height: 100%; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; 
         } 
-        .form-content-area {
-            margin-top: 14px; 
-        }
-        .form-group {
-            display: flex; 
-            align-items: center; 
-            gap: 8px; 
-            margin-bottom: 5px;
-        }
-        .form-group label {
-            width: 80px; 
-            flex-shrink: 0; 
-            font-size: 10px; 
-            font-weight: 800; 
-            color: var(--accent); 
-            text-transform: uppercase; 
-        }
-        .actions-footer { 
-            margin-top: 0px; 
-            display: flex; 
-            flex-direction: column; 
-            gap: 6px; 
-        } 
-        .btn-add { 
-            background: var(--accent); 
-            color: #fff; 
-            width: 100%; 
-            padding: 11px; 
-            border-radius: 12px; 
-            font-weight: 900; 
-            cursor: pointer; 
-            border: none; 
-            text-transform: uppercase; 
-            font-size: 11px; 
-        } 
-        .btn-clear { 
-            background: transparent; 
-            color: var(--danger); 
-            width: 100%; 
-            padding: 8px; 
-            border-radius: 12px; 
-            font-weight: 800; 
-            cursor: pointer; 
-            border: 1px solid var(--danger); 
-            text-transform: uppercase; 
-            font-size: 9.5px; 
-        } 
-        .btn-clear-year { 
-            background: transparent; 
-            color: var(--purple); 
-            width: 100%; 
-            padding: 8px; 
-            border-radius: 12px; 
-            font-weight: 800; 
-            cursor: pointer; 
-            border: 1px solid var(--purple); 
-            text-transform: uppercase; 
-            font-size: 9.5px; 
-        } 
-        .backup-row {
-            display: flex;
-            gap: 5px;
-            width: 100%;
-        }
-        .btn-backup { 
-            background: transparent; 
-            color: var(--success); 
-            width: 50%; 
-            padding: 8px 3px; 
-            border-radius: 12px; 
-            font-weight: 800; 
-            cursor: pointer; 
-            border: 1px solid var(--success); 
-            text-transform: uppercase; 
-            font-size: 9.5px; 
-            text-align: center; 
-        } 
-        .btn-import { 
-            background: transparent; 
-            color: var(--warning); 
-            width: 50%; 
-            padding: 8px 3px; 
-            border-radius: 12px; 
-            font-weight: 800; 
-            cursor: pointer; 
-            border: 1px solid var(--warning); 
-            text-transform: uppercase; 
-            font-size: 9.5px; 
-            text-align: center; 
-        } 
+        .form-content-area { margin-top: 14px; }
+        .form-group { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
+        .form-group label { width: 80px; flex-shrink: 0; font-size: 10px; font-weight: 800; color: var(--accent); text-transform: uppercase; }
+        
+        .actions-footer { display: flex; flex-direction: column; gap: 6px; } 
+        .btn-add { background: var(--accent); color: #fff; width: 100%; padding: 11px; border-radius: 12px; font-weight: 900; cursor: pointer; border: none; text-transform: uppercase; font-size: 11px; } 
+        .btn-clear { background: transparent; color: var(--danger); width: 100%; padding: 8px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--danger); text-transform: uppercase; font-size: 9.5px; } 
+        .btn-clear-year { background: transparent; color: var(--purple); width: 100%; padding: 8px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--purple); text-transform: uppercase; font-size: 9.5px; } 
+        .backup-row { display: flex; gap: 5px; width: 100%; }
+        .btn-backup { background: transparent; color: var(--success); width: 50%; padding: 8px 3px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--success); text-transform: uppercase; font-size: 9.5px; text-align: center; } 
+        .btn-import { background: transparent; color: var(--warning); width: 50%; padding: 8px 3px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--warning); text-transform: uppercase; font-size: 9.5px; text-align: center; } 
 
         .main-view { background: var(--surface); border-radius: 20px; border: 1.5px solid var(--brown-border); overflow: hidden; height: 100%; display: flex; flex-direction: column; } 
-        
-        .table-container { 
-            flex-grow: 1; 
-            max-height: calc(14 * 39.5px + 35px); 
-            overflow-y: auto; 
-        } 
+        .table-container { flex-grow: 1; overflow-y: auto; } 
 
         table { width: 100%; border-collapse: collapse; } 
-        th, td { padding: 9px 5px; text-align: center; border-bottom: 1px solid var(--border); font-size: 12px; height: 39.5px; } 
+        th, td { padding: 9px 5px; text-align: center; border-bottom: 1px solid var(--border); font-size: 12px; } 
         th { background: #0d1117; color: var(--accent); font-size: 10px; text-transform: uppercase; position: sticky; top: 0; z-index: 5; } 
 
         .month-grid { display: none; position: absolute; top: 70px; right: 180px; background: #0d1117; border: 1px solid var(--accent); padding: 15px; border-radius: 15px; grid-template-columns: repeat(3, 1fr); gap: 8px; z-index: 1000; } 
@@ -346,130 +163,57 @@
         .month-item { background: #000; color: white; border: 1px solid var(--border); padding: 10px; border-radius: 8px; cursor: pointer; font-size: 11px; font-weight: bold; }
         
         .header-btn {
-            background: #1e2633;
-            border: 1px solid var(--border);
-            color: white;
-            padding: 10px 15px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: 800;
-            font-size: 12px;
-            text-transform: uppercase;
+            background: #1e2633; border: 1px solid var(--border); color: white;
+            padding: 10px 15px; border-radius: 10px; cursor: pointer; font-weight: 800; font-size: 12px; text-transform: uppercase;
         }
+        .desktop-header-info { display: inline; }
+        .mobile-nav-tabs, .mobile-search-area { display: none; }
 
-        .desktop-header-info {
-            display: inline;
-        }
+        /* ABA NL (Nota de Leituras) - No desktop pode ficar oculta ou integrada se preferir, mas para manter o grid adaptado criamos o slot */
+        .desktop-nl-container { display: none; }
 
-        .mobile-nav-tabs {
-            display: none;
-        }
-        .mobile-search-area {
-            display: none;
-        }
-
-        /* COMPORTAMENTO EXCLUSIVO PARA TELAS DE CELULAR/TABLET (MAX-WIDTH: 900px) */
         @media (max-width: 900px) {
-            body {
-                padding: 10px;
-                overflow: hidden !important;
-            }
-            .container {
-                height: 96vh; 
-            }
-            .desktop-header-info {
-                display: none !important;
-            }
-            .top-dashboard {
-                display: flex !important;
-                flex-direction: column;
-                gap: 8px;
-            }
-            .observations {
-                height: auto !important;
-                padding: 10px 12px !important;
-            }
-            .summary-grid {
-                grid-template-columns: repeat(2, 1fr) !important;
-                gap: 8px !important;
-                height: auto !important;
-            }
-            .summary-card {
-                height: 60px !important;
-            }
-            .content-wrap {
-                display: block !important;
-            }
+            body { padding: 10px; overflow: hidden !important; }
+            .container { height: 96vh; }
+            .desktop-header-info { display: none !important; }
+            .top-dashboard { display: flex !important; flex-direction: column; gap: 8px; }
+            .observations { height: auto !important; padding: 10px 12px !important; }
+            .summary-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 8px !important; height: auto !important; }
+            .summary-card { height: 60px !important; }
+            .content-wrap { display: block !important; }
             
             .mobile-nav-tabs {
-                display: flex;
-                width: 100%;
-                background: var(--surface);
-                border: 1px solid var(--border);
-                border-radius: 14px;
-                z-index: 999;
-                justify-content: space-between;
-                padding: 6px;
-                margin-bottom: 12px;
-                gap: 6px;
-                flex-shrink: 0;
+                display: flex; width: 100%; background: var(--surface); border: 1px solid var(--border);
+                border-radius: 14px; z-index: 999; justify-content: space-between; padding: 6px;
+                margin-bottom: 12px; gap: 4px; flex-shrink: 0;
             }
             .mob-tab-btn {
-                background: transparent;
-                border: none;
-                color: var(--text-p);
-                font-size: 10px;
-                font-weight: 800;
-                text-transform: uppercase;
-                cursor: pointer;
-                flex: 1;
-                padding: 10px 4px;
-                border-radius: 10px;
-                text-align: center;
-                transition: 0.3s;
+                background: transparent; border: none; color: var(--text-p); font-size: 9.5px;
+                font-weight: 800; text-transform: uppercase; cursor: pointer; flex: 1; padding: 8px 2px;
+                border-radius: 10px; text-align: center; transition: 0.3s;
             }
-            .mob-tab-btn.active {
-                background: var(--accent);
-                color: #fff;
-            }
+            .mob-tab-btn.active { background: var(--accent); color: #fff; }
 
-            .mobile-tab-content {
-                display: none !important;
-            }
+            .mobile-tab-content { display: none !important; }
             .mobile-tab-content.active-tab {
-                display: flex !important;
-                flex-direction: column;
-                flex-grow: 1;
-                overflow: hidden;
+                display: flex !important; flex-direction: column; flex-grow: 1; overflow: hidden;
             }
-
-            #tabFormulario .sidebar {
-                height: 100% !important;
-                justify-content: flex-start !important;
-                gap: 15px;
-            }
-
-            .mobile-search-area {
-                display: block !important;
-                margin-bottom: 8px;
-            }
+            #tabFormulario .sidebar { height: 100% !important; justify-content: flex-start !important; gap: 15px; }
+            .mobile-search-area { display: block !important; margin-bottom: 8px; }
         }
 
-        /* REGRAS DE IMPRESSÃO */
         @media print { 
-            body { height: auto !important; overflow: visible !important; display: block !important; background: #fff !important; color: #000 !important; }
+            body { height: auto !important; overflow: visible !important; background: #fff !important; color: #000 !important; }
             .container { display: block !important; width: 100% !important; height: auto !important; }
-            header { border: none; border-bottom: 2px solid #000; height: auto; padding: 10px 0; margin-bottom: 10px; background: #fff !important; }
-            header h1 { width: 100%; text-align: center; color: #000 !important; font-size: 12pt !important; }
-            .desktop-header-info { display: inline !important; color: #000 !important; }
+            header { border: none; border-bottom: 2px solid #000; padding: 10px 0; background: #fff !important; }
+            header h1 { color: #000 !important; font-size: 12pt !important; }
             .content-wrap { display: block !important; }
             .main-view { border: 1px solid #000 !important; background: #fff !important; margin-top: 15px; }
             table { font-size: 8pt !important; width: 100% !important; }
             td, th { border: 0.5px solid #000 !important; color: #000 !important; padding: 4px !important; background: #fff !important; }
             th { background: #e9ecef !important; color: #000 !important; }
             .table-container { max-height: none !important; overflow: visible !important; }
-            .no-print, #tabDashboard, #tabFormulario, .mobile-nav-tabs, .mobile-search-area { display: none !important; } 
-            
+            .no-print, .mobile-nav-tabs, .mobile-search-area, #tabNL { display: none !important; } 
             #tabTabela { display: flex !important; flex-direction: column !important; }
         } 
     </style> 
@@ -514,17 +258,12 @@
         </div> 
     </div> 
 
-    <!-- BARRA DE NAVEGAÇÃO SUPERIOR (APARECE APENAS NO MÓVEL) -->
+    <!-- BARRA DE NAVEGAÇÃO SUPERIOR (ABAS COM NL) -->
     <nav class="mobile-nav-tabs no-print">
-        <button class="mob-tab-btn active" onclick="switchMobileTab('tabDashboard', this)">
-            📊 Dashboard
-        </button>
-        <button class="mob-tab-btn" onclick="switchMobileTab('tabFormulario', this)">
-            ➕ Novo Registro
-        </button>
-        <button class="mob-tab-btn" onclick="switchMobileTab('tabTabela', this)">
-            📋 Registros
-        </button>
+        <button class="mob-tab-btn active" onclick="switchMobileTab('tabDashboard', this)">📊 Dashboard</button>
+        <button class="mob-tab-btn" onclick="switchMobileTab('tabFormulario', this)">➕ Novo</button>
+        <button class="mob-tab-btn" onclick="switchMobileTab('tabTabela', this)">📋 Registros</button>
+        <button class="mob-tab-btn" onclick="switchMobileTab('tabNL', this)" style="color: var(--success); font-weight:900;">📖 NL</button>
     </nav>
 
     <!-- DASHBOARD -->
@@ -592,7 +331,28 @@
                     </table> 
                 </div> 
             </div> 
-        </main> 
+        </main>
+
+        <!-- NOVA ABA: NOTA DE LEITURAS (NL) -->
+        <section class="mobile-tab-content" id="tabNL">
+            <div style="margin-bottom: 6px;">
+                <input type="text" id="searchNL" placeholder="Pesquisar Nota (Ex: 1101, cães, sem leitura)..." oninput="renderizarNL()" style="border-color: var(--success); font-size: 13px; padding: 10px;">
+            </div>
+            <div class="main-view">
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width: 80px;">Número</th>
+                                <th style="width: 130px;">Status</th>
+                                <th>Detalhe da Nota de Leitura</th>
+                            </tr>
+                        </thead>
+                        <tbody id="nlCorpo"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
     </div> 
 </div> 
 
@@ -606,6 +366,102 @@
     const msNomesCompletos = ["JANEIRO", "FEVEREIRO", "MARÇO", "ABRIL", "MAIO", "JUNHO", "JULHO", "AGOSTO", "SETEMBRO", "OUTUBRO", "NOVEMBRO", "DEZEMBRO"]; 
     const fM = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); 
 
+    // LISTA DE NOTAS DE LEITURA (NL)
+    const notasDeLeitura = [
+      { numero: '1101', status: 'Com leitura', detalhe: 'LEITURA DIFICULTADA POR CÃES/ANIMAIS' },
+      { numero: '1102', status: 'Com leitura', detalhe: 'MEDIDOR OBSTRUÍDO COM POSSIBILIDADE DE LEITURA' },
+      { numero: '1103', status: 'Com leitura', detalhe: 'FALTA PLACA/IDENTIF. MEDIDOR/QUADRO/APTO. /PRÉDIO' },
+      { numero: '1104', status: 'Com leitura', detalhe: 'MEDIÇÃO/QUADRO EM MAL ESTADO' },
+      { numero: '1107', status: 'Com leitura', detalhe: 'MED LOCAL IMPRÓPRIO PERIGOSO/CX MED ALTURA ANORMAL' },
+      { numero: '1110', status: 'Com leitura', detalhe: 'TAMPA ACRÍLICA EMBAÇADA' },
+      { numero: '1201', status: 'Com leitura', detalhe: 'MUDANÇA NOME LOGRADOURO' },
+      { numero: '1202', status: 'Com leitura', detalhe: 'MUDANÇA NUMERAÇÃO INTERNA, APTO OU VILA DE CASAS' },
+      { numero: '1203', status: 'Com leitura', detalhe: 'INSTALAÇÃO FORA DE SEQUÊNCIA' },
+      { numero: '1204', status: 'Com leitura', detalhe: 'Nº MEDIDOR/CONSTANTE DIFERENTE SEM SUBSTITUIÇÃO' },
+      { numero: '1205', status: 'Com leitura', detalhe: 'MEDIDOR SUBSTITUÍDO' },
+      { numero: '1206', status: 'Com leitura', detalhe: 'CÓDIGO DE CLASSE/RAMO DE NEGÓCIO INADEQUADO' },
+      { numero: '1207', status: 'Com leitura', detalhe: 'CLIENTE NÃO CADASTRADO/NOVA LIGAÇÃO' },
+      { numero: '1208', status: 'Com leitura', detalhe: 'SEQUÊNCIAMENTO DE ROTAS' },
+      { numero: '1209', status: 'Com leitura', detalhe: 'ROTA FECHADA' },
+      { numero: '1231', status: 'Com leitura', detalhe: 'INVERSÃO DE MEDIDORES ENTRE INSTALAÇÕES' },
+      { numero: '1234', status: 'Com leitura', detalhe: 'ENDEREÇO URBANO PARA ENTREGA DA FATURA RURAL' },
+      { numero: '1250', status: 'Com leitura', detalhe: 'INCLUSÃO/ALTERAÇÃO LOCAL INSTALAÇÃO DO EQUIPAMENTO' },
+      { numero: '1300', status: 'Com leitura', detalhe: 'REGISTRADOR NÃO CONSTA NO SGL' },
+      { numero: '1302', status: 'Com leitura', detalhe: 'RAMAL AÉREO COM OBSTÁCULOS' },
+      { numero: '1303', status: 'Com leitura', detalhe: 'FORNECIMENTO A TERCEIROS/INTERLIGAÇÃO' },
+      { numero: '1304', status: 'Com leitura', detalhe: 'CONSUMO EM INSTALAÇÃO DESLIGADA' },
+      { numero: '1320', status: 'Com leitura', detalhe: 'SITUAÇÃO DE RISCO PARA TERCEIROS NA REDE' },
+      { numero: '1326', status: 'Com leitura', detalhe: 'VESPEIRO NA MEDIÇÃO' },
+      { numero: '1327', status: 'Com leitura', detalhe: 'VIDRO VISOR DA CAIXA QUEBRADO' },
+      { numero: '1329', status: 'Com leitura', detalhe: 'MEDIDOR EMBAÇADO/SUJO' },
+      { numero: '1343', status: 'Com leitura', detalhe: 'ILUMINAÇÃO PÚBLICA ACESA DURANTE O DIA' },
+      { numero: '1349', status: 'Com leitura', detalhe: 'INSTALAÇÃO COM LIGAÇÃO PROVISÓRIA' },
+      { numero: '1351', status: 'Com leitura', detalhe: 'SUSPEITA DE MEDIDOR COM PONTEIROS DESREGULADOS' },
+      { numero: '1364', status: 'Com leitura', detalhe: 'VIDRO VISOR DA CAIXA EMBAÇADO' },
+      { numero: '1373', status: 'Com leitura', detalhe: 'INSTALAÇÃO INCENDIADA/DEMOLIDA' },
+      { numero: '1390', status: 'Com leitura', detalhe: 'MED POSICIONADO INADEQUADAMENTE NA CAIXA' },
+      { numero: '1501', status: 'Com leitura', detalhe: 'CAIXA DE MEDIÇÃO SEM TAMPA' },
+      { numero: '1503', status: 'Com leitura', detalhe: 'SUSPEITA DE IRREGULARIDADE' },
+      { numero: '1505', status: 'Com leitura', detalhe: 'SUSPEITA MED DEFEITUOSO/AVARIADO/MANIPULADO/PARADO' },
+      { numero: '1506', status: 'Com leitura', detalhe: 'MEDIDOR COM DISCO GIRANDO AO CONTRÁRIO/DESMARCAÇÃO' },
+      { numero: '1544', status: 'Com leitura', detalhe: 'NÃO IDENTIFICADO MOTIVO DO CONSUMO ZERO' },
+      { numero: '1546', status: 'Com leitura', detalhe: 'CONSUMO INCOMPATÍVEL COM O IMÓVEL' },
+      { numero: '1560', status: 'Com leitura', detalhe: 'DENÚNCIA DE UMA LIGAÇÃO CLANDESTINA' },
+      { numero: '1562', status: 'Com leitura', detalhe: 'INSTALAÇÃO DESLIGADA SEM CONSUMO' },
+      { numero: '1570', status: 'Com leitura', detalhe: 'DENÚNCIA DE VÁRIAS LIGAÇÕES CLANDESTINAS' },
+      { numero: '1600', status: 'Com leitura', detalhe: 'MEDIDOR EM CURTO OU INCENDIADO' },
+      { numero: '1800', status: 'Com leitura', detalhe: 'LEITURA PREVISTA NO CALENDÁRIO REAL - LEITURA NORMAL' },
+      { numero: '1801', status: 'Com leitura', detalhe: 'INSTALAÇÃO DESABITADA/VAZIA COM ACESSO À LEITURA' },
+      { numero: '1802', status: 'Com leitura', detalhe: 'LEITURA ATUAL MENOR QUE ANTERIOR SEM VIRADA' },
+      { numero: '1818', status: 'Com leitura', detalhe: 'TELEMETRIA IMPRESSÃO E ENTREGA' },
+      { numero: '1819', status: 'Com leitura', detalhe: 'LEITURA DE TELEMETRIA' },
+      { numero: '1828', status: 'Com leitura', detalhe: 'LEITURA CONFERIDA E CONFIRMADA' },
+      { numero: '1834', status: 'Com leitura', detalhe: 'LEITURA INFORMADA PELO CLIENTE' },
+      { numero: '1835', status: 'Com leitura', detalhe: 'PONTALETE UTILIZADO PARA OUTROS FINS' },
+      { numero: '1838', status: 'Com leitura', detalhe: 'ETIQUETA DESCOLANDO/SEM ETIQUETA' },
+      { numero: '1847', status: 'Com leitura', detalhe: 'LEITURA INFORMADA PELO CLIENTE FORA DE CICLO' },
+      { numero: '1897', status: 'Com leitura', detalhe: 'LEITURA COLETADA VIA APP DE MENSAGEM' },
+      { numero: '1898', status: 'Com leitura', detalhe: 'LEITURA INFORMADA PELO CLIENTE NO CICLO' },
+      { numero: '1901', status: 'Com leitura', detalhe: 'POSTE: CAIXA MEDIÇÃO: LENTE EMBAÇADA, CAIXA QUEBRADA' },
+      { numero: '1902', status: 'Com leitura', detalhe: 'POSTE: DEFEITO NO MEDIDOR: MAL POSICIONADO, EMBAÇADO' },
+      { numero: '1978', status: 'Com leitura', detalhe: 'MEDIDOR NO POSTE/CPREDE' },
+      { numero: '2000', status: 'Com leitura', detalhe: 'SUSPENSÃO DE MEDIDOR DEFEITUOSO DEVIDO A CHUVAS/ENCHENTES' },
+      { numero: '3201', status: 'Sem Leitura', detalhe: 'MEDIDOR RETIRADO' },
+      { numero: '3205', status: 'Sem Leitura', detalhe: 'ENDEREÇO INSTALAÇÃO NÃO LOCALIZADO' },
+      { numero: '3311', status: 'Sem Leitura', detalhe: 'MEDIDOR ELETRÔNICO APAGADO/CHAVE DISJUNTOR DESLIGADA' },
+      { numero: '3313', status: 'Sem Leitura', detalhe: 'INSETOS DENTRO DA CAIXA OU ENVOLVENDO O MEDIDOR' },
+      { numero: '3369', status: 'Sem Leitura', detalhe: 'MEDIDOR EMBAÇADO' },
+      { numero: '3370', status: 'Sem Leitura', detalhe: 'TAMPA ACRÍLICA EMBAÇADA' },
+      { numero: '3374', status: 'Sem Leitura', detalhe: 'VIDRO VISOR DA CAIXA EMBAÇADO' },
+      { numero: '3376', status: 'Sem Leitura', detalhe: 'MEDIDOR ELETRÔNICO DESPROGRAMADO' },
+      { numero: '3379', status: 'Sem Leitura', detalhe: 'MEDIDOR POSICIONADO INADEQUADAMENTE NA CAIXA' },
+      { numero: '3511', status: 'Sem Leitura', detalhe: 'SUSPEITA MED DEFEITUOSO/ AVARIADO/ MANIPULADO/PARADO' },
+      { numero: '3700', status: 'Sem Leitura', detalhe: 'MEDIDOR EM CURTO OU INCENDIADO' },
+      { numero: '3804', status: 'Sem Leitura', detalhe: 'MEDIDOR ELETRÔNICO APAGADO/FALTA ENERGIA NA REDE' },
+      { numero: '3868', status: 'Sem Leitura', detalhe: 'PROBLEMA OPERACIONAL CAUSA PARCEIRA VEÍCULO MCD FALTA TRANSMISSÃO' },
+      { numero: '3871', status: 'Sem Leitura', detalhe: 'PROBLEMA ADMINISTRATIVO (FALTOU LEITURISTA)' },
+      { numero: '3878', status: 'Sem Leitura', detalhe: 'INSTALAÇÕES SEM LEITURA PLANEJADA PARA O MÊS' },
+      { numero: '3901', status: 'Sem Leitura', detalhe: 'POSTE: CAIXA DE MEDIÇÃO: LENTE EMBAÇADA, CAIXA QUEBRADA' },
+      { numero: '3902', status: 'Sem Leitura', detalhe: 'POSTE: DEFEITO NO MEDIDOR: MAL POSICIONADO, EMBAÇADO' },
+      { numero: '3903', status: 'Sem Leitura', detalhe: 'POSTE: RISCO OU OBSTACULO NA REALIZAÇÃO DA LEITURA' },
+      { numero: '5101', status: 'Sem Leitura', detalhe: 'MEDIÇÃO/QUADRO SEM A POSSIBILIDADE DE ABRIR' },
+      { numero: '5102', status: 'Sem Leitura', detalhe: 'MEDIDOR OBSTRUÍDO SEM A POSSIBILIDADE LEITURA' },
+      { numero: '5103', status: 'Sem Leitura', detalhe: 'INSETOS NA CAIXA DO MEDIDOR EXTERNAMENTE' },
+      { numero: '5104', status: 'Sem Leitura', detalhe: 'CASA FECHADA/PORTÃO FECHADO/FALTA ACESSO A MEDIÇÃO' },
+      { numero: '5105', status: 'Sem Leitura', detalhe: 'CLIENTE NÃO PERMITIU ACESSO DO LEITURISTA AO MEDIDOR' },
+      { numero: '5106', status: 'Sem Leitura', detalhe: 'MED LOCAL IMPRÓPRIO PERIGOSO/CX MED ALTURA ANORMAL' },
+      { numero: '5108', status: 'Sem Leitura', detalhe: 'LEITURA IMPEDIDA POR CÃES/ANIMAIS' },
+      { numero: '5109', status: 'Sem Leitura', detalhe: 'INSTALAÇÃO DESABITADA/VAZIA SEM ACESSO À LEITURA' },
+      { numero: '5558', status: 'Sem Leitura', detalhe: 'SUSPEITA DE IRREGULARIDADE' },
+      { numero: '5800', status: 'Sem Leitura', detalhe: 'PADRÃO MEDIÇÃO INCENDIADO/DEMOLIDO' },
+      { numero: '5802', status: 'Sem Leitura', detalhe: 'INSTALAÇÃO INTERDITADA' },
+      { numero: '6801', status: 'Sem Leitura', detalhe: 'LEITURA IMPEDIDA POR CONDIÇÃO INSEGURA/ÁREA RISCO' },
+      { numero: '6820', status: 'Sem Leitura', detalhe: 'ESTRADA OU RUA INTRASITÁVEL' },
+      { numero: '6862', status: 'Sem Leitura', detalhe: 'GREVE NO SERVIÇO PÚBLICO' },
+      { numero: '6872', status: 'Sem Leitura', detalhe: 'CALAMIDADE DECRETADA ENCHENTE ALAGAM TERREMOTO VENDAVAL' },
+      { numero: '7000', status: 'Sem Leitura', detalhe: 'SUSPENSÃO DE MEDIDOR DEFEITUOSO DEVIDO A CHUVAS/ENCHENTES' }
+    ];
+
     function switchMobileTab(tabId, btnElement) {
         document.querySelectorAll('.mobile-tab-content').forEach(el => el.classList.remove('active-tab'));
         document.getElementById(tabId).classList.add('active-tab');
@@ -618,6 +474,23 @@
         document.getElementById('searchRazao').value = val;
         document.getElementById('searchRazaoMob').value = val;
         atualizarTabela();
+    }
+
+    function renderizarNL() {
+        const termo = document.getElementById('searchNL').value.toUpperCase();
+        const filtradas = notasDeLeitura.filter(item => 
+            item.numero.includes(termo) || 
+            item.detalhe.toUpperCase().includes(termo) || 
+            item.status.toUpperCase().includes(termo)
+        );
+
+        document.getElementById('nlCorpo').innerHTML = filtradas.map(item => `
+            <tr>
+                <td style="font-weight: 900; color: var(--accent);">${item.numero}</td>
+                <td><span style="color: ${item.status === 'Com leitura' ? 'var(--success)' : 'var(--danger)'}; font-weight: 800; font-size: 10px;">${item.status}</span></td>
+                <td style="text-align: left; font-size: 11px; padding-left: 8px;">${item.detalhe}</td>
+            </tr>
+        `).join('');
     }
 
     function animarContagem(id, final, isMoeda = false) { 
@@ -651,6 +524,7 @@
         
         renderMonths(); 
         atualizarTabela(); 
+        renderizarNL();
     } 
 
     function handleAuth() { 
