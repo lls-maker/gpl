@@ -6,7 +6,7 @@
     <title>Gestão de Produtividade de Leituras 2026</title> 
 
     <!-- FAVICON CORRIGIDO EM BASE64 SEGURO E COMPATÍVEL COM TODOS OS NAVEGADORES -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzMiAzMicgd2lkdGg9JzMyJyBoZWlnaHQ9JzMyJz48cmVjdCB3aWR0aD0nMzInIGhlaWdodD0nMzInIHJ4PSc2JyBmaWxsPScjMGIwZjE1Jy8+PHRleHQgeD0nNTAlJyB5PSc1NSUnIGRvbWluYW50LWJhc2VsaW5lPSdtaWRkbGUnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJyBmb250LXdlaWdodD0nOTAwJyBmb250LXNpemU9JzEwJyBmaWxsPScjMDBmZjg4JyBsZXR0ZXItc3BhY2luZz0nMC41Jz5HUEw8L3RleHQ+PC9zdmc+">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzMiAzMicgd2lkdGg9JzMyJyBoZWlghtD0nMzInIHJ4PSc2JyBmaWxsPScjMGIwZjE1Jy8+PHRleHQgeD0nNTAlJyB5PSc1NSUnIGRvbWluYW50LWJhc2VsaW5lPSdtaWRkbGUnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJyBmb250LXdlaWdodD0nOTAwJyBmb250LXNpemU9JzEwJyBmaWxsPScjMDBmZjg4JyBsZXR0ZXItc3BhY2luZz0nMC41Jz5HUEw8L3RleHQ+PC9zdmc+">
 
     <!-- VÍNCULO DO MANIFESTO PARA ATIVAR O MODO PWA -->
     <link rel="manifest" href="./manifest.json">
@@ -31,12 +31,9 @@
         } 
         * { box-sizing: border-box; } 
 
+        /* CORREÇÃO DEFINITIVA: REMOVIDO O POSITION FIXED QUE FAZIA O CARD ESTICAR AO REABRIR */
         html, body {
-            height: 100vh;
-            height: 100dvh;
-            overflow: hidden !important;
-            position: fixed;
-            width: 100%;
+            min-height: 100%;
             font-family: 'Inter', system-ui, sans-serif; 
             background-color: var(--bg); 
             color: var(--text-p); 
@@ -99,13 +96,10 @@
         .container { 
             max-width: 1450px; 
             width: 100%; 
-            height: 100%; 
-            max-height: 95vh; 
             margin: auto; 
             display: flex; 
             flex-direction: column; 
             gap: 8px; 
-            overflow: hidden; 
         } 
         header { 
             background: var(--surface); padding: 10px 20px; border-radius: 16px; 
@@ -144,24 +138,19 @@
 
         .content-wrap { 
             display: grid; grid-template-columns: 320px 1fr; gap: 12px; 
-            flex-grow: 1; min-height: 0; overflow: hidden; 
         } 
         aside, main { 
-            display: flex; flex-direction: column; height: 100%; 
-            min-height: 0; overflow: hidden; 
+            display: flex; flex-direction: column; 
         } 
         
-        /* SIDEBAR / FORMULÁRIO COMPACTO E FIXO NA TELA */
         .sidebar { 
             background: linear-gradient(180deg, rgba(0, 112, 243, 0.08) 0%, var(--surface) 100%); 
             padding: 10px 14px; border-radius: 16px; border: 1.5px solid var(--accent); 
-            height: 100%; max-height: 100%; display: flex; flex-direction: column; 
-            justify-content: space-between; overflow: hidden; 
+            display: flex; flex-direction: column; 
+            justify-content: space-between; 
         } 
         .form-content-area { 
             margin-top: 2px; 
-            flex-grow: 1; 
-            min-height: 0; 
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -179,16 +168,13 @@
 
         .main-view { 
             background: var(--surface); border-radius: 16px; border: 1.5px solid var(--brown-border); 
-            display: flex; flex-direction: column; flex-grow: 1; min-height: 0; overflow: hidden; 
+            display: flex; flex-direction: column; 
         } 
-        .table-container { flex-grow: 1; min-height: 0; overflow-y: auto; } 
+        .table-container { max-height: 420px; overflow-y: auto; } 
 
         #tabNL {
-            height: 100%;
             display: flex;
             flex-direction: column;
-            overflow: hidden;
-            min-height: 0;
         }
 
         table { width: 100%; border-collapse: collapse; } 
@@ -207,12 +193,8 @@
         .mobile-nav-tabs, .mobile-search-area { display: none; }
 
         @media (max-width: 900px) {
-            html, body { padding: 4px; }
-            .container { 
-                height: 100%; 
-                max-height: none; 
-                gap: 6px; 
-            }
+            html, body { padding: 4px; align-items: flex-start; }
+            .container { gap: 6px; }
             .desktop-header-info { display: none !important; }
             .top-dashboard { display: flex !important; flex-direction: column; gap: 4px; }
             .observations { height: auto !important; padding: 6px 8px !important; }
@@ -234,16 +216,13 @@
 
             .mobile-tab-content { display: none !important; }
             .mobile-tab-content.active-tab {
-                display: flex !important; flex-direction: column; flex-grow: 1; min-height: 0; overflow: hidden;
+                display: flex !important; flex-direction: column;
             }
             #tabFormulario .sidebar { 
-                height: 100% !important; 
-                max-height: 100% !important;
-                overflow: hidden !important; 
-                justify-content: space-between !important; 
                 gap: 6px; 
                 padding: 10px 12px;
             }
+            .table-container { max-height: 62vh; overflow-y: auto; }
             .mobile-search-area { display: block !important; margin-bottom: 4px; flex-shrink: 0; }
         }
 
@@ -335,7 +314,7 @@
     </div>
 
     <div class="content-wrap"> 
-        <!-- FORMULÁRIO COMPACTO E FIXO NA TELA -->
+        <!-- FORMULÁRIO -->
         <aside class="no-print mobile-tab-content" id="tabFormulario"> 
             <div class="sidebar"> 
                 <div>
@@ -718,7 +697,7 @@
     }
 
     function importarBackup(event) {
-        const file = event.target.files[0];
+        The file = event.target.files[0];
         if (!file) return;
 
         const reader = new FileReader();
