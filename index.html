@@ -119,7 +119,7 @@
         .dot { height: 6px; width: 6px; border-radius: 50%; display: inline-block; flex-shrink: 0; } 
 
         /* CARDS DO DASHBOARD BEM MAIORES */
-        .summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; height: auto; } 
+        .summary-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; height: auto; } 
         .summary-card { 
             background: var(--surface); padding: 12px 8px; border-radius: 16px; 
             border: 1.5px solid var(--grey-border); border-top: 6px solid; 
@@ -136,21 +136,18 @@
         .neon-receber { border-top-color: var(--success); } 
         .neon-acumulado { border-top-color: var(--purple); } 
 
+        /* LAYOUT ÚNICA PÁGINA PARA DESKTOP (LADO A LADO) */
         .content-wrap { 
-            display: block; 
+            display: grid; 
+            grid-template-columns: 320px 1fr; 
+            gap: 8px;
             flex-grow: 1; 
             min-height: 0; 
             overflow: hidden; 
         } 
         
-        .mobile-tab-content { display: none; height: 100%; min-height: 0; overflow: hidden; }
-        .mobile-tab-content.active-tab {
-            display: flex; flex-direction: column; flex-grow: 1; min-height: 0; overflow: hidden;
-        }
-
-        aside.mobile-tab-content .sidebar { 
+        .sidebar { 
             height: 100%; 
-            max-height: 100%; 
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -191,19 +188,37 @@
             padding: 8px 12px; border-radius: 9px; cursor: pointer; font-weight: 800; font-size: 11px; text-transform: uppercase;
         }
 
-        /* BOTÕES DAS ABAS AUMENTADOS */
-        .mobile-nav-tabs {
-            display: flex; width: 100%; background: var(--surface); border: 1px solid var(--border);
-            border-radius: 12px; z-index: 9; justify-content: space-between; padding: 6px;
-            gap: 6px; flex-shrink: 0;
-        }
-        .mob-tab-btn {
-            background: transparent; border: none; color: var(--text-p); font-size: 10px;
-            font-weight: 800; text-transform: uppercase; cursor: pointer; flex: 1; padding: 12px 4px;
-            border-radius: 10px; text-align: center; transition: 0.3s;
-        }
-        .mob-tab-btn.active { background: var(--accent); color: #fff; }
         .mobile-search-area { display: block; margin-bottom: 4px; flex-shrink: 0; }
+
+        /* RESPONSIVIDADE: SE FOR CELULAR, MANTÉM O SISTEMA DE ABAS */
+        @media (max-width: 900px) {
+            .mobile-nav-tabs {
+                display: flex; width: 100%; background: var(--surface); border: 1px solid var(--border);
+                border-radius: 12px; z-index: 9; justify-content: space-between; padding: 6px;
+                gap: 6px; flex-shrink: 0;
+            }
+            .mob-tab-btn {
+                background: transparent; border: none; color: var(--text-p); font-size: 10px;
+                font-weight: 800; text-transform: uppercase; cursor: pointer; flex: 1; padding: 12px 4px;
+                border-radius: 10px; text-align: center; transition: 0.3s;
+            }
+            .mob-tab-btn.active { background: var(--accent); color: #fff; }
+            
+            .content-wrap {
+                display: block;
+            }
+            .mobile-tab-content { display: none; height: 100%; min-height: 0; overflow: hidden; }
+            .mobile-tab-content.active-tab {
+                display: flex; flex-direction: column; flex-grow: 1; min-height: 0; overflow: hidden;
+            }
+            .summary-grid { grid-template-columns: repeat(4, 1fr); }
+        }
+
+        /* NO DESKTOP, ESCONDE A BARRA DE ABAS E MOSTRA TUDO FIXO */
+        @media (min-width: 901px) {
+            .mobile-nav-tabs { display: none !important; }
+            .mobile-tab-content { display: flex !important; flex-direction: column; height: 100%; }
+        }
 
         /* IMPRESSÃO COLORIDA FORÇADA */
         @media print { 
@@ -279,6 +294,7 @@
             <button class="header-btn" onclick="toggleMonthGrid()" id="currentMonthDisplay" style="background: var(--accent); border-color: var(--accent);">SETEMBRO</button> 
             <div id="monthGrid" class="month-grid"></div> 
             <button class="header-btn" onclick="window.print()">IMPRIMIR</button> 
+            <button class="header-btn" onclick="logoutSystem()" style="background: var(--danger); border-color: var(--danger);">SAIR</button>
         </div> 
     </header> 
 
@@ -292,7 +308,7 @@
         </div> 
     </div> 
 
-    <!-- BARRA DE NAVEGAÇÃO EM ABAS -->
+    <!-- BARRA DE NAVEGAÇÃO EM ABAS (APENAS PARA MOBILE) -->
     <nav class="mobile-nav-tabs no-print">
         <button class="mob-tab-btn active" id="btnTabDashboard" onclick="switchMobileTab('tabDashboard', this)">📊 Dash</button>
         <button class="mob-tab-btn" id="btnTabFormulario" onclick="switchMobileTab('tabFormulario', this)">➕ Novo</button>
@@ -300,7 +316,7 @@
         <button class="mob-tab-btn" id="btnTabNL" onclick="switchMobileTab('tabNL', this)">🔍 NL</button>
     </nav>
 
-    <!-- DASHBOARD -->
+    <!-- DASHBOARD (CARDS) -->
     <div class="top-dashboard mobile-tab-content active-tab" id="tabDashboard">
         <div class="observations no-print"> 
             <div class="obs-item"><span class="dot" style="background:var(--success)"></span> Bônus de R$ 0,20 por cada leitura excedente a 8000 leituras</div> 
@@ -318,10 +334,14 @@
         </div>
     </div>
 
-    <!-- CONTEÚDO PRINCIPAL EM ABAS -->
+    <!-- CONTEÚDO PRINCIPAL (FORMULÁRIO LATERAL + TABELA LADO A LADO) -->
     <div class="content-wrap" id="mainContentWrap"> 
-        <aside class="no-print mobile-tab-content" id="tabFormulario"> 
+        <aside class="no-print mobile-tab-content active-tab" id="tabFormulario"> 
             <div class="sidebar"> 
+                <div class="mobile-search-area no-print" style="margin-bottom: 8px;">
+                    <label style="font-size: 10px; font-weight: 800; color: var(--success); text-transform: uppercase; display: block; margin-bottom: 3px;">Pesquisar Razão</label>
+                    <input type="text" id="searchRazao" placeholder="Filtrar tabela..." oninput="sincronizarBusca(this.value)" style="border-color: var(--success); margin-bottom: 0;">
+                </div>
                 <div class="form-content-area" style="padding-top: 5px;">
                     <form id="gplForm"> 
                         <div class="form-group"><label>Data</label><input type="date" id="data" required></div> 
@@ -345,10 +365,7 @@
             </div> 
         </aside> 
 
-        <main class="mobile-tab-content" id="tabTabela"> 
-            <div class="mobile-search-area no-print">
-                <input type="text" id="searchRazao" placeholder="Pesquisar razão nos registros..." oninput="sincronizarBusca(this.value)" style="border-color: var(--success); margin-bottom: 0;">
-            </div>
+        <main class="mobile-tab-content active-tab" id="tabTabela"> 
             <div class="main-view"> 
                 <div class="table-container"> 
                     <table> 
@@ -361,7 +378,7 @@
             </div> 
         </main> 
 
-        <!-- ABA NL -->
+        <!-- ABA NL (APENAS PARA MOBILE SE NECESSÁRIO) -->
         <div class="mobile-tab-content" id="tabNL" style="flex-direction: column;">
             <div class="mobile-search-area">
                 <input type="text" id="searchNL" placeholder="Pesquisar por número ou descrição da nota..." oninput="filtrarNL(this.value)" style="border-color: var(--success);">
@@ -496,6 +513,7 @@
     const fM = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); 
 
     function switchMobileTab(tabId, btnElement) {
+        if(window.innerWidth > 900) return; // No desktop não usa abas
         document.querySelectorAll('.mobile-tab-content').forEach(el => el.classList.remove('active-tab'));
         const target = document.getElementById(tabId);
         if(target) target.classList.add('active-tab');
@@ -507,7 +525,8 @@
     }
 
     function sincronizarBusca(val) {
-        document.getElementById('searchRazao').value = val;
+        const s1 = document.getElementById('searchRazao');
+        if(s1) s1.value = val;
         atualizarTabela();
     }
 
@@ -577,18 +596,6 @@
         renderMonths(); 
         renderizarNL();
         atualizarTabela(); 
-        
-        const savedTab = sessionStorage.getItem('gpl_active_tab');
-        if (savedTab && document.getElementById(savedTab)) {
-            let btnMap = {
-                'tabDashboard': 'btnTabDashboard',
-                'tabFormulario': 'btnTabFormulario',
-                'tabTabela': 'btnTabTabela',
-                'tabNL': 'btnTabNL'
-            };
-            let btnEl = document.getElementById(btnMap[savedTab]);
-            if (btnEl) switchMobileTab(savedTab, btnEl);
-        }
     } 
 
     function handleAuth() { 
@@ -634,6 +641,13 @@
         else alert("Usuário não encontrado."); 
     }
 
+    function logoutSystem() {
+        sessionStorage.removeItem('gpl_user_2026');
+        localStorage.removeItem('gpl_saved_user_2026');
+        localStorage.removeItem('gpl_saved_pass_2026');
+        location.reload();
+    }
+
     function renderMonths() { 
         const ms = ["JAN", "FEV", "MAR", "ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ"]; 
         document.getElementById('monthGrid').innerHTML = ms.map((m, i) => `<div class="month-item" onclick="selectMonth(${i})">${m}</div>`).join(''); 
@@ -652,7 +666,8 @@
 
     function atualizarTabela() { 
         const mesF = "2026-" + String(viewDate.getMonth() + 1).padStart(2, '0'); 
-        const busca = document.getElementById('searchRazao').value.toUpperCase(); 
+        const searchInput = document.getElementById('searchRazao');
+        const busca = searchInput ? searchInput.value.toUpperCase() : ""; 
         const regs = db.filter(i => i.data.startsWith(mesF) && i.razao.includes(busca)).sort((a,b) => new Date(a.data) - new Date(b.data)); 
          
         let sL=0, sI=0; 
@@ -712,7 +727,7 @@
         }); 
         localStorage.setItem(`GPL_DATA_${currentUser}`, JSON.stringify(db)); 
         atualizarTabela(); e.target.reset(); document.getElementById('data').focus(); 
-        switchMobileTab('tabTabela', document.getElementById('btnTabTabela'));
+        if(window.innerWidth <= 900) switchMobileTab('tabTabela', document.getElementById('btnTabTabela'));
     }; 
 
     function remover(id) { if(confirm("Excluir?")) { db = db.filter(i => i.id !== id); localStorage.setItem(`GPL_DATA_${currentUser}`, JSON.stringify(db)); atualizarTabela(); } } 
