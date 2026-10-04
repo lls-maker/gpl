@@ -393,7 +393,7 @@
                 </div>
                 <div class="actions-footer"> 
                     <button type="button" onclick="document.getElementById('gplForm').requestSubmit()" class="btn-add" id="btnSalvarRegistro">Salvar Registro</button> 
-                    <button type="button" onclick="limparFormulario()" class="btn-clear" style="color: var(--warning); border-color: var(--warning);" id="btnCancelarEdicao" style="display:none;">Cancelar Edição</button>
+                    <button type="button" onclick="limparFormulario()" class="btn-clear" style="color: var(--warning); border-color: var(--warning); display: none;" id="btnCancelarEdicao">Cancelar Edição</button>
                     <button type="button" onclick="limparTudo()" class="btn-clear">Limpar Mês</button> 
                     <button type="button" onclick="limparAno()" class="btn-clear-year">Limpar todos os dados</button> 
                     <div class="backup-row">
@@ -822,9 +822,8 @@
                 <td>${i.leituras.toLocaleString()}</td>
                 <td>${i.imped}</td>
                 <td><span style="color:${calcPercentual <= 0.5 ? 'var(--success)' : 'var(--danger)'}; font-weight:900;">${calcPercentual.toFixed(2)}%</span></td>
-                <td class="no-print" style="white-space: nowrap;">
-                    <button onclick="editar(${i.id})" title="Editar" style="background:none; border:none; color:var(--accent); cursor:pointer; margin-right:6px; font-size:13px;">✏️</button>
-                    <button onclick="remover(${i.id})" title="Excluir" style="background:none; border:none; color:var(--danger); cursor:pointer; font-size:13px;">✕</button>
+                <td class="no-print">
+                    <button type="button" onclick="editar(${i.id})" title="Editar" style="background:none; border:none; color:var(--accent); cursor:pointer; font-size:14px; padding:4px;">✏️</button>
                 </td>
             </tr>`; 
         }).join('');
@@ -879,13 +878,12 @@
         };
 
         if (editId) {
-            // Atualiza o registro existente
             const index = db.findIndex(i => i.id == editId);
             if (index !== -1) {
                 db[index] = { id: Number(editId), ...dadosForm };
             }
+            alert("Registro atualizado com sucesso!");
         } else {
-            // Cria um novo registro
             db.push({ 
                 id: Date.now(), 
                 ...dadosForm
@@ -899,6 +897,8 @@
     }; 
 
     function editar(id) {
+        if (!confirm("Deseja realmente editar este registro?")) return;
+
         const item = db.find(i => i.id === id);
         if (!item) return;
 
@@ -913,7 +913,6 @@
         document.getElementById('btnSalvarRegistro').innerText = "Atualizar Registro";
         document.getElementById('btnCancelarEdicao').style.display = "block";
 
-        // Muda automaticamente para a aba de formulário (Novo / Editar)
         switchMobileTab('tabFormulario', document.getElementById('btnTabFormulario'));
     }
 
@@ -924,7 +923,6 @@
         document.getElementById('btnCancelarEdicao').style.display = "none";
     }
 
-    function remover(id) { if(confirm("Excluir?")) { db = db.filter(i => i.id !== id); localStorage.setItem(`GPL_DATA_${currentUser}`, JSON.stringify(db)); atualizarTabela(); } } 
     function limparTudo() { if(confirm("Deseja limpar todos os registros deste mês?")) { const mesF = "2026-" + String(viewDate.getMonth() + 1).padStart(2, '0'); db = db.filter(i => !i.data.startsWith(mesF)); localStorage.setItem(`GPL_DATA_${currentUser}`, JSON.stringify(db)); atualizarTabela(); } } 
      
     function limparAno() { 
@@ -990,7 +988,7 @@
             }
             event.target.value = "";
         };
-        reader.readAsTest(file);
+        reader.readAsText(file);
     }
 
     window.addEventListener('click', (e) => {
@@ -1005,5 +1003,4 @@
         initSystem();
     }; 
 </script> 
-</body> 
-</html>
+</body> </html>
