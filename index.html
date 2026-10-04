@@ -8,8 +8,9 @@
     <!-- FAVICON CORRIGIDO EM BASE64 SEGURO E COMPATÍVEL COM TODOS OS NAVEGADORES -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzMiAzMicgd2lkdGg9JzMyJyBoZWlnaHQ9JzMyJz48cmVjdCB3aWR0aD0nMzInIGhlaWdodD0nMzInIHJ4PSc2JyBmaWxsPScjMGIwZjE1Jy8+PHRleHQgeD0nNTAlJyB5PSc1NSUnIGRvbWluYW50LWJhc2VsaW5lPSdtaWRkbGUnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJyBmb250LXdlaWdodD0nOTAwJyBmb250LXNpemU9JzEwJyBmaWxsPScjMDBmZjg4JyBsZXR0ZXItc3BhY2luZz0nMC41Jz5HUEw8L3RleHQ+PC9zdmc+">
 
-    <!-- VÍNCULO DO MANIFESTO PARA ATIVAR O MODO PWA (APLICATIVO INSTALÁVEL) -->
+    <!-- VÍNCULO DO MANIFESTO PARA ATIVAR O MODO PWA -->
     <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#030508">
 
     <style> 
         :root { 
@@ -28,21 +29,21 @@
             --orange-neon: #ff8c00; 
             --white-neon: #f8f9fa; 
         } 
-        * { 
-            box-sizing: border-box; 
-        } 
-        body { 
+        * { box-sizing: border-box; } 
+
+        html, body {
+            height: 100vh;
             font-family: 'Inter', system-ui, sans-serif; 
             background-color: var(--bg); 
             color: var(--text-p); 
             margin: 0; 
-            padding: 15px; 
-            min-height: 100vh; 
+            padding: 12px; 
             display: flex;
             justify-content: center;
-            alignment-items: center;
             align-items: center;
+            overflow: hidden;
         } 
+
         input { 
             background: #000; 
             color: white; 
@@ -69,395 +70,180 @@
             -webkit-appearance: none; 
             margin: 0; 
         } 
-        input[type=number] { 
-            -moz-appearance: textfield; 
-        } 
+        input[type=number] { -moz-appearance: textfield; } 
+
         #loginScreen { 
-            position: fixed; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100%; 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: radial-gradient(circle at center, #0b0f15 0%, #030508 100%); 
-            z-index: 9999; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
+            z-index: 9999; display: flex; align-items: center; justify-content: center; 
         } 
         .login-box { 
-            background: rgba(11, 15, 21, 0.8); 
-            padding: 40px; 
-            border-radius: 24px; 
-            border: 1px solid var(--border); 
-            border-top: 4px solid var(--success); 
-            width: 380px; 
-            text-align: center; 
-            backdrop-filter: blur(10px); 
+            background: rgba(11, 15, 21, 0.8); padding: 40px; border-radius: 24px; 
+            border: 1px solid var(--border); border-top: 4px solid var(--success); 
+            width: 380px; text-align: center; backdrop-filter: blur(10px); 
             box-shadow: 0 20px 50px rgba(0,0,0,0.5); 
         } 
         .auth-btn { 
-            background: var(--success); 
-            color: black; 
-            width: 100%; 
-            padding: 14px; 
-            border-radius: 12px; 
-            font-weight: 900; 
-            cursor: pointer; 
-            border: none; 
-            text-transform: uppercase; 
-            margin-top: 10px; 
-            transition: 0.3s; 
+            background: var(--success); color: black; width: 100%; padding: 14px; 
+            border-radius: 12px; font-weight: 900; cursor: pointer; border: none; 
+            text-transform: uppercase; margin-top: 10px; transition: 0.3s; 
         } 
         .auth-link { 
-            color: var(--accent); 
-            font-size: 11px; 
-            cursor: pointer; 
-            font-weight: 700; 
-            margin-top: 15px; 
-            display: inline-block; 
-            text-transform: uppercase; 
+            color: var(--accent); font-size: 11px; cursor: pointer; 
+            font-weight: 700; margin-top: 15px; display: inline-block; text-transform: uppercase; 
         } 
 
-        /* COMPUTADOR COM LARGURA AMPLIADA ECONFORTÁVEL */
+        /* LARGURA DO COMPUTADOR EQUILIBRADA (EXATAMENTE COMO VOCÊ GOSTAVA) */
         .container { 
-            max-width: 1750px; 
+            max-width: 1450px; 
             width: 100%; 
-            height: 94vh; 
+            height: 100%; 
+            max-height: 94vh; 
             margin: auto; 
             display: flex; 
             flex-direction: column; 
-            gap: 12px; 
+            gap: 10px; 
+            overflow: hidden; 
         } 
         header { 
-            background: var(--surface); 
-            padding: 12px 25px; 
-            border-radius: 20px; 
-            border: 1px solid var(--border); 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            flex-shrink: 0; 
-            position: relative; 
+            background: var(--surface); padding: 12px 25px; border-radius: 20px; 
+            border: 1px solid var(--border); display: flex; justify-content: space-between; 
+            align-items: center; flex-shrink: 0; position: relative; 
         } 
-        .prog-area { 
-            width: 100%; 
-            flex-shrink: 0; 
-            padding: 0 5px; 
-        } 
+        .prog-area { width: 100%; flex-shrink: 0; padding: 0 5px; } 
         
         .top-dashboard {
-            display: grid;
-            grid-template-columns: 320px 1fr;
-            gap: 15px;
-            flex-shrink: 0;
-            margin-top: 12px;
+            display: grid; grid-template-columns: 320px 1fr; gap: 12px; flex-shrink: 0; margin-top: 2px;
         }
-
         .observations { 
-            background: var(--surface); 
-            padding: 15px 20px; 
-            border-radius: 20px; 
-            border: 1.5px solid #ffffff; 
-            display: flex; 
-            flex-direction: column; 
-            justify-content: center; 
-            gap: 8px; 
-            height: 100%;
+            background: var(--surface); padding: 10px 18px; border-radius: 16px; 
+            border: 1.5px solid #ffffff; display: flex; flex-direction: column; 
+            justify-content: center; gap: 5px; height: 75px; 
         } 
-        .obs-item { 
-            font-size: 11px; 
-            color: #ffffff; 
-            display: flex; 
-            align-items: center; 
-            gap: 10px; 
-            font-weight: 600; 
-        } 
-        .dot { 
-            height: 8px; 
-            width: 8px; 
-            border-radius: 50%; 
-            display: inline-block; 
-        } 
+        .obs-item { font-size: 10px; color: #ffffff; display: flex; align-items: center; gap: 8px; font-weight: 600; } 
+        .dot { height: 6px; width: 6px; border-radius: 50%; display: inline-block; flex-shrink: 0; } 
 
-        .summary-grid { 
-            display: grid; 
-            grid-template-columns: repeat(7, 1fr); 
-            gap: 12px; 
-        } 
+        .summary-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; height: 75px; } 
         .summary-card { 
-            background: var(--surface); 
-            padding: 10px; 
-            border-radius: 16px; 
-            border: 1.5px solid var(--grey-border); 
-            border-top: 5px solid; 
-            display: flex; 
-            flex-direction: column; 
-            justify-content: center; 
-            text-align: center; 
-            transition: 0.3s ease; 
+            background: var(--surface); padding: 6px 4px; border-radius: 16px; 
+            border: 1.5px solid var(--grey-border); border-top: 5px solid; 
+            display: flex; flex-direction: column; justify-content: center; text-align: center; height: 100%; 
         } 
-        .summary-card:hover { 
-            transform: translateY(-3px); 
-            filter: brightness(1.1); 
-        } 
-        .summary-card p { font-size: 8px; font-weight: 800; text-transform: uppercase; margin: 0; } 
-        .summary-card h2 { margin: 6px 0 0; font-size: 1rem; color: var(--text-h); font-weight: 900; } 
+        .summary-card p { font-size: 7.5px; font-weight: 800; text-transform: uppercase; margin: 0; } 
+        .summary-card h2 { margin: 3px 0 0; font-size: 0.9rem; color: var(--text-h); font-weight: 900; } 
 
-        .neon-leituras { border-top-color: var(--white-neon); box-shadow: 0 0 15px rgba(248, 249, 250, 0.2); } 
-        .neon-impedimentos { border-top-color: var(--orange-neon); box-shadow: 0 0 15px rgba(255, 140, 0, 0.2); } 
-        .neon-meta { border-top-color: var(--warning); box-shadow: 0 0 15px rgba(255, 204, 0, 0.2); } 
-        .neon-bonus { border-top-color: var(--accent); box-shadow: 0 0 15px rgba(0, 112, 243, 0.2); } 
-        .neon-descontos { border-top-color: var(--danger); box-shadow: 0 0 15px rgba(255, 77, 77, 0.2); } 
-        .neon-receber { border-top-color: var(--success); box-shadow: 0 0 20px rgba(0, 255, 136, 0.25); } 
-        .neon-acumulado { border-top-color: var(--purple); box-shadow: 0 0 15px rgba(156, 39, 176, 0.2); } 
+        .neon-leituras { border-top-color: var(--white-neon); } 
+        .neon-impedimentos { border-top-color: var(--orange-neon); } 
+        .neon-meta { border-top-color: var(--warning); } 
+        .neon-bonus { border-top-color: var(--accent); } 
+        .neon-descontos { border-top-color: var(--danger); } 
+        .neon-receber { border-top-color: var(--success); } 
+        .neon-acumulado { border-top-color: var(--purple); } 
 
         .content-wrap { 
-            display: grid; 
-            grid-template-columns: 320px 1fr; 
-            gap: 15px; 
-            flex-grow: 1; 
-            overflow: hidden; 
+            display: grid; grid-template-columns: 320px 1fr; gap: 15px; 
+            flex-grow: 1; min-height: 0; overflow: hidden; 
         } 
         aside, main { 
-            display: flex; 
-            flex-direction: column; 
-            height: 100%; 
-            overflow: hidden; 
+            display: flex; flex-direction: column; height: 100%; 
+            min-height: 0; overflow: hidden; 
         } 
+        
         .sidebar { 
             background: linear-gradient(180deg, rgba(0, 112, 243, 0.08) 0%, var(--surface) 100%); 
-            padding: 14px 18px; 
-            border-radius: 20px; 
-            border: 1.5px solid var(--accent); 
-            height: 100%; 
-            display: flex; 
-            flex-direction: column; 
-            justify-content: space-between; 
-            overflow: hidden; 
+            padding: 16px 20px; border-radius: 20px; border: 1.5px solid var(--accent); 
+            height: 100%; display: flex; flex-direction: column; 
+            justify-content: space-between; overflow: hidden; 
         } 
-        .form-content-area {
-            margin-top: 14px; 
-        }
-        .form-group {
-            display: flex; 
-            align-items: center; 
-            gap: 8px; 
-            margin-bottom: 5px;
-        }
-        .form-group label {
-            width: 80px; 
-            flex-shrink: 0; 
-            font-size: 10px; 
-            font-weight: 800; 
-            color: var(--accent); 
-            text-transform: uppercase; 
-        }
-        .actions-footer { 
-            margin-top: 0px; 
-            display: flex; 
-            flex-direction: column; 
-            gap: 6px; 
-        } 
-        .btn-add { 
-            background: var(--accent); 
-            color: #fff; 
-            width: 100%; 
-            padding: 11px; 
-            border-radius: 12px; 
-            font-weight: 900; 
-            cursor: pointer; 
-            border: none; 
-            text-transform: uppercase; 
-            font-size: 11px; 
-        } 
-        .btn-clear { 
-            background: transparent; 
-            color: var(--danger); 
-            width: 100%; 
-            padding: 8px; 
-            border-radius: 12px; 
-            font-weight: 800; 
-            cursor: pointer; 
-            border: 1px solid var(--danger); 
-            text-transform: uppercase; 
-            font-size: 9.5px; 
-        } 
-        .btn-clear-year { 
-            background: transparent; 
-            color: var(--purple); 
-            width: 100%; 
-            padding: 8px; 
-            border-radius: 12px; 
-            font-weight: 800; 
-            cursor: pointer; 
-            border: 1px solid var(--purple); 
-            text-transform: uppercase; 
-            font-size: 9.5px; 
-        } 
-        .backup-row {
-            display: flex;
-            gap: 5px;
-            width: 100%;
-        }
-        .btn-backup { 
-            background: transparent; 
-            color: var(--success); 
-            width: 50%; 
-            padding: 8px 3px; 
-            border-radius: 12px; 
-            font-weight: 800; 
-            cursor: pointer; 
-            border: 1px solid var(--success); 
-            text-transform: uppercase; 
-            font-size: 9.5px; 
-            text-align: center; 
-        } 
-        .btn-import { 
-            background: transparent; 
-            color: var(--warning); 
-            width: 50%; 
-            padding: 8px 3px; 
-            border-radius: 12px; 
-            font-weight: 800; 
-            cursor: pointer; 
-            border: 1px solid var(--warning); 
-            text-transform: uppercase; 
-            font-size: 9.5px; 
-            text-align: center; 
-        } 
-
-        .main-view { background: var(--surface); border-radius: 20px; border: 1.5px solid var(--brown-border); overflow: hidden; height: 100%; display: flex; flex-direction: column; } 
+        .form-content-area { margin-top: 5px; }
+        .form-group { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+        .form-group label { width: 80px; flex-shrink: 0; font-size: 10px; font-weight: 800; color: var(--accent); text-transform: uppercase; }
         
-        .table-container { 
-            flex-grow: 1; 
-            max-height: calc(14 * 39.5px + 35px); 
-            overflow-y: auto; 
+        .actions-footer { display: flex; flex-direction: column; gap: 5px; margin-top: 10px; flex-shrink: 0; } 
+        .btn-add { background: var(--accent); color: #fff; width: 100%; padding: 10px; border-radius: 12px; font-weight: 900; cursor: pointer; border: none; text-transform: uppercase; font-size: 11px; } 
+        .btn-clear { background: transparent; color: var(--danger); width: 100%; padding: 7px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--danger); text-transform: uppercase; font-size: 9px; } 
+        .btn-clear-year { background: transparent; color: var(--purple); width: 100%; padding: 7px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--purple); text-transform: uppercase; font-size: 9px; } 
+        .backup-row { display: flex; gap: 5px; width: 100%; }
+        .btn-backup { background: transparent; color: var(--success); width: 50%; padding: 7px 3px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--success); text-transform: uppercase; font-size: 9px; text-align: center; } 
+        .btn-import { background: transparent; color: var(--warning); width: 50%; padding: 7px 3px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--warning); text-transform: uppercase; font-size: 9px; text-align: center; } 
+
+        .main-view { 
+            background: var(--surface); border-radius: 20px; border: 1.5px solid var(--brown-border); 
+            display: flex; flex-direction: column; flex-grow: 1; min-height: 0; overflow: hidden; 
         } 
+        .table-container { flex-grow: 1; min-height: 0; overflow-y: auto; } 
 
         table { width: 100%; border-collapse: collapse; } 
-        th, td { padding: 9px 5px; text-align: center; border-bottom: 1px solid var(--border); font-size: 12px; height: 39.5px; } 
+        th, td { padding: 8px 5px; text-align: center; border-bottom: 1px solid var(--border); font-size: 12px; } 
         th { background: #0d1117; color: var(--accent); font-size: 10px; text-transform: uppercase; position: sticky; top: 0; z-index: 5; } 
 
         .month-grid { display: none; position: absolute; top: 70px; right: 180px; background: #0d1117; border: 1px solid var(--accent); padding: 15px; border-radius: 15px; grid-template-columns: repeat(3, 1fr); gap: 8px; z-index: 1000; } 
         .month-grid.active { display: grid; } 
         .month-item { background: #000; color: white; border: 1px solid var(--border); padding: 10px; border-radius: 8px; cursor: pointer; font-size: 11px; font-weight: bold; }
         
-        .mobile-nav-tabs {
-            display: none;
-        }
-        .mobile-search-area {
-            display: none;
-        }
-        /* Classe para ocultar apenas o nome do usuário no cabeçalho mobile */
-        .desktop-user-title {
-            display: inline;
+        .header-btn {
+            background: #1e2633; border: 1px solid var(--border); color: white;
+            padding: 9px 14px; border-radius: 10px; cursor: pointer; font-weight: 800; font-size: 11px; text-transform: uppercase;
         }
 
-        /* COMPORTAMENTO EXCLUSIVO PARA TELAS DE CELULAR/TABLET (MAX-WIDTH: 900px) */
+        .mobile-nav-tabs, .mobile-search-area { display: none; }
+        .desktop-header-info { display: inline; }
+
+        /* REGRAS EXCLUSIVAS PARA O MOBILE (COM ABAS FIXAS E LIMPO) */
         @media (max-width: 900px) {
-            body { 
-                align-items: flex-start; 
-                padding: 10px; 
-                height: 100vh;
-                overflow: hidden;
-            } 
-            .container { 
-                height: 100%; 
-                max-height: none;
-                padding-bottom: 65px; 
-            } 
-            .desktop-user-title {
-                display: none !important;
-            }
-            header h1 {
-                font-size: 14px !important;
-            }
-            .top-dashboard {
-                display: flex !important;
-                flex-direction: column;
-            }
-            .summary-grid {
-                grid-template-columns: repeat(2, 1fr) !important;
-            }
-            .content-wrap {
-                display: block !important;
-            }
-            
-            .mobile-tab-content {
-                display: none !important;
-            }
-            .mobile-tab-content.active-tab {
-                display: flex !important;
-                flex-direction: column;
-                height: 100%;
-                flex-grow: 1;
-            }
-
-            .mobile-search-area {
-                display: block !important;
-                margin-bottom: 8px;
-                flex-shrink: 0;
-            }
+            html, body { padding: 8px; height: 100vh; overflow: hidden; }
+            .container { height: 100%; max-height: none; gap: 8px; padding-bottom: 55px; }
+            .desktop-header-info { display: none !important; }
+            .top-dashboard { display: flex !important; flex-direction: column; gap: 6px; }
+            .observations { height: auto !important; padding: 8px 12px !important; }
+            .summary-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 6px !important; height: auto !important; }
+            .summary-card { height: 50px !important; }
+            .content-wrap { display: block !important; }
             
             .mobile-nav-tabs {
-                display: flex;
-                position: fixed;
-                bottom: 0;
-                left: 0;
-                width: 100%;
-                background: var(--surface);
-                border-top: 1px solid var(--border);
-                z-index: 999;
-                justify-content: space-around;
-                padding: 10px 0;
-                backdrop-filter: blur(10px);
+                display: flex; width: 100%; background: var(--surface); border: 1px solid var(--border);
+                border-radius: 14px; z-index: 999; justify-content: space-between; padding: 6px;
+                position: fixed; bottom: 8px; left: 0; width: calc(100% - 16px); margin-left: 8px;
+                box-sizing: border-box; backdrop-filter: blur(10px);
             }
             .mob-tab-btn {
-                background: none;
-                border: none;
-                color: var(--text-p);
-                font-size: 10px;
-                font-weight: 800;
-                text-transform: uppercase;
-                cursor: pointer;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                gap: 4px;
+                background: transparent; border: none; color: var(--text-p); font-size: 9.5px;
+                font-weight: 800; text-transform: uppercase; cursor: pointer; flex: 1; padding: 8px 4px;
+                border-radius: 10px; text-align: center; transition: 0.3s;
             }
-            .mob-tab-btn.active {
-                color: var(--success);
+            .mob-tab-btn.active { background: var(--accent); color: #fff; }
+
+            .mobile-tab-content { display: none !important; }
+            .mobile-tab-content.active-tab {
+                display: flex !important; flex-direction: column; flex-grow: 1; min-height: 0; overflow: hidden;
             }
-            .table-container {
-                max-height: none !important;
-                flex-grow: 1 !important;
+
+            aside.mobile-tab-content .sidebar { 
+                height: 100% !important; 
+                max-height: 100% !important; 
+                overflow-y: auto !important; 
             }
+            .mobile-search-area { display: block !important; margin-bottom: 6px; flex-shrink: 0; }
         }
 
         /* REGRAS DE IMPRESSÃO: MOSTRA O CABEÇALHO OFICIAL COM O USUÁRIO E IMPRIME A TABELA */
         @media print { 
-            body { height: auto !important; overflow: visible !important; display: block !important; background: #fff !important; color: #000 !important; }
-            .container { display: block !important; width: 100% !important; height: auto !important; }
+            html, body { height: auto !important; overflow: visible !important; background: #fff !important; color: #000 !important; position: static !important; }
+            .container { display: block !important; width: 100% !important; height: auto !important; max-height: none !important; }
             
-            /* Restaura a exibição do nome do usuário e título na folha impressa, mesmo se estivemos no celular */
-            .desktop-user-title { display: inline !important; }
+            .desktop-header-info { display: inline !important; }
+            .no-print, .mobile-nav-tabs, .top-dashboard, .content-wrap > aside { display: none !important; } 
             
-            header { border: none; border-bottom: 2px solid #000; height: auto; padding: 10px 0; margin-bottom: 10px; background: #fff !important; }
-            header h1 { color: #000 !important; font-size: 14pt !important; width: 100%; text-align: left; }
+            header { border: none; border-bottom: 2px solid #000; padding: 10px 0; background: #fff !important; margin-bottom: 10px; }
+            header h1 { color: #000 !important; font-size: 13pt !important; display: block !important; }
             
-            .content-wrap { display: block !important; }
-            .top-dashboard { display: grid !important; grid-template-columns: 1fr !important; gap: 10px !important; margin-bottom: 15px; }
-            .observations { display: none !important; }
-            .summary-grid { display: grid !important; grid-template-columns: repeat(4, 1fr) !important; gap: 6px !important; }
-            .summary-card { background: #f8f9fa !important; border: 1px solid #000 !important; box-shadow: none !important; color: #000 !important; padding: 6px !important; }
-            .summary-card h2, .summary-card p { color: #000 !important; margin: 2px 0 !important; font-size: 8pt !important; }
+            #tabTabela { display: flex !important; flex-direction: column !important; position: static !important; width: 100% !important; height: auto !important; }
             
-            .main-view { border: 1px solid #000 !important; background: #fff !important; }
-            table { font-size: 8pt !important; width: 100% !important; }
-            td, th { border: 0.5px solid #000 !important; color: #000 !important; padding: 4px !important; background: #fff !important; }
+            .main-view { border: 1px solid #000 !important; background: #fff !important; margin-top: 5px; height: auto !important; overflow: visible !important; }
+            table { font-size: 8.5pt !important; width: 100% !important; }
+            td, th { border: 0.5px solid #000 !important; color: #000 !important; padding: 5px !important; background: #fff !important; }
             th { background: #e9ecef !important; color: #000 !important; }
             .table-container { max-height: none !important; overflow: visible !important; }
-            .no-print, aside, .mobile-nav-tabs, #progArea { display: none !important; } 
         } 
     </style> 
 </head> 
@@ -479,15 +265,15 @@
 
 <div class="container"> 
     <header> 
-        <div style="display: flex; align-items: center; gap: 15px;"> 
-            <div style="background:var(--success); color:black; padding:8px 15px; border-radius:10px; font-weight:900;" class="no-print">GPL</div> 
-            <h1 style="font-size: 16px; color: white; margin: 0;">Gestão de Produção de Leituras - <span class="desktop-user-title"><span id="userDisplay" style="color:var(--success)"></span></span></h1> 
+        <div style="display: flex; align-items: center; gap: 10px;"> 
+            <div style="background:var(--success); color:black; padding:8px 12px; border-radius:10px; font-weight:900;" class="no-print">GPL</div> 
+            <h1 style="font-size: 15px; color: white; margin: 0;">Gestão de Produção de Leituras - <span class="desktop-header-info"><span id="userDisplay" style="color:var(--success)"></span></span></h1> 
         </div> 
-        <div style="display: flex; gap: 10px; align-items: center;"> 
-            <button class="btn-add no-print" style="padding: 10px 20px; font-size: 12px; width: 140px; margin: 0; background: var(--accent);" onclick="toggleMonthGrid()" id="currentMonthDisplay">SETEMBRO 2026</button> 
+        <div style="display: flex; gap: 8px; align-items: center;" class="no-print"> 
+            <button class="header-btn" onclick="toggleMonthGrid()" id="currentMonthDisplay" style="background: var(--accent); border-color: var(--accent);">SETEMBRO</button> 
             <div id="monthGrid" class="month-grid"></div> 
-            <button onclick="window.print()" style="background:#1e2633; border:1px solid var(--border); color:white; padding:10px 15px; border-radius:10px; cursor:pointer; font-weight:800;">IMPRIMIR</button> 
-            <button onclick="logout()" style="background:var(--danger); border:none; color:white; padding:10px; border-radius:10px; cursor:pointer; font-weight:bold;">SAIR</button> 
+            <button class="header-btn" onclick="window.print()">IMPRIMIR</button> 
+            <button class="header-btn" onclick="logout()" style="background:var(--danger); border-color:var(--danger);">SAIR</button> 
         </div> 
     </header> 
 
@@ -501,7 +287,14 @@
         </div> 
     </div> 
 
-    <!-- DASHBOARD (NO DESKTOP APARECE NORMALMENTE; NO MÓVEL É A ABA 1) -->
+    <!-- BARRA DE NAVEGAÇÃO SUPERIOR (EXCLUSIVA PARA MOBILE) -->
+    <nav class="mobile-nav-tabs no-print">
+        <button class="mob-tab-btn active" onclick="switchMobileTab('tabDashboard', this)">📊 Dashboard</button>
+        <button class="mob-tab-btn" onclick="switchMobileTab('tabFormulario', this)">➕ Novo</button>
+        <button class="mob-tab-btn" onclick="switchMobileTab('tabTabela', this)">📋 Registros</button>
+    </nav>
+
+    <!-- DASHBOARD -->
     <div class="top-dashboard mobile-tab-content active-tab" id="tabDashboard">
         <div class="observations no-print"> 
             <div class="obs-item"><span class="dot" style="background:var(--success)"></span> Bônus de R$ 0,20 por cada leitura excedente a 8000 leituras</div> 
@@ -520,12 +313,12 @@
     </div>
 
     <div class="content-wrap"> 
-        <!-- FORMULÁRIO (NO DESKTOP APARECE NA LATERAL COM O CAMPO DE PESQUISA ORIGINAL; NO MÓVEL É A ABA 2) -->
+        <!-- FORMULÁRIO -->
         <aside class="no-print mobile-tab-content" id="tabFormulario"> 
             <div class="sidebar"> 
                 <div>
-                    <label style="font-size: 9px; font-weight: 800; color: var(--success); text-transform: uppercase; margin-bottom: 3px; display: block;" class="desktop-search-label">Pesquisar razão</label> 
-                    <input type="text" id="searchRazao" placeholder="Filtrar tabela..." oninput="sincronizarBusca(this.value)" style="border-color: var(--success); margin-bottom: 6px;" class="desktop-search-input"> 
+                    <label style="font-size: 10px; font-weight: 800; color: var(--success); text-transform: uppercase; margin-bottom: 4px; display: block;">Pesquisar razão</label> 
+                    <input type="text" id="searchRazao" placeholder="Filtrar registros..." oninput="sincronizarBusca(this.value)" style="border-color: var(--success); margin-bottom: 8px;"> 
                     
                     <div class="form-content-area">
                         <form id="gplForm"> 
@@ -551,11 +344,10 @@
             </div> 
         </aside> 
 
-        <!-- TABELA (NO DESKTOP APARECE AO LADO; NO MÓVEL É A ABA 3) -->
-        <main class="mobile-tab-content active-tab" id="tabTabela"> 
-            <!-- Barra de pesquisa exclusiva para o topo da Tabela no celular -->
+        <!-- TABELA / REGISTROS -->
+        <main class="mobile-tab-content" id="tabTabela"> 
             <div class="mobile-search-area no-print">
-                <input type="text" id="searchRazaoMob" placeholder="Pesquisar razão na tabela..." oninput="sincronizarBusca(this.value)" style="border-color: var(--success);">
+                <input type="text" id="searchRazaoMob" placeholder="Pesquisar razão nos registros..." oninput="sincronizarBusca(this.value)" style="border-color: var(--success);">
             </div>
             <div class="main-view"> 
                 <div class="table-container"> 
@@ -570,19 +362,6 @@
         </main> 
     </div> 
 </div> 
-
-<!-- BARRA DE NAVEGAÇÃO INFERIOR (APARECE APENAS NO MÓVEL) -->
-<nav class="mobile-nav-tabs no-print">
-    <button class="mob-tab-btn" onclick="switchMobileTab('tabDashboard', this)">
-        📊 Dashboard
-    </button>
-    <button class="mob-tab-btn" onclick="switchMobileTab('tabFormulario', this)">
-        ➕ Novo Registro
-    </button>
-    <button class="mob-tab-btn active" onclick="switchMobileTab('tabTabela', this)">
-        📋 Tabela
-    </button>
-</nav>
 
 <script> 
     let db = []; 
@@ -635,7 +414,7 @@
         document.getElementById('userDisplay').innerText = currentUser; 
         db = JSON.parse(localStorage.getItem(`GPL_DATA_${currentUser}`)) || []; 
         
-        document.getElementById('currentMonthDisplay').innerText = `${msNomesCompletos[viewDate.getMonth()]} 2026`; 
+        document.getElementById('currentMonthDisplay').innerText = msNomesCompletos[viewDate.getMonth()]; 
         
         renderMonths(); 
         atualizarTabela(); 
@@ -680,7 +459,7 @@
      
     function selectMonth(m) { 
         viewDate.setMonth(m); 
-        document.getElementById('currentMonthDisplay').innerText = `${msNomesCompletos[m]} 2026`; 
+        document.getElementById('currentMonthDisplay').innerText = msNomesCompletos[m]; 
         toggleMonthGrid(); 
         atualizarTabela(); 
     } 
