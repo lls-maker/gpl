@@ -118,7 +118,7 @@
         .obs-item { font-size: 10px; color: #ffffff; display: flex; align-items: center; gap: 6px; font-weight: 600; } 
         .dot { height: 6px; width: 6px; border-radius: 50%; display: inline-block; flex-shrink: 0; } 
 
-        /* CARDS DO DASHBOARD BEM MAIORES */
+        /* CARDS DO DASHBOARD */
         .summary-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; height: auto; } 
         .summary-card { 
             background: var(--surface); padding: 12px 8px; border-radius: 16px; 
@@ -136,7 +136,7 @@
         .neon-receber { border-top-color: var(--success); } 
         .neon-acumulado { border-top-color: var(--purple); } 
 
-        /* LAYOUT ÚNICA PÁGINA PARA DESKTOP (LADO A LADO) */
+        /* LAYOUT LADO A LADO NO DESKTOP (FORMULÁRIO + TABELA) */
         .content-wrap { 
             display: grid; 
             grid-template-columns: 320px 1fr; 
@@ -190,7 +190,7 @@
 
         .mobile-search-area { display: block; margin-bottom: 4px; flex-shrink: 0; }
 
-        /* RESPONSIVIDADE: SE FOR CELULAR, MANTÉM O SISTEMA DE ABAS */
+        /* RESPONSIVIDADE PARA CELULAR (ABAS) */
         @media (max-width: 900px) {
             .mobile-nav-tabs {
                 display: flex; width: 100%; background: var(--surface); border: 1px solid var(--border);
@@ -214,7 +214,7 @@
             .summary-grid { grid-template-columns: repeat(4, 1fr); }
         }
 
-        /* NO DESKTOP, ESCONDE A BARRA DE ABAS E MOSTRA TUDO FIXO */
+        /* NO DESKTOP, ESCONDE A BARRA DE ABAS E MOSTRA TUDO JUNTO (LADO A LADO) */
         @media (min-width: 901px) {
             .mobile-nav-tabs { display: none !important; }
             .mobile-tab-content { display: flex !important; flex-direction: column; height: 100%; }
@@ -316,7 +316,7 @@
         <button class="mob-tab-btn" id="btnTabNL" onclick="switchMobileTab('tabNL', this)">🔍 NL</button>
     </nav>
 
-    <!-- DASHBOARD (CARDS) -->
+    <!-- DASHBOARD -->
     <div class="top-dashboard mobile-tab-content active-tab" id="tabDashboard">
         <div class="observations no-print"> 
             <div class="obs-item"><span class="dot" style="background:var(--success)"></span> Bônus de R$ 0,20 por cada leitura excedente a 8000 leituras</div> 
@@ -334,7 +334,7 @@
         </div>
     </div>
 
-    <!-- CONTEÚDO PRINCIPAL (FORMULÁRIO LATERAL + TABELA LADO A LADO) -->
+    <!-- CONTEÚDO PRINCIPAL (FORMULÁRIO LATERAL + TABELA) -->
     <div class="content-wrap" id="mainContentWrap"> 
         <aside class="no-print mobile-tab-content active-tab" id="tabFormulario"> 
             <div class="sidebar"> 
@@ -378,7 +378,7 @@
             </div> 
         </main> 
 
-        <!-- ABA NL (APENAS PARA MOBILE SE NECESSÁRIO) -->
+        <!-- ABA NL (APENAS PARA MOBILE) -->
         <div class="mobile-tab-content" id="tabNL" style="flex-direction: column;">
             <div class="mobile-search-area">
                 <input type="text" id="searchNL" placeholder="Pesquisar por número ou descrição da nota..." oninput="filtrarNL(this.value)" style="border-color: var(--success);">
@@ -503,7 +503,7 @@
       { numero: '5800', status: 'Sem Leitura', detalhe: 'PADRÃO MEDIÇÃO INCENDIADO/DEMOLIDO' },
       { numero: '5802', status: 'Sem Leitura', detalhe: 'INSTALAÇÃO INTERDITADA' },
       { numero: '6801', status: 'Sem Leitura', detalhe: 'LEITURA IMPEDIDA POR CONDIÇÃO INSEGURA/ÁREA RISCO' },
-      { numero: '6820', status: 'Sem Leitura', detalhe: 'ESTRADA OU RUA INTRASITÁVEL' },
+      { numero: '6820', status: 'Sem Leitura', detalhe: 'ESTRADA أو RUA INTRASITÁVEL' },
       { numero: '6862', status: 'Sem Leitura', detalhe: 'GREVE NO SERVIÇO PÚBLICO' },
       { numero: '6872', status: 'Sem Leitura', detalhe: 'CALAMIDADE DECRETADA ENCHENTE ALAGAM TERREMOTO VENDAVAL' },
       { numero: '7000', status: 'Sem Leitura', detalhe: 'SUSPENSÃO DE MEDIDOR DEFEITUOSO DEVIDO A CHUVAS/ENCHENTES' }
@@ -513,7 +513,7 @@
     const fM = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); 
 
     function switchMobileTab(tabId, btnElement) {
-        if(window.innerWidth > 900) return; // No desktop não usa abas
+        if(window.innerWidth > 900) return;
         document.querySelectorAll('.mobile-tab-content').forEach(el => el.classList.remove('active-tab'));
         const target = document.getElementById(tabId);
         if(target) target.classList.add('active-tab');
