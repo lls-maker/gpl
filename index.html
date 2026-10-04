@@ -223,7 +223,7 @@
         } 
         .sidebar { 
             background: linear-gradient(180deg, rgba(0, 112, 243, 0.08) 0%, var(--surface) 100%); 
-            padding: 14px 18px 14px 18px; /* Adiciona uma margem inferior equilibrada para afastar os botões da linha final do card */
+            padding: 14px 18px; 
             border-radius: 20px; 
             border: 1.5px solid var(--accent); 
             height: 100%; 
@@ -339,6 +339,100 @@
         .month-grid.active { display: grid; } 
         .month-item { background: #000; color: white; border: 1px solid var(--border); padding: 10px; border-radius: 8px; cursor: pointer; font-size: 11px; font-weight: bold; }
         
+        /* BOTÕES DE TOPO PADRONIZADOS */
+        .header-btn {
+            background: #1e2633;
+            border: 1px solid var(--border);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 800;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        /* BARRA DE ABAS MOBILE (OCULTA NO DESKTOP) */
+        .mobile-nav-tabs {
+            display: none;
+        }
+        .mobile-search-area {
+            display: none;
+        }
+
+        /* COMPORTAMENTO EXCLUSIVO PARA TELAS DE CELULAR/TABLET (MAX-WIDTH: 900px) */
+        @media (max-width: 900px) {
+            body {
+                align-items: flex-start;
+                padding: 10px;
+            }
+            .container {
+                height: auto;
+                padding-bottom: 70px; 
+            }
+            .top-dashboard {
+                display: flex !important;
+                flex-direction: column;
+            }
+            .summary-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+            .content-wrap {
+                display: block !important;
+            }
+            
+            /* No celular, esconde as seções e exibe apenas a ativa */
+            .mobile-tab-content {
+                display: none !important;
+            }
+            .mobile-tab-content.active-tab {
+                display: flex !important;
+                flex-direction: column;
+                height: auto;
+                flex-grow: 1;
+            }
+
+            /* No celular, exibe a barra de pesquisa no topo da aba de Tabela */
+            .mobile-search-area {
+                display: block !important;
+                margin-bottom: 8px;
+            }
+            
+            /* Barra inferior fixa para celular */
+            .mobile-nav-tabs {
+                display: flex;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                background: var(--surface);
+                border-top: 1px solid var(--border);
+                z-index: 999;
+                justify-content: space-around;
+                padding: 10px 0;
+                backdrop-filter: blur(10px);
+            }
+            .mob-tab-btn {
+                background: none;
+                border: none;
+                color: var(--text-p);
+                font-size: 10px;
+                font-weight: 800;
+                text-transform: uppercase;
+                cursor: pointer;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 4px;
+            }
+            .mob-tab-btn.active {
+                color: var(--success);
+            }
+            .table-container {
+                max-height: 450px !important;
+            }
+        }
+
         @media print { 
             body { height: auto !important; overflow: visible !important; display: block !important; background: #fff !important; color: #000 !important; }
             .container { display: block !important; width: 100% !important; height: auto !important; }
@@ -355,7 +449,7 @@
             td, th { border: 0.5px solid #000 !important; color: #000 !important; padding: 4px !important; background: #fff !important; }
             th { background: #e9ecef !important; color: #000 !important; }
             .table-container { max-height: none !important; overflow: visible !important; }
-            .no-print, aside { display: none !important; } 
+            .no-print, aside, .mobile-nav-tabs { display: none !important; } 
         } 
     </style> 
 </head> 
@@ -379,13 +473,13 @@
     <header> 
         <div style="display: flex; align-items: center; gap: 15px;"> 
             <div style="background:var(--success); color:black; padding:8px 15px; border-radius:10px; font-weight:900;" class="no-print">GPL</div> 
-            <h1 style="font-size: 16px; color: white; margin: 0;">Gestão de Produtividade de Leituras - <span id="userDisplay" style="color:var(--success)"></span></h1> 
+            <h1 style="font-size: 16px; color: white; margin: 0;">Gestão de Leituras - <span id="userDisplay" style="color:var(--success)"></span></h1> 
         </div> 
         <div style="display: flex; gap: 10px; align-items: center;" class="no-print"> 
-            <button class="btn-add" style="padding: 10px 20px; font-size: 12px; width: 180px; margin: 0; background: var(--accent);" onclick="toggleMonthGrid()" id="currentMonthDisplay">SETEMBRO 2026 ▾</button> 
+            <button class="header-btn" onclick="toggleMonthGrid()" id="currentMonthDisplay" style="background: var(--accent); border-color: var(--accent);">SETEMBRO 2026</button> 
             <div id="monthGrid" class="month-grid"></div> 
-            <button onclick="window.print()" style="background:#1e2633; border:1px solid var(--border); color:white; padding:10px 20px; border-radius:10px; cursor:pointer; font-weight:800;">IMPRIMIR</button> 
-            <button onclick="logout()" style="background:var(--danger); border:none; color:white; padding:10px; border-radius:10px; cursor:pointer; font-weight:bold;">SAIR</button> 
+            <button class="header-btn" onclick="window.print()">IMPRIMIR</button> 
+            <button class="header-btn" onclick="logout()" style="background:var(--danger); border-color:var(--danger);">SAIR</button> 
         </div> 
     </header> 
 
@@ -399,8 +493,8 @@
         </div> 
     </div> 
 
-    <!-- BLOCO SUPERIOR: OBSERVAÇÕES + CARDS DE RESUMO -->
-    <div class="top-dashboard">
+    <!-- DASHBOARD (NO DESKTOP APARECE NORMALMENTE; NO MÓVEL É A ABA 1) -->
+    <div class="top-dashboard mobile-tab-content active-tab" id="tabDashboard">
         <div class="observations no-print"> 
             <div class="obs-item"><span class="dot" style="background:var(--success)"></span> Bônus de R$ 0,20 por cada leitura excedente a 8000 leituras</div> 
             <div class="obs-item"><span class="dot" style="background:var(--danger)"></span> Desconto: R$ 1,50 p/ impedimento</div> 
@@ -418,11 +512,12 @@
     </div>
 
     <div class="content-wrap"> 
-        <aside class="no-print"> 
+        <!-- FORMULÁRIO (NO DESKTOP APARECE NA LATERAL COM O CAMPO DE PESQUISA ORIGINAL; NO MÓVEL É A ABA 2) -->
+        <aside class="no-print mobile-tab-content" id="tabFormulario"> 
             <div class="sidebar"> 
                 <div>
-                    <label style="font-size: 9px; font-weight: 800; color: var(--success); text-transform: uppercase; margin-bottom: 3px; display: block;">Pesquisar razão</label> 
-                    <input type="text" id="searchRazao" placeholder="Filtrar tabela..." oninput="atualizarTabela()" style="border-color: var(--success); margin-bottom: 6px;"> 
+                    <label style="font-size: 9px; font-weight: 800; color: var(--success); text-transform: uppercase; margin-bottom: 3px; display: block;" class="desktop-search-label">Pesquisar razão</label> 
+                    <input type="text" id="searchRazao" placeholder="Filtrar tabela..." oninput="sincronizarBusca(this.value)" style="border-color: var(--success); margin-bottom: 6px;" class="desktop-search-input"> 
                     
                     <div class="form-content-area">
                         <form id="gplForm"> 
@@ -448,7 +543,12 @@
             </div> 
         </aside> 
 
-        <main> 
+        <!-- TABELA (NO DESKTOP APARECE AO LADO; NO MÓVEL É A ABA 3) -->
+        <main class="mobile-tab-content active-tab" id="tabTabela"> 
+            <!-- Barra de pesquisa exclusiva para o topo da Tabela no celular -->
+            <div class="mobile-search-area no-print">
+                <input type="text" id="searchRazaoMob" placeholder="Pesquisar razão na tabela..." oninput="sincronizarBusca(this.value)" style="border-color: var(--success);">
+            </div>
             <div class="main-view"> 
                 <div class="table-container"> 
                     <table> 
@@ -463,6 +563,19 @@
     </div> 
 </div> 
 
+<!-- BARRA DE NAVEGAÇÃO INFERIOR (APARECE APENAS NO MÓVEL) -->
+<nav class="mobile-nav-tabs no-print">
+    <button class="mob-tab-btn" onclick="switchMobileTab('tabDashboard', this)">
+        📊 Dashboard
+    </button>
+    <button class="mob-tab-btn" onclick="switchMobileTab('tabFormulario', this)">
+        ➕ Novo Registro
+    </button>
+    <button class="mob-tab-btn active" onclick="switchMobileTab('tabTabela', this)">
+        📋 Tabela
+    </button>
+</nav>
+
 <script> 
     let db = []; 
     let currentUser = ""; 
@@ -472,6 +585,20 @@
     
     const msNomesCompletos = ["JANEIRO", "FEVEREIRO", "MARÇO", "ABRIL", "MAIO", "JUNHO", "JULHO", "AGOSTO", "SETEMBRO", "OUTUBRO", "NOVEMBRO", "DEZEMBRO"]; 
     const fM = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); 
+
+    function switchMobileTab(tabId, btnElement) {
+        document.querySelectorAll('.mobile-tab-content').forEach(el => el.classList.remove('active-tab'));
+        document.getElementById(tabId).classList.add('active-tab');
+
+        document.querySelectorAll('.mob-tab-btn').forEach(btn => btn.classList.remove('active'));
+        btnElement.classList.add('active');
+    }
+
+    function sincronizarBusca(val) {
+        document.getElementById('searchRazao').value = val;
+        document.getElementById('searchRazaoMob').value = val;
+        atualizarTabela();
+    }
 
     function animarContagem(id, final, isMoeda = false) { 
         const el = document.getElementById(id); 
@@ -500,7 +627,7 @@
         document.getElementById('userDisplay').innerText = currentUser; 
         db = JSON.parse(localStorage.getItem(`GPL_DATA_${currentUser}`)) || []; 
         
-        document.getElementById('currentMonthDisplay').innerText = `${msNomesCompletos[viewDate.getMonth()]} 2026 ▾`; 
+        document.getElementById('currentMonthDisplay').innerText = `${msNomesCompletos[viewDate.getMonth()]} 2026`; 
         
         renderMonths(); 
         atualizarTabela(); 
@@ -535,6 +662,7 @@
         if(users[u]) alert("Sua dica: " + users[u].hint); 
         else alert("Usuário não encontrado."); 
     }
+
     function renderMonths() { 
         const ms = ["JAN", "FEV", "MAR", "ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ"]; 
         document.getElementById('monthGrid').innerHTML = ms.map((m, i) => `<div class="month-item" onclick="selectMonth(${i})">${m}</div>`).join(''); 
@@ -544,7 +672,7 @@
      
     function selectMonth(m) { 
         viewDate.setMonth(m); 
-        document.getElementById('currentMonthDisplay').innerText = `${msNomesCompletos[m]} 2026 ▾`; 
+        document.getElementById('currentMonthDisplay').innerText = `${msNomesCompletos[m]} 2026`; 
         toggleMonthGrid(); 
         atualizarTabela(); 
     } 
@@ -604,6 +732,14 @@
         }); 
         localStorage.setItem(`GPL_DATA_${currentUser}`, JSON.stringify(db)); 
         atualizarTabela(); e.target.reset(); document.getElementById('data').focus(); 
+        
+        if (window.innerWidth <= 900) {
+            document.querySelectorAll('.mobile-tab-content').forEach(el => el.classList.remove('active-tab'));
+            document.getElementById('tabTabela').classList.add('active-tab');
+            document.querySelectorAll('.mob-tab-btn').forEach((btn, idx) => {
+                btn.classList.toggle('active', idx === 2);
+            });
+        }
     }; 
 
     function remover(id) { if(confirm("Excluir?")) { db = db.filter(i => i.id !== id); localStorage.setItem(`GPL_DATA_${currentUser}`, JSON.stringify(db)); atualizarTabela(); } } 
