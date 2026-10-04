@@ -37,7 +37,7 @@
             background-color: var(--bg); 
             color: var(--text-p); 
             margin: 0; 
-            padding: 12px; 
+            padding: 10px; 
             display: flex;
             justify-content: center;
             align-items: center;
@@ -53,7 +53,7 @@
             outline: none; 
             width: 100%; 
             font-size: 12px; 
-            margin-bottom: 6px; 
+            margin-bottom: 5px; 
             transition: 0.3s; 
         } 
         input:focus { 
@@ -93,12 +93,12 @@
             font-weight: 700; margin-top: 15px; display: inline-block; text-transform: uppercase; 
         } 
 
-        /* LARGURA DO COMPUTADOR EQUILIBRADA (EXATAMENTE COMO VOCÊ GOSTAVA) */
+        /* COMPUTADOR COM LARGURA AMPLIADA ECONFORTÁVEL */
         .container { 
-            max-width: 1450px; 
+            max-width: 1650px; 
             width: 100%; 
             height: 100%; 
-            max-height: 94vh; 
+            max-height: 97vh; 
             margin: auto; 
             display: flex; 
             flex-direction: column; 
@@ -106,17 +106,17 @@
             overflow: hidden; 
         } 
         header { 
-            background: var(--surface); padding: 12px 25px; border-radius: 20px; 
+            background: var(--surface); padding: 10px 20px; border-radius: 18px; 
             border: 1px solid var(--border); display: flex; justify-content: space-between; 
             align-items: center; flex-shrink: 0; position: relative; 
         } 
-        .prog-area { width: 100%; flex-shrink: 0; padding: 0 5px; } 
+        .prog-area { width: 100%; flex-shrink: 0; padding: 0 2px; } 
         
         .top-dashboard {
-            display: grid; grid-template-columns: 320px 1fr; gap: 12px; flex-shrink: 0; margin-top: 2px;
+            display: grid; grid-template-columns: 320px 1fr; gap: 12px; flex-shrink: 0;
         }
         .observations { 
-            background: var(--surface); padding: 10px 18px; border-radius: 16px; 
+            background: var(--surface); padding: 12px 16px; border-radius: 16px; 
             border: 1.5px solid #ffffff; display: flex; flex-direction: column; 
             justify-content: center; gap: 5px; height: 75px; 
         } 
@@ -141,7 +141,7 @@
         .neon-acumulado { border-top-color: var(--purple); } 
 
         .content-wrap { 
-            display: grid; grid-template-columns: 320px 1fr; gap: 15px; 
+            display: grid; grid-template-columns: 320px 1fr; gap: 12px; 
             flex-grow: 1; min-height: 0; overflow: hidden; 
         } 
         aside, main { 
@@ -151,15 +151,15 @@
         
         .sidebar { 
             background: linear-gradient(180deg, rgba(0, 112, 243, 0.08) 0%, var(--surface) 100%); 
-            padding: 16px 20px; border-radius: 20px; border: 1.5px solid var(--accent); 
+            padding: 14px 18px; border-radius: 18px; border: 1.5px solid var(--accent); 
             height: 100%; display: flex; flex-direction: column; 
             justify-content: space-between; overflow: hidden; 
         } 
-        .form-content-area { margin-top: 5px; }
-        .form-group { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+        .form-content-area { margin-top: 4px; }
+        .form-group { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
         .form-group label { width: 80px; flex-shrink: 0; font-size: 10px; font-weight: 800; color: var(--accent); text-transform: uppercase; }
         
-        .actions-footer { display: flex; flex-direction: column; gap: 5px; margin-top: 10px; flex-shrink: 0; } 
+        .actions-footer { display: flex; flex-direction: column; gap: 5px; margin-top: 6px; flex-shrink: 0; } 
         .btn-add { background: var(--accent); color: #fff; width: 100%; padding: 10px; border-radius: 12px; font-weight: 900; cursor: pointer; border: none; text-transform: uppercase; font-size: 11px; } 
         .btn-clear { background: transparent; color: var(--danger); width: 100%; padding: 7px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--danger); text-transform: uppercase; font-size: 9px; } 
         .btn-clear-year { background: transparent; color: var(--purple); width: 100%; padding: 7px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--purple); text-transform: uppercase; font-size: 9px; } 
@@ -168,7 +168,7 @@
         .btn-import { background: transparent; color: var(--warning); width: 50%; padding: 7px 3px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--warning); text-transform: uppercase; font-size: 9px; text-align: center; } 
 
         .main-view { 
-            background: var(--surface); border-radius: 20px; border: 1.5px solid var(--brown-border); 
+            background: var(--surface); border-radius: 18px; border: 1.5px solid var(--brown-border); 
             display: flex; flex-direction: column; flex-grow: 1; min-height: 0; overflow: hidden; 
         } 
         .table-container { flex-grow: 1; min-height: 0; overflow-y: auto; } 
@@ -177,43 +177,53 @@
         th, td { padding: 8px 5px; text-align: center; border-bottom: 1px solid var(--border); font-size: 12px; } 
         th { background: #0d1117; color: var(--accent); font-size: 10px; text-transform: uppercase; position: sticky; top: 0; z-index: 5; } 
 
-        .month-grid { display: none; position: absolute; top: 70px; right: 180px; background: #0d1117; border: 1px solid var(--accent); padding: 15px; border-radius: 15px; grid-template-columns: repeat(3, 1fr); gap: 8px; z-index: 1000; } 
+        .month-grid { display: none; position: absolute; top: 65px; right: 20px; background: #0d1117; border: 1px solid var(--accent); padding: 15px; border-radius: 15px; grid-template-columns: repeat(3, 1fr); gap: 8px; z-index: 1000; } 
         .month-grid.active { display: grid; } 
         .month-item { background: #000; color: white; border: 1px solid var(--border); padding: 10px; border-radius: 8px; cursor: pointer; font-size: 11px; font-weight: bold; }
         
         .header-btn {
             background: #1e2633; border: 1px solid var(--border); color: white;
-            padding: 9px 14px; border-radius: 10px; cursor: pointer; font-weight: 800; font-size: 11px; text-transform: uppercase;
+            padding: 8px 12px; border-radius: 9px; cursor: pointer; font-weight: 800; font-size: 11px; text-transform: uppercase;
         }
 
         .mobile-nav-tabs, .mobile-search-area { display: none; }
-        .desktop-header-info { display: inline; }
+        .desktop-header-title { display: inline; }
+        .mobile-header-title { display: none; }
 
-        /* REGRAS EXCLUSIVAS PARA O MOBILE (COM ABAS FIXAS E LIMPO) */
+        /* REGRAS EXCLUSIVAS PARA O MOBILE (ABAS NO TOPO, CARD FIXO E SEM VAZAR) */
         @media (max-width: 900px) {
-            html, body { padding: 8px; height: 100vh; overflow: hidden; }
-            .container { height: 100%; max-height: none; gap: 8px; padding-bottom: 55px; }
-            .desktop-header-info { display: none !important; }
-            .top-dashboard { display: flex !important; flex-direction: column; gap: 6px; }
-            .observations { height: auto !important; padding: 8px 12px !important; }
-            .summary-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 6px !important; height: auto !important; }
-            .summary-card { height: 50px !important; }
-            .content-wrap { display: block !important; }
+            html, body { padding: 6px; height: 100vh; overflow: hidden; }
+            .container { 
+                height: 100%; max-height: 100%; gap: 6px; 
+                display: flex; flex-direction: column; overflow: hidden;
+            }
+            .desktop-header-title { display: none !important; }
+            .mobile-header-title { display: inline !important; }
             
+            header { padding: 8px 12px; }
+            
+            .top-dashboard { display: flex !important; flex-direction: column; gap: 4px; }
+            .observations { display: none !important; } /* Oculta dicas no mobile para economizar espaço e fixar perfeitamente */
+            .summary-grid { grid-template-columns: repeat(4, 1fr) !important; gap: 5px !important; height: auto !important; }
+            .summary-card { height: 50px !important; padding: 4px !important; }
+            .summary-card h2 { font-size: 0.8rem !important; }
+            
+            /* BARRA DE ABAS NO TOPO (LOGO ABAIXO DA BARRA DE METAS) */
             .mobile-nav-tabs {
                 display: flex; width: 100%; background: var(--surface); border: 1px solid var(--border);
-                border-radius: 14px; z-index: 999; justify-content: space-between; padding: 6px;
-                position: fixed; bottom: 8px; left: 0; width: calc(100% - 16px); margin-left: 8px;
-                box-sizing: border-box; backdrop-filter: blur(10px);
+                border-radius: 12px; z-index: 9; justify-content: space-between; padding: 4px;
+                gap: 4px; flex-shrink: 0;
             }
             .mob-tab-btn {
-                background: transparent; border: none; color: var(--text-p); font-size: 9.5px;
+                background: transparent; border: none; color: var(--text-p); font-size: 9px;
                 font-weight: 800; text-transform: uppercase; cursor: pointer; flex: 1; padding: 8px 4px;
-                border-radius: 10px; text-align: center; transition: 0.3s;
+                border-radius: 9px; text-align: center; transition: 0.3s;
             }
             .mob-tab-btn.active { background: var(--accent); color: #fff; }
 
-            .mobile-tab-content { display: none !important; }
+            .content-wrap { display: block !important; flex-grow: 1; min-height: 0; overflow: hidden; }
+            
+            .mobile-tab-content { display: none !important; height: 100%; }
             .mobile-tab-content.active-tab {
                 display: flex !important; flex-direction: column; flex-grow: 1; min-height: 0; overflow: hidden;
             }
@@ -222,16 +232,19 @@
                 height: 100% !important; 
                 max-height: 100% !important; 
                 overflow-y: auto !important; 
+                padding: 12px !important;
             }
-            .mobile-search-area { display: block !important; margin-bottom: 6px; flex-shrink: 0; }
+            .mobile-search-area { display: block !important; margin-bottom: 5px; flex-shrink: 0; }
+            .table-container { flex-grow: 1 !important; min-height: 0 !important; overflow-y: auto !important; }
         }
 
-        /* REGRAS DE IMPRESSÃO: MOSTRA O CABEÇALHO OFICIAL COM O USUÁRIO E IMPRIME A TABELA */
+        /* REGRAS DE IMPRESSÃO UNIVERSAL */
         @media print { 
             html, body { height: auto !important; overflow: visible !important; background: #fff !important; color: #000 !important; position: static !important; }
             .container { display: block !important; width: 100% !important; height: auto !important; max-height: none !important; }
             
-            .desktop-header-info { display: inline !important; }
+            .desktop-header-title { display: inline !important; }
+            .mobile-header-title { display: none !important; }
             .no-print, .mobile-nav-tabs, .top-dashboard, .content-wrap > aside { display: none !important; } 
             
             header { border: none; border-bottom: 2px solid #000; padding: 10px 0; background: #fff !important; margin-bottom: 10px; }
@@ -266,10 +279,13 @@
 <div class="container"> 
     <header> 
         <div style="display: flex; align-items: center; gap: 10px;"> 
-            <div style="background:var(--success); color:black; padding:8px 12px; border-radius:10px; font-weight:900;" class="no-print">GPL</div> 
-            <h1 style="font-size: 15px; color: white; margin: 0;">Gestão de Produção de Leituras - <span class="desktop-header-info"><span id="userDisplay" style="color:var(--success)"></span></span></h1> 
+            <div style="background:var(--success); color:black; padding:8px 12px; border-radius:10px; font-weight:900;">GPL</div> 
+            <h1 style="font-size: 15px; color: white; margin: 0;">
+                <span class="desktop-header-title">Gestão de Produção de Leituras - <span id="userDisplay" style="color:var(--success)"></span></span>
+                <span class="mobile-header-title">GPL 2026</span>
+            </h1> 
         </div> 
-        <div style="display: flex; gap: 8px; align-items: center;" class="no-print"> 
+        <div style="display: flex; gap: 8px; align-items: center;"> 
             <button class="header-btn" onclick="toggleMonthGrid()" id="currentMonthDisplay" style="background: var(--accent); border-color: var(--accent);">SETEMBRO</button> 
             <div id="monthGrid" class="month-grid"></div> 
             <button class="header-btn" onclick="window.print()">IMPRIMIR</button> 
@@ -277,7 +293,7 @@
         </div> 
     </header> 
 
-    <div id="progArea" class="prog-area no-print"> 
+    <div id="progArea" class="prog-area"> 
         <div style="width:100%; background:#1e2633; height:8px; border-radius:10px; overflow:hidden; border:1px solid var(--border); margin-bottom:3px;"> 
             <div id="barFill" style="height:100%; width:0%; background:linear-gradient(90deg, var(--accent), var(--success)); transition:0.8s;"></div> 
         </div> 
@@ -287,10 +303,10 @@
         </div> 
     </div> 
 
-    <!-- BARRA DE NAVEGAÇÃO SUPERIOR (EXCLUSIVA PARA MOBILE) -->
+    <!-- BARRA DE NAVEGAÇÃO NO TOPO (LOGO ABAIXO DA BARRA DE METAS NO MOBILE) -->
     <nav class="mobile-nav-tabs no-print">
         <button class="mob-tab-btn active" onclick="switchMobileTab('tabDashboard', this)">📊 Dashboard</button>
-        <button class="mob-tab-btn" onclick="switchMobileTab('tabFormulario', this)">➕ Novo</button>
+        <button class="mob-tab-btn" onclick="switchMobileTab('tabFormulario', this)">➕ Novo Registro</button>
         <button class="mob-tab-btn" onclick="switchMobileTab('tabTabela', this)">📋 Registros</button>
     </nav>
 
@@ -318,7 +334,7 @@
             <div class="sidebar"> 
                 <div>
                     <label style="font-size: 10px; font-weight: 800; color: var(--success); text-transform: uppercase; margin-bottom: 4px; display: block;">Pesquisar razão</label> 
-                    <input type="text" id="searchRazao" placeholder="Filtrar registros..." oninput="sincronizarBusca(this.value)" style="border-color: var(--success); margin-bottom: 8px;"> 
+                    <input type="text" id="searchRazao" placeholder="Filtrar registros..." oninput="sincronizarBusca(this.value)" style="border-color: var(--success); margin-bottom: 6px;"> 
                     
                     <div class="form-content-area">
                         <form id="gplForm"> 
