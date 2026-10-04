@@ -118,7 +118,6 @@
         .obs-item { font-size: 10px; color: #ffffff; display: flex; align-items: center; gap: 6px; font-weight: 600; } 
         .dot { height: 6px; width: 6px; border-radius: 50%; display: inline-block; flex-shrink: 0; } 
 
-        /* CARDS DO DASHBOARD UNIFORMES E MAIORES */
         .summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; height: auto; } 
         .summary-card { 
             background: var(--surface); padding: 8px 4px; border-radius: 14px; 
@@ -136,7 +135,6 @@
         .neon-receber { border-top-color: var(--success); } 
         .neon-acumulado { border-top-color: var(--purple); } 
 
-        /* LAYOUT EM ABAS PADRÃO UNIFICADO (DESKTOP E MOBILE IGUAIS) */
         .content-wrap { 
             display: block; 
             flex-grow: 1; 
@@ -250,10 +248,16 @@
 <div id="loginScreen"> 
     <div class="login-box"> 
         <div style="background:var(--success); color:black; padding:10px; border-radius:12px; font-weight:900; margin-bottom:20px;">GPL</div> 
-        <h2 id="authTitle" style="color:white; font-size:18px; margin-bottom:20px;">Acessar Conta</h2> 
+        <h2 id="authTitle" style="color:white; font-size:18px; margin-bottom:15px;">Acessar Conta</h2> 
         <input type="text" id="userInput" placeholder="Usuário"> 
         <input type="password" id="passInput" placeholder="Senha"> 
         <input type="text" id="recoveryInput" placeholder="Dica de segurança" style="display:none;"> 
+        
+        <div style="display: flex; align-items: center; gap: 8px; margin: 10px 0 15px 2px; text-align: left; font-size: 11px;">
+            <input type="checkbox" id="rememberMe" style="width: auto; margin: 0; cursor: pointer;">
+            <label for="rememberMe" style="color: var(--text-p); cursor: pointer; user-select: none;">Lembrar de mim (Salvar login)</label>
+        </div>
+
         <button onclick="handleAuth()" id="authBtn" class="auth-btn">ENTRAR</button> 
         <div style="display:flex; justify-content: space-between; gap: 10px;"> 
             <span class="auth-link" id="authSwitch" onclick="toggleAuthMode()">Criar Conta</span> 
@@ -286,7 +290,7 @@
         </div> 
     </div> 
 
-    <!-- BARRA DE NAVEGAÇÃO EM ABAS (UNIFICADA DESKTOP E MOBILE) -->
+    <!-- BARRA DE NAVEGAÇÃO EM ABAS -->
     <nav class="mobile-nav-tabs no-print">
         <button class="mob-tab-btn active" id="btnTabDashboard" onclick="switchMobileTab('tabDashboard', this)">📊 Dash</button>
         <button class="mob-tab-btn" id="btnTabFormulario" onclick="switchMobileTab('tabFormulario', this)">➕ Novo</button>
@@ -545,7 +549,19 @@
     } 
 
     function initSystem() { 
-        currentUser = sessionStorage.getItem('gpl_user_2026'); 
+        currentUser = localStorage.getItem('gpl_saved_user_2026') || sessionStorage.getItem('gpl_user_2026'); 
+        if(!currentUser) {
+            let savedU = localStorage.getItem('gpl_saved_user_2026');
+            let savedP = localStorage.getItem('gpl_saved_pass_2026');
+            if(savedU && savedP) {
+                let users = JSON.parse(localStorage.getItem('GPL_USERS_2026')) || {};
+                if(users[savedU] && users[savedU].pass === savedP) {
+                    currentUser = savedU;
+                    sessionStorage.setItem('gpl_user_2026', currentUser);
+                }
+            }
+        }
+
         if(!currentUser) return; 
         document.getElementById('loginScreen').style.display = 'none'; 
         document.getElementById('headerUserDisplay').innerText = currentUser;
@@ -577,6 +593,8 @@
         const u = document.getElementById('userInput').value.trim().toUpperCase(); 
         const p = document.getElementById('passInput').value; 
         const r = document.getElementById('recoveryInput').value; 
+        const remember = document.getElementById('rememberMe').checked;
+
         let users = JSON.parse(localStorage.getItem('GPL_USERS_2026')) || {}; 
         if(document.getElementById('authTitle').innerText.includes("Criar")) { 
             if(!u || !p) return alert("Preencha Usuário e Senha"); 
@@ -584,8 +602,19 @@
             localStorage.setItem('GPL_USERS_2026', JSON.stringify(users)); 
             alert("Conta Criada!"); toggleAuthMode(); 
         } else { 
-            if(users[u] && users[u].pass === p) { sessionStorage.setItem('gpl_user_2026', u); initSystem(); } 
-            else alert("Dados incorretos!"); 
+            if(users[u] && users[u].pass === p) { 
+                sessionStorage.setItem('gpl_user_2026', u); 
+                if(remember) {
+                    localStorage.setItem('gpl_saved_user_2026', u);
+                    localStorage.setItem('gpl_saved_pass_2026', p);
+                } else {
+                    localStorage.removeItem('gpl_saved_user_2026');
+                    localStorage.removeItem('gpl_saved_pass_2026');
+                }
+                initSystem(); 
+            } else {
+                alert("Dados incorretos!"); 
+            }
         } 
     } 
 
