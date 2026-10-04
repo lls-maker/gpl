@@ -352,6 +352,11 @@
             text-transform: uppercase;
         }
 
+        /* NOME DO USUÁRIO OCULTO NO MOBILE */
+        .user-display-mobile {
+            display: inline;
+        }
+
         /* BARRA DE ABAS SUPERIOR (OCULTA NO DESKTOP) */
         .mobile-nav-tabs {
             display: none;
@@ -369,6 +374,9 @@
             .container {
                 height: auto;
                 padding-bottom: 20px; 
+            }
+            .user-display-mobile {
+                display: none !important;
             }
             .top-dashboard {
                 display: flex !important;
@@ -442,27 +450,23 @@
             }
         }
 
-        /* REGRAS DE IMPRESSÃO GLOBAL (EXCLUI O FORMULÁRIO E EXIBE DASHBOARD + REGISTROS) */
+        /* REGRAS DE IMPRESSÃO (EXIBE APENAS TÍTULO COM USUÁRIO E TABELA DE REGISTROS) */
         @media print { 
             body { height: auto !important; overflow: visible !important; display: block !important; background: #fff !important; color: #000 !important; }
             .container { display: block !important; width: 100% !important; height: auto !important; }
             header { border: none; border-bottom: 2px solid #000; height: auto; padding: 10px 0; margin-bottom: 10px; background: #fff !important; }
             header h1 { width: 100%; text-align: center; color: #000 !important; font-size: 12pt !important; }
+            .user-display-mobile { display: inline !important; }
             .content-wrap { display: block !important; }
-            .top-dashboard { display: grid !important; grid-template-columns: 1fr !important; gap: 10px !important; margin-bottom: 15px; }
-            .observations { display: none !important; }
-            .summary-grid { display: grid !important; grid-template-columns: repeat(4, 1fr) !important; gap: 6px !important; }
-            .summary-card { background: #f8f9fa !important; border: 1px solid #000 !important; box-shadow: none !important; color: #000 !important; padding: 6px !important; }
-            .summary-card h2, .summary-card p { color: #000 !important; margin: 2px 0 !important; font-size: 8pt !important; }
             .main-view { border: 1px solid #000 !important; background: #fff !important; margin-top: 15px; }
             table { font-size: 8pt !important; width: 100% !important; }
             td, th { border: 0.5px solid #000 !important; color: #000 !important; padding: 4px !important; background: #fff !important; }
             th { background: #e9ecef !important; color: #000 !important; }
             .table-container { max-height: none !important; overflow: visible !important; }
-            .no-print, #tabFormulario, .mobile-nav-tabs, .mobile-search-area { display: none !important; } 
+            .no-print, #tabDashboard, #tabFormulario, .mobile-nav-tabs, .mobile-search-area { display: none !important; } 
             
-            /* Força Dashboard e Registros a aparecerem na impressão */
-            #tabDashboard, #tabTabela { display: flex !important; flex-direction: column !important; }
+            /* Força apenas a aba de Registros a aparecer na impressão */
+            #tabTabela { display: flex !important; flex-direction: column !important; }
         } 
     </style> 
 </head> 
@@ -486,10 +490,10 @@
     <header> 
         <div style="display: flex; align-items: center; gap: 10px;"> 
             <div style="background:var(--success); color:black; padding:8px 12px; border-radius:10px; font-weight:900;" class="no-print">GPL</div> 
-            <h1 style="font-size: 15px; color: white; margin: 0;">Gestão de Produtividade de Leituras</h1> 
+            <h1 style="font-size: 15px; color: white; margin: 0;">Gestão de Leituras - <span class="user-display-mobile" id="userDisplay" style="color:var(--success)"></span></h1> 
         </div> 
         <div style="display: flex; gap: 8px; align-items: center;" class="no-print"> 
-            <button class="header-btn" onclick="toggleMonthGrid()" id="currentMonthDisplay" style="background: var(--accent); border-color: var(--accent);">SETEMBRO 2026</button> 
+            <button class="header-btn" onclick="toggleMonthGrid()" id="currentMonthDisplay" style="background: var(--accent); border-color: var(--accent);">SETEMBRO</button> 
             <div id="monthGrid" class="month-grid"></div> 
             <button class="header-btn" onclick="window.print()">IMPRIMIR</button> 
             <button class="header-btn" onclick="logout()" style="background:var(--danger); border-color:var(--danger);">SAIR</button> 
@@ -636,9 +640,10 @@
         currentUser = sessionStorage.getItem('gpl_user_2026'); 
         if(!currentUser) return; 
         document.getElementById('loginScreen').style.display = 'none'; 
+        document.getElementById('userDisplay').innerText = currentUser; 
         db = JSON.parse(localStorage.getItem(`GPL_DATA_${currentUser}`)) || []; 
         
-        document.getElementById('currentMonthDisplay').innerText = `${msNomesCompletos[viewDate.getMonth()]} 2026`; 
+        document.getElementById('currentMonthDisplay').innerText = msNomesCompletos[viewDate.getMonth()]; 
         
         renderMonths(); 
         atualizarTabela(); 
@@ -683,7 +688,7 @@
      
     function selectMonth(m) { 
         viewDate.setMonth(m); 
-        document.getElementById('currentMonthDisplay').innerText = `${msNomesCompletos[m]} 2026`; 
+        document.getElementById('currentMonthDisplay').innerText = msNomesCompletos[m]; 
         toggleMonthGrid(); 
         atualizarTabela(); 
     } 
