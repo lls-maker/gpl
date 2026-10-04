@@ -12,7 +12,996 @@
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#030508">
 
+    <style> <!DOCTYPE html> 
+<html lang="pt-br"> 
+<head> 
+    <meta charset="UTF-8"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <title>Gestão de Produtividade de Leituras 2026</title> 
+
+    <!-- FAVICON BASE64 -->
+    <!-- FAVICON CORRIGIDO EM BASE64 SEGURO E COMPATÍVEL COM TODOS OS NAVEGADORES -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzMiAzMicgd2lkdGg9JzMyJyBoZWlnaHQ9JzMyJz48cmVjdCB3aWR0aD0nMzInIGhlaWdodD0nMzInIHJ4PSc2JyBmaWxsPScjMGIwZjE1Jy8+PHRleHQgeD0nNTAlJyB5PSc1NSUnIGRvbWluYW50LWJhc2VsaW5lPSdtaWRkbGUnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJyBmb250LXdlaWdodD0nOTAwJyBmb250LXNpemU9JzEwJyBmaWxsPScjMDBmZjg4JyBsZXR0ZXItc3BhY2luZz0nMC41Jz5HUEw8L3RleHQ+PC9zdmc+">
+
+    <!-- MANIFESTO PWA -->
+    <!-- VÍNCULO DO MANIFESTO PARA ATIVAR O MODO PWA (APLICATIVO INSTALÁVEL) -->
+    <link rel="manifest" href="./manifest.json">
+
     <style> 
+        :root { 
+            --bg: #030508; 
+            --surface: #0b0f15; 
+            --accent: #0070f3; 
+            --success: #00ff88; 
+            --danger: #ff4d4d; 
+            --warning: #ffcc00; 
+            --border: #1e2633; 
+            --text-p: #8899a6; 
+            --text-h: #ffffff; 
+            --grey-border: #333c4d; 
+            --brown-border: #5d4037; 
+            --purple: #9c27b0; 
+            --orange-neon: #ff8c00; 
+            --white-neon: #f8f9fa; 
+        } 
+        * { box-sizing: border-box; } 
+        
+        * { 
+            box-sizing: border-box; 
+        } 
+        body { 
+            font-family: 'Inter', system-ui, sans-serif; 
+            background-color: var(--bg); 
+            color: var(--text-p); 
+            margin: 0; 
+            padding: 8px; 
+            height: 100dvh; 
+            padding: 15px; 
+            height: 100vh; 
+            overflow: hidden; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        } 
+
+        input { 
+            background: #000; 
+            color: white; 
+            border: 1px solid var(--border); 
+            padding: 7px 10px; 
+            border-radius: 8px; 
+            padding: 8px 10px; 
+            border-radius: 9px; 
+            outline: none; 
+            width: 100%; 
+            font-size: 12px; 
+            margin-bottom: 4px; 
+            margin-bottom: 6px; 
+            transition: 0.3s; 
+        } 
+        input:focus { 
+            border-color: var(--accent) !important; 
+            box-shadow: 0 0 15px rgba(0, 112, 243, 0.4); 
+        } 
+        input[type="date"]::-webkit-calendar-picker-indicator { 
+            filter: invert(1); 
+            cursor: pointer; 
+            opacity: 1; 
+            display: block; 
+        } 
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { 
+            -webkit-appearance: none; 
+            margin: 0; 
+        } 
+        input[type=number] { -moz-appearance: textfield; } 
+
+        input[type=number] { 
+            -moz-appearance: textfield; 
+        } 
+        #loginScreen { 
+            position: fixed; 
+            top: 0; left: 0; width: 100%; height: 100%; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: radial-gradient(circle at center, #0b0f15 0%, #030508 100%); 
+            z-index: 9999; 
+            display: flex; align-items: center; justify-content: center; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+        } 
+        .login-box { 
+            background: rgba(11, 15, 21, 0.8); 
+            padding: 40px; 
+            border-radius: 24px; 
+            border: 1px solid var(--border); 
+            border-top: 4px solid var(--success); 
+            width: 380px; text-align: center; 
+            width: 380px; 
+            text-align: center; 
+            backdrop-filter: blur(10px); 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5); 
+        } 
+        .auth-btn { 
+            background: var(--success); color: black; width: 100%; padding: 14px; 
+            border-radius: 12px; font-weight: 900; cursor: pointer; border: none; 
+            text-transform: uppercase; margin-top: 10px; transition: 0.3s; 
+            background: var(--success); 
+            color: black; 
+            width: 100%; 
+            padding: 14px; 
+            border-radius: 12px; 
+            font-weight: 900; 
+            cursor: pointer; 
+            border: none; 
+            text-transform: uppercase; 
+            margin-top: 10px; 
+            transition: 0.3s; 
+        } 
+        .auth-link { 
+            color: var(--accent); font-size: 11px; cursor: pointer; 
+            font-weight: 700; margin-top: 15px; display: inline-block; text-transform: uppercase; 
+            color: var(--accent); 
+            font-size: 11px; 
+            cursor: pointer; 
+            font-weight: 700; 
+            margin-top: 15px; 
+            display: inline-block; 
+            text-transform: uppercase; 
+        } 
+
+        .container { 
+            max-width: 1450px; 
+            width: 100%; 
+            height: 100%; 
+            height: 94vh; 
+            margin: auto; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 6px; 
+            gap: 12px; 
+            overflow: hidden; 
+        } 
+
+        header { 
+            background: var(--surface); 
+            padding: 8px 16px; 
+            border-radius: 12px; 
+            padding: 12px 25px; 
+            border-radius: 20px; 
+            border: 1px solid var(--border); 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            flex-shrink: 0; 
+            position: relative; 
+        } 
+        .prog-area { width: 100%; flex-shrink: 0; padding: 0 2px; } 
+        .prog-area { 
+            width: 100%; 
+            flex-shrink: 0; 
+            padding: 0 5px; 
+        } 
+
+        /* DASHBOARD DESKTOP */
+        /* DASHBOARD REESTRUTURADO E HARMONIOSO */
+        .top-dashboard {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 8px;
+            grid-template-columns: 320px 1fr;
+            gap: 12px;
+            flex-shrink: 0;
+            margin-top: 6px;
+        }
+
+        .observations { 
+            background: var(--surface); 
+            padding: 6px 12px; 
+            border-radius: 12px; 
+            padding: 12px 18px; 
+            border-radius: 16px; 
+            border: 1.5px solid #ffffff; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            gap: 3px; 
+            height: 65px; 
+            gap: 6px; 
+            height: 80px; /* Altura fixa controlada para alinhar com os cards */
+        } 
+        .obs-item { 
+            font-size: 9px; color: #ffffff; display: flex; align-items: center; gap: 6px; font-weight: 600; 
+            font-size: 10px; 
+            color: #ffffff; 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+            font-weight: 600; 
+        } 
+        .dot { 
+            height: 6px; 
+            width: 6px; 
+            border-radius: 50%; 
+            display: inline-block; 
+            flex-shrink: 0; 
+        } 
+        .dot { height: 5px; width: 5px; border-radius: 50%; display: inline-block; flex-shrink: 0; } 
+
+        .summary-grid { 
+            display: grid; 
+            grid-template-columns: repeat(7, 1fr); 
+            gap: 8px; 
+            height: 65px; 
+            gap: 10px; 
+            height: 80px; /* Altura exata para bater com as observações */
+        } 
+        .summary-card { 
+            background: var(--surface); 
+            padding: 4px; 
+            border-radius: 12px; 
+            padding: 8px 4px; 
+            border-radius: 16px; 
+            border: 1.5px solid var(--grey-border); 
+            border-top: 4px solid; 
+            display: flex; flex-direction: column; justify-content: center; text-align: center; 
+            border-top: 5px solid; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            text-align: center; 
+            transition: 0.3s ease; 
+            height: 100%;
+        } 
+        .summary-card p { font-size: 7px; font-weight: 800; text-transform: uppercase; margin: 0; } 
+        .summary-card h2 { margin: 2px 0 0; font-size: 0.8rem; color: var(--text-h); font-weight: 900; } 
+        .summary-card:hover { 
+            transform: translateY(-3px); 
+            filter: brightness(1.1); 
+        } 
+        .summary-card p { font-size: 7.5px; font-weight: 800; text-transform: uppercase; margin: 0; } 
+        .summary-card h2 { margin: 4px 0 0; font-size: 0.9rem; color: var(--text-h); font-weight: 900; } 
+
+        .neon-leituras { border-top-color: var(--white-neon); } 
+        .neon-impedimentos { border-top-color: var(--orange-neon); } 
+        .neon-meta { border-top-color: var(--warning); } 
+        .neon-bonus { border-top-color: var(--accent); } 
+        .neon-descontos { border-top-color: var(--danger); } 
+        .neon-receber { border-top-color: var(--success); } 
+        .neon-acumulado { border-top-color: var(--purple); } 
+        .neon-leituras { border-top-color: var(--white-neon); box-shadow: 0 0 15px rgba(248, 249, 250, 0.2); } 
+        .neon-impedimentos { border-top-color: var(--orange-neon); box-shadow: 0 0 15px rgba(255, 140, 0, 0.2); } 
+        .neon-meta { border-top-color: var(--warning); box-shadow: 0 0 15px rgba(255, 204, 0, 0.2); } 
+        .neon-bonus { border-top-color: var(--accent); box-shadow: 0 0 15px rgba(0, 112, 243, 0.2); } 
+        .neon-descontos { border-top-color: var(--danger); box-shadow: 0 0 15px rgba(255, 77, 77, 0.2); } 
+        .neon-receber { border-top-color: var(--success); box-shadow: 0 0 20px rgba(0, 255, 136, 0.25); } 
+        .neon-acumulado { border-top-color: var(--purple); box-shadow: 0 0 15px rgba(156, 39, 176, 0.2); } 
+
+        .content-wrap { 
+            display: grid; 
+            grid-template-columns: 320px 1fr; 
+            gap: 8px; 
+            gap: 15px; 
+            flex-grow: 1; 
+            min-height: 0;
+            overflow: hidden; 
+        } 
+        aside, main { 
+            display: flex; flex-direction: column; height: 100%; min-height: 0; overflow: hidden; 
+            display: flex; 
+            flex-direction: column; 
+            height: 100%; 
+            overflow: hidden; 
+        } 
+        .sidebar { 
+            background: linear-gradient(180deg, rgba(0, 112, 243, 0.08) 0%, var(--surface) 100%); 
+            padding: 10px 14px; 
+            border-radius: 12px; 
+            padding: 14px 18px; 
+            border-radius: 20px; 
+            border: 1.5px solid var(--accent); 
+            height: 100%; 
+            display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: space-between; 
+            overflow: hidden; 
+        } 
+        .form-content-area {
+            margin-top: 14px; 
+        }
+        .form-group {
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+            margin-bottom: 5px;
+        }
+        .form-group label {
+            width: 80px; 
+            flex-shrink: 0; 
+            font-size: 10px; 
+            font-weight: 800; 
+            color: var(--accent); 
+            text-transform: uppercase; 
+        }
+        .actions-footer { 
+            margin-top: 0px; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 6px; 
+        } 
+        .btn-add { 
+            background: var(--accent); 
+            color: #fff; 
+            width: 100%; 
+            padding: 11px; 
+            border-radius: 12px; 
+            font-weight: 900; 
+            cursor: pointer; 
+            border: none; 
+            text-transform: uppercase; 
+            font-size: 11px; 
+        } 
+        .btn-clear { 
+            background: transparent; 
+            color: var(--danger); 
+            width: 100%; 
+            padding: 8px; 
+            border-radius: 12px; 
+            font-weight: 800; 
+            cursor: pointer; 
+            border: 1px solid var(--danger); 
+            text-transform: uppercase; 
+            font-size: 9.5px; 
+        } 
+        .btn-clear-year { 
+            background: transparent; 
+            color: var(--purple); 
+            width: 100%; 
+            padding: 8px; 
+            border-radius: 12px; 
+            font-weight: 800; 
+            cursor: pointer; 
+            border: 1px solid var(--purple); 
+            text-transform: uppercase; 
+            font-size: 9.5px; 
+        } 
+        .backup-row {
+            display: flex;
+            gap: 5px;
+            width: 100%;
+        }
+        .btn-backup { 
+            background: transparent; 
+            color: var(--success); 
+            width: 50%; 
+            padding: 8px 3px; 
+            border-radius: 12px; 
+            font-weight: 800; 
+            cursor: pointer; 
+            border: 1px solid var(--success); 
+            text-transform: uppercase; 
+            font-size: 9.5px; 
+            text-align: center; 
+        } 
+        .btn-import { 
+            background: transparent; 
+            color: var(--warning); 
+            width: 50%; 
+            padding: 8px 3px; 
+            border-radius: 12px; 
+            font-weight: 800; 
+            cursor: pointer; 
+            border: 1px solid var(--warning); 
+            text-transform: uppercase; 
+            font-size: 9.5px; 
+            text-align: center; 
+        } 
+        .form-group { display: flex; align-items: center; gap: 8px; margin-bottom: 3px; }
+        .form-group label { width: 75px; flex-shrink: 0; font-size: 9.5px; font-weight: 800; color: var(--accent); text-transform: uppercase; }
+        
+        .actions-footer { display: flex; flex-direction: column; gap: 4px; } 
+        .btn-add { background: var(--accent); color: #fff; width: 100%; padding: 8px; border-radius: 9px; font-weight: 900; cursor: pointer; border: none; text-transform: uppercase; font-size: 10px; } 
+        .btn-clear { background: transparent; color: var(--danger); width: 100%; padding: 5px; border-radius: 9px; font-weight: 800; cursor: pointer; border: 1px solid var(--danger); text-transform: uppercase; font-size: 9px; } 
+        .btn-clear-year { background: transparent; color: var(--purple); width: 100%; padding: 5px; border-radius: 9px; font-weight: 800; cursor: pointer; border: 1px solid var(--purple); text-transform: uppercase; font-size: 9px; } 
+        .backup-row { display: flex; gap: 5px; width: 100%; }
+        .btn-backup { background: transparent; color: var(--success); width: 50%; padding: 5px; border-radius: 9px; font-weight: 800; cursor: pointer; border: 1px solid var(--success); text-transform: uppercase; font-size: 9px; text-align: center; } 
+        .btn-import { background: transparent; color: var(--warning); width: 50%; padding: 5px; border-radius: 9px; font-weight: 800; cursor: pointer; border: 1px solid var(--warning); text-transform: uppercase; font-size: 9px; text-align: center; } 
+
+        .main-view { background: var(--surface); border-radius: 12px; border: 1.5px solid var(--brown-border); height: 100%; display: flex; flex-direction: column; min-height: 0; overflow: hidden; } 
+        .table-container { flex-grow: 1; min-height: 0; overflow-y: auto; } 
+        .main-view { background: var(--surface); border-radius: 20px; border: 1.5px solid var(--brown-border); overflow: hidden; height: 100%; display: flex; flex-direction: column; } 
+        
+        .table-container { 
+            flex-grow: 1; 
+            max-height: calc(14 * 39.5px + 35px); 
+            overflow-y: auto; 
+        } 
+
+        table { width: 100%; border-collapse: collapse; } 
+        th, td { padding: 7px 5px; text-align: center; border-bottom: 1px solid var(--border); font-size: 11px; } 
+        th { background: #0d1117; color: var(--accent); font-size: 9.5px; text-transform: uppercase; position: sticky; top: 0; z-index: 5; } 
+        th, td { padding: 9px 5px; text-align: center; border-bottom: 1px solid var(--border); font-size: 12px; height: 39.5px; } 
+        th { background: #0d1117; color: var(--accent); font-size: 10px; text-transform: uppercase; position: sticky; top: 0; z-index: 5; } 
+
+        .month-grid { display: none; position: absolute; top: 55px; right: 160px; background: #0d1117; border: 1px solid var(--accent); padding: 10px; border-radius: 12px; grid-template-columns: repeat(3, 1fr); gap: 6px; z-index: 1000; } 
+        .month-grid { display: none; position: absolute; top: 70px; right: 180px; background: #0d1117; border: 1px solid var(--accent); padding: 15px; border-radius: 15px; grid-template-columns: repeat(3, 1fr); gap: 8px; z-index: 1000; } 
+        .month-grid.active { display: grid; } 
+        .month-item { background: #000; color: white; border: 1px solid var(--border); padding: 7px; border-radius: 8px; cursor: pointer; font-size: 10px; font-weight: bold; text-align: center; }
+        .month-item { background: #000; color: white; border: 1px solid var(--border); padding: 10px; border-radius: 8px; cursor: pointer; font-size: 11px; font-weight: bold; }
+
+        .header-btn {
+            background: #1e2633; border: 1px solid var(--border); color: white;
+            padding: 7px 12px; border-radius: 8px; cursor: pointer; font-weight: 800; font-size: 11px; text-transform: uppercase;
+            background: #1e2633;
+            border: 1px solid var(--border);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 800;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+        .desktop-header-info { display: inline; }
+        .mobile-nav-tabs, .mobile-search-area { display: none; }
+
+        /* RESPONSIVIDADE CELULAR COM ABAS E ALTURA EXATA (SEM SOBRA NO RODAPÉ) */
+        .desktop-header-info {
+            display: inline;
+        }
+
+        .mobile-nav-tabs {
+            display: none;
+        }
+        .mobile-search-area {
+            display: none;
+        }
+
+        /* COMPORTAMENTO EXCLUSIVO PARA TELAS DE CELULAR/TABLET (MAX-WIDTH: 900px) */
+        @media (max-width: 900px) {
+            body { 
+                padding: 4px; 
+                height: 100dvh; 
+                overflow: hidden; 
+            body {
+                padding: 10px;
+                overflow: hidden !important;
+            }
+            .container { 
+                height: 100%; 
+                gap: 4px; 
+            .container {
+                height: 96vh; 
+            }
+            .desktop-header-info { display: none !important; }
+            .top-dashboard { display: none !important; }
+
+            .desktop-header-info {
+                display: none !important;
+            }
+            .top-dashboard {
+                display: flex !important;
+                flex-direction: column;
+                gap: 8px;
+            }
+            .observations {
+                height: auto !important;
+                padding: 10px 12px !important;
+            }
+            .summary-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 8px !important;
+                height: auto !important;
+            }
+            .summary-card {
+                height: 60px !important;
+            }
+            .content-wrap {
+                display: block !important;
+            }
+            
+            .mobile-nav-tabs {
+                display: flex;
+                width: 100%;
+                background: var(--surface);
+                border: 1px solid var(--border);
+                border-radius: 10px;
+                border-radius: 14px;
+                z-index: 999;
+                justify-content: space-between;
+                padding: 3px;
+                gap: 3px;
+                padding: 6px;
+                margin-bottom: 12px;
+                gap: 6px;
+                flex-shrink: 0;
+            }
+            .mob-tab-btn {
+                background: transparent; border: none; color: var(--text-p);
+                font-size: 9.5px; font-weight: 800; text-transform: uppercase; cursor: pointer;
+                flex: 1; padding: 7px 2px; border-radius: 8px; text-align: center; transition: 0.3s;
+                background: transparent;
+                border: none;
+                color: var(--text-p);
+                font-size: 10px;
+                font-weight: 800;
+                text-transform: uppercase;
+                cursor: pointer;
+                flex: 1;
+                padding: 10px 4px;
+                border-radius: 10px;
+                text-align: center;
+                transition: 0.3s;
+            }
+            .mob-tab-btn.active {
+                background: var(--accent);
+                color: #fff;
+            }
+            .mob-tab-btn.active { background: var(--accent); color: #fff; }
+
+            .content-wrap { 
+                display: block !important; 
+                flex-grow: 1; 
+                min-height: 0; 
+                position: relative; 
+            .mobile-tab-content {
+                display: none !important;
+            }
+            .mobile-tab-content { display: none !important; }
+            .mobile-tab-content.active-tab {
+                display: flex !important; 
+                flex-direction: column; 
+                position: absolute;
+                top: 0; left: 0; 
+                width: 100%; 
+                height: 100% !important; 
+                min-height: 0; 
+                display: flex !important;
+                flex-direction: column;
+                flex-grow: 1;
+                overflow: hidden;
+            }
+
+            #tabDashboard.active-tab { 
+                gap: 6px; 
+                overflow-y: auto; 
+            #tabFormulario .sidebar {
+                height: 100% !important;
+                justify-content: flex-start !important;
+                gap: 15px;
+            }
+            #tabDashboard .observations { height: auto !important; padding: 8px 10px !important; }
+            #tabDashboard .summary-grid {
+                display: grid !important;
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 6px !important;
+                height: auto !important;
+            }
+            #tabDashboard .summary-card { height: 52px !important; }
+
+            #tabFormulario .sidebar { 
+                height: 100% !important; 
+                justify-content: space-between !important; 
+                padding: 10px; 
+            .mobile-search-area {
+                display: block !important;
+                margin-bottom: 8px;
+            }
+            .mobile-search-area { display: block !important; margin-bottom: 4px; flex-shrink: 0; }
+        }
+
+        /* REGRAS DE IMPRESSÃO */
+        @media print { 
+            body { height: auto !important; overflow: visible !important; background: #fff !important; color: #000 !important; }
+            body { height: auto !important; overflow: visible !important; display: block !important; background: #fff !important; color: #000 !important; }
+            .container { display: block !important; width: 100% !important; height: auto !important; }
+            header { border: none; border-bottom: 2px solid #000; padding: 10px 0; background: #fff !important; }
+            header h1 { color: #000 !important; font-size: 12pt !important; }
+            header { border: none; border-bottom: 2px solid #000; height: auto; padding: 10px 0; margin-bottom: 10px; background: #fff !important; }
+            header h1 { width: 100%; text-align: center; color: #000 !important; font-size: 12pt !important; }
+            .desktop-header-info { display: inline !important; color: #000 !important; }
+            .content-wrap { display: block !important; }
+            .main-view { border: 1px solid #000 !important; background: #fff !important; margin-top: 15px; }
+            table { font-size: 8pt !important; width: 100% !important; }
+            td, th { border: 0.5px solid #000 !important; color: #000 !important; padding: 4px !important; background: #fff !important; }
+            th { background: #e9ecef !important; color: #000 !important; }
+            .table-container { max-height: none !important; overflow: visible !important; }
+            .no-print, .mobile-nav-tabs, .mobile-search-area { display: none !important; } 
+            .no-print, #tabDashboard, #tabFormulario, .mobile-nav-tabs, .mobile-search-area { display: none !important; } 
+            
+            #tabTabela { display: flex !important; flex-direction: column !important; }
+        } 
+    </style> 
+</head> 
+<body>
+
+<div id="loginScreen"> 
+    <div class="login-box"> 
+        <div style="background:var(--success); color:black; padding:10px; border-radius:12px; font-weight:900; margin-bottom:20px;">GPL 2026</div> 
+        <h2 id="authTitle" style="color:white; font-size:18px; margin-bottom:20px;">Acessar Conta</h2> 
+        <input type="text" id="userInput" placeholder="Usuário"> 
+        <input type="password" id="passInput" placeholder="Senha"> 
+        <input type="text" id="recoveryInput" placeholder="Dica de segurança" style="display:none;"> 
+        <button onclick="handleAuth()" id="authBtn" class="auth-btn">ENTRAR</button> 
+        <div style="display:flex; justify-content: space-between; gap: 10px;"> 
+            <span class="auth-link" id="authSwitch" onclick="toggleAuthMode()">Criar Conta</span> 
+            <span class="auth-link" style="color:var(--warning)" onclick="recoverPass()">Recuperar</span> 
+        </div> 
+    </div> 
+</div> 
+
+<div class="container"> 
+    <header> 
+        <div style="display: flex; align-items: center; gap: 10px;"> 
+            <div style="background:var(--success); color:black; padding:7px 10px; border-radius:8px; font-weight:900;" class="no-print">GPL</div> 
+            <h1 style="font-size: 14px; color: white; margin: 0;"><span class="desktop-header-info">Gestão de Leituras - <span id="userDisplay" style="color:var(--success)"></span></span></h1> 
+            <div style="background:var(--success); color:black; padding:8px 12px; border-radius:10px; font-weight:900;" class="no-print">GPL</div> 
+            <h1 style="font-size: 15px; color: white; margin: 0;"><span class="desktop-header-info">Gestão de Leituras - <span id="userDisplay" style="color:var(--success)"></span></span></h1> 
+        </div> 
+        <div style="display: flex; gap: 8px; align-items: center;" class="no-print"> 
+            <button class="header-btn" onclick="toggleMonthGrid()" id="currentMonthDisplay" style="background: var(--accent); border-color: var(--accent);">SETEMBRO</button> 
+            <div id="monthGrid" class="month-grid"></div> 
+            <button class="header-btn" onclick="window.print()">IMPRIMIR</button> 
+            <button class="header-btn" onclick="logout()" style="background:var(--danger); border-color:var(--danger);">SAIR</button> 
+        </div> 
+    </header> 
+
+    <div id="progArea" class="prog-area no-print"> 
+        <div style="width:100%; background:#1e2633; height:6px; border-radius:10px; overflow:hidden; border:1px solid var(--border); margin-bottom:2px;"> 
+        <div style="width:100%; background:#1e2633; height:8px; border-radius:10px; overflow:hidden; border:1px solid var(--border); margin-bottom:3px;"> 
+            <div id="barFill" style="height:100%; width:0%; background:linear-gradient(90deg, var(--accent), var(--success)); transition:0.8s;"></div> 
+        </div> 
+        <div style="display:flex; justify-content:space-between; font-size:9px; font-weight:bold; color:var(--text-p); text-transform: uppercase;"> 
+        <div style="display:flex; justify-content:space-between; font-size:10px; font-weight:bold; color:var(--text-p); text-transform: uppercase;"> 
+            <span id="barTxt">Progresso Meta: 0 / 8.000</span> 
+            <span id="barPerc" style="color:var(--success)">0%</span> 
+        </div> 
+    </div> 
+
+    <!-- NAVEGAÇÃO MOBILE (ABAS) -->
+    <!-- BARRA DE NAVEGAÇÃO SUPERIOR (APARECE APENAS NO MÓVEL) -->
+    <nav class="mobile-nav-tabs no-print">
+        <button class="mob-tab-btn active" onclick="switchMobileTab('tabDashboard', this)">📊 Dashboard</button>
+        <button class="mob-tab-btn" onclick="switchMobileTab('tabFormulario', this)">➕ Novo Registro</button>
+        <button class="mob-tab-btn" onclick="switchMobileTab('tabTabela', this)">📋 Registros</button>
+        <button class="mob-tab-btn active" onclick="switchMobileTab('tabDashboard', this)">
+            📊 Dashboard
+        </button>
+        <button class="mob-tab-btn" onclick="switchMobileTab('tabFormulario', this)">
+            ➕ Novo Registro
+        </button>
+        <button class="mob-tab-btn" onclick="switchMobileTab('tabTabela', this)">
+            📋 Registros
+        </button>
+    </nav>
+
+    <!-- DASHBOARD -->
+    <div class="top-dashboard mobile-tab-content active-tab" id="tabDashboard">
+        <div class="observations no-print"> 
+            <div class="obs-item"><span class="dot" style="background:var(--success)"></span> Bônus de R$ 0,20 por cada leitura excedente a 8000 leituras</div> 
+            <div class="obs-item"><span class="dot" style="background:var(--danger)"></span> Desconto: R$ 1,50 p/ impedimento</div> 
+            <div class="obs-item"><span class="dot" style="background:var(--warning)"></span> Qualidade: Meta ≤ 0,50%</div> 
+        </div> 
+        <div class="summary-grid"> 
+            <div class="summary-card neon-leituras"><p>Leituras</p><h2 id="totL">0</h2></div> 
+            <div class="summary-card neon-impedimentos"><p>Impedimentos</p><h2 id="totI">0</h2></div> 
+            <div class="summary-card neon-meta"><p>Qualidade</p><h2 id="totMeta">0,00%</h2></div> 
+            <div class="summary-card neon-bonus"><p>Bônus</p><h2 id="totB">R$ 0,00</h2></div> 
+            <div class="summary-card neon-descontos"><p>Descontos</p><h2 id="totD">R$ 0,00</h2></div> 
+            <div class="summary-card neon-receber"><p>Receber Mês</p><h2 id="totNet">R$ 0,00</h2></div> 
+            <div class="summary-card neon-acumulado"><p>Acumulado Ano</p><h2 id="totAcumulado">R$ 0,00</h2></div> 
+        </div>
+    </div>
+
+    <div class="content-wrap"> 
+        <!-- FORMULÁRIO -->
+        <aside class="no-print mobile-tab-content" id="tabFormulario"> 
+            <div class="sidebar"> 
+                <div>
+                    <label style="font-size: 9px; font-weight: 800; color: var(--success); text-transform: uppercase; margin-bottom: 2px; display: block;" class="desktop-search-label">Pesquisar razão</label> 
+                    <input type="text" id="searchRazao" placeholder="Filtrar registros..." oninput="sincronizarBusca(this.value)" style="border-color: var(--success); margin-bottom: 4px;" class="desktop-search-input"> 
+                    <label style="font-size: 9px; font-weight: 800; color: var(--success); text-transform: uppercase; margin-bottom: 3px; display: block;" class="desktop-search-label">Pesquisar razão</label> 
+                    <input type="text" id="searchRazao" placeholder="Filtrar registros..." oninput="sincronizarBusca(this.value)" style="border-color: var(--success); margin-bottom: 6px;" class="desktop-search-input"> 
+
+                    <div class="form-content-area">
+                        <form id="gplForm"> 
+                            <div class="form-group"><label>Data</label><input type="date" id="data" required></div> 
+                            <div class="form-group"><label>Localidade</label><input type="text" id="localidade" required></div> 
+                            <div class="form-group"><label>Razão</label><input type="text" id="razao" required></div> 
+                            <div class="form-group"><label>Rotas</label><input type="text" id="rotas" required></div> 
+                            <div class="form-group"><label>Leituras</label><input type="number" id="leituras" required></div> 
+                            <div class="form-group"><label>Imped.</label><input type="number" id="imped" required></div> 
+                        </form>
+                    </div>
+                </div>
+                <div class="actions-footer"> 
+                    <button type="button" onclick="document.getElementById('gplForm').requestSubmit()" class="btn-add">Salvar Registro</button> 
+                    <button type="button" onclick="limparTudo()" class="btn-clear">Limpar Mês</button> 
+                    <button type="button" onclick="limparAno()" class="btn-clear-year">Limpar todos os dados</button> 
+                    <div class="backup-row">
+                        <button type="button" onclick="exportarBackup()" class="btn-backup">Backup</button>
+                        <button type="button" onclick="dispararImportacao()" class="btn-import">Restaurar</button>
+                        <input type="file" id="importFile" accept=".json" style="display:none;" onchange="importarBackup(event)">
+                    </div>
+                </div> 
+            </div> 
+        </aside> 
+
+        <!-- TABELA / REGISTROS -->
+        <main class="mobile-tab-content" id="tabTabela"> 
+            <div class="mobile-search-area no-print">
+                <input type="text" id="searchRazaoMob" placeholder="Pesquisar razão nos registros..." oninput="sincronizarBusca(this.value)" style="border-color: var(--success);">
+            </div>
+            <div class="main-view"> 
+                <div class="table-container"> 
+                    <table> 
+                        <thead> 
+                            <tr><th>Data</th><th>Localidade</th><th>Razão</th><th>Rotas</th><th>Leituras</th><th>Imp.</th><th>%</th><th class="no-print">Ação</th></tr> 
+                        </thead> 
+                        <tbody id="tabelaCorpo"></tbody> 
+                    </table> 
+                </div> 
+            </div> 
+        </main> 
+    </div> 
+</div> 
+
+<script> 
+    let db = []; 
+    let currentUser = ""; 
+
+    let dataAtualDoSistema = new Date();
+    let viewDate = new Date(2026, dataAtualDoSistema.getMonth(), 1); 
+
+    const msNomesCompletos = ["JANEIRO", "FEVEREIRO", "MARÇO", "ABRIL", "MAIO", "JUNHO", "JULHO", "AGOSTO", "SETEMBRO", "OUTUBRO", "NOVEMBRO", "DEZEMBRO"]; 
+    const fM = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); 
+
+    function switchMobileTab(tabId, btnElement) {
+        document.querySelectorAll('.mobile-tab-content').forEach(el => el.classList.remove('active-tab'));
+        document.getElementById(tabId).classList.add('active-tab');
+
+        document.querySelectorAll('.mob-tab-btn').forEach(btn => btn.classList.remove('active'));
+        btnElement.classList.add('active');
+    }
+
+    function sincronizarBusca(val) {
+        document.getElementById('searchRazao').value = val;
+        document.getElementById('searchRazaoMob').value = val;
+        atualizarTabela();
+    }
+
+    function animarContagem(id, final, isMoeda = false) { 
+        const el = document.getElementById(id); 
+        if(!el) return; 
+        let start = 0; 
+        const timer = setInterval(() => { 
+            start += final / 15; 
+            if(start >= final) { 
+                if(id === 'totMeta') { 
+                    el.innerText = final.toFixed(2) + "%"; 
+                    el.style.color = final <= 0.5 ? 'var(--success)' : 'var(--danger)'; 
+                } else { 
+                    el.innerText = isMoeda ? fM(final) : Math.floor(final).toLocaleString(); 
+                } 
+                clearInterval(timer); 
+            } else { 
+                el.innerText = isMoeda ? fM(start) : Math.floor(start).toLocaleString(); 
+            } 
+        }, 20); 
+    } 
+
+    function initSystem() { 
+        currentUser = sessionStorage.getItem('gpl_user_2026'); 
+        if(!currentUser) return; 
+        document.getElementById('loginScreen').style.display = 'none'; 
+        document.getElementById('userDisplay').innerText = currentUser; 
+        db = JSON.parse(localStorage.getItem(`GPL_DATA_${currentUser}`)) || []; 
+
+        document.getElementById('currentMonthDisplay').innerText = msNomesCompletos[viewDate.getMonth()]; 
+        
+        renderMonths(); 
+        atualizarTabela(); 
+    } 
+
+    function handleAuth() { 
+        const u = document.getElementById('userInput').value.trim().toUpperCase(); 
+        const p = document.getElementById('passInput').value; 
+        const r = document.getElementById('recoveryInput').value; 
+        let users = JSON.parse(localStorage.getItem('GPL_USERS_2026')) || {}; 
+        if(document.getElementById('authTitle').innerText.includes("Criar")) { 
+            if(!u || !p) return alert("Preencha Usuário e Senha"); 
+            users[u] = { pass: p, hint: r }; 
+            localStorage.setItem('GPL_USERS_2026', JSON.stringify(users)); 
+            alert("Conta Criada!"); toggleAuthMode(); 
+        } else { 
+            if(users[u] && users[u].pass === p) { sessionStorage.setItem('gpl_user_2026', u); initSystem(); } 
+            else alert("Dados incorretos!"); 
+        } 
+    } 
+
+    function toggleAuthMode() { 
+        const t = document.getElementById('authTitle'); 
+        const isLogin = t.innerText === "Acessar Conta"; 
+        t.innerText = isLogin ? "Criar Novo Usuário" : "Acessar Conta"; 
+        document.getElementById('recoveryInput').style.display = isLogin ? "block" : "none"; 
+    } 
+
+    function recoverPass() { 
+        const u = document.getElementById('userInput').value.toUpperCase(); 
+        let users = JSON.parse(localStorage.getItem('GPL_USERS_2026')) || {}; 
+        if(users[u]) alert("Sua dica: " + users[u].hint); 
+        else alert("Usuário não encontrado."); 
+    }
+
+    function renderMonths() { 
+        const ms = ["JAN", "FEV", "MAR", "ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ"]; 
+        document.getElementById('monthGrid').innerHTML = ms.map((m, i) => `<div class="month-item" onclick="selectMonth(${i})">${m}</div>`).join(''); 
+    } 
+
+    function toggleMonthGrid() { document.getElementById('monthGrid').classList.toggle('active'); } 
+
+    function selectMonth(m) { 
+        viewDate.setMonth(m); 
+        document.getElementById('currentMonthDisplay').innerText = msNomesCompletos[m]; 
+        toggleMonthGrid(); 
+        atualizarTabela(); 
+    } 
+
+    function atualizarTabela() { 
+        const mesF = "2026-" + String(viewDate.getMonth() + 1).padStart(2, '0'); 
+        const busca = document.getElementById('searchRazao').value.toUpperCase(); 
+        const regs = db.filter(i => i.data.startsWith(mesF) && i.razao.includes(busca)).sort((a,b) => new Date(a.data) - new Date(b.data)); 
+
+        let sL=0, sI=0; 
+
+        document.getElementById('tabelaCorpo').innerHTML = regs.map(i => { 
+            const calcPercentual = i.leituras > 0 ? (i.imped / i.leituras) * 100 : 0; 
+            sL += i.leituras; sI += i.imped; 
+            return `<tr><td>${i.data.split('-').reverse().slice(0,2).join('/')}</td><td>${i.localidade}</td><td>${i.razao}</td><td>${i.rotas}</td><td>${i.leituras.toLocaleString()}</td><td>${i.imped}</td><td><span style="color:${calcPercentual <= 0.5 ? 'var(--success)' : 'var(--danger)'}; font-weight:900;">${calcPercentual.toFixed(2)}%</span></td><td class="no-print"><button onclick="remover(${i.id})" style="background:none; border:none; color:var(--danger); cursor:pointer;">✕</button></td></tr>`; 
+        }).join(''); 
+
+        const sB = sL > 8000 ? (sL - 8000) * 0.20 : 0; 
+        const sD = sI * 1.50; 
+        const net = sB - sD; 
+
+        animarContagem('totL', sL); animarContagem('totI', sI); 
+        animarContagem('totMeta', sL > 0 ? (sI/sL*100) : 0); 
+        animarContagem('totB', sB, true); animarContagem('totD', sD, true); 
+        animarContagem('totNet', net < 0 ? 0 : net, true); 
+
+        const perc = Math.min((sL/8000)*100, 100); 
+        document.getElementById('barFill').style.width = perc + "%"; 
+        document.getElementById('barPerc').innerText = Math.floor(perc) + "%"; 
+        document.getElementById('barTxt').innerText = `Progresso Meta: ${sL.toLocaleString()} / 8.000`; 
+
+        let acum = 0; 
+        for(let m=0; m<12; m++) { 
+            const f = "2026-" + String(m+1).padStart(2,'0'); 
+            const r = db.filter(x => x.data.startsWith(f)); 
+            const tl = r.reduce((a,c) => a+c.leituras, 0); 
+            const ti = r.reduce((a,c) => a+c.imped, 0); 
+            const bonusMes = tl > 8000 ? (tl - 8000) * 0.20 : 0; 
+            const descMes = ti * 1.50; 
+            const liquidoMes = bonusMes - descMes; 
+            if(liquidoMes > 0) acum += liquidoMes;
+            if(liquidoMes > 0) {
+                acum += liquidoMes;
+            }
+        } 
+        animarContagem('totAcumulado', acum, true); 
+    } 
+
+    document.getElementById('gplForm').onsubmit = (e) => { 
+        e.preventDefault(); 
+        db.push({ 
+            id: Date.now(), data: document.getElementById('data').value, 
+            localidade: document.getElementById('localidade').value.toUpperCase(), 
+            razao: document.getElementById('razao').value.toUpperCase(), 
+            rotas: document.getElementById('rotas').value.toUpperCase(), 
+            leituras: Number(document.getElementById('leituras').value), 
+            imped: Number(document.getElementById('imped').value) 
+        }); 
+        localStorage.setItem(`GPL_DATA_${currentUser}`, JSON.stringify(db)); 
+        atualizarTabela(); e.target.reset(); document.getElementById('data').focus(); 
+
+        if (window.innerWidth <= 900) {
+            document.querySelectorAll('.mobile-tab-content').forEach(el => el.classList.remove('active-tab'));
+            document.getElementById('tabTabela').classList.add('active-tab');
+            document.querySelectorAll('.mob-tab-btn').forEach((btn, idx) => {
+                btn.classList.toggle('active', idx === 2);
+            });
+        }
+    }; 
+
+    function remover(id) { if(confirm("Excluir?")) { db = db.filter(i => i.id !== id); localStorage.setItem(`GPL_DATA_${currentUser}`, JSON.stringify(db)); atualizarTabela(); } } 
+    function limparTudo() { if(confirm("Deseja limpar todos os registros deste mês?")) { const mesF = "2026-" + String(viewDate.getMonth() + 1).padStart(2, '0'); db = db.filter(i => !i.data.startsWith(mesF)); localStorage.setItem(`GPL_DATA_${currentUser}`, JSON.stringify(db)); atualizarTabela(); } } 
+
+    function limparAno() { 
+        if(confirm("ATENÇÃO: Você está prestes a apagar TODOS os registros de 2026!")) { 
+            if(confirm("Tem certeza absoluta? Esta ação não pode ser desfeita.")) { 
+                db = []; localStorage.setItem(`GPL_DATA_${currentUser}`, JSON.stringify(db)); atualizarTabela(); alert("Todos os dados de 2026 foram removidos."); 
+                db = []; 
+                localStorage.setItem(`GPL_DATA_${currentUser}`, JSON.stringify(db)); 
+                atualizarTabela(); 
+                alert("Todos os dados de 2026 foram removidos."); 
+            } 
+        } 
+    } 
+
+    function exportarBackup() {
+        if (!db || db.length === 0) return alert("Não há dados cadastrados para exportar.");
+        if (!db || db.length === 0) {
+            alert("Não há dados cadastrados para exportar.");
+            return;
+        }
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db, null, 2));
+        const downloadAnchor = document.createElement('a');
+        downloadAnchor.setAttribute("href", dataStr);
+        downloadAnchor.setAttribute("download", `backup_gpl_${currentUser.toLowerCase()}_2026.json`);
+        document.body.appendChild(downloadAnchor);
+        downloadAnchor.click();
+        downloadAnchor.remove();
+    }
+
+    function dispararImportacao() { document.getElementById('importFile').click(); }
+    function dispararImportacao() {
+        document.getElementById('importFile').click();
+    }
+
+    function importarBackup(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const importedData = JSON.parse(e.target.result);
+                if (Array.isArray(importedData)) {
+                    if (confirm(`Deseja substituir os dados atuais pelos registros do arquivo "${file.name}"?`)) {
+                        db = importedData;
+                        localStorage.setItem(`GPL_DATA_${currentUser}`, JSON.stringify(db));
+                        atualizarTabela();
+                        alert("Backup restaurado com sucesso!");
+                    }
+                } else { alert("O arquivo JSON selecionado não possui um formato válido."); }
+            } catch (err) { alert("Erro ao ler o arquivo JSON."); }
+                } else {
+                    alert("O arquivo JSON selecionado não possui um formato válido.");
+                }
+            } catch (err) {
+                alert("Erro ao ler o arquivo JSON. Certifique-se de que é um arquivo válido.");
+            }
+            event.target.value = "";
+        };
+        reader.readAsText(file);
+    }
+
+    window.addEventListener('click', (e) => {
+        const grid = document.getElementById('monthGrid');
+        const displayBtn = document.getElementById('currentMonthDisplay');
+        if (grid && grid.classList.contains('active') && e.target !== displayBtn && !grid.contains(e.target)) {
+            grid.classList.remove('active');
+        }
+    });
+
+    function logout() { sessionStorage.clear(); location.reload(); } 
+
+    window.onload = function() {
+        initSystem();
+        
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js').catch((err) => console.log('SW:', err));
+            navigator.serviceWorker.register('./sw.js')
+                .then(() => console.log('Service Worker GPL ativo e rodando offline!'))
+                .catch((err) => console.log('Falha ao registrar o SW:', err));
+        }
+    }; 
+</script> 
+</body> 
+</html>
         :root { 
             --bg: #030508; 
             --surface: #0b0f15; 
