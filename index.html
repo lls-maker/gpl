@@ -888,6 +888,7 @@
                 id: Date.now(), 
                 ...dadosForm
             }); 
+            alert("Registro salvo com sucesso!");
         }
 
         localStorage.setItem(`GPL_DATA_${currentUser}`, JSON.stringify(db)); 
@@ -965,13 +966,15 @@
             try {
                 const importedData = JSON.parse(e.target.result);
                 if (confirm(`Substituir dados atuais pelo arquivo "${file.name}"?`)) {
-                    if (importedData && !Array.isArray(importedData) && importedData.registros) {
+                    // Compatibilidade robusta para arquivos antigos ou novos
+                    if (Array.isArray(importedData)) {
+                        db = importedData;
+                        calendarioDb = {};
+                    } else if (importedData && typeof importedData === 'object') {
                         db = Array.isArray(importedData.registros) ? importedData.registros : [];
                         calendarioDb = (typeof importedData.calendario === 'object' && importedData.calendario !== null) ? importedData.calendario : {};
-                    } else if (Array.isArray(importedData)) {
-                        db = importedData;
                     } else {
-                        return alert("Arquivo inválido.");
+                        return alert("Arquivo de backup inválido.");
                     }
 
                     localStorage.setItem(`GPL_DATA_${currentUser}`, JSON.stringify(db));
@@ -981,10 +984,10 @@
                     renderizarCalendario();
                     verificarSabadosAlertas();
                     
-                    alert("Restaurado com sucesso!");
+                    alert("Backup restaurado com sucesso!");
                 }
             } catch (err) { 
-                alert("Erro ao ler JSON."); 
+                alert("Erro ao ler o arquivo JSON."); 
             }
             event.target.value = "";
         };
@@ -1003,4 +1006,5 @@
         initSystem();
     }; 
 </script> 
-</body> </html>
+</body> 
+</html>
