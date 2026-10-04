@@ -352,8 +352,8 @@
             text-transform: uppercase;
         }
 
-        /* NOME DO USUÁRIO OCULTO NO MOBILE */
-        .user-display-mobile {
+        /* TEXTO DO TÍTULO COMPLETO (EXIBIDO SÓ NO DESKTOP) */
+        .desktop-title {
             display: inline;
         }
 
@@ -375,7 +375,8 @@
                 height: auto;
                 padding-bottom: 20px; 
             }
-            .user-display-mobile {
+            /* Oculta o texto "Gestão de Produtividade de Leituras" no mobile */
+            .desktop-title {
                 display: none !important;
             }
             .top-dashboard {
@@ -450,13 +451,13 @@
             }
         }
 
-        /* REGRAS DE IMPRESSÃO (EXIBE APENAS TÍTULO COM USUÁRIO E TABELA DE REGISTROS) */
+        /* REGRAS DE IMPRESSÃO */
         @media print { 
             body { height: auto !important; overflow: visible !important; display: block !important; background: #fff !important; color: #000 !important; }
             .container { display: block !important; width: 100% !important; height: auto !important; }
             header { border: none; border-bottom: 2px solid #000; height: auto; padding: 10px 0; margin-bottom: 10px; background: #fff !important; }
             header h1 { width: 100%; text-align: center; color: #000 !important; font-size: 12pt !important; }
-            .user-display-mobile { display: inline !important; }
+            .desktop-title { display: inline !important; }
             .content-wrap { display: block !important; }
             .main-view { border: 1px solid #000 !important; background: #fff !important; margin-top: 15px; }
             table { font-size: 8pt !important; width: 100% !important; }
@@ -465,7 +466,6 @@
             .table-container { max-height: none !important; overflow: visible !important; }
             .no-print, #tabDashboard, #tabFormulario, .mobile-nav-tabs, .mobile-search-area { display: none !important; } 
             
-            /* Força apenas a aba de Registros a aparecer na impressão */
             #tabTabela { display: flex !important; flex-direction: column !important; }
         } 
     </style> 
@@ -490,7 +490,7 @@
     <header> 
         <div style="display: flex; align-items: center; gap: 10px;"> 
             <div style="background:var(--success); color:black; padding:8px 12px; border-radius:10px; font-weight:900;" class="no-print">GPL</div> 
-            <h1 style="font-size: 15px; color: white; margin: 0;">Gestão de Leituras - <span class="user-display-mobile" id="userDisplay" style="color:var(--success)"></span></h1> 
+            <h1 style="font-size: 15px; color: white; margin: 0;"><span class="desktop-title">Gestão de Produtividade de Leituras - </span><span id="userDisplay" style="color:var(--success)"></span></h1> 
         </div> 
         <div style="display: flex; gap: 8px; align-items: center;" class="no-print"> 
             <button class="header-btn" onclick="toggleMonthGrid()" id="currentMonthDisplay" style="background: var(--accent); border-color: var(--accent);">SETEMBRO</button> 
