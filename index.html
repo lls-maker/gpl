@@ -482,6 +482,49 @@
     </table> 
 </div>
 
+<!-- SCRIPTS DO FIREBASE -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyBCyO4flW7U20t2Lh4HQRy5hGBIzxahjp4",
+        authDomain: "gestaoprodutividadeleituras.firebaseapp.com",
+        projectId: "gestaoprodutividadeleituras",
+        storageBucket: "gestaoprodutividadeleituras.firebasestorage.app",
+        messagingSenderId: "1053226233050",
+        appId: "1:1053226233050:web:964e6c40891fe4973a89e3"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const dbCloud = getFirestore(app);
+
+    // Disponibiliza as funções do Firestore globalmente para o resto do script
+    window.cloudSave = async function(user, data, calendario) {
+        try {
+            await setDoc(doc(dbCloud, "usuarios", user), {
+                dados: data,
+                calendario: calendario,
+                ultimaAtualizacao: new Date()
+            });
+        } catch (e) {
+            console.error("Erro ao salvar na nuvem:", e);
+        }
+    };
+
+    window.cloudLoad = async function(user) {
+        try {
+            const docSnap = await getDoc(doc(dbCloud, "usuarios", user));
+            if (docSnap.exists()) {
+                return docSnap.data();
+            }
+        } catch (e) {
+            console.error("Erro ao carregar da nuvem:", e);
+        }
+        return null;
+    };
+</script>
+
 <script> 
     let db = []; 
     let calendarioDb = {}; 
@@ -643,6 +686,7 @@
     function salvarDataCalendario(razao, data) {
         calendarioDb[razao] = data;
         localStorage.setItem(`GPL_CAL_${currentUser}`, JSON.stringify(calendarioDb));
+        if (window.cloudSave) window.cloudSave(currentUser, db, calendarioDb);
         verificarSabadosAlertas();
     }
 
@@ -713,7 +757,7 @@
         }, 20); 
     } 
 
-    function initSystem() { 
+    async function initSystem() { 
         currentUser = localStorage.getItem('gpl_saved_user_2026') || sessionStorage.getItem('gpl_user_2026'); 
         if(!currentUser) {
             let savedU = localStorage.getItem('gpl_saved_user_2026');
@@ -728,12 +772,28 @@
         }
 
         if(!currentUser) return; 
+
+        // Tenta carregar dados atualizados da nuvem (Firebase)
+        if (window.cloudLoad) {
+            let cloudData = await window.cloudLoad(currentUser);
+            if (cloudData) {
+                if (cloudData.dados) db = cloudData.dados;
+                if (cloudData.calendario) calendarioDb = cloudData.calendario;
+                localStorage.setItem(`GPL_DATA_${currentUser}`, JSON.stringify(db));
+                localStorage.setItem(`GPL_CAL_${currentUser}`, JSON.stringify(calendarioDb));
+            }
+        }
+
+        if(db.length === 0) {
+            db = JSON.parse(localStorage.getItem(`GPL_DATA_${currentUser}`)) || []; 
+        }
+        if(Object.keys(calendarioDb).length === 0) {
+            calendarioDb = JSON.parse(localStorage.getItem(`GPL_CAL_${currentUser}`)) || {};
+        }
+
         document.getElementById('loginScreen').style.display = 'none'; 
         document.getElementById('headerUserDisplay').innerText = currentUser;
         document.getElementById('printUser').innerText = currentUser;
-        
-        db = JSON.parse(localStorage.getItem(`GPL_DATA_${currentUser}`)) || []; 
-        calendarioDb = JSON.parse(localStorage.getItem(`GPL_CAL_${currentUser}`)) || {};
         
         let nomeMes = msNomesCompletos[viewDate.getMonth()];
         document.getElementById('currentMonthDisplay').innerText = nomeMes; 
@@ -906,6 +966,8 @@
         }
 
         localStorage.setItem(`GPL_DATA_${currentUser}`, JSON.stringify(db)); 
+        if (window.cloudSave) window.cloudSave(currentUser, db, calendarioDb); // Salva na Nuvem automaticamente
+
         limparFormulario();
         atualizarTabela(); 
         switchMobileTab('tabTabela', document.getElementById('btnTabTabela'));
@@ -938,13 +1000,22 @@
         document.getElementById('btnCancelarEdicao').style.display = "none";
     }
 
-    function limparTudo() { if(confirm("Deseja limpar todos os registros deste mês?")) { const mesF = "2026-" + String(viewDate.getMonth() + 1).padStart(2, '0'); db = db.filter(i => !i.data.startsWith(mesF)); localStorage.setItem(`GPL_DATA_${currentUser}`, JSON.stringify(db)); atualizarTabela(); } } 
+    function limparTudo() { 
+        if(confirm("Deseja limpar todos os registros deste mês?")) { 
+            const mesF = "2026-" + String(viewDate.getMonth() + 1).padStart(2, '0'); 
+            db = db.filter(i => !i.data.startsWith(mesF)); 
+            localStorage.setItem(`GPL_DATA_${currentUser}`, JSON.stringify(db)); 
+            if (window.cloudSave) window.cloudSave(currentUser, db, calendarioDb);
+            atualizarTabela(); 
+        } 
+    } 
      
     function limparAno() { 
         if(confirm("ATENÇÃO: Você está prestes a apagar TODOS os registros de 2026!")) { 
             if(confirm("Tem certeza absoluta?")) { 
                 db = []; 
                 localStorage.setItem(`GPL_DATA_${currentUser}`, JSON.stringify(db)); 
+                if (window.cloudSave) window.cloudSave(currentUser, db, calendarioDb);
                 atualizarTabela(); 
                 alert("Dados de 2026 removidos."); 
             } 
@@ -992,6 +1063,7 @@
 
                     localStorage.setItem(`GPL_DATA_${currentUser}`, JSON.stringify(db));
                     localStorage.setItem(`GPL_CAL_${currentUser}`, JSON.stringify(calendarioDb));
+                    if (window.cloudSave) window.cloudSave(currentUser, db, calendarioDb);
                     
                     atualizarTabela();
                     renderizarCalendario();
@@ -1017,30 +1089,26 @@
 
     window.onload = function() {
         initSystem();
-    }; 
 
-    window.onload = function() {
-    initSystem();
-
-    // Navegação por Enter / Próximo nos campos do formulário
-    const form = document.getElementById("gplForm");
-    if (form) {
-        const inputs = Array.from(form.querySelectorAll("input"));
-        inputs.forEach((input, index) => {
-            input.addEventListener("keydown", (e) => {
-                if (e.key === "Enter") {
-                    e.preventDefault();
-                    const nextInput = inputs[index + 1];
-                    if (nextInput) {
-                        nextInput.focus();
-                    } else {
-                        form.requestSubmit();
+        // Navegação por Enter / Próximo nos campos do formulário
+        const form = document.getElementById("gplForm");
+        if (form) {
+            const inputs = Array.from(form.querySelectorAll("input"));
+            inputs.forEach((input, index) => {
+                input.addEventListener("keydown", (e) => {
+                    if (e.key === "Enter") {
+                        e.preventDefault();
+                        const nextInput = inputs[index + 1];
+                        if (nextInput) {
+                            nextInput.focus();
+                        } else {
+                            form.requestSubmit();
+                        }
                     }
-                }
+                });
             });
-        });
-    }
-};
+        }
+    };
 </script> 
 </body> 
 </html>
