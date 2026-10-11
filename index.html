@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"> 
     <title>Gestão de Produtividade de Leituras</title> 
 
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzMiAzMicgd2lkdGg9JzMyJyBoZWlnaHQ9JzMyJz48cmVjdCB3aWR0aD0nMzInIGhlaWdodD0nMzInIHJ4PSc2JyBmaWxsPScjMGIwZjE1Jy8+PHRleHQgeD0nNTAlJyB5PSc1NSUnIGRvbWluYW50LWJhc2VsaW5lPSdtaWRkbGUnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJyBmb250LXdlaWdodD0nOTAwJyBmb250LXdlaWdodD0nMTAwMCcgZm9udC1zaXplPScxMCcgZmlsbD0nIzAwZmY4OCcgbGV0dGVyLXNwYWNpbmdzPScwLjUnPkdQTDwvdGV4dD48L3N2Zz4=">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzIDIgMzInIHdpZHRoPSczMicgaGVpZ2h0PSczMic+PHJlY3Qgd2lkdGg9nMzInIGhlaWdodD0nMzInIHJ4PSc2JyBmaWxsPScjMGIwZjE1Jy8+PHRleHQgeD0nNTAlJyB5PSc1NSUnIGRvbWluYW50LWJhc2VsaW5lPSdtaWRkbGUnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJyBmb250LXdlaWdodD0nOTAwJyBmb250LXdlaWdodD0nMTAwMCcgZm9udC1zaXplPScxMCcgZmlsbD0nIzAwZmY4OCcgbGV0dGVyLXNwYWNpbmdzPScwLjUnPkdQTDwvdGV4dD48L3N2Zz4=">
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#030508">
 
@@ -448,7 +448,7 @@
         <button class="mob-tab-btn" id="btnTabTabela" onclick="switchMobileTab('tabTabela', this)">📋 Reg</button>
         <button class="mob-tab-btn" id="btnTabNL" onclick="switchMobileTab('tabNL', this)">🔍 NL</button>
         <button class="mob-tab-btn" id="btnTabCal" onclick="switchMobileTab('tabCal', this)">📅 Cal</button>
-        <button class="mob-tab-btn" id="btnTabRelatorio" onclick="switchMobileTab('tabRelatorio', this)" style="border-color: var(--purple); color: #e1bee7;">📑 Relat.</button>
+        <button class="mob-tab-btn" id="btnTabRelatorio" onclick="switchMobileTab('tabRelatorio', this)" style="color: #e1bee7;">📑 Relat.</button>
     </nav>
 
     <!-- DASHBOARD -->
@@ -795,7 +795,6 @@
         processarConteudoTxtTerceiros(conteudo);
     };
 
-    // Força a leitura como UTF-8 para evitar caracteres corrompidos no telemóvel/PWA
     reader.readAsText(file, "UTF-8");
 }
 
@@ -907,7 +906,6 @@
             return;
         }
 
-        // SE O USUÁRIO DIGITOU NA PESQUISA DE MEDIDOR
         if (termoBusca) {
             const listaMedidores = Array.isArray(dadosRazao.medidores) ? dadosRazao.medidores : [];
             const resultados = listaMedidores.filter(item => item.medidor.includes(termoBusca));
@@ -943,8 +941,7 @@
             return;
         }
 
-        // SE NÃO HÁ PESQUISA, EXIBE OS CARDS FIXOS DE RESUMO DE OC(NL)
-        const resumo = dadosRazao.resumoOC || dadosRazao; // compatibilidade retroativa caso venha no formato antigo
+        const resumo = dadosRazao.resumoOC || dadosRazao;
         const chavesOC = Object.keys(resumo);
 
         if (chavesOC.length === 0) {
