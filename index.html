@@ -81,7 +81,7 @@
             -moz-appearance: textfield; 
         } 
 
-        #loginScreen, #paymentScreen { 
+        #loginScreen { 
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; 
             background: radial-gradient(circle at center, #0b0f15 0%, #030508 100%); 
             z-index: 99999; display: flex; align-items: center; justify-content: center; 
@@ -217,6 +217,9 @@
         .btn-add { background: var(--accent); color: #fff; width: 100%; padding: 12px; border-radius: 12px; font-weight: 900; cursor: pointer; border: none; text-transform: uppercase; font-size: 11.5px; } 
         .btn-clear { background: transparent; color: var(--danger); width: 100%; padding: 8px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--danger); text-transform: uppercase; font-size: 10px; } 
         .btn-clear-year { background: transparent; color: var(--purple); width: 100%; padding: 8px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--purple); text-transform: uppercase; font-size: 10px; } 
+        .backup-row { display: flex; gap: 6px; width: 100%; }
+        .btn-backup { background: transparent; color: var(--success); width: 50%; padding: 8px 4px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--success); text-transform: uppercase; font-size: 10px; text-align: center; } 
+        .btn-import { background: transparent; color: var(--warning); width: 50%; padding: 8px 4px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--warning); text-transform: uppercase; font-size: 10px; text-align: center; } 
 
         .main-view { 
             background: var(--surface); border-radius: 16px; border: 1.5px solid var(--brown-border); 
@@ -349,7 +352,7 @@
     <div class="login-box"> 
         <div style="background:var(--success); color:black; padding:10px; border-radius:12px; font-weight:900; margin-bottom:20px;">GPL</div> 
         <h2 id="authTitle" style="color:white; font-size:18px; margin-bottom:15px;">Acessar Conta</h2> 
-        <input type="text" id="userInput" placeholder="Usuário"> 
+        <input type="text" id="userInput" placeholder="Utilizador"> 
         <input type="password" id="passInput" placeholder="Senha"> 
         <input type="text" id="recoveryInput" placeholder="Dica de segurança" style="display:none;"> 
         
@@ -441,6 +444,11 @@
                     <button type="button" onclick="limparFormulario()" class="btn-clear" style="color: var(--warning); border-color: var(--warning); display: none;" id="btnCancelarEdicao">Cancelar Edição</button>
                     <button type="button" onclick="limparTudo()" class="btn-clear">Limpar Mês</button> 
                     <button type="button" onclick="limparAno()" class="btn-clear-year">Limpar todos os dados</button> 
+                    <div class="backup-row">
+                        <button type="button" onclick="exportarBackup()" class="btn-backup">Backup</button>
+                        <button type="button" onclick="dispararImportacao()" class="btn-import">Restaurar</button>
+                        <input type="file" id="importFile" accept=".json" style="display:none;" onchange="importarBackup(event)">
+                    </div>
                 </div> 
             </div> 
         </aside> 
@@ -546,7 +554,13 @@
     window.cloudSave = async function(user, data, calendario, relatorios) {
         try {
             const docRef = doc(dbCloud, "usuarios", user);
+            const docSnap = await getDoc(docRef);
+            let senhaAtual = docSnap.exists() ? docSnap.data().senha : "";
+            let dicaAtual = docSnap.exists() ? docSnap.data().dica : "";
+
             await setDoc(docRef, {
+                senha: senhaAtual,
+                dica: dicaAtual,
                 dados: data,
                 calendario: calendario,
                 relatorios: relatorios || {},
@@ -568,6 +582,28 @@
         }
         return null;
     };
+
+    window.cloudSaveUserAuth = async function(user, senha, dica) {
+        try {
+            const docRef = doc(dbCloud, "usuarios", user);
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists() && docSnap.data().senha) {
+                return false; // Utilizador já existe
+            }
+            await setDoc(docRef, {
+                senha: senha,
+                dica: dica || "",
+                dados: [],
+                calendario: {},
+                relatorios: {},
+                ultimaAtualizacao: new Date()
+            }, { merge: true });
+            return true;
+        } catch (e) {
+            console.error("Erro ao salvar credenciais:", e);
+            return false;
+        }
+    };
 </script>
 
 <script> 
@@ -577,6 +613,9 @@
     let currentUser = ""; 
     let dataAtualDoSistema = new Date();
     let viewDate = new Date(2026, dataAtualDoSistema.getMonth(), 1); 
+
+    // ALTERE AQUI PARA O NOME EXATO DO SEU LOGIN PRINCIPAL (MESTRE)
+    const usuarioMestre = "ADMIN";
 
     const lista18Razoes = Array.from({length: 18}, (_, i) => `RAZÃO ${String(i + 1).padStart(2, '0')}`);
     
@@ -912,15 +951,18 @@
         const corpo = document.getElementById('calCorpo');
         if(!corpo) return;
 
+        const isAdmin = (currentUser === usuarioMestre);
+
         const html = lista18Razoes
             .filter(razao => razao.includes(termo))
             .map(razao => {
                 const dataSalva = calendarioDb[razao] || '';
+                const disabledAttr = isAdmin ? '' : 'disabled style="opacity: 0.7; cursor: not-allowed;"';
                 return `
                     <tr>
                         <td style="font-weight: bold; color: var(--accent);">${razao}</td>
                         <td>
-                            <input type="date" value="${dataSalva}" onchange="salvarDataCalendario('${razao}', this.value)" style="margin-bottom:0; font-size:11px;">
+                            <input type="date" value="${dataSalva}" onchange="salvarDataCalendario('${razao}', this.value)" ${disabledAttr} style="margin-bottom:0; font-size:11px;">
                         </td>
                     </tr>
                 `;
@@ -930,13 +972,14 @@
     }
 
     function salvarDataCalendario(razao, data) {
-        calendarioDb[razao] = data;
-        
-        // Se quiser que apenas o seu usuário principal (ex: "ADMIN") atualize o calendário global para todos, mude a linha abaixo para salvar no seu usuário mestre:
-        // let usuarioAlvo = "ADMIN";
-        // if (window.cloudSave) window.cloudSave(usuarioAlvo, db, calendarioDb, relatorioRazoesDb);
+        if (currentUser !== usuarioMestre) {
+            alert("Apenas o utilizador Mestre (Administrador) pode alterar o calendário global!");
+            renderizarCalendario();
+            return;
+        }
 
-        if (window.cloudSave) window.cloudSave(currentUser, db, calendarioDb, relatorioRazoesDb);
+        calendarioDb[razao] = data;
+        if (window.cloudSave) window.cloudSave(usuarioMestre, db, calendarioDb, relatorioRazoesDb);
         verificarSabadosAlertas();
     }
 
@@ -1013,35 +1056,41 @@
         const r = document.getElementById('recoveryInput').value; 
         const rememberMe = document.getElementById('rememberMe').checked;
 
-        if(!u || !p) return alert("Preencha Usuário e Senha"); 
+        if(!u || !p) return alert("Preencha Utilizador e Senha"); 
 
-        currentUser = u;
-
-        let cloudData = window.cloudLoad ? await window.cloudLoad(u) : null;
-        
         let isCriando = document.getElementById('authTitle').innerText.includes("Criar");
+        let cloudData = window.cloudLoad ? await window.cloudLoad(u) : null;
 
         if (isCriando) {
             if (cloudData && cloudData.senha) {
-                return alert("Este usuário já existe! Escolha outro nome ou acesse sua conta.");
+                return alert("Este nome de utilizador já existe! Escolha outro nome ou aceda à sua conta.");
             }
-            // Salva novo usuário na nuvem com senha e dica
-            await window.cloudSaveUserAuth(u, p, r);
+            let criado = await window.cloudSaveUserAuth(u, p, r);
+            if (!criado) return alert("Erro ao criar utilizador ou nome já existente.");
             alert("Conta criada com sucesso!");
+            cloudData = await window.cloudLoad(u);
         } else {
-            // Valida senha se a conta já existir na nuvem
-            if (cloudData && cloudData.senha && cloudData.senha !== p) {
+            if (!cloudData || !cloudData.senha) {
+                return alert("Utilizador não encontrado. Verifique o nome ou crie uma conta nova.");
+            }
+            if (cloudData.senha !== p) {
                 return alert("Senha incorreta!");
-            } else if (!cloudData) {
-                // Se não existe na nuvem, cria automaticamente no primeiro acesso
-                await window.cloudSaveUserAuth(u, p, r);
             }
         }
 
+        currentUser = u;
+
         if (cloudData) {
             if (cloudData.dados) db = cloudData.dados;
-            if (cloudData.calendario) calendarioDb = cloudData.calendario;
             if (cloudData.relatorios) relatorioRazoesDb = cloudData.relatorios;
+        }
+
+        // CARREGA O CALENDÁRIO GLOBAL DO UTILIZADOR MESTRE
+        let dadosMestre = await window.cloudLoad(usuarioMestre);
+        if (dadosMestre && dadosMestre.calendario) {
+            calendarioDb = dadosMestre.calendario;
+        } else if (cloudData && cloudData.calendario) {
+            calendarioDb = cloudData.calendario;
         }
 
         if (rememberMe) {
@@ -1059,19 +1108,19 @@
     function toggleAuthMode() { 
         const t = document.getElementById('authTitle'); 
         const isLogin = t.innerText === "Acessar Conta"; 
-        t.innerText = isLogin ? "Criar Novo Usuário" : "Acessar Conta"; 
+        t.innerText = isLogin ? "Criar Novo Utilizador" : "Acessar Conta"; 
         document.getElementById('recoveryInput').style.display = isLogin ? "block" : "none"; 
     } 
 
     function recoverPass() { 
         const u = document.getElementById('userInput').value.trim().toUpperCase(); 
-        if(!u) return alert("Digite o seu usuário primeiro para recuperar a senha.");
+        if(!u) return alert("Digite o seu utilizador primeiro para recuperar a senha.");
         
         window.cloudLoad(u).then(cloudData => {
             if(cloudData && cloudData.dica) {
                 alert("Dica de segurança: " + cloudData.dica);
             } else {
-                alert("Usuário não encontrado na nuvem ou sem dica cadastrada.");
+                alert("Utilizador não encontrado na nuvem ou sem dica cadastrada.");
             }
         });
     }
@@ -1240,6 +1289,68 @@
         } 
     } 
 
+    function exportarBackup() {
+        if ((!db || db.length === 0) && Object.keys(calendarioDb).length === 0 && Object.keys(relatorioRazoesDb).length === 0) {
+            return alert("Sem dados para exportar.");
+        }
+        
+        const dadosBackup = {
+            registros: db,
+            calendario: calendarioDb,
+            relatorios: relatorioRazoesDb
+        };
+
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dadosBackup, null, 2));
+        const dl = document.createElement('a');
+        dl.setAttribute("href", dataStr);
+        dl.setAttribute("download", `backup_gpl_${currentUser.toLowerCase()}_2026.json`);
+        document.body.appendChild(dl); 
+        dl.click(); 
+        dl.remove();
+    }
+
+    function dispararImportacao() { document.getElementById('importFile').click(); }
+
+    function importarBackup(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const importedData = JSON.parse(e.target.result);
+                if (confirm(`Substituir dados atuais pelo arquivo "${file.name}"?`)) {
+                    if (Array.isArray(importedData)) {
+                        db = importedData;
+                    } else if (importedData && typeof importedData === 'object') {
+                        db = Array.isArray(importedData.registros) ? importedData.registros : [];
+                        if (currentUser === usuarioMestre && importedData.calendario) {
+                            calendarioDb = importedData.calendario;
+                        }
+                        if (importedData.relatorios) {
+                            relatorioRazoesDb = importedData.relatorios;
+                        }
+                    } else {
+                        return alert("Arquivo de backup inválido.");
+                    }
+
+                    if (window.cloudSave) window.cloudSave(currentUser, db, calendarioDb, relatorioRazoesDb);
+                    
+                    atualizarTabela();
+                    renderizarCalendario();
+                    popularSelectRazoesRelatorio();
+                    renderizarTabelaRelatorioAtual();
+                    verificarSabadosAlertas();
+                    
+                    alert("Backup restaurado e sincronizado com a nuvem!");
+                }
+            } catch (err) { 
+                alert("Erro ao ler o arquivo JSON."); 
+            }
+            event.target.value = "";
+        };
+        reader.readAsText(file);
+    }
+
     window.onload = function() {
         let savedU = localStorage.getItem('gpl_saved_user_2026');
         let savedP = localStorage.getItem('gpl_saved_pass_2026');
@@ -1275,39 +1386,5 @@
         }
     };
 </script> 
-
-<!-- SCRIPT DE SUPORTE AUTH NA NUVEM -->
-<script type="module">
-    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-
-    const firebaseConfig = {
-        apiKey: "AIzaSyBCyO4flW7U20t2Lh4HQRy5hGBIzxahjp4",
-        authDomain: "gestaoprodutividadeleituras.firebaseapp.com",
-        projectId: "gestaoprodutividadeleituras",
-        storageBucket: "gestaoprodutividadeleituras.firebasestorage.app",
-        messagingSenderId: "1053226233050",
-        appId: "1:1053226233050:web:964e6c40891fe4973a89e3"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const dbCloud = getFirestore(app);
-
-    window.cloudSaveUserAuth = async function(user, senha, dica) {
-        try {
-            const docRef = doc(dbCloud, "usuarios", user);
-            await setDoc(docRef, {
-                senha: senha,
-                dica: dica || "",
-                dados: [],
-                calendario: {},
-                relatorios: {},
-                ultimaAtualizacao: new Date()
-            }, { merge: true });
-        } catch (e) {
-            console.error("Erro ao salvar credenciais:", e);
-        }
-    };
-</script>
 </body> 
 </html>
