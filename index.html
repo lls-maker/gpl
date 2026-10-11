@@ -200,11 +200,11 @@
         <div style="background:var(--warning); color:black; padding:10px; border-radius:12px; font-weight:900; margin-bottom:15px;">PAGAMENTO</div>
         <h2 style="color:white; font-size:16px; margin-bottom:10px;">Ativação de Conta Pendente</h2>
         <p style="font-size:11.5px; color:var(--text-p); margin-bottom:15px; line-height: 1.4;">
-            Para liberar seu acesso completo, realize o Pix no valor de <strong style="color:var(--success);">R$ 10,00</strong> e envie o comprovante:
+            Para liberar seu acesso completo, realize o Pix no valor de <strong style="color:var(--success);">R$ 10,00</strong>e envie o comprovante:
         </p>
         
         <div style="background:#000; border:1px dashed var(--success); padding:10px; border-radius:8px; margin-bottom:15px; user-select:all; font-family:monospace; color:var(--success); font-size:12px; font-weight:bold;">
-        
+            
         </div>
 
         <button onclick="checarLiberacaoManual()" class="auth-btn" style="background:var(--accent); color:white;">Já fiz o pagamento / Entrar</button>
@@ -530,7 +530,6 @@
     }
 
     window.onload = function() {
-        // Apenas preenche o campo se houver usuário salvo, mas mantém a tela de login visível exigindo clique ou Enter
         let savedU = localStorage.getItem('gpl_saved_user_2026');
         let savedP = localStorage.getItem('gpl_saved_pass_2026');
         if(savedU && savedP) {
@@ -539,7 +538,6 @@
             document.getElementById('rememberMe').checked = true;
         }
 
-        // Adiciona suporte para a tecla Enter no formulário de login
         const passInputEl = document.getElementById('passInput');
         if(passInputEl) {
             passInputEl.addEventListener("keydown", (e) => {
