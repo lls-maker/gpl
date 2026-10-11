@@ -785,15 +785,27 @@
         renderizarTabelaRelatorioAtual();
     }
 
-    function processarArquivoTxtSelecionado(input) {
-        const file = input.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            processarConteudoTxtTerceiros(e.target.result);
-        };
+   function processarArquivoTxtSelecionado(input) {
+    const file = input.files[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    const nomeArquivo = file.name.toLowerCase();
+
+    reader.onload = function(e) {
+        let conteudo = e.target.result;
+        if (nomeArquivo.endsWith('.docx')) {
+            conteudo = conteudo.replace(/[^\x20-\x7E\u00A0-\u00FF\n\r]/g, ' ');
+        }
+        processarConteudoTxtTerceiros(conteudo);
+    };
+
+    if (nomeArquivo.endsWith('.docx')) {
+        reader.readAsBinaryString(file);
+    } else {
         reader.readAsText(file, "ISO-8859-1");
     }
+}
 
     function processarConteudoTxtTerceiros(conteudo) {
         const razaoSelecionada = document.getElementById('selectRazaoRelatorio').value;
