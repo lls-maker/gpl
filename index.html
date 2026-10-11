@@ -235,31 +235,48 @@
         .cards-container {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 10px;
+            gap: 8px;
             padding: 10px;
             overflow-y: auto;
             flex-grow: 1;
             height: 100%;
+            align-content: start;
         }
         .oc-card {
             background: linear-gradient(145deg, #0d121a, var(--surface));
             border: 1px solid var(--border);
             border-left: 4px solid var(--accent);
             border-radius: 12px;
-            padding: 12px;
+            padding: 10px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            height: 95px;
+        }
+        /* CARD COMPACTO EXCLUSIVO PARA PESQUISA DE MEDIDOR */
+        .medidor-card {
+            background: linear-gradient(145deg, #0d121a, var(--surface));
+            border: 1px solid var(--success);
+            border-left: 5px solid var(--success);
+            border-radius: 12px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            box-shadow: 0 4px 15px rgba(0,255,136,0.15);
+            max-width: 380px;
+            margin: 6px auto;
+            width: 100%;
         }
         .oc-card-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 6px;
+            margin-bottom: 4px;
         }
         .oc-code {
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 900;
             color: var(--text-h);
         }
@@ -267,23 +284,27 @@
             background: rgba(0, 255, 136, 0.12);
             color: var(--success);
             border: 1px solid var(--success);
-            padding: 4px 8px;
+            padding: 3px 8px;
             border-radius: 8px;
-            font-size: 0.95rem;
+            font-size: 0.85rem;
             font-weight: 900;
         }
         .oc-desc {
-            font-size: 11px;
+            font-size: 10.5px;
             color: var(--text-p);
-            margin-bottom: 8px;
-            line-height: 1.3;
+            margin-bottom: 4px;
+            line-height: 1.25;
             font-weight: 600;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
         .oc-status {
-            font-size: 10px;
+            font-size: 9.5px;
             font-weight: 800;
             text-transform: uppercase;
-            padding: 3px 6px;
+            padding: 2px 6px;
             border-radius: 4px;
             display: inline-block;
             width: fit-content;
@@ -554,7 +575,7 @@
             <div class="main-view" style="margin-top: 6px;">
                 <div id="relatorioCardsCorpo" class="cards-container">
                     <div style="grid-column: 1 / -1; text-align: center; color: var(--text-p); padding: 30px; font-weight: 700; font-size: 12px;">
-                        Carregue um arquivo TXT e pesquise o número do medidor acima para ver a NL e a Leitura.
+                        Carregue um arquivo TXT para visualizar os cartões de Ocorrências (NL).
                     </div>
                 </div>
             </div>
@@ -777,7 +798,8 @@
     function processarConteudoTxtTerceiros(conteudo) {
         const razaoSelecionada = document.getElementById('selectRazaoRelatorio').value;
         const linhas = conteudo.split(/\r?\n/);
-        let registrosMedidores = [];
+        let contagemOC = {};
+        let listaMedidores = [];
 
         let idxMedidor = -1;
         let idxOC = -1;
@@ -792,7 +814,6 @@
             let linhaLimpa = linha.trim();
             if (!linhaLimpa) return;
 
-            // Detecta o cabeçalho dinamicamente
             if (linhaLimpa.includes("MEDIDOR") || linhaLimpa.includes("OC") || linhaLimpa.includes("LEIT.")) {
                 let cabecalhos = linhaLimpa.split(/\s+/);
                 for (let i = 0; i < cabecalhos.length; i++) {
@@ -836,8 +857,12 @@
                     leitEncontrada = tokens[tokens.length - 1].replace(/["']/g, '').trim();
                 }
 
+                if (ocEncontrada && mapValidosNL[ocEncontrada]) {
+                    contagemOC[ocEncontrada] = (contagemOC[ocEncontrada] || 0) + 1;
+                }
+
                 if (medidorEncontrado) {
-                    registrosMedidores.push({
+                    listaMedidores.push({
                         medidor: medidorEncontrado.toUpperCase(),
                         oc: ocEncontrada || "N/A",
                         leit: leitEncontrada || "N/A"
@@ -846,12 +871,16 @@
             }
         });
 
-        relatorioRazoesDb[razaoSelecionada] = registrosMedidores;
+        relatorioRazoesDb[razaoSelecionada] = {
+            resumoOC: contagemOC,
+            medidores: listaMedidores
+        };
+
         localStorage.setItem(`GPL_REL_${currentUser}`, JSON.stringify(relatorioRazoesDb));
         if (window.cloudSave) window.cloudSave(currentUser, db, calendarioDb, relatorioRazoesDb);
 
         renderizarTabelaRelatorioAtual();
-        alert(`Arquivo da ${razaoSelecionada} carregado com ${registrosMedidores.length} medidores processados!`);
+        alert(`Arquivo da ${razaoSelecionada} processado com sucesso!`);
     }
 
     function buscarMedidorNoRelatorio() {
@@ -864,9 +893,9 @@
         const termoBusca = (document.getElementById('searchMedidorRelatorio')?.value || '').trim().toUpperCase();
         if (!corpo) return;
 
-        const listaMedidores = (relatorioRazoesDb && Array.isArray(relatorioRazoesDb[razaoSelecionada])) ? relatorioRazoesDb[razaoSelecionada] : [];
+        const dadosRazao = (relatorioRazoesDb && relatorioRazoesDb[razaoSelecionada]) ? relatorioRazoesDb[razaoSelecionada] : null;
 
-        if (listaMedidores.length === 0) {
+        if (!dadosRazao || (!dadosRazao.resumoOC && !dadosRazao.medidores)) {
             corpo.innerHTML = `
                 <div style="grid-column: 1 / -1; text-align: center; color: var(--text-p); padding: 30px; font-weight: 700; font-size: 12px;">
                     Nenhum arquivo TXT carregado para esta razão. Clique em "Carregar TXT" acima.
@@ -874,36 +903,66 @@
             return;
         }
 
-        if (!termoBusca) {
+        // SE O USUÁRIO DIGITOU NA PESQUISA DE MEDIDOR
+        if (termoBusca) {
+            const listaMedidores = Array.isArray(dadosRazao.medidores) ? dadosRazao.medidores : [];
+            const resultados = listaMedidores.filter(item => item.medidor.includes(termoBusca));
+
+            if (resultados.length === 0) {
+                corpo.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; color: var(--text-p); padding: 30px; font-weight: 700; font-size: 12px;">
+                        Nenhum medidor encontrado com o número "${termoBusca}".
+                    </div>`;
+                return;
+            }
+
+            corpo.innerHTML = resultados.map(item => {
+                const infoNL = notasDeLeitura.find(n => n.numero === item.oc) || { status: 'Ocorrência', detalhe: 'Nota de Leitura detectada no arquivo' };
+                const isComLeitura = infoNL.status.toLowerCase().includes('com');
+
+                return `
+                    <div class="medidor-card">
+                        <div class="oc-card-header">
+                            <span class="oc-code" style="font-size: 0.95rem; color: var(--success);">Medidor: ${item.medidor}</span>
+                            <span class="oc-count" style="font-size: 0.85rem;">Leit: ${item.leit}</span>
+                        </div>
+                        <div style="font-size: 11.5px; font-weight: bold; color: var(--warning); display: flex; justify-content: space-between; align-items: center;">
+                            <span>NL: ${item.oc}</span>
+                            <span class="oc-status" style="background: ${isComLeitura ? 'rgba(0,255,136,0.1)' : 'rgba(255,204,0,0.1)'}; color: ${isComLeitura ? 'var(--success)' : 'var(--warning)'}; border: 1px solid ${isComLeitura ? 'var(--success)' : 'var(--warning)'};">
+                                ${infoNL.status}
+                            </span>
+                        </div>
+                        <div class="oc-desc" style="-webkit-line-clamp: 1; margin-bottom: 0;">${infoNL.detalhe}</div>
+                    </div>
+                `;
+            }).join('');
+            return;
+        }
+
+        // SE NÃO HÁ PESQUISA, EXIBE OS CARDS FIXOS DE RESUMO DE OC(NL)
+        const resumo = dadosRazao.resumoOC || dadosRazao; // compatibilidade retroativa caso venha no formato antigo
+        const chavesOC = Object.keys(resumo);
+
+        if (chavesOC.length === 0) {
             corpo.innerHTML = `
                 <div style="grid-column: 1 / -1; text-align: center; color: var(--text-p); padding: 30px; font-weight: 700; font-size: 12px;">
-                    Digite o número do medidor acima para consultar a NL e a Leitura correspondente.
+                    Nenhuma ocorrência encontrada no arquivo para esta razão.
                 </div>`;
             return;
         }
 
-        const resultados = listaMedidores.filter(item => item.medidor.includes(termoBusca));
+        chavesOC.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
 
-        if (resultados.length === 0) {
-            corpo.innerHTML = `
-                <div style="grid-column: 1 / -1; text-align: center; color: var(--text-p); padding: 30px; font-weight: 700; font-size: 12px;">
-                    Nenhum medidor encontrado com o número "${termoBusca}".
-                </div>`;
-            return;
-        }
-
-        corpo.innerHTML = resultados.map(item => {
-            const infoNL = notasDeLeitura.find(n => n.numero === item.oc) || { status: 'Ocorrência', detalhe: 'Nota de Leitura detectada no arquivo' };
+        corpo.innerHTML = chavesOC.map(oc => {
+            const qtd = resumo[oc];
+            const infoNL = notasDeLeitura.find(item => item.numero === oc) || { status: 'Desconhecido', detalhe: 'Nota de Leitura mapeada' };
             const isComLeitura = infoNL.status.toLowerCase().includes('com');
 
             return `
-                <div class="oc-card" style="border-left-color: var(--success);">
+                <div class="oc-card">
                     <div class="oc-card-header">
-                        <span class="oc-code" style="font-size: 0.95rem;">Medidor: ${item.medidor}</span>
-                        <span class="oc-count" style="font-size: 0.85rem;">Leit: ${item.leit}</span>
-                    </div>
-                    <div style="font-size: 12px; font-weight: bold; color: var(--warning); margin-bottom: 4px;">
-                        NL: ${item.oc}
+                        <span class="oc-code">NL ${oc}</span>
+                        <span class="oc-count">${typeof qtd === 'number' ? qtd.toLocaleString() : qtd}</span>
                     </div>
                     <div class="oc-desc">${infoNL.detalhe}</div>
                     <div>
