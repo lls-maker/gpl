@@ -650,7 +650,7 @@
                 senha: senha,
                 dica: dica || "",
                 isAdmin: isAdminUser,
-                ativo: isAdminUser ? true : false, // Contas novas iniciam bloqueadas aguardando confirmação do pagamento de R$ 10,00
+                ativo: isAdminUser ? true : false, // Inicia bloqueado aguardando liberação do Admin após pagamento
                 dados: [],
                 calendario: {},
                 relatorios: {},
@@ -1011,12 +1011,11 @@
             .filter(razao => razao.includes(termo))
             .map(razao => {
                 const dataSalva = calendarioDb[razao] || '';
-                const disabledAttr = currentIsAdmin ? '' : 'disabled style="opacity: 0.7; cursor: not-allowed;"';
                 return `
                     <tr>
                         <td style="font-weight: bold; color: var(--accent);">${razao}</td>
                         <td>
-                            <input type="date" value="${dataSalva}" onchange="salvarDataCalendario('${razao}', this.value)" ${disabledAttr} style="margin-bottom:0; font-size:11px;">
+                            <input type="date" value="${dataSalva}" onchange="salvarDataCalendario('${razao}', this.value)" style="margin-bottom:0; font-size:11px;">
                         </td>
                     </tr>
                 `;
@@ -1026,21 +1025,13 @@
     }
 
     async function salvarDataCalendario(razao, data) {
-        if (!currentIsAdmin) {
-            alert("Apenas o Administrador pode alterar o calendário global!");
-            renderizarCalendario();
-            return;
-        }
-
         calendarioDb[razao] = data;
         
-        // Salva centralizado no perfil do ADMIN para que todos leiam a mesma agenda global
         if (window.cloudSave) {
-            await window.cloudSave("ADMIN", [], calendarioDb, {});
+            await window.cloudSave(currentUser, db, calendarioDb, relatorioRazoesDb);
         }
         
         verificarSabadosAlertas();
-        alert("Data atualizada e sincronizada globalmente para todos os utilizadores!");
     }
 
     function verificarSabadosAlertas() {
@@ -1127,6 +1118,7 @@
             }
             let criado = await window.cloudSaveNewUserAuth(u, p, r);
             if (!criado) return alert("Erro ao criar utilizador.");
+            
             alert("Conta criada com sucesso! Para liberar o acesso, efetue o pagamento/PIX de R$ 10,00 e informe o comprovante ao Administrador.");
             toggleAuthMode();
             return;
@@ -1137,7 +1129,8 @@
             if (cloudData.senha !== p) {
                 return alert("Senha incorreta!");
             }
-            if (u !== "ADMIN" && cloudData.ativo === false) {
+            
+            if (u !== "ADMIN" && cloudData.ativo !== true) {
                 return alert("⚠️ A sua conta aguarda a confirmação do pagamento de R$ 10,00 pelo Administrador para ser liberada.");
             }
         }
@@ -1147,15 +1140,8 @@
 
         if (cloudData) {
             if (cloudData.dados) db = cloudData.dados;
+            if (cloudData.calendario) calendarioDb = cloudData.calendario;
             if (cloudData.relatorios) relatorioRazoesDb = cloudData.relatorios;
-        }
-
-        // CARREGA CALENDÁRIO GLOBAL DIRETAMENTE DA CONTA DO ADMIN
-        let dadosAdmin = await window.cloudLoad("ADMIN"); 
-        if (dadosAdmin && dadosAdmin.calendario) {
-            calendarioDb = dadosAdmin.calendario;
-        } else if (cloudData && cloudData.calendario) {
-            calendarioDb = cloudData.calendario;
         }
 
         if (rememberMe) {
@@ -1402,7 +1388,7 @@
                         db = importedData;
                     } else if (importedData && typeof importedData === 'object') {
                         db = Array.isArray(importedData.registros) ? importedData.registros : [];
-                        if (currentIsAdmin && importedData.calendario) {
+                        if (importedData.calendario) {
                             calendarioDb = importedData.calendario;
                         }
                         if (importedData.relatorios) {
