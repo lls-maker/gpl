@@ -547,14 +547,14 @@
                     </button>
                 </div>
             </div>
-            <!-- BARRA DE PESQUISA DOS CARDS DO RELATÓRIO -->
+            <!-- BARRA DE PESQUISA DE MEDIDOR (BORDA VERDE) -->
             <div class="mobile-search-area" style="margin-top: 4px;">
-                <input type="text" id="searchRelatorioCards" placeholder="Pesquisar por número da NL ou descrição..." oninput="renderizarTabelaRelatorioAtual()" style="border-color: var(--purple); margin-bottom: 0;">
+                <input type="text" id="searchMedidorRelatorio" placeholder="Pesquisar número do medidor..." oninput="buscarMedidorNoRelatorio()" style="border-color: var(--success); margin-bottom: 0;">
             </div>
             <div class="main-view" style="margin-top: 6px;">
                 <div id="relatorioCardsCorpo" class="cards-container">
                     <div style="grid-column: 1 / -1; text-align: center; color: var(--text-p); padding: 30px; font-weight: 700; font-size: 12px;">
-                        Nenhum arquivo TXT carregado para esta razão. Clique em "Carregar TXT" acima.
+                        Carregue um arquivo TXT e pesquise o número do medidor acima para ver a NL e a Leitura.
                     </div>
                 </div>
             </div>
@@ -760,6 +760,7 @@
     }
 
     function mudarRazaoRelatorio() {
+        document.getElementById('searchMedidorRelatorio').value = '';
         renderizarTabelaRelatorioAtual();
     }
 
@@ -776,66 +777,96 @@
     function processarConteudoTxtTerceiros(conteudo) {
         const razaoSelecionada = document.getElementById('selectRazaoRelatorio').value;
         const linhas = conteudo.split(/\r?\n/);
-        let contagemOC = {};
+        let registrosMedidores = [];
+
+        let idxMedidor = -1;
+        let idxOC = -1;
+        let idxLeit = -1;
 
         const mapValidosNL = {};
         notasDeLeitura.forEach(item => {
             mapValidosNL[String(item.numero).trim()] = true;
         });
 
-        let indiceColunaOC = -1;
-
         linhas.forEach(linha => {
             let linhaLimpa = linha.trim();
             if (!linhaLimpa) return;
 
-            if (linhaLimpa.includes("OC") && (linhaLimpa.includes("INSTALACAO") || linhaLimpa.includes("MEDIDOR") || linhaLimpa.includes("LEIT."))) {
+            // Detecta o cabeçalho dinamicamente
+            if (linhaLimpa.includes("MEDIDOR") || linhaLimpa.includes("OC") || linhaLimpa.includes("LEIT.")) {
                 let cabecalhos = linhaLimpa.split(/\s+/);
                 for (let i = 0; i < cabecalhos.length; i++) {
-                    if (cabecalhos[i] === "OC") {
-                        indiceColunaOC = i;
-                        break;
-                    }
+                    let h = cabecalhos[i].toUpperCase();
+                    if (h.includes("MEDIDOR")) idxMedidor = i;
+                    if (h === "OC") idxOC = i;
+                    if (h.includes("LEIT")) idxLeit = i;
                 }
                 return;
             }
 
             let tokens = linhaLimpa.split(/\s+/);
+            if (tokens.length >= 2) {
+                let medidorEncontrado = "";
+                let ocEncontrada = "";
+                let leitEncontrada = "";
 
-            if (indiceColunaOC !== -1 && tokens.length > indiceColunaOC) {
-                let valOC = tokens[indiceColunaOC].replace(/["']/g, '').trim();
-                if (mapValidosNL[valOC]) {
-                    contagemOC[valOC] = (contagemOC[valOC] || 0) + 1;
+                if (idxMedidor !== -1 && tokens.length > idxMedidor) {
+                    medidorEncontrado = tokens[idxMedidor].replace(/["']/g, '').trim();
+                } else {
+                    medidorEncontrado = tokens[0].replace(/["']/g, '').trim();
                 }
-            } else {
-                for (let i = 0; i < tokens.length; i++) {
-                    let token = tokens[i].replace(/["']/g, '').trim();
-                    if (mapValidosNL[token] && token.length === 4) {
-                        contagemOC[token] = (contagemOC[token] || 0) + 1;
-                        break;
+
+                if (idxOC !== -1 && tokens.length > idxOC) {
+                    let val = tokens[idxOC].replace(/["']/g, '').trim();
+                    if (mapValidosNL[val]) ocEncontrada = val;
+                }
+                if (!ocEncontrada) {
+                    for (let t of tokens) {
+                        let limpo = t.replace(/["']/g, '').trim();
+                        if (mapValidosNL[limpo]) {
+                            ocEncontrada = limpo;
+                            break;
+                        }
                     }
+                }
+
+                if (idxLeit !== -1 && tokens.length > idxLeit) {
+                    leitEncontrada = tokens[idxLeit].replace(/["']/g, '').trim();
+                } else if (tokens.length >= 3) {
+                    leitEncontrada = tokens[tokens.length - 1].replace(/["']/g, '').trim();
+                }
+
+                if (medidorEncontrado) {
+                    registrosMedidores.push({
+                        medidor: medidorEncontrado.toUpperCase(),
+                        oc: ocEncontrada || "N/A",
+                        leit: leitEncontrada || "N/A"
+                    });
                 }
             }
         });
 
-        relatorioRazoesDb[razaoSelecionada] = contagemOC;
+        relatorioRazoesDb[razaoSelecionada] = registrosMedidores;
         localStorage.setItem(`GPL_REL_${currentUser}`, JSON.stringify(relatorioRazoesDb));
         if (window.cloudSave) window.cloudSave(currentUser, db, calendarioDb, relatorioRazoesDb);
 
         renderizarTabelaRelatorioAtual();
-        alert(`Relatório da ${razaoSelecionada} processado com sucesso!`);
+        alert(`Arquivo da ${razaoSelecionada} carregado com ${registrosMedidores.length} medidores processados!`);
+    }
+
+    function buscarMedidorNoRelatorio() {
+        renderizarTabelaRelatorioAtual();
     }
 
     function renderizarTabelaRelatorioAtual() {
         const razaoSelecionada = document.getElementById('selectRazaoRelatorio').value;
         const corpo = document.getElementById('relatorioCardsCorpo');
-        const termoBusca = (document.getElementById('searchRelatorioCards')?.value || '').toUpperCase();
+        const termoBusca = (document.getElementById('searchMedidorRelatorio')?.value || '').trim().toUpperCase();
         if (!corpo) return;
 
-        const dadosRazao = (relatorioRazoesDb && relatorioRazoesDb[razaoSelecionada]) ? relatorioRazoesDb[razaoSelecionada] : {};
-        let chavesOC = Object.keys(dadosRazao);
+        const listaMedidores = (relatorioRazoesDb && Array.isArray(relatorioRazoesDb[razaoSelecionada])) ? relatorioRazoesDb[razaoSelecionada] : [];
 
-        if (chavesOC.length === 0) {
+        if (listaMedidores.length === 0) {
             corpo.innerHTML = `
                 <div style="grid-column: 1 / -1; text-align: center; color: var(--text-p); padding: 30px; font-weight: 700; font-size: 12px;">
                     Nenhum arquivo TXT carregado para esta razão. Clique em "Carregar TXT" acima.
@@ -843,33 +874,36 @@
             return;
         }
 
-        // Filtra as ocorrências com base no número da NL ou na descrição
-        chavesOC = chavesOC.filter(oc => {
-            const infoNL = notasDeLeitura.find(item => item.numero === oc) || { detalhe: '' };
-            const textoDescricao = infoNL.detalhe.toUpperCase();
-            return oc.includes(termoBusca) || textoDescricao.includes(termoBusca);
-        });
-
-        if (chavesOC.length === 0) {
+        if (!termoBusca) {
             corpo.innerHTML = `
                 <div style="grid-column: 1 / -1; text-align: center; color: var(--text-p); padding: 30px; font-weight: 700; font-size: 12px;">
-                    Nenhuma ocorrência encontrada para "${termoBusca}".
+                    Digite o número do medidor acima para consultar a NL e a Leitura correspondente.
                 </div>`;
             return;
         }
 
-        chavesOC.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+        const resultados = listaMedidores.filter(item => item.medidor.includes(termoBusca));
 
-        corpo.innerHTML = chavesOC.map(oc => {
-            const qtd = dadosRazao[oc];
-            const infoNL = notasDeLeitura.find(item => item.numero === oc) || { status: 'Desconhecido', detalhe: 'Nota de Leitura mapeada' };
+        if (resultados.length === 0) {
+            corpo.innerHTML = `
+                <div style="grid-column: 1 / -1; text-align: center; color: var(--text-p); padding: 30px; font-weight: 700; font-size: 12px;">
+                    Nenhum medidor encontrado com o número "${termoBusca}".
+                </div>`;
+            return;
+        }
+
+        corpo.innerHTML = resultados.map(item => {
+            const infoNL = notasDeLeitura.find(n => n.numero === item.oc) || { status: 'Ocorrência', detalhe: 'Nota de Leitura detectada no arquivo' };
             const isComLeitura = infoNL.status.toLowerCase().includes('com');
 
             return `
-                <div class="oc-card">
+                <div class="oc-card" style="border-left-color: var(--success);">
                     <div class="oc-card-header">
-                        <span class="oc-code">NL ${oc}</span>
-                        <span class="oc-count">${qtd.toLocaleString()}</span>
+                        <span class="oc-code" style="font-size: 0.95rem;">Medidor: ${item.medidor}</span>
+                        <span class="oc-count" style="font-size: 0.85rem;">Leit: ${item.leit}</span>
+                    </div>
+                    <div style="font-size: 12px; font-weight: bold; color: var(--warning); margin-bottom: 4px;">
+                        NL: ${item.oc}
                     </div>
                     <div class="oc-desc">${infoNL.detalhe}</div>
                     <div>
