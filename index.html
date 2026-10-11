@@ -785,27 +785,18 @@
         renderizarTabelaRelatorioAtual();
     }
 
-   function processarArquivoTxtSelecionado(input) {
+  function processarArquivoTxtSelecionado(input) {
     const file = input.files[0];
     if (!file) return;
     
     const reader = new FileReader();
-    const nomeArquivo = file.name.toLowerCase();
-
     reader.onload = function(e) {
         let conteudo = e.target.result;
-        if (nomeArquivo.endsWith('.docx')) {
-            // Remove marcadores binários do Word para isolar apenas o texto puro legível
-            conteudo = unescape(encodeURIComponent(conteudo)).replace(/[\x00-\x1F\x7F-\x9F]/g, " ");
-        }
         processarConteudoTxtTerceiros(conteudo);
     };
 
-    if (nomeArquivo.endsWith('.docx')) {
-        reader.readAsBinaryString(file);
-    } else {
-        reader.readAsText(file, "ISO-8859-1");
-    }
+    // Força a leitura como UTF-8 para evitar caracteres corrompidos no telemóvel/PWA
+    reader.readAsText(file, "UTF-8");
 }
 
     function processarConteudoTxtTerceiros(conteudo) {
