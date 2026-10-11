@@ -50,7 +50,7 @@
             z-index: -1;
         }
 
-        input { 
+        input, select { 
             background: #000; 
             color: white; 
             border: 1px solid var(--border); 
@@ -62,7 +62,7 @@
             margin-bottom: 5px; 
             transition: 0.3s; 
         } 
-        input:focus { 
+        input:focus, select:focus { 
             border-color: var(--accent) !important; 
             box-shadow: 0 0 15px rgba(0, 112, 243, 0.4); 
         } 
@@ -228,6 +228,64 @@
         th, td { padding: 9px 6px; text-align: center; border-bottom: 1px solid var(--border); font-size: 12px; } 
         th { background: #0d1117; color: var(--accent); font-size: 10px; text-transform: uppercase; position: sticky; top: 0; z-index: 5; } 
 
+        /* CARDS DO RELATÓRIO TXT */
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 10px;
+            padding: 10px;
+            overflow-y: auto;
+            flex-grow: 1;
+            height: 100%;
+        }
+        .oc-card {
+            background: linear-gradient(145deg, #0d121a, var(--surface));
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--accent);
+            border-radius: 12px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+        }
+        .oc-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+        .oc-code {
+            font-size: 1.1rem;
+            font-weight: 900;
+            color: var(--text-h);
+        }
+        .oc-count {
+            background: rgba(0, 255, 136, 0.12);
+            color: var(--success);
+            border: 1px solid var(--success);
+            padding: 4px 8px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 900;
+        }
+        .oc-desc {
+            font-size: 11px;
+            color: var(--text-p);
+            margin-bottom: 8px;
+            line-height: 1.3;
+            font-weight: 600;
+        }
+        .oc-status {
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            padding: 3px 6px;
+            border-radius: 4px;
+            display: inline-block;
+            width: fit-content;
+        }
+
         .month-grid { display: none; position: absolute; top: 50px; right: 15px; background: #0d1117; border: 1px solid var(--accent); padding: 12px; border-radius: 12px; grid-template-columns: repeat(3, 1fr); gap: 6px; z-index: 1000; } 
         .month-grid.active { display: grid; } 
         .month-item { background: #000; color: white; border: 1px solid var(--border); padding: 8px; border-radius: 6px; cursor: pointer; font-size: 10px; font-weight: bold; text-align: center; }
@@ -240,13 +298,13 @@
         .mobile-nav-tabs {
             display: flex; width: 100%; background: var(--surface); border: 1px solid var(--border);
             border-radius: 10px; z-index: 9; justify-content: space-between; padding: 4px;
-            gap: 4px; flex-shrink: 0;
+            gap: 3px; flex-shrink: 0;
         }
         .mob-tab-btn {
             background: rgba(255, 255, 255, 0.03); 
             border: 1.5px solid var(--grey-border); 
             color: var(--text-p); 
-            font-size: 8px;
+            font-size: 7.5px;
             font-weight: 800; 
             text-transform: uppercase; 
             cursor: pointer; 
@@ -359,13 +417,14 @@
         </div> 
     </div> 
 
-    <!-- ORDEM EXATA SOLICITADA: Dash, Novo, Reg, NL, Cal -->
+    <!-- ABAS DE NAVEGAÇÃO -->
     <nav class="mobile-nav-tabs no-print">
         <button class="mob-tab-btn active" id="btnTabDashboard" onclick="switchMobileTab('tabDashboard', this)">📊 Dash</button>
         <button class="mob-tab-btn" id="btnTabFormulario" onclick="switchMobileTab('tabFormulario', this)">➕ Novo</button>
         <button class="mob-tab-btn" id="btnTabTabela" onclick="switchMobileTab('tabTabela', this)">📋 Reg</button>
         <button class="mob-tab-btn" id="btnTabNL" onclick="switchMobileTab('tabNL', this)">🔍 NL</button>
         <button class="mob-tab-btn" id="btnTabCal" onclick="switchMobileTab('tabCal', this)">📅 Cal</button>
+        <button class="mob-tab-btn" id="btnTabRelatorio" onclick="switchMobileTab('tabRelatorio', this)" style="border-color: var(--purple); color: #e1bee7;">📑 Relat.</button>
     </nav>
 
     <!-- DASHBOARD -->
@@ -468,6 +527,31 @@
                 </div>
             </div>
         </div>
+
+        <!-- ABA RELATÓRIO TXT -->
+        <div class="mobile-tab-content" id="tabRelatorio" style="flex-direction: column;">
+            <div class="mobile-search-area" style="display: flex; gap: 8px; align-items: center; background: var(--surface); padding: 10px; border-radius: 12px; border: 1px solid var(--border);">
+                <div style="flex: 1;">
+                    <span style="font-weight: 800; color: #fff; font-size: 10.5px; display: block; margin-bottom: 4px;">RAZÃO</span>
+                    <select id="selectRazaoRelatorio" onchange="mudarRazaoRelatorio()" style="margin-bottom: 0; font-weight: bold; color: var(--accent); font-size: 11px;">
+                    </select>
+                </div>
+                <div>
+                    <span style="font-weight: 800; color: transparent; font-size: 10.5px; display: block; margin-bottom: 4px;">AÇÃO</span>
+                    <input type="file" id="inputTxtOcorrencia" accept=".txt,.csv" style="display:none" onchange="processarArquivoTxtSelecionado(this)">
+                    <button type="button" onclick="document.getElementById('inputTxtOcorrencia').click()" class="auth-btn" style="width: auto; margin-top: 0; padding: 8px 14px; font-size: 11px; background: var(--purple); color: #fff;">
+                        📂 Carregar TXT
+                    </button>
+                </div>
+            </div>
+            <div class="main-view" style="margin-top: 6px;">
+                <div id="relatorioCardsCorpo" class="cards-container">
+                    <div style="grid-column: 1 / -1; text-align: center; color: var(--text-p); padding: 30px; font-weight: 700; font-size: 12px;">
+                        Nenhum arquivo TXT carregado para esta razão. Clique em "Carregar TXT" acima.
+                    </div>
+                </div>
+            </div>
+        </div>
     </div> 
 </div> 
 
@@ -499,12 +583,12 @@
     const app = initializeApp(firebaseConfig);
     const dbCloud = getFirestore(app);
 
-    // Disponibiliza as funções do Firestore globalmente para o resto do script
-    window.cloudSave = async function(user, data, calendario) {
+    window.cloudSave = async function(user, data, calendario, relatorios) {
         try {
             await setDoc(doc(dbCloud, "usuarios", user), {
                 dados: data,
                 calendario: calendario,
+                relatorios: relatorios || {},
                 ultimaAtualizacao: new Date()
             });
         } catch (e) {
@@ -528,6 +612,7 @@
 <script> 
     let db = []; 
     let calendarioDb = {}; 
+    let relatorioRazoesDb = {};
     let currentUser = ""; 
     let dataAtualDoSistema = new Date();
     let viewDate = new Date(2026, dataAtualDoSistema.getMonth(), 1); 
@@ -661,6 +746,119 @@
         sessionStorage.setItem('gpl_active_tab', tabId);
     }
 
+    function popularSelectRazoesRelatorio() {
+        const sel = document.getElementById('selectRazaoRelatorio');
+        if(!sel) return;
+        sel.innerHTML = lista18Razoes.map(r => `<option value="${r}">${r}</option>`).join('');
+    }
+
+    function mudarRazaoRelatorio() {
+        renderizarTabelaRelatorioAtual();
+    }
+
+    function processarArquivoTxtSelecionado(input) {
+        const file = input.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            processarConteudoTxtTerceiros(e.target.result);
+        };
+        reader.readAsText(file, "ISO-8859-1");
+    }
+
+    function processarConteudoTxtTerceiros(conteudo) {
+        const razaoSelecionada = document.getElementById('selectRazaoRelatorio').value;
+        const linhas = conteudo.split(/\r?\n/);
+        let contagemOC = {};
+
+        const mapValidosNL = {};
+        notasDeLeitura.forEach(item => {
+            mapValidosNL[String(item.numero).trim()] = true;
+        });
+
+        let indiceColunaOC = -1;
+
+        linhas.forEach(linha => {
+            let linhaLimpa = linha.trim();
+            if (!linhaLimpa) return;
+
+            if (linhaLimpa.includes("OC") && (linhaLimpa.includes("INSTALACAO") || linhaLimpa.includes("MEDIDOR") || linhaLimpa.includes("LEIT."))) {
+                let cabecalhos = linhaLimpa.split(/\s+/);
+                for (let i = 0; i < cabecalhos.length; i++) {
+                    if (cabecalhos[i] === "OC") {
+                        indiceColunaOC = i;
+                        break;
+                    }
+                }
+                return;
+            }
+
+            let tokens = linhaLimpa.split(/\s+/);
+
+            if (indiceColunaOC !== -1 && tokens.length > indiceColunaOC) {
+                let valOC = tokens[indiceColunaOC].replace(/["']/g, '').trim();
+                if (mapValidosNL[valOC]) {
+                    contagemOC[valOC] = (contagemOC[valOC] || 0) + 1;
+                }
+            } else {
+                for (let i = 0; i < tokens.length; i++) {
+                    let token = tokens[i].replace(/["']/g, '').trim();
+                    if (mapValidosNL[token] && token.length === 4) {
+                        contagemOC[token] = (contagemOC[token] || 0) + 1;
+                        break;
+                    }
+                }
+            }
+        });
+
+        relatorioRazoesDb[razaoSelecionada] = contagemOC;
+        localStorage.setItem(`GPL_REL_${currentUser}`, JSON.stringify(relatorioRazoesDb));
+        if (window.cloudSave) window.cloudSave(currentUser, db, calendarioDb, relatorioRazoesDb);
+
+        renderizarTabelaRelatorioAtual();
+        alert(`Relatório da ${razaoSelecionada} processado com sucesso!`);
+    }
+
+    function renderizarTabelaRelatorioAtual() {
+        const razaoSelecionada = document.getElementById('selectRazaoRelatorio').value;
+        const corpo = document.getElementById('relatorioCardsCorpo');
+        if (!corpo) return;
+
+        const dadosRazao = (relatorioRazoesDb && relatorioRazoesDb[razaoSelecionada]) ? relatorioRazoesDb[razaoSelecionada] : {};
+        const chavesOC = Object.keys(dadosRazao);
+
+        if (chavesOC.length === 0) {
+            corpo.innerHTML = `
+                <div style="grid-column: 1 / -1; text-align: center; color: var(--text-p); padding: 30px; font-weight: 700; font-size: 12px;">
+                    Nenhum arquivo TXT carregado para esta razão. Clique em "Carregar TXT" acima.
+                </div>`;
+            return;
+        }
+
+        chavesOC.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+
+        corpo.innerHTML = chavesOC.map(oc => {
+            const qtd = dadosRazao[oc];
+            const infoNL = notasDeLeitura.find(item => item.numero === oc) || { status: 'Desconhecido', detalhe: 'Nota de Leitura mapeada' };
+            const isComLeitura = infoNL.status.toLowerCase().includes('com');
+
+            return `
+                <div class="oc-card">
+                    <div class="oc-card-header">
+                        <span class="oc-code">NL ${oc}</span>
+                        <span class="oc-count">${qtd.toLocaleString()}</span>
+                    </div>
+                    <div class="oc-desc">${infoNL.detalhe}</div>
+                    <div>
+                        <span class="oc-status" style="background: ${isComLeitura ? 'rgba(0,255,136,0.1)' : 'rgba(255,204,0,0.1)'}; color: ${isComLeitura ? 'var(--success)' : 'var(--warning)'}; border: 1px solid ${isComLeitura ? 'var(--success)' : 'var(--warning)'};">
+                            ${infoNL.status}
+                        </span>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
     function renderizarCalendario(filtro = '') {
         const termo = filtro.toUpperCase();
         const corpo = document.getElementById('calCorpo');
@@ -686,7 +884,7 @@
     function salvarDataCalendario(razao, data) {
         calendarioDb[razao] = data;
         localStorage.setItem(`GPL_CAL_${currentUser}`, JSON.stringify(calendarioDb));
-        if (window.cloudSave) window.cloudSave(currentUser, db, calendarioDb);
+        if (window.cloudSave) window.cloudSave(currentUser, db, calendarioDb, relatorioRazoesDb);
         verificarSabadosAlertas();
     }
 
@@ -773,14 +971,15 @@
 
         if(!currentUser) return; 
 
-        // Tenta carregar dados atualizados da nuvem (Firebase)
         if (window.cloudLoad) {
             let cloudData = await window.cloudLoad(currentUser);
             if (cloudData) {
                 if (cloudData.dados) db = cloudData.dados;
                 if (cloudData.calendario) calendarioDb = cloudData.calendario;
+                if (cloudData.relatorios) relatorioRazoesDb = cloudData.relatorios;
                 localStorage.setItem(`GPL_DATA_${currentUser}`, JSON.stringify(db));
                 localStorage.setItem(`GPL_CAL_${currentUser}`, JSON.stringify(calendarioDb));
+                localStorage.setItem(`GPL_REL_${currentUser}`, JSON.stringify(relatorioRazoesDb));
             }
         }
 
@@ -789,6 +988,9 @@
         }
         if(Object.keys(calendarioDb).length === 0) {
             calendarioDb = JSON.parse(localStorage.getItem(`GPL_CAL_${currentUser}`)) || {};
+        }
+        if(Object.keys(relatorioRazoesDb).length === 0) {
+            relatorioRazoesDb = JSON.parse(localStorage.getItem(`GPL_REL_${currentUser}`)) || {};
         }
 
         document.getElementById('loginScreen').style.display = 'none'; 
@@ -802,6 +1004,8 @@
         renderMonths(); 
         renderizarNL();
         renderizarCalendario();
+        popularSelectRazoesRelatorio();
+        renderizarTabelaRelatorioAtual();
         verificarSabadosAlertas();
         atualizarTabela(); 
         
@@ -812,7 +1016,8 @@
                 'tabFormulario': 'btnTabFormulario',
                 'tabTabela': 'btnTabTabela',
                 'tabNL': 'btnTabNL',
-                'tabCal': 'btnTabCal'
+                'tabCal': 'btnTabCal',
+                'tabRelatorio': 'btnTabRelatorio'
             };
             let btnEl = document.getElementById(btnMap[savedTab]);
             if (btnEl) switchMobileTab(savedTab, btnEl);
@@ -966,7 +1171,7 @@
         }
 
         localStorage.setItem(`GPL_DATA_${currentUser}`, JSON.stringify(db)); 
-        if (window.cloudSave) window.cloudSave(currentUser, db, calendarioDb); // Salva na Nuvem automaticamente
+        if (window.cloudSave) window.cloudSave(currentUser, db, calendarioDb, relatorioRazoesDb);
 
         limparFormulario();
         atualizarTabela(); 
@@ -1005,7 +1210,7 @@
             const mesF = "2026-" + String(viewDate.getMonth() + 1).padStart(2, '0'); 
             db = db.filter(i => !i.data.startsWith(mesF)); 
             localStorage.setItem(`GPL_DATA_${currentUser}`, JSON.stringify(db)); 
-            if (window.cloudSave) window.cloudSave(currentUser, db, calendarioDb);
+            if (window.cloudSave) window.cloudSave(currentUser, db, calendarioDb, relatorioRazoesDb);
             atualizarTabela(); 
         } 
     } 
@@ -1015,7 +1220,7 @@
             if(confirm("Tem certeza absoluta?")) { 
                 db = []; 
                 localStorage.setItem(`GPL_DATA_${currentUser}`, JSON.stringify(db)); 
-                if (window.cloudSave) window.cloudSave(currentUser, db, calendarioDb);
+                if (window.cloudSave) window.cloudSave(currentUser, db, calendarioDb, relatorioRazoesDb);
                 atualizarTabela(); 
                 alert("Dados de 2026 removidos."); 
             } 
@@ -1023,13 +1228,14 @@
     } 
 
     function exportarBackup() {
-        if ((!db || db.length === 0) && Object.keys(calendarioDb).length === 0) {
+        if ((!db || db.length === 0) && Object.keys(calendarioDb).length === 0 && Object.keys(relatorioRazoesDb).length === 0) {
             return alert("Sem dados para exportar.");
         }
         
         const dadosBackup = {
             registros: db,
-            calendario: calendarioDb
+            calendario: calendarioDb,
+            relatorios: relatorioRazoesDb
         };
 
         const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dadosBackup, null, 2));
@@ -1054,19 +1260,24 @@
                     if (Array.isArray(importedData)) {
                         db = importedData;
                         calendarioDb = {};
+                        relatorioRazoesDb = {};
                     } else if (importedData && typeof importedData === 'object') {
                         db = Array.isArray(importedData.registros) ? importedData.registros : [];
                         calendarioDb = (typeof importedData.calendario === 'object' && importedData.calendario !== null) ? importedData.calendario : {};
+                        relatorioRazoesDb = (typeof importedData.relatorios === 'object' && importedData.relatorios !== null) ? importedData.relatorios : {};
                     } else {
                         return alert("Arquivo de backup inválido.");
                     }
 
                     localStorage.setItem(`GPL_DATA_${currentUser}`, JSON.stringify(db));
                     localStorage.setItem(`GPL_CAL_${currentUser}`, JSON.stringify(calendarioDb));
-                    if (window.cloudSave) window.cloudSave(currentUser, db, calendarioDb);
+                    localStorage.setItem(`GPL_REL_${currentUser}`, JSON.stringify(relatorioRazoesDb));
+                    if (window.cloudSave) window.cloudSave(currentUser, db, calendarioDb, relatorioRazoesDb);
                     
                     atualizarTabela();
                     renderizarCalendario();
+                    popularSelectRazoesRelatorio();
+                    renderizarTabelaRelatorioAtual();
                     verificarSabadosAlertas();
                     
                     alert("Backup restaurado com sucesso!");
@@ -1090,7 +1301,6 @@
     window.onload = function() {
         initSystem();
 
-        // Navegação por Enter / Próximo nos campos do formulário
         const form = document.getElementById("gplForm");
         if (form) {
             const inputs = Array.from(form.querySelectorAll("input"));
