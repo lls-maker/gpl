@@ -588,7 +588,7 @@
 <!-- SCRIPTS DO FIREBASE -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyBCyO4flW7U20t2Lh4HQRy5hGBIzxahjp4",
@@ -650,7 +650,7 @@
                 senha: senha,
                 dica: dica || "",
                 isAdmin: isAdminUser,
-                ativo: isAdminUser ? true : false, // Inicia bloqueado aguardando liberação do Admin após pagamento
+                ativo: isAdminUser ? true : false,
                 dados: [],
                 calendario: {},
                 relatorios: {},
@@ -661,6 +661,17 @@
             console.error("Erro ao salvar credenciais:", e);
             return false;
         }
+    };
+
+    // SINCRONIZAÇÃO EM TEMPO REAL ENTRE DISPOSITIVOS
+    window.escutarAlteracoesNuvem = function(user, callbackAtualizacao) {
+        const docRef = doc(dbCloud, "usuarios", user);
+        onSnapshot(docRef, (docSnap) => {
+            if (docSnap.exists()) {
+                const dadosNuvem = docSnap.data();
+                callbackAtualizacao(dadosNuvem);
+            }
+        });
     };
 </script>
 
@@ -1130,13 +1141,14 @@
                 return alert("Senha incorreta!");
             }
             
-            if (u !== "ADMIN" && cloudData.ativo !== true) {
+            const isAdminUser = (u === "ADMIN" || cloudData.isAdmin === true);
+            if (!isAdminUser && cloudData.ativo !== true) {
                 return alert("⚠️ A sua conta aguarda a confirmação do pagamento de R$ 10,00 pelo Administrador para ser liberada.");
             }
         }
 
         currentUser = u;
-        currentIsAdmin = !!(cloudData && cloudData.isAdmin);
+        currentIsAdmin = !!(cloudData && (cloudData.isAdmin || u === "ADMIN"));
 
         if (cloudData) {
             if (cloudData.dados) db = cloudData.dados;
@@ -1194,6 +1206,18 @@
         renderizarTabelaRelatorioAtual();
         verificarSabadosAlertas();
         atualizarTabela(); 
+
+        // ATIVA A SINCRONIZAÇÃO EM TEMPO REAL AUTOMÁTICA
+        window.escutarAlteracoesNuvem(currentUser, (dadosNuvem) => {
+            if (dadosNuvem.dados) db = dadosNuvem.dados;
+            if (dadosNuvem.calendario) calendarioDb = dadosNuvem.calendario;
+            if (dadosNuvem.relatorios) relatorioRazoesDb = dadosNuvem.relatorios;
+
+            atualizarTabela();
+            renderizarCalendario();
+            renderizarTabelaRelatorioAtual();
+            verificarSabadosAlertas();
+        });
     }
 
     function renderMonths() { 
