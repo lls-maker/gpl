@@ -343,6 +343,85 @@
             box-shadow: 0 0 10px rgba(0, 112, 243, 0.5);
         }
         .mobile-search-area { display: block; margin-bottom: 4px; flex-shrink: 0; }
+
+        /* CABEÇALHO EXCLUSIVO PARA IMPRESSÃO */
+        .print-header {
+            display: none;
+        }
+
+        @media print {
+            body {
+                background: white !important;
+                color: black !important;
+                display: block !important;
+                overflow: auto !important;
+                height: auto !important;
+            }
+            body::before { display: none; }
+            .container {
+                max-width: 100% !important;
+                width: 100% !important;
+                height: auto !important;
+                max-height: none !important;
+                border: none !important;
+                box-shadow: none !important;
+                background: white !important;
+                padding: 0 !important;
+                display: block !important;
+            }
+            header, .prog-area, .mobile-nav-tabs, .no-print, .mobile-search-area {
+                display: none !important;
+            }
+            .mobile-tab-content {
+                display: none !important;
+            }
+            .mobile-tab-content#tabTabela {
+                display: block !important;
+                height: auto !important;
+                overflow: visible !important;
+            }
+            .print-header {
+                display: block !important;
+                text-align: center;
+                margin-bottom: 20px;
+                border-bottom: 2px solid #000;
+                padding-bottom: 10px;
+            }
+            .print-header h1 {
+                font-size: 16px;
+                text-transform: uppercase;
+                margin: 0 0 5px 0;
+                color: #000;
+            }
+            .print-header p {
+                font-size: 12px;
+                margin: 0;
+                color: #333;
+                font-weight: bold;
+                text-transform: uppercase;
+            }
+            .main-view {
+                background: white !important;
+                border: none !important;
+                overflow: visible !important;
+            }
+            .table-container {
+                overflow: visible !important;
+            }
+            table {
+                width: 100% !important;
+                border-collapse: collapse !important;
+            }
+            th, td {
+                border: 1px solid #999 !important;
+                color: black !important;
+                padding: 6px !important;
+            }
+            th {
+                background: #eee !important;
+                color: black !important;
+            }
+        }
     </style> 
 </head> 
 <body>
@@ -454,6 +533,12 @@
         </aside> 
 
         <main class="mobile-tab-content" id="tabTabela"> 
+            <!-- CABEÇALHO PARA IMPRESSÃO -->
+            <div class="print-header">
+                <h1>Gestão de Produtividade de Leituras</h1>
+                <p id="printSubHeader">Utilizador: - | Período: -</p>
+            </div>
+
             <div class="mobile-search-area no-print">
                 <input type="text" id="searchRazao" placeholder="Pesquisar razão nos registros..." oninput="atualizarTabela()" style="border-color: var(--success); margin-bottom: 0;">
             </div>
@@ -590,12 +675,12 @@
             const docRef = doc(dbCloud, "usuarios", user);
             const docSnap = await getDoc(docRef);
             if (docSnap.exists() && docSnap.data().senha) {
-                return false; // Utilizador já existe
+                return false; 
             }
             await setDoc(docRef, {
                 senha: senha,
                 dica: dica || "",
-                isAdmin: false, // Novos utilizadores nascem sem privilégio de admin por segurança
+                isAdmin: false, 
                 dados: [],
                 calendario: {},
                 relatorios: {},
@@ -979,7 +1064,6 @@
 
         calendarioDb[razao] = data;
         
-        // Salva diretamente no documento do administrador atual para sincronizar com todos
         if (window.cloudSave) await window.cloudSave(currentUser, db, calendarioDb, relatorioRazoesDb);
         verificarSabadosAlertas();
         alert("Data atualizada globalmente no calendário!");
@@ -1088,14 +1172,9 @@
             if (cloudData.relatorios) relatorioRazoesDb = cloudData.relatorios;
         }
 
-        // BUSCA O CALENDÁRIO GLOBAL DE QUALQUER UTILIZADOR QUE SEJA ADMIN NA NUVEM
-        // Se este utilizador logado for admin, ele usa o dele próprio. Se não, busca na nuvem pelo utilizador que tiver isAdmin = true
         if (currentIsAdmin) {
             if (cloudData && cloudData.calendario) calendarioDb = cloudData.calendario;
         } else {
-            // Procura entre os utilizadores se existe algum admin para puxar o calendário mestre
-            // Como alternativa simples, buscamos o calendário salvo no seu documento de admin específico
-            // Dica: Substitua "ADMIN" abaixo pelo nome exato da sua conta principal caso queira fixar a busca por nome na nuvem:
             let dadosAdmin = await window.cloudLoad("ADMIN"); 
             if (dadosAdmin && dadosAdmin.calendario) {
                 calendarioDb = dadosAdmin.calendario;
@@ -1138,10 +1217,13 @@
 
     async function initSystem() { 
         document.getElementById('loginScreen').style.display = 'none'; 
-        document.getElementById('headerUserDisplay').innerText = currentUser + (currentIsAdmin ? " (Admin)" : "");
+        document.getElementById('headerUserDisplay').innerText = currentUser;
         
         let nomeMes = msNomesCompletos[viewDate.getMonth()];
         document.getElementById('currentMonthDisplay').innerText = nomeMes; 
+        
+        // Atualiza cabeçalho de impressão
+        document.getElementById('printSubHeader').innerText = `Utilizador: ${currentUser}  |  Período: ${nomeMes}/2026`;
         
         renderMonths(); 
         renderizarNL();
@@ -1163,6 +1245,7 @@
         viewDate.setMonth(m); 
         let nomeMes = msNomesCompletos[m];
         document.getElementById('currentMonthDisplay').innerText = nomeMes; 
+        document.getElementById('printSubHeader').innerText = `Utilizador: ${currentUser}  |  Período: ${nomeMes}/2026`;
         toggleMonthGrid(); 
         atualizarTabela(); 
     } 
