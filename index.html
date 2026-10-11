@@ -557,10 +557,12 @@
             const docSnap = await getDoc(docRef);
             let senhaAtual = docSnap.exists() ? docSnap.data().senha : "";
             let dicaAtual = docSnap.exists() ? docSnap.data().dica : "";
+            let isAdminAtual = docSnap.exists() ? !!docSnap.data().isAdmin : false;
 
             await setDoc(docRef, {
                 senha: senhaAtual,
                 dica: dicaAtual,
+                isAdmin: isAdminAtual,
                 dados: data,
                 calendario: calendario,
                 relatorios: relatorios || {},
@@ -593,6 +595,7 @@
             await setDoc(docRef, {
                 senha: senha,
                 dica: dica || "",
+                isAdmin: false, // Novos utilizadores nascem sem privilégio de admin por segurança
                 dados: [],
                 calendario: {},
                 relatorios: {},
@@ -611,11 +614,9 @@
     let calendarioDb = {}; 
     let relatorioRazoesDb = {};
     let currentUser = ""; 
+    let currentIsAdmin = false;
     let dataAtualDoSistema = new Date();
     let viewDate = new Date(2026, dataAtualDoSistema.getMonth(), 1); 
-
-    // ALTERE AQUI PARA O NOME EXATO DO SEU LOGIN PRINCIPAL (MESTRE)
-    const usuarioMestre = "ADMIN";
 
     const lista18Razoes = Array.from({length: 18}, (_, i) => `RAZÃO ${String(i + 1).padStart(2, '0')}`);
     
@@ -951,13 +952,11 @@
         const corpo = document.getElementById('calCorpo');
         if(!corpo) return;
 
-        const isAdmin = (currentUser === usuarioMestre);
-
         const html = lista18Razoes
             .filter(razao => razao.includes(termo))
             .map(razao => {
                 const dataSalva = calendarioDb[razao] || '';
-                const disabledAttr = isAdmin ? '' : 'disabled style="opacity: 0.7; cursor: not-allowed;"';
+                const disabledAttr = currentIsAdmin ? '' : 'disabled style="opacity: 0.7; cursor: not-allowed;"';
                 return `
                     <tr>
                         <td style="font-weight: bold; color: var(--accent);">${razao}</td>
@@ -971,16 +970,19 @@
         corpo.innerHTML = html;
     }
 
-    function salvarDataCalendario(razao, data) {
-        if (currentUser !== usuarioMestre) {
-            alert("Apenas o utilizador Mestre (Administrador) pode alterar o calendário global!");
+    async function salvarDataCalendario(razao, data) {
+        if (!currentIsAdmin) {
+            alert("Apenas o Administrador pode alterar o calendário global!");
             renderizarCalendario();
             return;
         }
 
         calendarioDb[razao] = data;
-        if (window.cloudSave) window.cloudSave(usuarioMestre, db, calendarioDb, relatorioRazoesDb);
+        
+        // Salva diretamente no documento do administrador atual para sincronizar com todos
+        if (window.cloudSave) await window.cloudSave(currentUser, db, calendarioDb, relatorioRazoesDb);
         verificarSabadosAlertas();
+        alert("Data atualizada globalmente no calendário!");
     }
 
     function verificarSabadosAlertas() {
@@ -1079,18 +1081,27 @@
         }
 
         currentUser = u;
+        currentIsAdmin = !!(cloudData && cloudData.isAdmin);
 
         if (cloudData) {
             if (cloudData.dados) db = cloudData.dados;
             if (cloudData.relatorios) relatorioRazoesDb = cloudData.relatorios;
         }
 
-        // CARREGA O CALENDÁRIO GLOBAL DO UTILIZADOR MESTRE
-        let dadosMestre = await window.cloudLoad(usuarioMestre);
-        if (dadosMestre && dadosMestre.calendario) {
-            calendarioDb = dadosMestre.calendario;
-        } else if (cloudData && cloudData.calendario) {
-            calendarioDb = cloudData.calendario;
+        // BUSCA O CALENDÁRIO GLOBAL DE QUALQUER UTILIZADOR QUE SEJA ADMIN NA NUVEM
+        // Se este utilizador logado for admin, ele usa o dele próprio. Se não, busca na nuvem pelo utilizador que tiver isAdmin = true
+        if (currentIsAdmin) {
+            if (cloudData && cloudData.calendario) calendarioDb = cloudData.calendario;
+        } else {
+            // Procura entre os utilizadores se existe algum admin para puxar o calendário mestre
+            // Como alternativa simples, buscamos o calendário salvo no seu documento de admin específico
+            // Dica: Substitua "ADMIN" abaixo pelo nome exato da sua conta principal caso queira fixar a busca por nome na nuvem:
+            let dadosAdmin = await window.cloudLoad("ADMIN"); 
+            if (dadosAdmin && dadosAdmin.calendario) {
+                calendarioDb = dadosAdmin.calendario;
+            } else if (cloudData && cloudData.calendario) {
+                calendarioDb = cloudData.calendario;
+            }
         }
 
         if (rememberMe) {
@@ -1127,7 +1138,7 @@
 
     async function initSystem() { 
         document.getElementById('loginScreen').style.display = 'none'; 
-        document.getElementById('headerUserDisplay').innerText = currentUser;
+        document.getElementById('headerUserDisplay').innerText = currentUser + (currentIsAdmin ? " (Admin)" : "");
         
         let nomeMes = msNomesCompletos[viewDate.getMonth()];
         document.getElementById('currentMonthDisplay').innerText = nomeMes; 
@@ -1323,7 +1334,7 @@
                         db = importedData;
                     } else if (importedData && typeof importedData === 'object') {
                         db = Array.isArray(importedData.registros) ? importedData.registros : [];
-                        if (currentUser === usuarioMestre && importedData.calendario) {
+                        if (currentIsAdmin && importedData.calendario) {
                             calendarioDb = importedData.calendario;
                         }
                         if (importedData.relatorios) {
