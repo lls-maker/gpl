@@ -351,13 +351,18 @@
         <h2 id="authTitle" style="color:white; font-size:18px; margin-bottom:15px;">Acessar Conta</h2> 
         <input type="text" id="userInput" placeholder="Usuário"> 
         <input type="password" id="passInput" placeholder="Senha"> 
-
+        <input type="text" id="recoveryInput" placeholder="Dica de segurança" style="display:none;"> 
+        
         <div style="display: flex; align-items: center; gap: 8px; margin: 10px 0 15px 2px; text-align: left; font-size: 11px;">
             <input type="checkbox" id="rememberMe" style="width: auto; margin: 0; cursor: pointer;">
             <label for="rememberMe" style="color: var(--text-p); cursor: pointer; user-select: none;">Lembrar de mim</label>
         </div>
 
         <button onclick="handleAuth()" id="authBtn" class="auth-btn">ENTRAR</button> 
+        <div style="display:flex; justify-content: space-between; gap: 10px;"> 
+            <span class="auth-link" id="authSwitch" onclick="toggleAuthMode()">Criar Conta</span> 
+            <span class="auth-link" style="color:var(--warning)" onclick="recoverPass()">Recuperar Senha</span> 
+        </div> 
     </div> 
 </div>
 
@@ -926,6 +931,11 @@
 
     function salvarDataCalendario(razao, data) {
         calendarioDb[razao] = data;
+        
+        // Se quiser que apenas o seu usuário principal (ex: "ADMIN") atualize o calendário global para todos, mude a linha abaixo para salvar no seu usuário mestre:
+        // let usuarioAlvo = "ADMIN";
+        // if (window.cloudSave) window.cloudSave(usuarioAlvo, db, calendarioDb, relatorioRazoesDb);
+
         if (window.cloudSave) window.cloudSave(currentUser, db, calendarioDb, relatorioRazoesDb);
         verificarSabadosAlertas();
     }
@@ -1000,28 +1010,71 @@
     async function handleAuth() { 
         const u = document.getElementById('userInput').value.trim().toUpperCase(); 
         const p = document.getElementById('passInput').value; 
+        const r = document.getElementById('recoveryInput').value; 
+        const rememberMe = document.getElementById('rememberMe').checked;
 
         if(!u || !p) return alert("Preencha Usuário e Senha"); 
 
         currentUser = u;
 
-        // Tenta carregar do Firebase para validar se já existe ou baixar dados
         let cloudData = window.cloudLoad ? await window.cloudLoad(u) : null;
         
-        if (!cloudData) {
-            // Se for primeiro acesso na nuvem, inicializa o documento com dados vazios
-            if(window.cloudSave) {
-                await window.cloudSave(u, [], {}, {});
+        let isCriando = document.getElementById('authTitle').innerText.includes("Criar");
+
+        if (isCriando) {
+            if (cloudData && cloudData.senha) {
+                return alert("Este usuário já existe! Escolha outro nome ou acesse sua conta.");
             }
+            // Salva novo usuário na nuvem com senha e dica
+            await window.cloudSaveUserAuth(u, p, r);
+            alert("Conta criada com sucesso!");
         } else {
+            // Valida senha se a conta já existir na nuvem
+            if (cloudData && cloudData.senha && cloudData.senha !== p) {
+                return alert("Senha incorreta!");
+            } else if (!cloudData) {
+                // Se não existe na nuvem, cria automaticamente no primeiro acesso
+                await window.cloudSaveUserAuth(u, p, r);
+            }
+        }
+
+        if (cloudData) {
             if (cloudData.dados) db = cloudData.dados;
             if (cloudData.calendario) calendarioDb = cloudData.calendario;
             if (cloudData.relatorios) relatorioRazoesDb = cloudData.relatorios;
         }
 
+        if (rememberMe) {
+            localStorage.setItem('gpl_saved_user_2026', u);
+            localStorage.setItem('gpl_saved_pass_2026', p);
+        } else {
+            localStorage.removeItem('gpl_saved_user_2026');
+            localStorage.removeItem('gpl_saved_pass_2026');
+        }
+
         document.getElementById('loginScreen').style.display = 'none';
         initSystem();
     } 
+
+    function toggleAuthMode() { 
+        const t = document.getElementById('authTitle'); 
+        const isLogin = t.innerText === "Acessar Conta"; 
+        t.innerText = isLogin ? "Criar Novo Usuário" : "Acessar Conta"; 
+        document.getElementById('recoveryInput').style.display = isLogin ? "block" : "none"; 
+    } 
+
+    function recoverPass() { 
+        const u = document.getElementById('userInput').value.trim().toUpperCase(); 
+        if(!u) return alert("Digite o seu usuário primeiro para recuperar a senha.");
+        
+        window.cloudLoad(u).then(cloudData => {
+            if(cloudData && cloudData.dica) {
+                alert("Dica de segurança: " + cloudData.dica);
+            } else {
+                alert("Usuário não encontrado na nuvem ou sem dica cadastrada.");
+            }
+        });
+    }
 
     async function initSystem() { 
         document.getElementById('loginScreen').style.display = 'none'; 
@@ -1188,6 +1241,11 @@
     } 
 
     window.onload = function() {
+        let savedU = localStorage.getItem('gpl_saved_user_2026');
+        let savedP = localStorage.getItem('gpl_saved_pass_2026');
+        if(savedU) document.getElementById('userInput').value = savedU;
+        if(savedP) document.getElementById('passInput').value = savedP;
+
         const passInputEl = document.getElementById('passInput');
         if(passInputEl) {
             passInputEl.addEventListener("keydown", (e) => {
@@ -1217,5 +1275,39 @@
         }
     };
 </script> 
+
+<!-- SCRIPT DE SUPORTE AUTH NA NUVEM -->
+<script type="module">
+    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyBCyO4flW7U20t2Lh4HQRy5hGBIzxahjp4",
+        authDomain: "gestaoprodutividadeleituras.firebaseapp.com",
+        projectId: "gestaoprodutividadeleituras",
+        storageBucket: "gestaoprodutividadeleituras.firebasestorage.app",
+        messagingSenderId: "1053226233050",
+        appId: "1:1053226233050:web:964e6c40891fe4973a89e3"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const dbCloud = getFirestore(app);
+
+    window.cloudSaveUserAuth = async function(user, senha, dica) {
+        try {
+            const docRef = doc(dbCloud, "usuarios", user);
+            await setDoc(docRef, {
+                senha: senha,
+                dica: dica || "",
+                dados: [],
+                calendario: {},
+                relatorios: {},
+                ultimaAtualizacao: new Date()
+            }, { merge: true });
+        } catch (e) {
+            console.error("Erro ao salvar credenciais:", e);
+        }
+    };
+</script>
 </body> 
 </html>
