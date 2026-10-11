@@ -350,12 +350,17 @@
         }
 
         @media print {
+            @page {
+                margin: 15mm; /* Adiciona margem limpa na folha impressa */
+            }
             body {
                 background: white !important;
                 color: black !important;
                 display: block !important;
                 overflow: auto !important;
                 height: auto !important;
+                margin: 0 !important;
+                padding: 0 !important;
             }
             body::before { display: none; }
             .container {
@@ -379,18 +384,19 @@
                 display: block !important;
                 height: auto !important;
                 overflow: visible !important;
+                padding-top: 5px !important;
             }
             .print-header {
                 display: block !important;
                 text-align: center;
-                margin-bottom: 20px;
+                margin-bottom: 15px;
                 border-bottom: 2px solid #000;
-                padding-bottom: 10px;
+                padding-bottom: 8px;
             }
             .print-header h1 {
                 font-size: 16px;
                 text-transform: uppercase;
-                margin: 0 0 5px 0;
+                margin: 0 0 4px 0;
                 color: #000;
             }
             .print-header p {
@@ -526,7 +532,6 @@
                     <div class="backup-row">
                         <button type="button" onclick="exportarBackup()" class="btn-backup">Backup</button>
                         <button type="button" onclick="dispararImportacao()" class="btn-import">Restaurar</button>
-                        <!-- ATUALIZADO: aceita arquivos json, txt ou coringa para celular (*.*) -->
                         <input type="file" id="importFile" accept=".json,.txt,application/json" style="display:none;" onchange="importarBackup(event)">
                     </div>
                 </div> 
@@ -1394,7 +1399,6 @@
             relatorios: relatorioRazoesDb
         };
 
-        // Força blob com application/json para compatibilidade com celulares Android/iOS
         const dataStr = JSON.stringify(dadosBackup, null, 2);
         const blob = new Blob([dataStr], { type: 'application/json;charset=utf-8;' });
         const url = URL.createObjectURL(blob);
@@ -1410,7 +1414,6 @@
 
     function dispararImportacao() { 
         const fileInput = document.getElementById('importFile');
-        // Reseta o valor para garantir que o evento onchange dispare mesmo se o usuário selecionar o mesmo arquivo
         fileInput.value = '';
         fileInput.click(); 
     }
