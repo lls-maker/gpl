@@ -40,6 +40,7 @@
             justify-content: center;
             align-items: center;
             overflow: hidden;
+            overscroll-behavior-y: contain; /* Evita o bounce padrão do navegador no mobile */
         } 
 
         body::before {
@@ -48,6 +49,25 @@
             top: 0; left: 0; width: 100%; height: 100%;
             background: radial-gradient(circle at center, #111a2c 0%, #030508 100%);
             z-index: -1;
+        }
+
+        /* Indicador visual de puxar para atualizar (Pull-to-Refresh) */
+        #pullToRefreshIndicator {
+            position: fixed;
+            top: -50px;
+            left: 0;
+            width: 100%;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(11, 15, 21, 0.95);
+            color: var(--success);
+            font-weight: 900;
+            font-size: 11px;
+            border-bottom: 1px solid var(--border);
+            z-index: 99999;
+            transition: transform 0.2s ease;
         }
 
         input, select { 
@@ -389,6 +409,9 @@
 </head> 
 <body>
 
+<!-- INDICADOR DE PULL TO REFRESH (MOBILE) -->
+<div id="pullToRefreshIndicator">🔄 Puxe mais para atualizar...</div>
+
 <!-- TELA DE LOGIN / PAGAMENTO -->
 <div id="loginScreen"> 
     <div class="login-box"> 
@@ -426,6 +449,10 @@
         <div style="display: flex; gap: 8px; align-items: center;"> 
             <button class="header-btn" onclick="toggleMonthGrid()" id="currentMonthDisplay" style="background: var(--accent); border-color: var(--accent);">SETEMBRO</button> 
             <div id="monthGrid" class="month-grid"></div> 
+            
+            <!-- BOTÃO DE ATUALIZAR MANUAL (DESKTOP/GERAL) -->
+            <button class="header-btn" onclick="atualizarDadosManualmente(this)" title="Atualizar dados da nuvem" style="background: var(--success); color: black;">🔄</button>
+
             <button class="header-btn" onclick="window.print()">IMPRIMIR</button> 
         </div> 
     </header> 
@@ -812,6 +839,98 @@
         
         sessionStorage.setItem('gpl_active_tab', tabId);
     }
+
+    // FUNÇÃO CENTRALIZADA DE ATUALIZAÇÃO MANUAL DA NUVEM
+    async function atualizarDadosManualmente(btnElement = null) {
+        if (!currentUser) return alert("Nenhum utilizador logado.");
+        
+        let iconeOriginal = "";
+        if (btnElement) {
+            iconeOriginal = btnElement.innerText;
+            btnElement.innerText = "⏳";
+            btnElement.disabled = true;
+        }
+
+        try {
+            const cloudData = await window.cloudLoad(currentUser);
+            if (cloudData) {
+                if (cloudData.dados) db = cloudData.dados;
+                if (cloudData.calendario) calendarioDb = cloudData.calendario;
+                if (cloudData.relatorios) relatorioRazoesDb = cloudData.relatorios;
+
+                atualizarTabela();
+                renderizarCalendario();
+                renderizarTabelaRelatorioAtual();
+                verificarSabadosAlertas();
+                
+                return true;
+            } else {
+                alert("Nenhum dado encontrado na nuvem para este utilizador.");
+                return false;
+            }
+        } catch (error) {
+            console.error("Erro ao atualizar:", error);
+            alert("Erro ao conectar com a nuvem. Verifique a conexão.");
+            return false;
+        } finally {
+            if (btnElement) {
+                btnElement.innerText = iconeOriginal;
+                btnElement.disabled = false;
+            }
+        }
+    }
+
+    // IMPLEMENTAÇÃO DO PULL-TO-REFRESH PARA MOBILE
+    let startY = 0;
+    let isPulling = false;
+    const pullThreshold = 80;
+
+    window.addEventListener('touchstart', (e) => {
+        if (window.scrollY <= 0 && document.querySelector('.container').scrollTop <= 0) {
+            startY = e.touches[0].clientY;
+            isPulling = true;
+        }
+    }, { passive: true });
+
+    window.addEventListener('touchmove', (e) => {
+        if (!isPulling) return;
+        const currentY = e.touches[0].clientY;
+        const diff = currentY - startY;
+
+        const indicator = document.getElementById('pullToRefreshIndicator');
+        if (diff > 0 && diff < 150) {
+            indicator.style.transform = `translateY(${diff}px)`;
+            if (diff >= pullThreshold) {
+                indicator.innerText = "Solte para atualizar os dados 🔄";
+            } else {
+                indicator.innerText = "Puxe mais para atualizar...";
+            }
+        }
+    }, { passive: true });
+
+    window.addEventListener('touchend', async (e) => {
+        if (!isPulling) return;
+        isPulling = false;
+        const indicator = document.getElementById('pullToRefreshIndicator');
+        const endY = e.changedTouches[0].clientY;
+        const diff = endY - startY;
+
+        if (diff >= pullThreshold && currentUser) {
+            indicator.innerText = "Atualizando dados da nuvem...";
+            indicator.style.transform = `translateY(50px)`;
+            
+            await atualizarDadosManualmente();
+            
+            setTimeout(() => {
+                indicator.innerText = "Atualizado com sucesso! ✨";
+                setTimeout(() => {
+                    indicator.style.transform = `translateY(0px)`;
+                }, 600);
+            }, 400);
+        } else {
+            indicator.style.transform = `translateY(0px)`;
+        }
+    });
 
     function popularSelectRazoesRelatorio() {
         const sel = document.getElementById('selectRazaoRelatorio');
@@ -1207,7 +1326,7 @@
         verificarSabadosAlertas();
         atualizarTabela(); 
 
-        // ATIVA A SINCRONIZAÇÃO EM TEMPO REAL AUTOMÁTICA
+        // SINCRONIZAÇÃO EM TEMPO REAL AUTOMÁTICA
         window.escutarAlteracoesNuvem(currentUser, (dadosNuvem) => {
             if (dadosNuvem.dados) db = dadosNuvem.dados;
             if (dadosNuvem.calendario) calendarioDb = dadosNuvem.calendario;
