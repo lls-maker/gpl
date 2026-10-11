@@ -795,7 +795,8 @@
     reader.onload = function(e) {
         let conteudo = e.target.result;
         if (nomeArquivo.endsWith('.docx')) {
-            conteudo = conteudo.replace(/[^\x20-\x7E\u00A0-\u00FF\n\r]/g, ' ');
+            // Remove marcadores binários do Word para isolar apenas o texto puro legível
+            conteudo = unescape(encodeURIComponent(conteudo)).replace(/[\x00-\x1F\x7F-\x9F]/g, " ");
         }
         processarConteudoTxtTerceiros(conteudo);
     };
