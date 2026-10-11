@@ -526,7 +526,8 @@
                     <div class="backup-row">
                         <button type="button" onclick="exportarBackup()" class="btn-backup">Backup</button>
                         <button type="button" onclick="dispararImportacao()" class="btn-import">Restaurar</button>
-                        <input type="file" id="importFile" accept=".json" style="display:none;" onchange="importarBackup(event)">
+                        <!-- ATUALIZADO: aceita arquivos json, txt ou coringa para celular (*.*) -->
+                        <input type="file" id="importFile" accept=".json,.txt,application/json" style="display:none;" onchange="importarBackup(event)">
                     </div>
                 </div> 
             </div> 
@@ -1222,7 +1223,6 @@
         let nomeMes = msNomesCompletos[viewDate.getMonth()];
         document.getElementById('currentMonthDisplay').innerText = nomeMes; 
         
-        // Atualiza cabeçalho de impressão
         document.getElementById('printSubHeader').innerText = `Utilizador: ${currentUser}  |  Período: ${nomeMes}/2026`;
         
         renderMonths(); 
@@ -1394,20 +1394,31 @@
             relatorios: relatorioRazoesDb
         };
 
-        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dadosBackup, null, 2));
+        // Força blob com application/json para compatibilidade com celulares Android/iOS
+        const dataStr = JSON.stringify(dadosBackup, null, 2);
+        const blob = new Blob([dataStr], { type: 'application/json;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        
         const dl = document.createElement('a');
-        dl.setAttribute("href", dataStr);
-        dl.setAttribute("download", `backup_gpl_${currentUser.toLowerCase()}_2026.json`);
+        dl.href = url;
+        dl.download = `backup_gpl_${currentUser.toLowerCase()}_2026.json`;
         document.body.appendChild(dl); 
         dl.click(); 
         dl.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
     }
 
-    function dispararImportacao() { document.getElementById('importFile').click(); }
+    function dispararImportacao() { 
+        const fileInput = document.getElementById('importFile');
+        // Reseta o valor para garantir que o evento onchange dispare mesmo se o usuário selecionar o mesmo arquivo
+        fileInput.value = '';
+        fileInput.click(); 
+    }
 
     function importarBackup(event) {
         const file = event.target.files[0];
         if (!file) return;
+        
         const reader = new FileReader();
         reader.onload = function(e) {
             try {
