@@ -351,14 +351,16 @@
 
         @media print {
             @page {
-                margin: 15mm; /* Adiciona margem limpa na folha impressa */
+                margin: 10mm;
+                size: auto;
             }
-            body {
+            html, body {
                 background: white !important;
                 color: black !important;
                 display: block !important;
-                overflow: auto !important;
+                overflow: visible !important;
                 height: auto !important;
+                position: static !important;
                 margin: 0 !important;
                 padding: 0 !important;
             }
@@ -373,6 +375,7 @@
                 background: white !important;
                 padding: 0 !important;
                 display: block !important;
+                overflow: visible !important;
             }
             header, .prog-area, .mobile-nav-tabs, .no-print, .mobile-search-area {
                 display: none !important;
@@ -384,7 +387,7 @@
                 display: block !important;
                 height: auto !important;
                 overflow: visible !important;
-                padding-top: 5px !important;
+                padding-top: 0 !important;
             }
             .print-header {
                 display: block !important;
@@ -410,9 +413,11 @@
                 background: white !important;
                 border: none !important;
                 overflow: visible !important;
+                height: auto !important;
             }
             .table-container {
                 overflow: visible !important;
+                height: auto !important;
             }
             table {
                 width: 100% !important;
@@ -532,7 +537,8 @@
                     <div class="backup-row">
                         <button type="button" onclick="exportarBackup()" class="btn-backup">Backup</button>
                         <button type="button" onclick="dispararImportacao()" class="btn-import">Restaurar</button>
-                        <input type="file" id="importFile" accept=".json,.txt,application/json" style="display:none;" onchange="importarBackup(event)">
+                        <!-- CORRIGIDO: Aceita arquivos JSON em qualquer formato de leitura de celular (*/*) -->
+                        <input type="file" id="importFile" accept="application/json,.json,.txt" style="display:none;" onchange="importarBackup(event)">
                     </div>
                 </div> 
             </div> 
