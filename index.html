@@ -76,7 +76,10 @@
             -webkit-appearance: none; 
             margin: 0; 
         } 
-        input[type=number] { -moz-appearance: textfield; } 
+        input[type=number] { 
+            appearance: textfield;
+            -moz-appearance: textfield; 
+        } 
 
         #loginScreen { 
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; 
@@ -544,6 +547,10 @@
                     </button>
                 </div>
             </div>
+            <!-- BARRA DE PESQUISA DOS CARDS DO RELATÓRIO -->
+            <div class="mobile-search-area" style="margin-top: 4px;">
+                <input type="text" id="searchRelatorioCards" placeholder="Pesquisar por número da NL ou descrição..." oninput="renderizarTabelaRelatorioAtual()" style="border-color: var(--purple); margin-bottom: 0;">
+            </div>
             <div class="main-view" style="margin-top: 6px;">
                 <div id="relatorioCardsCorpo" class="cards-container">
                     <div style="grid-column: 1 / -1; text-align: center; color: var(--text-p); padding: 30px; font-weight: 700; font-size: 12px;">
@@ -822,15 +829,31 @@
     function renderizarTabelaRelatorioAtual() {
         const razaoSelecionada = document.getElementById('selectRazaoRelatorio').value;
         const corpo = document.getElementById('relatorioCardsCorpo');
+        const termoBusca = (document.getElementById('searchRelatorioCards')?.value || '').toUpperCase();
         if (!corpo) return;
 
         const dadosRazao = (relatorioRazoesDb && relatorioRazoesDb[razaoSelecionada]) ? relatorioRazoesDb[razaoSelecionada] : {};
-        const chavesOC = Object.keys(dadosRazao);
+        let chavesOC = Object.keys(dadosRazao);
 
         if (chavesOC.length === 0) {
             corpo.innerHTML = `
                 <div style="grid-column: 1 / -1; text-align: center; color: var(--text-p); padding: 30px; font-weight: 700; font-size: 12px;">
                     Nenhum arquivo TXT carregado para esta razão. Clique em "Carregar TXT" acima.
+                </div>`;
+            return;
+        }
+
+        // Filtra as ocorrências com base no número da NL ou na descrição
+        chavesOC = chavesOC.filter(oc => {
+            const infoNL = notasDeLeitura.find(item => item.numero === oc) || { detalhe: '' };
+            const textoDescricao = infoNL.detalhe.toUpperCase();
+            return oc.includes(termoBusca) || textoDescricao.includes(termoBusca);
+        });
+
+        if (chavesOC.length === 0) {
+            corpo.innerHTML = `
+                <div style="grid-column: 1 / -1; text-align: center; color: var(--text-p); padding: 30px; font-weight: 700; font-size: 12px;">
+                    Nenhuma ocorrência encontrada para "${termoBusca}".
                 </div>`;
             return;
         }
