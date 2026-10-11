@@ -87,10 +87,11 @@
             z-index: 99999; display: flex; align-items: center; justify-content: center; 
         } 
         .login-box { 
-            background: rgba(11, 15, 21, 0.95); padding: 35px; border-radius: 24px; 
+            background: rgba(11, 15, 21, 0.95); padding: 30px; border-radius: 24px; 
             border: 1px solid var(--border); border-top: 4px solid var(--success); 
-            width: 350px; text-align: center; backdrop-filter: blur(10px); 
+            width: 360px; text-align: center; backdrop-filter: blur(10px); 
             box-shadow: 0 20px 50px rgba(0,0,0,0.8); 
+            max-height: 95vh; overflow-y: auto;
         } 
         .auth-btn { 
             background: var(--success); color: black; width: 100%; padding: 12px; 
@@ -351,7 +352,7 @@
 
         @media print {
             @page {
-                margin: 10mm;
+                margin: 0mm;
                 size: auto;
             }
             html, body {
@@ -374,6 +375,7 @@
                 box-shadow: none !important;
                 background: white !important;
                 padding: 0 !important;
+                margin: 0 !important;
                 display: block !important;
                 overflow: visible !important;
             }
@@ -387,14 +389,16 @@
                 display: block !important;
                 height: auto !important;
                 overflow: visible !important;
-                padding-top: 0 !important;
+                margin: 0 !important;
+                padding: 5px !important;
             }
             .print-header {
                 display: block !important;
                 text-align: center;
-                margin-bottom: 15px;
+                margin-top: 0 !important;
+                margin-bottom: 10px;
                 border-bottom: 2px solid #000;
-                padding-bottom: 8px;
+                padding-bottom: 6px;
             }
             .print-header h1 {
                 font-size: 16px;
@@ -414,6 +418,7 @@
                 border: none !important;
                 overflow: visible !important;
                 height: auto !important;
+                margin: 0 !important;
             }
             .table-container {
                 overflow: visible !important;
@@ -437,11 +442,17 @@
 </head> 
 <body>
 
-<!-- TELA DE LOGIN -->
+<!-- TELA DE LOGIN / PAGAMENTO -->
 <div id="loginScreen"> 
     <div class="login-box"> 
-        <div style="background:var(--success); color:black; padding:10px; border-radius:12px; font-weight:900; margin-bottom:20px;">GPL</div> 
-        <h2 id="authTitle" style="color:white; font-size:18px; margin-bottom:15px;">Acessar Conta</h2> 
+        <div style="background:var(--success); color:black; padding:10px; border-radius:12px; font-weight:900; margin-bottom:15px;">GPL</div> 
+        <h2 id="authTitle" style="color:white; font-size:18px; margin-bottom:10px;">Acessar Conta</h2> 
+        
+        <!-- AVISO DE PAGAMENTO PARA NOVOS CONTAS -->
+        <div id="paymentNotice" style="display:none; background: rgba(0, 255, 136, 0.1); border: 1px solid var(--success); padding: 10px; border-radius: 10px; margin-bottom: 12px; font-size: 11px; color: var(--success); text-align: left; font-weight: bold;">
+            💡 Para liberar o acesso ao aplicativo, é necessário efetuar um depósito/PIX de <strong>R$ 10,00</strong>. Após criar a conta, informe o comprovante ao suporte para ativação completa.
+        </div>
+
         <input type="text" id="userInput" placeholder="Utilizador"> 
         <input type="password" id="passInput" placeholder="Senha"> 
         <input type="text" id="recoveryInput" placeholder="Dica de segurança" style="display:none;"> 
@@ -493,29 +504,29 @@
         <button class="mob-tab-btn" id="btnTabRelatorio" onclick="switchMobileTab('tabRelatorio', this)">📑 Relat.</button>
     </nav>
 
-    <!-- DASHBOARD -->
-    <div class="top-dashboard mobile-tab-content active-tab" id="tabDashboard">
-        <div class="observations no-print"> 
-            <div class="obs-item"><span class="dot" style="background:var(--success)"></span> Bônus de R$ 0,20 por cada leitura excedente a 8000 leituras</div> 
-            <div class="obs-item"><span class="dot" style="background:var(--danger)"></span> Desconto: R$ 1,50 p/ impedimento</div> 
-            <div class="obs-item"><span class="dot" style="background:var(--warning)"></span> Qualidade: Meta ≤ 0,50%</div> 
-        </div> 
-
-        <div id="saturdayAlertContainer" style="display:none;" class="no-print"></div>
-
-        <div class="summary-grid"> 
-            <div class="summary-card neon-leituras"><p>Leituras</p><h2 id="totL">0</h2></div> 
-            <div class="summary-card neon-impedimentos"><p>Impedimentos</p><h2 id="totI">0</h2></div> 
-            <div class="summary-card neon-meta"><p>Qualidade</p><h2 id="totMeta">0,00%</h2></div> 
-            <div class="summary-card neon-bonus"><p>Bônus</p><h2 id="totB">R$ 0,00</h2></div> 
-            <div class="summary-card neon-descontos"><p>Descontos</p><h2 id="totD">R$ 0,00</h2></div> 
-            <div class="summary-card neon-receber"><p>Receber Mês</p><h2 id="totNet">R$ 0,00</h2></div> 
-            <div class="summary-card neon-acumulado"><p>Acumulado Ano</p><h2 id="totAcumulado">R$ 0,00</h2></div> 
-        </div>
-    </div>
-
     <!-- CONTEÚDO PRINCIPAL EM ABAS -->
     <div class="content-wrap" id="mainContentWrap"> 
+        <!-- DASHBOARD (SISTEMA DE PAGAMENTO E RESUMO) -->
+        <div class="top-dashboard mobile-tab-content active-tab" id="tabDashboard">
+            <div class="observations no-print"> 
+                <div class="obs-item"><span class="dot" style="background:var(--success)"></span> Bônus de R$ 0,20 por cada leitura excedente a 8000 leituras</div> 
+                <div class="obs-item"><span class="dot" style="background:var(--danger)"></span> Desconto: R$ 1,50 p/ impedimento</div> 
+                <div class="obs-item"><span class="dot" style="background:var(--warning)"></span> Qualidade: Meta ≤ 0,50%</div> 
+            </div> 
+
+            <div id="saturdayAlertContainer" style="display:none;" class="no-print"></div>
+
+            <div class="summary-grid"> 
+                <div class="summary-card neon-leituras"><p>Leituras</p><h2 id="totL">0</h2></div> 
+                <div class="summary-card neon-impedimentos"><p>Impedimentos</p><h2 id="totI">0</h2></div> 
+                <div class="summary-card neon-meta"><p>Qualidade</p><h2 id="totMeta">0,00%</h2></div> 
+                <div class="summary-card neon-bonus"><p>Bônus</p><h2 id="totB">R$ 0,00</h2></div> 
+                <div class="summary-card neon-descontos"><p>Descontos</p><h2 id="totD">R$ 0,00</h2></div> 
+                <div class="summary-card neon-receber"><p>Receber Mês</p><h2 id="totNet">R$ 0,00</h2></div> 
+                <div class="summary-card neon-acumulado"><p>Acumulado Ano</p><h2 id="totAcumulado">R$ 0,00</h2></div> 
+            </div>
+        </div>
+
         <aside class="no-print mobile-tab-content" id="tabFormulario"> 
             <div class="sidebar"> 
                 <div class="form-content-area" style="padding-top: 5px;">
@@ -537,7 +548,6 @@
                     <div class="backup-row">
                         <button type="button" onclick="exportarBackup()" class="btn-backup">Backup</button>
                         <button type="button" onclick="dispararImportacao()" class="btn-import">Restaurar</button>
-                        <!-- CORRIGIDO: Aceita arquivos JSON em qualquer formato de leitura de celular (*/*) -->
                         <input type="file" id="importFile" accept="application/json,.json,.txt" style="display:none;" onchange="importarBackup(event)">
                     </div>
                 </div> 
@@ -1076,6 +1086,7 @@
 
         calendarioDb[razao] = data;
         
+        // Salva atualizado na nuvem do próprio ADMIN e propaga
         if (window.cloudSave) await window.cloudSave(currentUser, db, calendarioDb, relatorioRazoesDb);
         verificarSabadosAlertas();
         alert("Data atualizada globalmente no calendário!");
@@ -1165,7 +1176,7 @@
             }
             let criado = await window.cloudSaveUserAuth(u, p, r);
             if (!criado) return alert("Erro ao criar utilizador ou nome já existente.");
-            alert("Conta criada com sucesso!");
+            alert("Conta criada com sucesso! Lembre-se de efetuar o pagamento/depósito de R$ 10,00 para liberação total.");
             cloudData = await window.cloudLoad(u);
         } else {
             if (!cloudData || !cloudData.senha) {
@@ -1184,15 +1195,12 @@
             if (cloudData.relatorios) relatorioRazoesDb = cloudData.relatorios;
         }
 
-        if (currentIsAdmin) {
-            if (cloudData && cloudData.calendario) calendarioDb = cloudData.calendario;
-        } else {
-            let dadosAdmin = await window.cloudLoad("ADMIN"); 
-            if (dadosAdmin && dadosAdmin.calendario) {
-                calendarioDb = dadosAdmin.calendario;
-            } else if (cloudData && cloudData.calendario) {
-                calendarioDb = cloudData.calendario;
-            }
+        // CARREGA SEMPRE O CALENDÁRIO GLOBAL MAIS RECURSO DO ADMIN
+        let dadosAdmin = await window.cloudLoad("ADMIN"); 
+        if (dadosAdmin && dadosAdmin.calendario) {
+            calendarioDb = dadosAdmin.calendario;
+        } else if (cloudData && cloudData.calendario) {
+            calendarioDb = cloudData.calendario;
         }
 
         if (rememberMe) {
@@ -1209,9 +1217,12 @@
 
     function toggleAuthMode() { 
         const t = document.getElementById('authTitle'); 
+        const notice = document.getElementById('paymentNotice');
         const isLogin = t.innerText === "Acessar Conta"; 
+        
         t.innerText = isLogin ? "Criar Novo Utilizador" : "Acessar Conta"; 
         document.getElementById('recoveryInput').style.display = isLogin ? "block" : "none"; 
+        if(notice) notice.style.display = isLogin ? "block" : "none";
     } 
 
     function recoverPass() { 
