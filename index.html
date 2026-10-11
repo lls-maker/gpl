@@ -217,9 +217,6 @@
         .btn-add { background: var(--accent); color: #fff; width: 100%; padding: 12px; border-radius: 12px; font-weight: 900; cursor: pointer; border: none; text-transform: uppercase; font-size: 11.5px; } 
         .btn-clear { background: transparent; color: var(--danger); width: 100%; padding: 8px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--danger); text-transform: uppercase; font-size: 10px; } 
         .btn-clear-year { background: transparent; color: var(--purple); width: 100%; padding: 8px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--purple); text-transform: uppercase; font-size: 10px; } 
-        .backup-row { display: flex; gap: 6px; width: 100%; }
-        .btn-backup { background: transparent; color: var(--success); width: 50%; padding: 8px 4px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--success); text-transform: uppercase; font-size: 10px; text-align: center; } 
-        .btn-import { background: transparent; color: var(--warning); width: 50%; padding: 8px 4px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--warning); text-transform: uppercase; font-size: 10px; text-align: center; } 
 
         .main-view { 
             background: var(--surface); border-radius: 16px; border: 1.5px solid var(--brown-border); 
@@ -354,37 +351,14 @@
         <h2 id="authTitle" style="color:white; font-size:18px; margin-bottom:15px;">Acessar Conta</h2> 
         <input type="text" id="userInput" placeholder="Usuário"> 
         <input type="password" id="passInput" placeholder="Senha"> 
-        <input type="text" id="recoveryInput" placeholder="Dica de segurança" style="display:none;"> 
-        
+
         <div style="display: flex; align-items: center; gap: 8px; margin: 10px 0 15px 2px; text-align: left; font-size: 11px;">
             <input type="checkbox" id="rememberMe" style="width: auto; margin: 0; cursor: pointer;">
             <label for="rememberMe" style="color: var(--text-p); cursor: pointer; user-select: none;">Lembrar de mim</label>
         </div>
 
         <button onclick="handleAuth()" id="authBtn" class="auth-btn">ENTRAR</button> 
-        <div style="display:flex; justify-content: space-between; gap: 10px;"> 
-            <span class="auth-link" id="authSwitch" onclick="toggleAuthMode()">Criar Conta</span> 
-            <span class="auth-link" style="color:var(--warning)" onclick="recoverPass()">Recuperar</span> 
-        </div> 
     </div> 
-</div>
-
-<!-- TELA DE PAGAMENTO (MANUAL) -->
-<div id="paymentScreen" style="display:none;">
-    <div class="login-box">
-        <div style="background:var(--warning); color:black; padding:10px; border-radius:12px; font-weight:900; margin-bottom:15px;">PAGAMENTO</div>
-        <h2 style="color:white; font-size:16px; margin-bottom:10px;">Ativação de Conta Pendente</h2>
-        <p style="font-size:11.5px; color:var(--text-p); margin-bottom:15px; line-height: 1.4;">
-            Para liberar seu acesso completo, realize o Pix no valor de <strong style="color:var(--success);">R$ 10,00</strong> e envie o comprovante:
-        </p>
-        
-        <div style="background:#000; border:1px dashed var(--success); padding:10px; border-radius:8px; margin-bottom:15px; user-select:all; font-family:monospace; color:var(--success); font-size:12px; font-weight:bold;">
-        
-        </div>
-
-        <button onclick="checarLiberacaoManual()" class="auth-btn" style="background:var(--accent); color:white;">Já fiz o pagamento / Entrar</button>
-        <span class="auth-link" style="color:var(--danger); display:block; margin-top:15px;" onclick="cancelarPagamento()">Sair / Voltar</span>
-    </div>
 </div>
 
 <div class="container"> 
@@ -462,11 +436,6 @@
                     <button type="button" onclick="limparFormulario()" class="btn-clear" style="color: var(--warning); border-color: var(--warning); display: none;" id="btnCancelarEdicao">Cancelar Edição</button>
                     <button type="button" onclick="limparTudo()" class="btn-clear">Limpar Mês</button> 
                     <button type="button" onclick="limparAno()" class="btn-clear-year">Limpar todos os dados</button> 
-                    <div class="backup-row">
-                        <button type="button" onclick="exportarBackup()" class="btn-backup">Backup</button>
-                        <button type="button" onclick="dispararImportacao()" class="btn-import">Restaurar</button>
-                        <input type="file" id="importFile" accept=".json" style="display:none;" onchange="importarBackup(event)">
-                    </div>
                 </div> 
             </div> 
         </aside> 
@@ -572,14 +541,10 @@
     window.cloudSave = async function(user, data, calendario, relatorios) {
         try {
             const docRef = doc(dbCloud, "usuarios", user);
-            const docSnap = await getDoc(docRef);
-            let pagoAtual = docSnap.exists() ? (docSnap.data().pago || false) : true; // Mantém liberado ao salvar
-
             await setDoc(docRef, {
                 dados: data,
                 calendario: calendario,
                 relatorios: relatorios || {},
-                pago: pagoAtual,
                 ultimaAtualizacao: new Date()
             }, { merge: true });
         } catch (e) {
@@ -841,11 +806,10 @@
             medidores: listaMedidores
         };
 
-        localStorage.setItem(`GPL_REL_${currentUser}`, JSON.stringify(relatorioRazoesDb));
         if (window.cloudSave) window.cloudSave(currentUser, db, calendarioDb, relatorioRazoesDb);
 
         renderizarTabelaRelatorioAtual();
-        alert(`Arquivo da ${razaoSelecionada} processado com sucesso!`);
+        alert(`Arquivo da ${razaoSelecionada} processado e salvo na nuvem!`);
     }
 
     function buscarMedidorNoRelatorio() {
@@ -962,7 +926,6 @@
 
     function salvarDataCalendario(razao, data) {
         calendarioDb[razao] = data;
-        localStorage.setItem(`GPL_CAL_${currentUser}`, JSON.stringify(calendarioDb));
         if (window.cloudSave) window.cloudSave(currentUser, db, calendarioDb, relatorioRazoesDb);
         verificarSabadosAlertas();
     }
@@ -1037,111 +1000,31 @@
     async function handleAuth() { 
         const u = document.getElementById('userInput').value.trim().toUpperCase(); 
         const p = document.getElementById('passInput').value; 
-        const r = document.getElementById('recoveryInput').value; 
-        const rememberMe = document.getElementById('rememberMe').checked;
 
         if(!u || !p) return alert("Preencha Usuário e Senha"); 
 
-        let users = JSON.parse(localStorage.getItem('GPL_USERS_2026')) || {}; 
-        
-        if(document.getElementById('authTitle').innerText.includes("Criar")) { 
-            users[u] = { pass: p, hint: r }; 
-            localStorage.setItem('GPL_USERS_2026', JSON.stringify(users)); 
-            currentUser = u;
+        currentUser = u;
 
+        // Tenta carregar do Firebase para validar se já existe ou baixar dados
+        let cloudData = window.cloudLoad ? await window.cloudLoad(u) : null;
+        
+        if (!cloudData) {
+            // Se for primeiro acesso na nuvem, inicializa o documento com dados vazios
             if(window.cloudSave) {
                 await window.cloudSave(u, [], {}, {});
             }
-            
-            document.getElementById('loginScreen').style.display = 'none';
-            initSystem();
-        } else { 
-            if(users[u] && users[u].pass === p) { 
-                currentUser = u;
-            } else {
-                let cloudData = window.cloudLoad ? await window.cloudLoad(u) : null;
-                if(cloudData) {
-                    currentUser = u;
-                } else {
-                    return alert("Usuário ou senha incorretos!"); 
-                }
-            }
-
-            if (rememberMe) {
-                localStorage.setItem('gpl_saved_user_2026', u);
-                localStorage.setItem('gpl_saved_pass_2026', p);
-            } else {
-                localStorage.removeItem('gpl_saved_user_2026');
-                localStorage.removeItem('gpl_saved_pass_2026');
-            }
-
-            sessionStorage.setItem('gpl_user_2026', u); 
-            checarLiberacaoManual();
-        } 
-    } 
-
-    async function checarLiberacaoManual() {
-        if(!currentUser) return;
-        
-        if (window.cloudLoad) {
-            let cloudData = await window.cloudLoad(currentUser);
-            if (cloudData) {
-                if (cloudData.dados) db = cloudData.dados;
-                if (cloudData.calendario) calendarioDb = cloudData.calendario;
-                if (cloudData.relatorios) relatorioRazoesDb = cloudData.relatorios;
-                
-                localStorage.setItem(`GPL_DATA_${currentUser}`, JSON.stringify(db));
-                localStorage.setItem(`GPL_CAL_${currentUser}`, JSON.stringify(calendarioDb));
-                localStorage.setItem(`GPL_REL_${currentUser}`, JSON.stringify(relatorioRazoesDb));
-            }
+        } else {
+            if (cloudData.dados) db = cloudData.dados;
+            if (cloudData.calendario) calendarioDb = cloudData.calendario;
+            if (cloudData.relatorios) relatorioRazoesDb = cloudData.relatorios;
         }
 
         document.getElementById('loginScreen').style.display = 'none';
-        document.getElementById('paymentScreen').style.display = 'none';
         initSystem();
-    }
-
-    function cancelarPagamento() {
-        document.getElementById('paymentScreen').style.display = 'none';
-        document.getElementById('loginScreen').style.display = 'flex';
-    }
-
-    function toggleAuthMode() { 
-        const t = document.getElementById('authTitle'); 
-        const isLogin = t.innerText === "Acessar Conta"; 
-        t.innerText = isLogin ? "Criar Novo Usuário" : "Acessar Conta"; 
-        document.getElementById('recoveryInput').style.display = isLogin ? "block" : "none"; 
     } 
 
-    function recoverPass() { 
-        const u = document.getElementById('userInput').value.toUpperCase(); 
-        let users = JSON.parse(localStorage.getItem('GPL_USERS_2026')) || {}; 
-        if(users[u]) alert("Sua dica: " + users[u].hint); 
-        else alert("Usuário não encontrado."); 
-    }
-
     async function initSystem() { 
-        if (window.cloudLoad) {
-            let cloudData = await window.cloudLoad(currentUser);
-            if (cloudData) {
-                if (cloudData.dados) db = cloudData.dados;
-                if (cloudData.calendario) calendarioDb = cloudData.calendario;
-                if (cloudData.relatorios) relatorioRazoesDb = cloudData.relatorios;
-            }
-        }
-
-        if(db.length === 0) {
-            db = JSON.parse(localStorage.getItem(`GPL_DATA_${currentUser}`)) || []; 
-        }
-        if(Object.keys(calendarioDb).length === 0) {
-            calendarioDb = JSON.parse(localStorage.getItem(`GPL_CAL_${currentUser}`)) || {};
-        }
-        if(Object.keys(relatorioRazoesDb).length === 0) {
-            relatorioRazoesDb = JSON.parse(localStorage.getItem(`GPL_REL_${currentUser}`)) || {};
-        }
-
         document.getElementById('loginScreen').style.display = 'none'; 
-        document.getElementById('paymentScreen').style.display = 'none';
         document.getElementById('headerUserDisplay').innerText = currentUser;
         
         let nomeMes = msNomesCompletos[viewDate.getMonth()];
@@ -1248,10 +1131,9 @@
                 id: Date.now(), 
                 ...dadosForm
             }); 
-            alert("Registro salvo com sucesso!");
+            alert("Registro salvo na nuvem com sucesso!");
         }
 
-        localStorage.setItem(`GPL_DATA_${currentUser}`, JSON.stringify(db)); 
         if (window.cloudSave) window.cloudSave(currentUser, db, calendarioDb, relatorioRazoesDb);
 
         limparFormulario();
@@ -1289,7 +1171,6 @@
         if(confirm("Deseja limpar todos os registros deste mês?")) { 
             const mesF = "2026-" + String(viewDate.getMonth() + 1).padStart(2, '0'); 
             db = db.filter(i => !i.data.startsWith(mesF)); 
-            localStorage.setItem(`GPL_DATA_${currentUser}`, JSON.stringify(db)); 
             if (window.cloudSave) window.cloudSave(currentUser, db, calendarioDb, relatorioRazoesDb);
             atualizarTabela(); 
         } 
@@ -1299,83 +1180,14 @@
         if(confirm("ATENÇÃO: Você está prestes a apagar TODOS os registros de 2026!")) { 
             if(confirm("Tem certeza absoluta?")) { 
                 db = []; 
-                localStorage.setItem(`GPL_DATA_${currentUser}`, JSON.stringify(db)); 
                 if (window.cloudSave) window.cloudSave(currentUser, db, calendarioDb, relatorioRazoesDb);
                 atualizarTabela(); 
-                alert("Dados de 2026 removidos."); 
+                alert("Dados de 2026 removidos da nuvem."); 
             } 
         } 
     } 
 
-    function exportarBackup() {
-        if ((!db || db.length === 0) && Object.keys(calendarioDb).length === 0 && Object.keys(relatorioRazoesDb).length === 0) {
-            return alert("Sem dados para exportar.");
-        }
-        
-        const dadosBackup = {
-            registros: db,
-            calendario: calendarioDb,
-            relatorios: relatorioRazoesDb
-        };
-
-        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dadosBackup, null, 2));
-        const dl = document.createElement('a');
-        dl.setAttribute("href", dataStr);
-        dl.setAttribute("download", `backup_gpl_${currentUser.toLowerCase()}_2026.json`);
-        document.body.appendChild(dl); 
-        dl.click(); 
-        dl.remove();
-    }
-
-    function dispararImportacao() { document.getElementById('importFile').click(); }
-
-    function importarBackup(event) {
-        const file = event.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            try {
-                const importedData = JSON.parse(e.target.result);
-                if (confirm(`Substituir dados atuais pelo arquivo "${file.name}"?`)) {
-                    if (Array.isArray(importedData)) {
-                        db = importedData;
-                        calendarioDb = {};
-                        relatorioRazoesDb = {};
-                    } else if (importedData && typeof importedData === 'object') {
-                        db = Array.isArray(importedData.registros) ? importedData.registros : [];
-                        calendarioDb = (typeof importedData.calendario === 'object' && importedData.calendario !== null) ? importedData.calendario : {};
-                        relatorioRazoesDb = (typeof importedData.relatorios === 'object' && importedData.relatorios !== null) ? importedData.relatorios : {};
-                    } else {
-                        return alert("Arquivo de backup inválido.");
-                    }
-
-                    localStorage.setItem(`GPL_DATA_${currentUser}`, JSON.stringify(db));
-                    localStorage.setItem(`GPL_CAL_${currentUser}`, JSON.stringify(calendarioDb));
-                    localStorage.setItem(`GPL_REL_${currentUser}`, JSON.stringify(relatorioRazoesDb));
-                    if (window.cloudSave) window.cloudSave(currentUser, db, calendarioDb, relatorioRazoesDb);
-                    
-                    atualizarTabela();
-                    renderizarCalendario();
-                    popularSelectRazoesRelatorio();
-                    renderizarTabelaRelatorioAtual();
-                    verificarSabadosAlertas();
-                    
-                    alert("Backup restaurado com sucesso!");
-                }
-            } catch (err) { 
-                alert("Erro ao ler o arquivo JSON."); 
-            }
-            event.target.value = "";
-        };
-        reader.readAsText(file);
-    }
-
     window.onload = function() {
-        let savedU = localStorage.getItem('gpl_saved_user_2026');
-        let savedP = localStorage.getItem('gpl_saved_pass_2026');
-        if(savedU) document.getElementById('userInput').value = savedU;
-        if(savedP) document.getElementById('passInput').value = savedP;
-
         const passInputEl = document.getElementById('passInput');
         if(passInputEl) {
             passInputEl.addEventListener("keydown", (e) => {
