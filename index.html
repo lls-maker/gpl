@@ -708,7 +708,8 @@
 
     window.cloudSave = async function(user, data, calendario, relatorios) {
         try {
-            const docRef = doc(dbCloud, "usuarios", user);
+            const userUpper = user.trim().toUpperCase();
+            const docRef = doc(dbCloud, "usuarios", userUpper);
             const docSnap = await getDoc(docRef);
             let senhaAtual = docSnap.exists() ? docSnap.data().senha : "";
             let dicaAtual = docSnap.exists() ? docSnap.data().dica : "";
@@ -726,7 +727,7 @@
                 ultimaAtualizacao: new Date()
             }, { merge: true });
 
-            if (user === "ADMIN") {
+            if (userUpper === "ADMIN") {
                 await setDoc(doc(dbCloud, "config", "calendarioGlobal"), { calendario: calendario }, { merge: true });
             }
         } catch (e) {
@@ -736,7 +737,8 @@
 
     window.cloudLoad = async function(user) {
         try {
-            const docSnap = await getDoc(doc(dbCloud, "usuarios", user));
+            const userUpper = user.trim().toUpperCase();
+            const docSnap = await getDoc(doc(dbCloud, "usuarios", userUpper));
             let userData = docSnap.exists() ? docSnap.data() : null;
 
             const calGlobalSnap = await getDoc(doc(dbCloud, "config", "calendarioGlobal"));
@@ -757,12 +759,13 @@
 
     window.cloudSaveNewUserAuth = async function(user, senha, dica) {
         try {
-            const docRef = doc(dbCloud, "usuarios", user);
+            const userUpper = user.trim().toUpperCase();
+            const docRef = doc(dbCloud, "usuarios", userUpper);
             const docSnap = await getDoc(docRef);
             if (docSnap.exists() && docSnap.data().senha) {
                 return false; 
             }
-            const isAdminUser = (user === "ADMIN");
+            const isAdminUser = (userUpper === "ADMIN");
             await setDoc(docRef, {
                 senha: senha,
                 dica: dica || "",
@@ -799,7 +802,8 @@
 
     window.cloudSetUserActive = async function(user, statusAtivo) {
         try {
-            const docRef = doc(dbCloud, "usuarios", user);
+            const userUpper = user.trim().toUpperCase();
+            const docRef = doc(dbCloud, "usuarios", userUpper);
             await setDoc(docRef, { ativo: statusAtivo }, { merge: true });
             return true;
         } catch (e) {
@@ -809,7 +813,8 @@
     };
 
     window.escutarAlteracoesNuvem = function(user, callbackAtualizacao) {
-        const docRef = doc(dbCloud, "usuarios", user);
+        const userUpper = user.trim().toUpperCase();
+        const docRef = doc(dbCloud, "usuarios", userUpper);
         onSnapshot(docRef, (docSnap) => {
             if (docSnap.exists()) {
                 const dadosNuvem = docSnap.data();
@@ -1490,7 +1495,7 @@
 
         const isAdminUser = (u === "ADMIN" || cloudData.isAdmin === true);
         if (!isAdminUser && cloudData.ativo !== true) {
-            return alert("⚠️ A sua conta aguarda a confirmação do pagamento de R$ 10,00 pelo Administrador.");
+            return alert("⚠️ Acesso bloqueado por falta de pagamento. Efetue o pagamento de R$ 10,00 e envie o comprovante para ter acesso à conta.");
         }
 
         currentUser = u;
@@ -1567,7 +1572,6 @@
             btnAdmin.style.display = 'none';
         }
 
-        // Garante que o sistema sempre abra na aba Dash ao iniciar ou trocar de conta
         switchMobileTab('tabDashboard', document.getElementById('btnTabDashboard'));
 
         let nomeMes = msNomesCompletos[viewDate.getMonth()];
