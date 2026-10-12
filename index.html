@@ -772,7 +772,7 @@
         return null;
     };
 
-    window.cloudSaveNewUserAuth = async function(user, senhaHash, dica) {
+    window.cloudSaveNewUserAuth = async function(user, senha, dica) {
         try {
             const userTrim = user.trim();
             const userUpper = userTrim.toUpperCase();
@@ -783,7 +783,7 @@
             }
             const isAdminUser = (userUpper === "ADMIN");
             await setDoc(docRef, {
-                senha: senhaHash,
+                senha: senha,
                 dica: dica || "",
                 isAdmin: isAdminUser,
                 ativo: isAdminUser ? true : false,
@@ -998,14 +998,6 @@
 
     const msNomesCompletos = ["JANEIRO", "FEVEREIRO", "MARÇO", "ABRIL", "MAIO", "JUNHO", "JULHO", "AGOSTO", "SETEMBRO", "OUTUBRO", "NOVEMBRO", "DEZEMBRO"]; 
     const fM = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); 
-
-    async function criptografarSenha(senha) {
-        const encoder = new TextEncoder();
-        const data = encoder.encode(senha);
-        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
-        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-    }
 
     function switchLoginPane(paneId) {
         document.querySelectorAll('.login-form-pane').forEach(el => el.classList.remove('active'));
@@ -1528,9 +1520,7 @@
         if (!cloudData || !cloudData.senha) {
             return alert("Utilizador não encontrado. Crie uma conta na aba 'Criar Conta'.");
         }
-
-        const pHash = await criptografarSenha(p);
-        if (cloudData.senha !== pHash) {
+        if (cloudData.senha !== p) {
             return alert("Senha incorreta!");
         }
 
@@ -1569,8 +1559,7 @@
             return alert("Este nome de utilizador já existe! Escolha outro nome.");
         }
 
-        const pHash = await criptografarSenha(p);
-        let criado = await window.cloudSaveNewUserAuth(u, pHash, r);
+        let criado = await window.cloudSaveNewUserAuth(u, p, r);
         if (!criado) return alert("Erro ao criar utilizador.");
 
         alert("Conta criada com sucesso! Efetue o PIX de R$ 10,00 e informe o comprovante ao Administrador para ativação.");
