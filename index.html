@@ -1305,6 +1305,8 @@
     } 
 
     function recoverPass() { 
+        event.preventDefault(); // Impede o comportamento padrão de seleção/foco do navegador
+        
         const u = document.getElementById('userInput').value.trim().toUpperCase(); 
         if(!u) return alert("Digite o seu utilizador primeiro para recuperar a senha.");
         
