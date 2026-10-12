@@ -842,12 +842,6 @@
             if (docSnap.exists()) {
                 const dadosNuvem = docSnap.data();
                 callbackAtualizacao(dadosNuvem);
-            } else {
-                onSnapshot(doc(dbCloud, "usuarios", userTrim), (docSnapAlt) => {
-                    if (docSnapAlt.exists()) {
-                        callbackAtualizacao(docSnapAlt.data());
-                    }
-                });
             }
         });
 
@@ -876,8 +870,11 @@
     let db = []; 
     let calendarioDb = {}; 
     let relatorioRazoesDb = {};
-    let currentUser = ""; 
-    let currentIsAdmin = false;
+    
+    // Recupera a sessão ao carregar a página para evitar logout ao apertar F5
+    let currentUser = sessionStorage.getItem('gpl_user') || ""; 
+    let currentIsAdmin = sessionStorage.getItem('gpl_is_admin') === 'true';
+
     let dataAtualDoSistema = new Date();
     let viewDate = new Date(2026, dataAtualDoSistema.getMonth(), 1); 
 
@@ -1071,6 +1068,9 @@
 
         currentUser = "";
         currentIsAdmin = false;
+        sessionStorage.removeItem('gpl_user');
+        sessionStorage.removeItem('gpl_is_admin');
+        
         db = [];
         calendarioDb = {};
         relatorioRazoesDb = {};
@@ -1523,11 +1523,14 @@
 
         const isAdminUser = (u.toUpperCase() === "ADMIN" || cloudData.isAdmin === true);
         if (!isAdminUser && cloudData.ativo !== true) {
-            return alert("⚠️ Conta bloqueada por falta de pagamento. Efetue o pagamento para ter acesso à conta.");
+            return alert("⚠️ Acesso bloqueado por falta de pagamento. Efetue o pagamento para ter acesso à conta.");
         }
 
         currentUser = u.toUpperCase();
         currentIsAdmin = isAdminUser;
+        
+        sessionStorage.setItem('gpl_user', currentUser);
+        sessionStorage.setItem('gpl_is_admin', currentIsAdmin);
 
         if (cloudData) {
             if (cloudData.dados) db = cloudData.dados;
@@ -1606,6 +1609,14 @@
         document.getElementById('currentMonthDisplay').innerText = nomeMes; 
         document.getElementById('printSubHeader').innerText = `Utilizador: ${currentUser}  |  Período: ${nomeMes}/2026`;
         
+        // Carrega dados atualizados do banco ao iniciar (incluindo o calendário global)
+        let cloudData = await window.cloudLoad(currentUser);
+        if (cloudData) {
+            if (cloudData.dados) db = cloudData.dados;
+            if (cloudData.calendario) calendarioDb = cloudData.calendario;
+            if (cloudData.relatorios) relatorioRazoesDb = cloudData.relatorios;
+        }
+
         renderMonths(); 
         renderizarNL();
         renderizarCalendario();
@@ -1617,14 +1628,33 @@
 
         window.escutarAlteracoesNuvem(currentUser, (dadosNuvem) => {
             if (dadosNuvem.dados) db = dadosNuvem.dados;
-            if (dadosNuvem.calendario) calendarioDb = dadosNuvem.calendario;
+            if (dadosNuvem.calendario) {
+                calendarioDb = dadosNuvem.calendario;
+                renderizarCalendario();
+                verificarSabadosAlertas();
+            }
             if (dadosNuvem.relatorios) relatorioRazoesDb = dadosNuvem.relatorios;
 
             atualizarTabela();
-            renderizarCalendario();
             renderizarTabelaRelatorioAtual();
-            verificarSabadosAlertas();
         });
+    }
+
+    // Se já houver sessão salva no sessionStorage ao abrir, inicia direto
+    window.addEventListener('DOMContentLoaded', () => {
+        if (currentUser) {
+            handleLoginAuto();
+        }
+    });
+
+    async function handleLoginAuto() {
+        let cloudData = await window.cloudLoad(currentUser);
+        if (cloudData) {
+            if (cloudData.dados) db = cloudData.dados;
+            if (cloudData.calendario) calendarioDb = cloudData.calendario;
+            if (cloudData.relatorios) relatorioRazoesDb = cloudData.relatorios;
+        }
+        initSystem();
     }
 
     function renderMonths() { 
@@ -1867,6 +1897,7 @@
                         e.preventDefault();
                         const nextInput = inputs[index + 1];
                         if (nextInput) {
+                            nextInput.export(); // correção de foco
                             nextInput.focus();
                         } else {
                             form.requestSubmit();
