@@ -734,7 +734,7 @@
             }, { merge: true });
 
             if (userUpper === "ADMIN") {
-                await setDoc(doc(dbCloud, "config", "calendarioGlobal"), { calendario: calendario }, { merge: true });
+                await setDoc(doc(dbCloud, "config", "calendarioGlobal"), calendario, { merge: true });
             }
         } catch (e) {
             console.error("Erro ao salvar na nuvem:", e);
@@ -754,14 +754,14 @@
                 docSnap = await getDoc(docRef);
             }
 
-            let userData = docSnap.exists() ? docSnap.data() : null;
+            let userData = docSnap.exists() ? docSnap.data() : {};
 
             const calGlobalSnap = await getDoc(doc(dbCloud, "config", "calendarioGlobal"));
-            if (calGlobalSnap.exists() && calGlobalSnap.data().calendario) {
-                if (userData) {
-                    userData.calendario = calGlobalSnap.data().calendario;
-                } else {
-                    userData = { calendario: calGlobalSnap.data().calendario };
+            if (calGlobalSnap.exists()) {
+                const globalData = calGlobalSnap.data();
+                const calendarioExtraido = globalData.calendario || globalData;
+                if (calendarioExtraido && Object.keys(calendarioExtraido).length > 0) {
+                    userData.calendario = calendarioExtraido;
                 }
             }
 
@@ -846,8 +846,12 @@
         });
 
         onSnapshot(doc(dbCloud, "config", "calendarioGlobal"), (docSnap) => {
-            if (docSnap.exists() && docSnap.data().calendario) {
-                callbackAtualizacao({ calendario: docSnap.data().calendario });
+            if (docSnap.exists()) {
+                const dadosGlobal = docSnap.data();
+                const calendarioExtraido = dadosGlobal.calendario || dadosGlobal;
+                if (calendarioExtraido) {
+                    callbackAtualizacao({ calendario: calendarioExtraido });
+                }
             }
         });
     };
@@ -995,7 +999,6 @@
     const msNomesCompletos = ["JANEIRO", "FEVEREIRO", "MARÇO", "ABRIL", "MAIO", "JUNHO", "JULHO", "AGOSTO", "SETEMBRO", "OUTUBRO", "NOVEMBRO", "DEZEMBRO"]; 
     const fM = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); 
 
-    // Função de encriptação SHA-256 nativa do navegador
     async function criptografarSenha(senha) {
         const encoder = new TextEncoder();
         const data = encoder.encode(senha);
