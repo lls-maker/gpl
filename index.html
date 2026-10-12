@@ -405,6 +405,13 @@
             th, td { border: 1px solid #999 !important; color: black !important; padding: 6px !important; }
             th { background: #eee !important; color: black !important; }
         }
+
+        /* Oculta o botão de atualizar em telas menores (celulares) */
+@media (max-width: 768px) {
+    header .header-btn[title="Atualizar dados da nuvem"] {
+        display: none !important;
+    }
+}
     </style> 
 </head> 
 <body>
