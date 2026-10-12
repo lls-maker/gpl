@@ -432,7 +432,7 @@
             💡 Para liberar o acesso ao aplicativo, é necessário efetuar um depósito/PIX de <strong>R$ 10,00</strong>. Após criar a conta, informe o comprovante ao suporte para ativação completa.
         </div>
 
-        <input type="text" id="userInput" placeholder="Utilizador"> 
+        <input type="text" id="userInput" placeholder="Utilizador" oninput="verificarBiometriaSalva(this.value.trim().toUpperCase())"> 
         <input type="password" id="passInput" placeholder="Senha"> 
         <input type="text" id="recoveryInput" placeholder="Dica de segurança" style="display:none;"> 
         
@@ -442,7 +442,7 @@
         </div>
 
         <button onclick="handleAuth()" id="authBtn" class="auth-btn">ENTRAR</button> 
-        <button onclick="handleBiometricAuth()" id="bioBtn" class="bio-btn" style="display:none;">🔓 Entrar com Biometria</button>
+        <button onclick="handleBiometricAuth()" id="bioBtn" class="bio-btn" style="display:none;">👆 Entrar com Biometria</button>
 
         <div style="display:flex; justify-content: space-between; gap: 10px;"> 
             <span class="auth-link" id="authSwitch" onclick="toggleAuthMode()">Criar Conta</span> 
@@ -908,13 +908,12 @@
         document.documentElement.style.overflow = "hidden";
     }
 
-    // PULL-TO-REFRESH INTELIGENTE (só ativa se o scroll estiver no topo absoluto)
+    // PULL-TO-REFRESH INTELIGENTE (só ativa se a aba/tabela ativa estiver no topo absoluto)
     let startY = 0;
     let isPulling = false;
     const pullThreshold = 80;
 
     window.addEventListener('touchstart', (e) => {
-        // Verifica se a aba ativa e seus containers de rolagem estão no topo absoluto (scrollTop === 0)
         const activeTabEl = document.querySelector('.mobile-tab-content.active-tab');
         const scrollableChild = activeTabEl ? activeTabEl.querySelector('.table-container, .form-content-area, .top-dashboard') : null;
         const isAtTop = scrollableChild ? scrollableChild.scrollTop <= 0 : (window.scrollY <= 0);
@@ -967,10 +966,10 @@
         }
     });
 
-    // FUNÇÕES DE BIOMETRIA (WebAuthn)
+    // FUNÇÃO DE BIOMETRIA DIGITAL (WebAuthn restrita a impressões digitais)
     async function verificarBiometriaSalva(u) {
         const bioBtn = document.getElementById('bioBtn');
-        if (!window.PublicKeyCredential) {
+        if (!window.PublicKeyCredential || !u) {
             if(bioBtn) bioBtn.style.display = 'none';
             return;
         }
@@ -999,14 +998,14 @@
                 allowCredentials: [{
                     id: rawId,
                     type: 'public-key',
-                    transports: ['internal', 'usb', 'nfc', 'ble']
+                    transports: ['internal']
                 }],
+                authenticatorSelection: { authenticatorAttachment: "platform" },
                 userVerification: 'required'
             };
 
             const assertion = await navigator.credentials.get({ publicKey });
             if (assertion) {
-                // Biometria bem-sucedida, busca dados na nuvem
                 let cloudData = window.cloudLoad ? await window.cloudLoad(u) : null;
                 if (!cloudData || !cloudData.senha) {
                     return alert("Utilizador não encontrado na nuvem.");
@@ -1025,8 +1024,8 @@
                 initSystem();
             }
         } catch (err) {
-            console.error("Erro na autenticação biométrica:", err);
-            alert("Autenticação biométrica cancelada ou falhou.");
+            console.error("Erro na biometria:", err);
+            alert("Autenticação biométrica cancelada ou não reconhecida.");
         }
     }
 
@@ -1045,7 +1044,11 @@
                     displayName: u
                 },
                 pubKeyCredParams: [{ alg: -7, type: "public-key" }, { alg: -257, type: "public-key" }],
-                authenticatorSelection: { authenticatorAttachment: "platform", userVerification: "required" },
+                authenticatorSelection: { 
+                    authenticatorAttachment: "platform", 
+                    userVerification: "required",
+                    residentKey: "preferred"
+                },
                 timeout: 60000
             };
 
@@ -1054,17 +1057,13 @@
                 const rawId = new Uint8Array(credential.rawId);
                 const base64Id = btoa(String.fromCharCode.apply(null, rawId));
                 localStorage.setItem('gpl_bio_user_' + u, base64Id);
-                alert("Biometria cadastrada com sucesso neste dispositivo!");
+                alert("Biometria cadastrada com sucesso!");
+                verificarBiometriaSalva(u);
             }
         } catch (e) {
-            console.log("Usuário cancelou ou biometria não suportada:", e);
+            console.log("Cadastro biométrico ignorado ou não suportado:", e);
         }
     }
-
-    document.getElementById('userInput').addEventListener('blur', function() {
-        const u = this.value.trim().toUpperCase();
-        if (u) verificarBiometriaSalva(u);
-    });
 
     function popularSelectRazoesRelatorio() {
         const sel = document.getElementById('selectRazaoRelatorio');
@@ -1412,9 +1411,9 @@
         if (rememberMe) {
             localStorage.setItem('gpl_saved_user_2026', u);
             localStorage.setItem('gpl_saved_pass_2026', p);
-            // Pergunta se deseja cadastrar biometria para futuros logins rápidos
+            
             if (!localStorage.getItem('gpl_bio_user_' + u) && window.PublicKeyCredential) {
-                if (confirm("Deseja cadastrar a biometria (impressão digital / facial) para entrar rapidamente neste dispositivo nas próximas vezes?")) {
+                if (confirm("Deseja cadastrar a biometria (impressão digital) para entrar rapidamente neste dispositivo nas próximas vezes?")) {
                     await cadastrarBiometriaSePossivel(u);
                 }
             }
