@@ -845,8 +845,9 @@
             }
         });
 
+        // Escuta dedicada em tempo real para sincronizar o calendário global de forma síncrona
         onSnapshot(doc(dbCloud, "config", "calendarioGlobal"), (docSnap) => {
-            if (docSnap.exists()) {
+            if (docSnap.exists() && docSnap.data().calendario) {
                 callbackAtualizacao({ calendario: docSnap.data().calendario });
             }
         });
@@ -871,7 +872,6 @@
     let calendarioDb = {}; 
     let relatorioRazoesDb = {};
     
-    // Recupera a sessão ao carregar a página para evitar logout ao apertar F5
     let currentUser = sessionStorage.getItem('gpl_user') || ""; 
     let currentIsAdmin = sessionStorage.getItem('gpl_is_admin') === 'true';
 
@@ -1609,7 +1609,6 @@
         document.getElementById('currentMonthDisplay').innerText = nomeMes; 
         document.getElementById('printSubHeader').innerText = `Utilizador: ${currentUser}  |  Período: ${nomeMes}/2026`;
         
-        // Carrega dados atualizados do banco ao iniciar (incluindo o calendário global)
         let cloudData = await window.cloudLoad(currentUser);
         if (cloudData) {
             if (cloudData.dados) db = cloudData.dados;
@@ -1640,7 +1639,6 @@
         });
     }
 
-    // Se já houver sessão salva no sessionStorage ao abrir, inicia direto
     window.addEventListener('DOMContentLoaded', () => {
         if (currentUser) {
             handleLoginAuto();
@@ -1878,6 +1876,18 @@
     }
 
     window.onload = function() {
+        // Intercepta a tecla F5 para atualizar a nuvem sem recarregar a página e sem deslogar
+        window.addEventListener("keydown", (e) => {
+            if (e.key === "F5") {
+                e.preventDefault();
+                if (currentUser) {
+                    atualizarDadosManualmente();
+                } else {
+                    location.reload();
+                }
+            }
+        });
+
         const loginPassEl = document.getElementById('loginPass');
         if(loginPassEl) {
             loginPassEl.addEventListener("keydown", (e) => {
@@ -1897,7 +1907,6 @@
                         e.preventDefault();
                         const nextInput = inputs[index + 1];
                         if (nextInput) {
-                            nextInput.export(); // correção de foco
                             nextInput.focus();
                         } else {
                             form.requestSubmit();
