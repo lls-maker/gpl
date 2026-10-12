@@ -113,7 +113,6 @@
             max-height: 95vh; overflow-y: auto;
         } 
 
-        /* ABAS DA TELA DE LOGIN */
         .login-tabs-header {
             display: flex;
             background: #000;
@@ -451,7 +450,7 @@
                 overflow: visible !important; margin: 0 !important; padding: 5px !important;
             }
             .print-header {
-                data: block !important; text-align: center;
+                display: block !important; text-align: center;
                 margin-top: 0 !important; margin-bottom: 10px;
                 border-bottom: 2px solid #000; padding-bottom: 6px;
             }
@@ -475,13 +474,11 @@
     <div class="login-box"> 
         <div style="background:var(--success); color:black; padding:10px; border-radius:12px; font-weight:900; margin-bottom:15px;">GPL</div> 
         
-        <!-- ABAS DE NAVEGAÇÃO DE AUTENTICAÇÃO -->
         <div class="login-tabs-header">
             <button class="login-tab-btn active" id="btnPaneLogin" onclick="switchLoginPane('loginPane')">Acessar</button>
             <button class="login-tab-btn" id="btnPaneCreate" onclick="switchLoginPane('createPane')">Criar Conta</button>
         </div>
 
-        <!-- PAINEL DE ACESSAR -->
         <div class="login-form-pane active" id="loginPane">
             <input type="text" id="loginUser" placeholder="Utilizador"> 
             <input type="password" id="loginPass" placeholder="Senha"> 
@@ -489,7 +486,6 @@
             <span class="auth-link" style="color:var(--warning)" onclick="recoverPass()">Recuperar Senha</span> 
         </div>
 
-        <!-- PAINEL DE CRIAR CONTA -->
         <div class="login-form-pane" id="createPane">
             <div style="background: rgba(0, 255, 136, 0.1); border: 1px solid var(--success); padding: 8px; border-radius: 8px; margin-bottom: 8px; font-size: 10px; color: var(--success); font-weight: bold;">
                 💡 Depósito/PIX de R$ 10,00 necessário para liberação após criar a conta.
@@ -710,6 +706,7 @@
     const app = initializeApp(firebaseConfig);
     const dbCloud = getFirestore(app);
 
+    // O Admin salva o calendário global na nuvem do utilizador ADMIN (ou numa coleção centralizada)
     window.cloudSave = async function(user, data, calendario, relatorios) {
         try {
             const docRef = doc(dbCloud, "usuarios", user);
@@ -729,6 +726,11 @@
                 relatorios: relatorios || {},
                 ultimaAtualizacao: new Date()
             }, { merge: true });
+
+            // Se for o ADMIN atualizando, atualiza também um documento global de calendário para que todos leiam a mesma programação
+            if (user === "ADMIN") {
+                await setDoc(doc(dbCloud, "config", "calendarioGlobal"), { calendario: calendario }, { merge: true });
+            }
         } catch (e) {
             console.error("Erro ao salvar na nuvem:", e);
         }
@@ -737,9 +739,19 @@
     window.cloudLoad = async function(user) {
         try {
             const docSnap = await getDoc(doc(dbCloud, "usuarios", user));
-            if (docSnap.exists()) {
-                return docSnap.data();
+            let userData = docSnap.exists() ? docSnap.data() : null;
+
+            // Carrega também o calendário global configurado pelo ADMIN se o utilizador não for o ADMIN
+            const calGlobalSnap = await getDoc(doc(dbCloud, "config", "calendarioGlobal"));
+            if (calGlobalSnap.exists() && calGlobalSnap.data().calendario) {
+                if (userData) {
+                    userData.calendario = calGlobalSnap.data().calendario;
+                } else {
+                    userData = { calendario: calGlobalSnap.data().calendario };
+                }
             }
+
+            return userData;
         } catch (e) {
             console.error("Erro ao carregar da nuvem:", e);
         }
@@ -805,6 +817,13 @@
             if (docSnap.exists()) {
                 const dadosNuvem = docSnap.data();
                 callbackAtualizacao(dadosNuvem);
+            }
+        });
+
+        // Escuta também alterações no calendário global do Admin
+        onSnapshot(doc(dbCloud, "config", "calendarioGlobal"), (docSnap) => {
+            if (docSnap.exists()) {
+                callbackAtualizacao({ calendario: docSnap.data().calendario });
             }
         });
     };
@@ -1355,11 +1374,23 @@
             .filter(razao => razao.includes(termo))
             .map(razao => {
                 const dataSalva = calendarioDb[razao] || '';
+                let dataFormatadaExibicao = "Não definida";
+                if (dataSalva) {
+                    const [ano, mes, dia] = dataSalva.split('-');
+                    dataFormatadaExibicao = `${dia}/${mes}/${ano}`;
+                }
+
                 return `
                     <tr>
                         <td style="font-weight: bold; color: var(--accent);">${razao}</td>
                         <td>
-                            <input type="date" value="${dataSalva}" onchange="salvarDataCalendario('${razao}', this.value)" style="margin-bottom:0; font-size:11px;">
+                            ${currentIsAdmin ? `
+                                <input type="date" value="${dataSalva}" onchange="salvarDataCalendario('${razao}', this.value)" style="margin-bottom:0; font-size:11px;">
+                            ` : `
+                                <div style="font-weight: bold; color: ${dataSalva ? 'var(--text-h)' : 'var(--text-p)'}; font-size: 12px; padding: 6px;">
+                                    ${dataFormatadaExibicao}
+                                </div>
+                            `}
                         </td>
                     </tr>
                 `;
@@ -1369,6 +1400,7 @@
     }
 
     async function salvarDataCalendario(razao, data) {
+        if (!currentIsAdmin) return;
         calendarioDb[razao] = data;
         
         if (window.cloudSave) {
@@ -1496,7 +1528,6 @@
 
         alert("Conta criada com sucesso! Efetue o PIX de R$ 10,00 e informe o comprovante ao Administrador para ativação.");
         
-        // Limpa campos e volta para aba de login
         document.getElementById('regUser').value = "";
         document.getElementById('regPass').value = "";
         document.getElementById('regPassConfirm').value = "";
