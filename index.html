@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"> 
     <title>Gestão de Produtividade de Leituras</title> 
 
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzMiAzMicgd2lkdGg9JzMyJyBoZWlnaHQ9JzMyJz48cmVjdCB3aWR0aD0nMzInIGhlaWdodD0nMzInIHJ4PSc2JyBmaWxsPSdjM2IwZjE1Jy8+PHRleHQgeD0nNTAlJyB5PSc1NSUnIGRvbWluYW50LWJhc2VsaW5lPSdtaWRkbGUnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJyBmb250LXdlaWdodD0nOTAwJyBmb250LXdlaWdodD0nMTAwMCcgZm9udC1zaXplPScxMCcgZmlsbD0nIzAwZmY4OCcgbGV0dGVyLXNwYWNpbmdzPScwLjUnPkdQTDwvdGV4dD48L3N2Zz4=">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzMiAzMicgd2lkdGg9JzMyJyBoZWlnaHQ9JzMyJz48cmVjdCB3aWR0aD0nMzInIGhlaWdodD0nMzInIHJ4PSc2JyBmaWxsPScjMGIwZjE1Jz48L3JlY3Q+PHRleHQgeD0nNTAlJyB5PSc1NSUnIGRvbWluYW50LWJhc2VsaW5lPSdtaWRkbGUnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJyBmb250LXdlaWdodD0nOTAwJyBmb250LXdlaWdodD0nMTAwMCcgZm9udC1zaXplPScxMCcgZmlsbD0nIzAwZmY4OCcgbGV0dGVyLXNwYWNpbmdzPScwLjUnPkdQTDwvdGV4dD48L3N2Zz4=">
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#030508">
 
@@ -260,6 +260,7 @@
             flex-grow: 1;
             height: 100%;
             align-content: start;
+            overscroll-behavior-y: contain;
         }
         .oc-card {
             background: linear-gradient(145deg, #0d121a, var(--surface));
@@ -537,7 +538,7 @@
                 <input type="text" id="searchRazao" placeholder="Pesquisar razão nos registros..." oninput="atualizarTabela()" style="border-color: var(--success); margin-bottom: 0;">
             </div>
             <div class="main-view"> 
-                <div class="table-container"> 
+                <div class="table-container" style="overscroll-behavior-y: contain;"> 
                     <table> 
                         <thead> 
                             <tr><th>Data</th><th>Localidade</th><th>Razão</th><th>Rotas</th><th>Leituras</th><th>Imp.</th><th>%</th><th class="no-print">Ação</th></tr> 
@@ -554,7 +555,7 @@
                 <input type="text" id="searchNL" placeholder="Pesquisar por número ou descrição da nota..." oninput="filtrarNL(this.value)" style="border-color: var(--success);">
             </div>
             <div class="main-view">
-                <div class="table-container">
+                <div class="table-container" style="overscroll-behavior-y: contain;">
                     <table>
                         <thead>
                             <tr><th>Número</th><th>Status</th><th>Detalhe / Descrição</th></tr>
@@ -571,7 +572,7 @@
                 <input type="text" id="searchCal" placeholder="Pesquisar razão..." oninput="renderizarCalendario(this.value)" style="border-color: var(--success); margin-bottom: 0;">
             </div>
             <div class="main-view">
-                <div class="table-container">
+                <div class="table-container" style="overscroll-behavior-y: contain;">
                     <table>
                         <thead>
                             <tr><th>Razão</th><th>Data da Próxima Leitura</th></tr>
@@ -904,7 +905,7 @@
 
     window.addEventListener('touchstart', (e) => {
         const activeTabEl = document.querySelector('.mobile-tab-content.active-tab');
-        const scrollableChild = activeTabEl ? activeTabEl.querySelector('.table-container, .form-content-area, .top-dashboard') : null;
+        const scrollableChild = activeTabEl ? activeTabEl.querySelector('.table-container, .form-content-area, .top-dashboard, .cards-container') : null;
         const isAtTop = scrollableChild ? scrollableChild.scrollTop <= 0 : (window.scrollY <= 0);
 
         if (isAtTop) {
