@@ -51,7 +51,6 @@
             z-index: -1;
         }
 
-        /* Indicador visual de puxar para atualizar (Pull-to-Refresh) */
         #pullToRefreshIndicator {
             position: fixed;
             top: -50px;
@@ -460,6 +459,9 @@
             <!-- BOTÃO DE ATUALIZAR (VISÍVEL NO DESKTOP, OCULTO NO MOBILE) -->
             <button class="header-btn btn-atualizar-mobile" onclick="atualizarDadosManualmente(this)" title="Atualizar dados da nuvem" style="background: var(--success); color: black;">🔄</button>
 
+            <!-- BOTÃO DE SAIR DA CONTA -->
+            <button class="header-btn" onclick="sairDaConta()" title="Sair da Conta" style="background: var(--danger); color: white;">🚪</button>
+
             <button class="header-btn" onclick="window.print()">IMPRIMIR</button> 
         </div> 
     </header> 
@@ -697,7 +699,6 @@
         }
     };
 
-    // SINCRONIZAÇÃO EM TEMPO REAL ENTRE DISPOSITIVOS
     window.escutarAlteracoesNuvem = function(user, callbackAtualizacao) {
         const docRef = doc(dbCloud, "usuarios", user);
         onSnapshot(docRef, (docSnap) => {
@@ -847,7 +848,6 @@
         sessionStorage.setItem('gpl_active_tab', tabId);
     }
 
-    // FUNÇÃO CENTRALIZADA DE ATUALIZAÇÃO MANUAL DA NUVEM
     async function atualizarDadosManualmente(btnElement = null) {
         if (!currentUser) return alert("Nenhum utilizador logado.");
         
@@ -887,7 +887,26 @@
         }
     }
 
-    // IMPLEMENTAÇÃO DO PULL-TO-REFRESH PARA MOBILE
+    // Função de Sair corrigida (sem rolagem infinita)
+    function sairDaConta() {
+        if (!confirm("Deseja realmente sair da conta?")) return;
+
+        currentUser = "";
+        currentIsAdmin = false;
+        db = [];
+        calendarioDb = {};
+        relatorioRazoesDb = {};
+
+        document.getElementById('passInput').value = "";
+        
+        const loginScreen = document.getElementById('loginScreen');
+        loginScreen.style.display = 'flex';
+
+        document.body.style.overflow = "hidden";
+        document.documentElement.style.overflow = "hidden";
+    }
+
+    // PULL-TO-REFRESH PARA MOBILE
     let startY = 0;
     let isPulling = false;
     const pullThreshold = 80;
@@ -1304,8 +1323,9 @@
         if(notice) notice.style.display = isLogin ? "block" : "none";
     } 
 
+    // Recuperação de senha corrigida (sem seleção indesejada)
     function recoverPass() { 
-        event.preventDefault(); // Impede o comportamento padrão de seleção/foco do navegador
+        if(typeof event !== 'undefined' && event) event.preventDefault();
         
         const u = document.getElementById('userInput').value.trim().toUpperCase(); 
         if(!u) return alert("Digite o seu utilizador primeiro para recuperar a senha.");
@@ -1335,7 +1355,6 @@
         verificarSabadosAlertas();
         atualizarTabela(); 
 
-        // SINCRONIZAÇÃO EM TEMPO REAL AUTOMÁTICA
         window.escutarAlteracoesNuvem(currentUser, (dadosNuvem) => {
             if (dadosNuvem.dados) db = dadosNuvem.dados;
             if (dadosNuvem.calendario) calendarioDb = dadosNuvem.calendario;
