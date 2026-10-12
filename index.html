@@ -476,8 +476,7 @@
         <button class="mob-tab-btn" id="btnTabNL" onclick="switchMobileTab('tabNL', this)">🔍 NL</button>
         <button class="mob-tab-btn" id="btnTabCal" onclick="switchMobileTab('tabCal', this)">📅 Cal</button>
         <button class="mob-tab-btn" id="btnTabRelatorio" onclick="switchMobileTab('tabRelatorio', this)">📑 Relat.</button>
-        <!-- Aba Admin inserida dinamicamente caso seja ADMIN -->
-        <button class="mob-tab-btn" id="btnTabAdmin" onclick="switchMobileTab('tabAdmin', this)" style="display:none; color: var(--warning); border-color: var(--warning);">👑 Adm</button>
+        <button class="mob-tab-btn" id="btnTabAdmin" onclick="switchMobileTab('tabAdmin', this)" style="display:none;">👑 Adm</button>
     </nav>
 
     <!-- CONTEÚDO PRINCIPAL EM ABAS -->
@@ -1037,7 +1036,7 @@
                         </span>
                     </td>
                     <td class="no-print">
-                        ${isAdmUser ? '<span style="color:var(--purple); font-weight:bold; font-size:10px;">ADMINISTRADOR</span>' : `
+                        ${isAdmUser ? '<span style="color:var(--purple); font-weight:bold; font-size:10px;">ADMIN</span>' : `
                             <button type="button" onclick="alternarAtivacaoUsuario('${u.nome}',${!isAtivo})" class="header-btn" style="background: ${isAtivo ? 'var(--danger)' : 'var(--success)'}; color: ${isAtivo ? '#fff' : '#000'}; padding: 4px 8px; font-size: 10px;">
                                 ${isAtivo ? 'Bloquear' : 'Aprovar'}
                             </button>
@@ -1437,7 +1436,7 @@
         
         const btnAdmin = document.getElementById('btnTabAdmin');
         if (currentIsAdmin) {
-            btnAdmin.style.display = 'block';
+            btnAdmin.style.display = 'flex';
         } else {
             btnAdmin.style.display = 'none';
         }
