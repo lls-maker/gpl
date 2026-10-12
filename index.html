@@ -706,6 +706,61 @@
     const app = initializeApp(firebaseConfig);
     const dbCloud = getFirestore(app);
 
+    // Função de Criptografia SHA-256 Nativa
+    async function hashSenha(senha) {
+        const encoder = new TextEncoder();
+        const data = encoder.encode(senha);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    // Função Híbrida de Login (Suporta antigos em texto plano e migra para hash automaticamente)
+    window.cloudVerificarLogin = async function(user, senhaDigitada) {
+        try {
+            const userTrim = user.trim();
+            const userUpper = userTrim.toUpperCase();
+            
+            let docRef = doc(dbCloud, "usuarios", userUpper);
+            let docSnap = await getDoc(docRef);
+            
+            if (!docSnap.exists()) {
+                docRef = doc(dbCloud, "usuarios", userTrim);
+                docSnap = await getDoc(docRef);
+            }
+
+            if (!docSnap.exists()) return { sucesso: false, erro: "Utilizador não encontrado. Crie uma conta." };
+
+            const dadosUsuario = docSnap.data();
+            const senhaArmazenada = dadosUsuario.senha;
+
+            const senhaHashDigitada = await hashSenha(senhaDigitada);
+            
+            let senhaValida = false;
+            let precisaAtualizarHash = false;
+
+            if (senhaArmazenada === senhaHashDigitada) {
+                senhaValida = true;
+            } else if (senhaArmazenada === senhaDigitada) {
+                senhaValida = true;
+                precisaAtualizarHash = true;
+            }
+
+            if (!senhaValida) {
+                return { sucesso: false, erro: "Senha incorreta!" };
+            }
+
+            if (precisaAtualizarHash) {
+                await setDoc(docRef, { senha: senhaHashDigitada }, { merge: true });
+            }
+
+            return { sucesso: true, dados: dadosUsuario };
+        } catch (e) {
+            console.error("Erro no login:", e);
+            return { sucesso: false, erro: "Erro de conexão com a nuvem." };
+        }
+    };
+
     window.cloudSave = async function(user, data, calendario, relatorios) {
         try {
             const userTrim = user.trim();
@@ -746,7 +801,6 @@
             const userTrim = user.trim();
             const userUpper = userTrim.toUpperCase();
             
-            // Leitura em paralelo (muito mais rápida)
             const [userDocSnap, calGlobalSnap] = await Promise.all([
                 getDoc(doc(dbCloud, "usuarios", userUpper)).then(async (snap) => {
                     if (!snap.exists()) {
@@ -783,9 +837,12 @@
             if (docSnap.exists() && docSnap.data().senha) {
                 return false; 
             }
+            
+            const senhaSegura = await hashSenha(senha);
             const isAdminUser = (userUpper === "ADMIN");
+            
             await setDoc(docRef, {
-                senha: senha,
+                senha: senhaSegura,
                 dica: dica || "",
                 isAdmin: isAdminUser,
                 ativo: isAdminUser ? true : false,
@@ -1524,15 +1581,14 @@
 
         if(!u || !p) return alert("Preencha Utilizador e Senha.");
 
-        let cloudData = window.cloudLoad ? await window.cloudLoad(u) : null;
-        if (!cloudData || !cloudData.senha) {
-            return alert("Utilizador não encontrado. Crie uma conta na aba 'Criar Conta'.");
-        }
-        if (cloudData.senha !== p) {
-            return alert("Senha incorreta!");
+        const resultadoLogin = await window.cloudVerificarLogin(u, p);
+        if (!resultadoLogin.sucesso) {
+            return alert(resultadoLogin.erro);
         }
 
+        const cloudData = resultadoLogin.dados;
         const isAdminUser = (u.toUpperCase() === "ADMIN" || cloudData.isAdmin === true);
+        
         if (!isAdminUser && cloudData.ativo !== true) {
             return alert("⚠️ Acesso bloqueado por falta de pagamento. Efetue o pagamento para ter acesso à conta.");
         }
@@ -1543,11 +1599,9 @@
         sessionStorage.setItem('gpl_user', currentUser);
         sessionStorage.setItem('gpl_is_admin', currentIsAdmin);
 
-        if (cloudData) {
-            if (cloudData.dados) db = cloudData.dados;
-            if (cloudData.calendario) calendarioDb = cloudData.calendario;
-            if (cloudData.relatorios) relatorioRazoesDb = cloudData.relatorios;
-        }
+        if (cloudData.dados) db = cloudData.dados;
+        if (cloudData.calendario) calendarioDb = cloudData.calendario;
+        if (cloudData.relatorios) relatorioRazoesDb = cloudData.relatorios;
 
         document.getElementById('loginScreen').style.display = 'none';
         initSystem();
