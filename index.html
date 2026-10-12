@@ -117,6 +117,11 @@
             border-radius: 12px; font-weight: 900; cursor: pointer; border: none; 
             text-transform: uppercase; margin-top: 10px; transition: 0.3s; 
         } 
+        .bio-btn {
+            background: transparent; color: var(--accent); width: 100%; padding: 10px; 
+            border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--accent); 
+            text-transform: uppercase; margin-top: 8px; font-size: 11px; transition: 0.3s;
+        }
         .auth-link { 
             color: var(--accent); font-size: 11px; cursor: pointer; 
             font-weight: 700; margin-top: 15px; display: inline-block; text-transform: uppercase; 
@@ -337,7 +342,6 @@
             padding: 8px 12px; border-radius: 9px; cursor: pointer; font-weight: 800; font-size: 11px; text-transform: uppercase;
         }
 
-        /* Oculta o botão de atualizar especificamente em telas menores (celulares) */
         @media (max-width: 768px) {
             .btn-atualizar-mobile {
                 display: none !important;
@@ -415,7 +419,7 @@
 </head> 
 <body>
 
-<!-- INDICADOR DE PULL TO REFRESH (MOBILE) -->
+<!-- INDICADOR DE PULL TO REFRESH -->
 <div id="pullToRefreshIndicator">🔄 Puxe mais para atualizar...</div>
 
 <!-- TELA DE LOGIN / PAGAMENTO -->
@@ -438,6 +442,8 @@
         </div>
 
         <button onclick="handleAuth()" id="authBtn" class="auth-btn">ENTRAR</button> 
+        <button onclick="handleBiometricAuth()" id="bioBtn" class="bio-btn" style="display:none;">🔓 Entrar com Biometria</button>
+
         <div style="display:flex; justify-content: space-between; gap: 10px;"> 
             <span class="auth-link" id="authSwitch" onclick="toggleAuthMode()">Criar Conta</span> 
             <span class="auth-link" style="color:var(--warning)" onclick="recoverPass()">Recuperar Senha</span> 
@@ -453,17 +459,11 @@
             <span style="font-size: 13px; font-weight: 800; color: var(--success); text-transform: uppercase;" id="headerUserDisplay"></span>
         </div>
         <div style="display: flex; gap: 8px; align-items: center;"> 
-            <!-- MÊS (Visível em ambos) -->
             <button class="header-btn" onclick="toggleMonthGrid()" id="currentMonthDisplay" style="background: var(--accent); border-color: var(--accent);">SETEMBRO</button> 
             <div id="monthGrid" class="month-grid"></div> 
             
-            <!-- IMPRIMIR (Visível em ambos) -->
             <button class="header-btn" onclick="window.print()">IMPRIMIR</button> 
-
-            <!-- ATUALIZAR (Visível APENAS no Desktop, oculto no mobile) -->
             <button class="header-btn btn-atualizar-mobile" onclick="atualizarDadosManualmente(this)" title="Atualizar dados da nuvem" style="background: var(--success); color: black;">🔄</button>
-
-            <!-- SAIR (Visível em ambos) -->
             <button class="header-btn" onclick="sairDaConta()" title="Sair da Conta" style="background: var(--danger); color: white;">🚪</button>
         </div> 
     </header> 
@@ -899,6 +899,7 @@
         relatorioRazoesDb = {};
 
         document.getElementById('passInput').value = "";
+        document.getElementById('bioBtn').style.display = 'none';
         
         const loginScreen = document.getElementById('loginScreen');
         loginScreen.style.display = 'flex';
@@ -907,15 +908,22 @@
         document.documentElement.style.overflow = "hidden";
     }
 
-    // PULL-TO-REFRESH PARA MOBILE
+    // PULL-TO-REFRESH INTELIGENTE (só ativa se o scroll estiver no topo absoluto)
     let startY = 0;
     let isPulling = false;
     const pullThreshold = 80;
 
     window.addEventListener('touchstart', (e) => {
-        if (window.scrollY <= 0 && document.querySelector('.container').scrollTop <= 0) {
+        // Verifica se a aba ativa e seus containers de rolagem estão no topo absoluto (scrollTop === 0)
+        const activeTabEl = document.querySelector('.mobile-tab-content.active-tab');
+        const scrollableChild = activeTabEl ? activeTabEl.querySelector('.table-container, .form-content-area, .top-dashboard') : null;
+        const isAtTop = scrollableChild ? scrollableChild.scrollTop <= 0 : (window.scrollY <= 0);
+
+        if (isAtTop) {
             startY = e.touches[0].clientY;
             isPulling = true;
+        } else {
+            isPulling = false;
         }
     }, { passive: true });
 
@@ -957,6 +965,105 @@
         } else {
             indicator.style.transform = `translateY(0px)`;
         }
+    });
+
+    // FUNÇÕES DE BIOMETRIA (WebAuthn)
+    async function verificarBiometriaSalva(u) {
+        const bioBtn = document.getElementById('bioBtn');
+        if (!window.PublicKeyCredential) {
+            if(bioBtn) bioBtn.style.display = 'none';
+            return;
+        }
+        const savedBioUser = localStorage.getItem('gpl_bio_user_' + u);
+        if (savedBioUser) {
+            if(bioBtn) bioBtn.style.display = 'block';
+        } else {
+            if(bioBtn) bioBtn.style.display = 'none';
+        }
+    }
+
+    async function handleBiometricAuth() {
+        const u = document.getElementById('userInput').value.trim().toUpperCase();
+        if (!u) return alert("Digite o seu utilizador para usar a biometria.");
+
+        try {
+            const credentialIdStr = localStorage.getItem('gpl_bio_user_' + u);
+            if (!credentialIdStr) return alert("Nenhuma biometria cadastrada para este utilizador neste dispositivo.");
+
+            const rawId = Uint8Array.from(atob(credentialIdStr), c => c.charCodeAt(0));
+            const challenge = new Uint8Array(32);
+            window.crypto.getRandomValues(challenge);
+
+            const publicKey = {
+                challenge: challenge,
+                allowCredentials: [{
+                    id: rawId,
+                    type: 'public-key',
+                    transports: ['internal', 'usb', 'nfc', 'ble']
+                }],
+                userVerification: 'required'
+            };
+
+            const assertion = await navigator.credentials.get({ publicKey });
+            if (assertion) {
+                // Biometria bem-sucedida, busca dados na nuvem
+                let cloudData = window.cloudLoad ? await window.cloudLoad(u) : null;
+                if (!cloudData || !cloudData.senha) {
+                    return alert("Utilizador não encontrado na nuvem.");
+                }
+
+                currentUser = u;
+                currentIsAdmin = !!(cloudData && (cloudData.isAdmin || u === "ADMIN"));
+
+                if (cloudData) {
+                    if (cloudData.dados) db = cloudData.dados;
+                    if (cloudData.calendario) calendarioDb = cloudData.calendario;
+                    if (cloudData.relatorios) relatorioRazoesDb = cloudData.relatorios;
+                }
+
+                document.getElementById('loginScreen').style.display = 'none';
+                initSystem();
+            }
+        } catch (err) {
+            console.error("Erro na autenticação biométrica:", err);
+            alert("Autenticação biométrica cancelada ou falhou.");
+        }
+    }
+
+    async function cadastrarBiometriaSePossivel(u) {
+        if (!window.PublicKeyCredential) return;
+        try {
+            const challenge = new Uint8Array(32);
+            window.crypto.getRandomValues(challenge);
+
+            const publicKey = {
+                challenge: challenge,
+                rp: { name: "GPL - Gestão de Produtividade" },
+                user: {
+                    id: Uint8Array.from(u, c => c.charCodeAt(0)),
+                    name: u,
+                    displayName: u
+                },
+                pubKeyCredParams: [{ alg: -7, type: "public-key" }, { alg: -257, type: "public-key" }],
+                authenticatorSelection: { authenticatorAttachment: "platform", userVerification: "required" },
+                timeout: 60000
+            };
+
+            const credential = await navigator.credentials.create({ publicKey });
+            if (credential) {
+                const rawId = new Uint8Array(credential.rawId);
+                const base64Id = btoa(String.fromCharCode.apply(null, rawId));
+                localStorage.setItem('gpl_bio_user_' + u, base64Id);
+                alert("Biometria cadastrada com sucesso neste dispositivo!");
+            }
+        } catch (e) {
+            console.log("Usuário cancelou ou biometria não suportada:", e);
+        }
+    }
+
+    document.getElementById('userInput').addEventListener('blur', function() {
+        const u = this.value.trim().toUpperCase();
+        if (u) verificarBiometriaSalva(u);
     });
 
     function popularSelectRazoesRelatorio() {
@@ -1305,6 +1412,12 @@
         if (rememberMe) {
             localStorage.setItem('gpl_saved_user_2026', u);
             localStorage.setItem('gpl_saved_pass_2026', p);
+            // Pergunta se deseja cadastrar biometria para futuros logins rápidos
+            if (!localStorage.getItem('gpl_bio_user_' + u) && window.PublicKeyCredential) {
+                if (confirm("Deseja cadastrar a biometria (impressão digital / facial) para entrar rapidamente neste dispositivo nas próximas vezes?")) {
+                    await cadastrarBiometriaSePossivel(u);
+                }
+            }
         } else {
             localStorage.removeItem('gpl_saved_user_2026');
             localStorage.removeItem('gpl_saved_pass_2026');
@@ -1322,6 +1435,7 @@
         t.innerText = isLogin ? "Criar Novo Utilizador" : "Acessar Conta"; 
         document.getElementById('recoveryInput').style.display = isLogin ? "block" : "none"; 
         if(notice) notice.style.display = isLogin ? "block" : "none";
+        document.getElementById('bioBtn').style.display = 'none';
     } 
 
     function recoverPass() { 
@@ -1590,7 +1704,10 @@
     window.onload = function() {
         let savedU = localStorage.getItem('gpl_saved_user_2026');
         let savedP = localStorage.getItem('gpl_saved_pass_2026');
-        if(savedU) document.getElementById('userInput').value = savedU;
+        if(savedU) {
+            document.getElementById('userInput').value = savedU;
+            verificarBiometriaSalva(savedU);
+        }
         if(savedP) document.getElementById('passInput').value = savedP;
 
         const passInputEl = document.getElementById('passInput');
