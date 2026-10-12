@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"> 
     <title>Gestão de Produtividade de Leituras</title> 
 
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzMiAzMicgd2lkdGg9JzMyJyBoZWlnaHQ9JzMyJz48cmVjdCB3aWR0aD0nMzInIGhlaWdodD0nMzInIHJ4PSc2JyBmaWxsPScjMGIwZjE1Jz48L3JlY3Q+PHRleHQgeD0nNTAlJyB5PSc1NSUnIGRvbWluYW50LWJhc2VsaW5lPSdtaWRkbGUnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJyBmb250LXdlaWdodD0nOTAwJyBmb250LXdlaWdodD0nMTAwMCcgZm9udC1zaXplPScxMCcgZmlsbD0nIzAwZmY4OCcgbGV0dGVyLXNwYWNpbmdzPScwLjUnPkdQTDwvdGV4dDwvc3ZnPg==">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzMiAzMicgd2lkdGg9JzMyJyBoZWlnaHQ9JzMyJz48cmVjdCB3aWR0aD0nMzInIGhlaWdodD0nMzInIHJ4PSc2JyBmaWxsPScjMGIwZjE1Jz48L3JlY3Q+PHRleHQgeD0nNTAlJyB5PSc1NSUnIGRvbWluYW50LWJhc2VsaW5lPSdtaWRkbGUnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJyBmb250LXdlaWdodD0nOTAwJyBmb250LXdlaWdodD0nMTAwMCcgZm9udC1zaXplPScxMCcgZmlsbD0nIzAwZmY4OCcgbGV0dGVyLXNwYWNpbmdzPScwLjUnPkdQTDwvdGV4dD48L3N2Zz4=">
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#030508">
 
@@ -772,7 +772,7 @@
         return null;
     };
 
-    window.cloudSaveNewUserAuth = async function(user, senha, dica) {
+    window.cloudSaveNewUserAuth = async function(user, senhaHash, dica) {
         try {
             const userTrim = user.trim();
             const userUpper = userTrim.toUpperCase();
@@ -783,7 +783,7 @@
             }
             const isAdminUser = (userUpper === "ADMIN");
             await setDoc(docRef, {
-                senha: senha,
+                senha: senhaHash,
                 dica: dica || "",
                 isAdmin: isAdminUser,
                 ativo: isAdminUser ? true : false,
@@ -994,6 +994,15 @@
 
     const msNomesCompletos = ["JANEIRO", "FEVEREIRO", "MARÇO", "ABRIL", "MAIO", "JUNHO", "JULHO", "AGOSTO", "SETEMBRO", "OUTUBRO", "NOVEMBRO", "DEZEMBRO"]; 
     const fM = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); 
+
+    // Função de encriptação SHA-256 nativa do navegador
+    async function criptografarSenha(senha) {
+        const encoder = new TextEncoder();
+        const data = encoder.encode(senha);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    }
 
     function switchLoginPane(paneId) {
         document.querySelectorAll('.login-form-pane').forEach(el => el.classList.remove('active'));
@@ -1516,7 +1525,9 @@
         if (!cloudData || !cloudData.senha) {
             return alert("Utilizador não encontrado. Crie uma conta na aba 'Criar Conta'.");
         }
-        if (cloudData.senha !== p) {
+
+        const pHash = await criptografarSenha(p);
+        if (cloudData.senha !== pHash) {
             return alert("Senha incorreta!");
         }
 
@@ -1555,7 +1566,8 @@
             return alert("Este nome de utilizador já existe! Escolha outro nome.");
         }
 
-        let criado = await window.cloudSaveNewUserAuth(u, p, r);
+        const pHash = await criptografarSenha(p);
+        let criado = await window.cloudSaveNewUserAuth(u, pHash, r);
         if (!criado) return alert("Erro ao criar utilizador.");
 
         alert("Conta criada com sucesso! Efetue o PIX de R$ 10,00 e informe o comprovante ao Administrador para ativação.");
