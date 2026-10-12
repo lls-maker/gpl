@@ -453,16 +453,18 @@
             <span style="font-size: 13px; font-weight: 800; color: var(--success); text-transform: uppercase;" id="headerUserDisplay"></span>
         </div>
         <div style="display: flex; gap: 8px; align-items: center;"> 
+            <!-- MÊS (Visível em ambos) -->
             <button class="header-btn" onclick="toggleMonthGrid()" id="currentMonthDisplay" style="background: var(--accent); border-color: var(--accent);">SETEMBRO</button> 
             <div id="monthGrid" class="month-grid"></div> 
             
-            <!-- BOTÃO DE ATUALIZAR (VISÍVEL NO DESKTOP, OCULTO NO MOBILE) -->
+            <!-- IMPRIMIR (Visível em ambos) -->
+            <button class="header-btn" onclick="window.print()">IMPRIMIR</button> 
+
+            <!-- ATUALIZAR (Visível APENAS no Desktop, oculto no mobile) -->
             <button class="header-btn btn-atualizar-mobile" onclick="atualizarDadosManualmente(this)" title="Atualizar dados da nuvem" style="background: var(--success); color: black;">🔄</button>
 
-            <!-- BOTÃO DE SAIR DA CONTA -->
+            <!-- SAIR (Visível em ambos) -->
             <button class="header-btn" onclick="sairDaConta()" title="Sair da Conta" style="background: var(--danger); color: white;">🚪</button>
-
-            <button class="header-btn" onclick="window.print()">IMPRIMIR</button> 
         </div> 
     </header> 
 
@@ -887,7 +889,6 @@
         }
     }
 
-    // Função de Sair corrigida (sem rolagem infinita)
     function sairDaConta() {
         if (!confirm("Deseja realmente sair da conta?")) return;
 
@@ -1323,7 +1324,6 @@
         if(notice) notice.style.display = isLogin ? "block" : "none";
     } 
 
-    // Recuperação de senha corrigida (sem seleção indesejada)
     function recoverPass() { 
         if(typeof event !== 'undefined' && event) event.preventDefault();
         
