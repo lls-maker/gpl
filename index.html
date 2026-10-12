@@ -734,7 +734,7 @@
             }, { merge: true });
 
             if (userUpper === "ADMIN") {
-                await setDoc(doc(dbCloud, "config", "calendarioGlobal"), calendario, { merge: true });
+                await setDoc(doc(dbCloud, "config", "calendarioGlobal"), { calendario: calendario }, { merge: true });
             }
         } catch (e) {
             console.error("Erro ao salvar na nuvem:", e);
