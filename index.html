@@ -706,7 +706,6 @@
     const app = initializeApp(firebaseConfig);
     const dbCloud = getFirestore(app);
 
-    // O Admin salva o calendário global na nuvem do utilizador ADMIN (ou numa coleção centralizada)
     window.cloudSave = async function(user, data, calendario, relatorios) {
         try {
             const docRef = doc(dbCloud, "usuarios", user);
@@ -727,7 +726,6 @@
                 ultimaAtualizacao: new Date()
             }, { merge: true });
 
-            // Se for o ADMIN atualizando, atualiza também um documento global de calendário para que todos leiam a mesma programação
             if (user === "ADMIN") {
                 await setDoc(doc(dbCloud, "config", "calendarioGlobal"), { calendario: calendario }, { merge: true });
             }
@@ -741,7 +739,6 @@
             const docSnap = await getDoc(doc(dbCloud, "usuarios", user));
             let userData = docSnap.exists() ? docSnap.data() : null;
 
-            // Carrega também o calendário global configurado pelo ADMIN se o utilizador não for o ADMIN
             const calGlobalSnap = await getDoc(doc(dbCloud, "config", "calendarioGlobal"));
             if (calGlobalSnap.exists() && calGlobalSnap.data().calendario) {
                 if (userData) {
@@ -775,7 +772,7 @@
                 calendario: {},
                 relatorios: {},
                 ultimaAtualizacao: new Date()
-            }, { merge: true });
+            });
             return true;
         } catch (e) {
             console.error("Erro ao salvar credenciais:", e);
@@ -820,7 +817,6 @@
             }
         });
 
-        // Escuta também alterações no calendário global do Admin
         onSnapshot(doc(dbCloud, "config", "calendarioGlobal"), (docSnap) => {
             if (docSnap.exists()) {
                 callbackAtualizacao({ calendario: docSnap.data().calendario });
@@ -1048,6 +1044,7 @@
         document.getElementById('loginUser').value = "";
         document.getElementById('loginPass').value = "";
         document.getElementById('btnTabAdmin').style.display = 'none';
+        document.getElementById('adminNotificationBadge').style.display = 'none';
         
         const loginScreen = document.getElementById('loginScreen');
         loginScreen.style.display = 'flex';
@@ -1569,6 +1566,9 @@
         } else {
             btnAdmin.style.display = 'none';
         }
+
+        // Garante que o sistema sempre abra na aba Dash ao iniciar ou trocar de conta
+        switchMobileTab('tabDashboard', document.getElementById('btnTabDashboard'));
 
         let nomeMes = msNomesCompletos[viewDate.getMonth()];
         document.getElementById('currentMonthDisplay').innerText = nomeMes; 
