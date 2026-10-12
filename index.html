@@ -708,9 +708,15 @@
 
     window.cloudSave = async function(user, data, calendario, relatorios) {
         try {
-            const userUpper = user.trim().toUpperCase();
-            const docRef = doc(dbCloud, "usuarios", userUpper);
-            const docSnap = await getDoc(docRef);
+            const userTrim = user.trim();
+            const userUpper = userTrim.toUpperCase();
+            let docRef = doc(dbCloud, "usuarios", userUpper);
+            let docSnap = await getDoc(docRef);
+            if (!docSnap.exists()) {
+                docRef = doc(dbCloud, "usuarios", userTrim);
+                docSnap = await getDoc(docRef);
+            }
+
             let senhaAtual = docSnap.exists() ? docSnap.data().senha : "";
             let dicaAtual = docSnap.exists() ? docSnap.data().dica : "";
             let isAdminAtual = docSnap.exists() ? !!docSnap.data().isAdmin : false;
@@ -737,8 +743,17 @@
 
     window.cloudLoad = async function(user) {
         try {
-            const userUpper = user.trim().toUpperCase();
-            const docSnap = await getDoc(doc(dbCloud, "usuarios", userUpper));
+            const userTrim = user.trim();
+            const userUpper = userTrim.toUpperCase();
+            
+            let docRef = doc(dbCloud, "usuarios", userUpper);
+            let docSnap = await getDoc(docRef);
+            
+            if (!docSnap.exists()) {
+                docRef = doc(dbCloud, "usuarios", userTrim);
+                docSnap = await getDoc(docRef);
+            }
+
             let userData = docSnap.exists() ? docSnap.data() : null;
 
             const calGlobalSnap = await getDoc(doc(dbCloud, "config", "calendarioGlobal"));
@@ -759,7 +774,8 @@
 
     window.cloudSaveNewUserAuth = async function(user, senha, dica) {
         try {
-            const userUpper = user.trim().toUpperCase();
+            const userTrim = user.trim();
+            const userUpper = userTrim.toUpperCase();
             const docRef = doc(dbCloud, "usuarios", userUpper);
             const docSnap = await getDoc(docRef);
             if (docSnap.exists() && docSnap.data().senha) {
@@ -802,8 +818,13 @@
 
     window.cloudSetUserActive = async function(user, statusAtivo) {
         try {
-            const userUpper = user.trim().toUpperCase();
-            const docRef = doc(dbCloud, "usuarios", userUpper);
+            const userTrim = user.trim();
+            const userUpper = userTrim.toUpperCase();
+            let docRef = doc(dbCloud, "usuarios", userUpper);
+            let docSnap = await getDoc(docRef);
+            if (!docSnap.exists()) {
+                docRef = doc(dbCloud, "usuarios", userTrim);
+            }
             await setDoc(docRef, { ativo: statusAtivo }, { merge: true });
             return true;
         } catch (e) {
@@ -813,12 +834,20 @@
     };
 
     window.escutarAlteracoesNuvem = function(user, callbackAtualizacao) {
-        const userUpper = user.trim().toUpperCase();
-        const docRef = doc(dbCloud, "usuarios", userUpper);
+        const userTrim = user.trim();
+        const userUpper = userTrim.toUpperCase();
+        let docRef = doc(dbCloud, "usuarios", userUpper);
+        
         onSnapshot(docRef, (docSnap) => {
             if (docSnap.exists()) {
                 const dadosNuvem = docSnap.data();
                 callbackAtualizacao(dadosNuvem);
+            } else {
+                onSnapshot(doc(dbCloud, "usuarios", userTrim), (docSnapAlt) => {
+                    if (docSnapAlt.exists()) {
+                        callbackAtualizacao(docSnapAlt.data());
+                    }
+                });
             }
         });
 
@@ -1058,7 +1087,6 @@
         document.documentElement.style.overflow = "hidden";
     }
 
-    // PULL-TO-REFRESH INTELIGENTE
     let startY = 0;
     let isPulling = false;
     const pullThreshold = 80;
@@ -1480,7 +1508,7 @@
     } 
 
     async function handleLogin() {
-        const u = document.getElementById('loginUser').value.trim().toUpperCase();
+        const u = document.getElementById('loginUser').value.trim();
         const p = document.getElementById('loginPass').value;
 
         if(!u || !p) return alert("Preencha Utilizador e Senha.");
@@ -1493,12 +1521,12 @@
             return alert("Senha incorreta!");
         }
 
-        const isAdminUser = (u === "ADMIN" || cloudData.isAdmin === true);
+        const isAdminUser = (u.toUpperCase() === "ADMIN" || cloudData.isAdmin === true);
         if (!isAdminUser && cloudData.ativo !== true) {
-            return alert("⚠️ Acesso bloqueado por falta de pagamento. Efetue o pagamento de R$ 10,00 e envie o comprovante para ter acesso à conta.");
+            return alert("⚠️ Conta bloqueada por falta de pagamento. Efetue o pagamento para ter acesso à conta.");
         }
 
-        currentUser = u;
+        currentUser = u.toUpperCase();
         currentIsAdmin = isAdminUser;
 
         if (cloudData) {
@@ -1512,7 +1540,7 @@
     }
 
     async function handleCreateAccount() {
-        const u = document.getElementById('regUser').value.trim().toUpperCase();
+        const u = document.getElementById('regUser').value.trim();
         const p = document.getElementById('regPass').value;
         const pConf = document.getElementById('regPassConfirm').value;
         const r = document.getElementById('regRecovery').value.trim();
@@ -1538,7 +1566,7 @@
     }
 
     function recoverPass() { 
-        const u = document.getElementById('loginUser').value.trim().toUpperCase(); 
+        const u = document.getElementById('loginUser').value.trim(); 
         if(!u) return alert("Digite o seu nome de utilizador no campo 'Utilizador' para recuperar a senha.");
         
         window.cloudLoad(u).then(cloudData => {
