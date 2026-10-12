@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"> 
     <title>Gestão de Produtividade de Leituras</title> 
 
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzMiAzMicgd2lkdGg9JzMyJyBoZWlnaHQ9JzMyJz48cmVjdCB3aWR0aD0nMzInIGhlaWdodD0nMzInIHJ4PSc2JyBmaWxsPScjMGIwZjE1Jy8+PHRleHQgeD0nNTAlJyB5PSc1NSUnIGRvbWluYW50LWJhc2VsaW5lPSdtaWRkbGUnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJyBmb250LXdlaWdodD0nOTAwJyBmb250LXdlaWdodD0nMTAwMCcgZm9udC1zaXplPScxMCcgZmlsbD0nIzAwZmY4OCcgbGV0dGVyLXNwYWNpbmdzPScwLjUnPkdQTDwvdGV4dD48L3N2Zz4=">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzMiAzMicgd2lkdGg9JzMyJyBoZWlnaHQ9JzMyJz48cmVjdCB3aWR0aD0nMzInIGhlaWdodD0nMzInIHJ4PSc2JyBmaWxsPSdjM2IwZjE1Jy8+PHRleHQgeD0nNTAlJyB5PSc1NSUnIGRvbWluYW50LWJhc2VsaW5lPSdtaWRkbGUnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJyBmb250LXdlaWdodD0nOTAwJyBmb250LXdlaWdodD0nMTAwMCcgZm9udC1zaXplPScxMCcgZmlsbD0nIzAwZmY4OCcgbGV0dGVyLXNwYWNpbmdzPScwLjUnPkdQTDwvdGV4dD48L3N2Zz4=">
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#030508">
 
@@ -430,11 +430,6 @@
         <input type="text" id="userInput" placeholder="Utilizador"> 
         <input type="password" id="passInput" placeholder="Senha"> 
         <input type="text" id="recoveryInput" placeholder="Dica de segurança" style="display:none;"> 
-        
-        <div style="display: flex; align-items: center; gap: 8px; margin: 10px 0 15px 2px; text-align: left; font-size: 11px;">
-            <input type="checkbox" id="rememberMe" style="width: auto; margin: 0; cursor: pointer;">
-            <label for="rememberMe" style="color: var(--text-p); cursor: pointer; user-select: none;">Lembrar de mim</label>
-        </div>
 
         <button onclick="handleAuth()" id="authBtn" class="auth-btn">ENTRAR</button> 
 
@@ -886,9 +881,6 @@
     function sairDaConta() {
         if (!confirm("Deseja realmente sair da conta?")) return;
 
-        localStorage.removeItem('gpl_saved_user_2026');
-        localStorage.removeItem('gpl_saved_pass_2026');
-
         currentUser = "";
         currentIsAdmin = false;
         db = [];
@@ -897,7 +889,6 @@
 
         document.getElementById('userInput').value = "";
         document.getElementById('passInput').value = "";
-        document.getElementById('rememberMe').checked = false;
         
         const loginScreen = document.getElementById('loginScreen');
         loginScreen.style.display = 'flex';
@@ -1267,7 +1258,6 @@
         const u = document.getElementById('userInput').value.trim().toUpperCase(); 
         const p = document.getElementById('passInput').value; 
         const r = document.getElementById('recoveryInput').value; 
-        const rememberMe = document.getElementById('rememberMe').checked;
 
         if(!u || !p) return alert("Preencha Utilizador e Senha"); 
 
@@ -1305,14 +1295,6 @@
             if (cloudData.dados) db = cloudData.dados;
             if (cloudData.calendario) calendarioDb = cloudData.calendario;
             if (cloudData.relatorios) relatorioRazoesDb = cloudData.relatorios;
-        }
-
-        if (rememberMe) {
-            localStorage.setItem('gpl_saved_user_2026', u);
-            localStorage.setItem('gpl_saved_pass_2026', p);
-        } else {
-            localStorage.removeItem('gpl_saved_user_2026');
-            localStorage.removeItem('gpl_saved_pass_2026');
         }
 
         document.getElementById('loginScreen').style.display = 'none';
@@ -1593,16 +1575,6 @@
     }
 
     window.onload = function() {
-        // Remove qualquer vestígio anterior de biometria e limpa o login automático se o checkbox não estiver ativo
-        let savedU = localStorage.getItem('gpl_saved_user_2026');
-        let savedP = localStorage.getItem('gpl_saved_pass_2026');
-        
-        if(savedU && savedP) {
-            document.getElementById('userInput').value = savedU;
-            document.getElementById('passInput').value = savedP;
-            document.getElementById('rememberMe').checked = true;
-        }
-
         const passInputEl = document.getElementById('passInput');
         if(passInputEl) {
             passInputEl.addEventListener("keydown", (e) => {
