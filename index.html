@@ -245,7 +245,7 @@
             background: var(--surface); border-radius: 16px; border: 1.5px solid var(--brown-border); 
             display: flex; flex-direction: column; flex-grow: 1; min-height: 0; overflow: hidden; 
         } 
-        .table-container { flex-grow: 1; min-height: 0; overflow-y: auto; } 
+        .table-container { flex-grow: 1; min-height: 0; overflow-y: auto; overscroll-behavior-y: contain; } 
 
         table { width: 100%; border-collapse: collapse; } 
         th, td { padding: 9px 6px; text-align: center; border-bottom: 1px solid var(--border); font-size: 12px; } 
@@ -469,13 +469,15 @@
     </div> 
 
     <!-- ABAS DE NAVEGAÇÃO -->
-    <nav class="mobile-nav-tabs no-print">
+    <nav class="mobile-nav-tabs no-print" id="mainNavTabs">
         <button class="mob-tab-btn active" id="btnTabDashboard" onclick="switchMobileTab('tabDashboard', this)">📊 Dash</button>
         <button class="mob-tab-btn" id="btnTabFormulario" onclick="switchMobileTab('tabFormulario', this)">➕ Novo</button>
         <button class="mob-tab-btn" id="btnTabTabela" onclick="switchMobileTab('tabTabela', this)">📋 Reg</button>
         <button class="mob-tab-btn" id="btnTabNL" onclick="switchMobileTab('tabNL', this)">🔍 NL</button>
         <button class="mob-tab-btn" id="btnTabCal" onclick="switchMobileTab('tabCal', this)">📅 Cal</button>
         <button class="mob-tab-btn" id="btnTabRelatorio" onclick="switchMobileTab('tabRelatorio', this)">📑 Relat.</button>
+        <!-- Aba Admin inserida dinamicamente caso seja ADMIN -->
+        <button class="mob-tab-btn" id="btnTabAdmin" onclick="switchMobileTab('tabAdmin', this)" style="display:none; color: var(--warning); border-color: var(--warning);">👑 Adm</button>
     </nav>
 
     <!-- CONTEÚDO PRINCIPAL EM ABAS -->
@@ -538,7 +540,7 @@
                 <input type="text" id="searchRazao" placeholder="Pesquisar razão nos registros..." oninput="atualizarTabela()" style="border-color: var(--success); margin-bottom: 0;">
             </div>
             <div class="main-view"> 
-                <div class="table-container" style="overscroll-behavior-y: contain;"> 
+                <div class="table-container"> 
                     <table> 
                         <thead> 
                             <tr><th>Data</th><th>Localidade</th><th>Razão</th><th>Rotas</th><th>Leituras</th><th>Imp.</th><th>%</th><th class="no-print">Ação</th></tr> 
@@ -555,7 +557,7 @@
                 <input type="text" id="searchNL" placeholder="Pesquisar por número ou descrição da nota..." oninput="filtrarNL(this.value)" style="border-color: var(--success);">
             </div>
             <div class="main-view">
-                <div class="table-container" style="overscroll-behavior-y: contain;">
+                <div class="table-container">
                     <table>
                         <thead>
                             <tr><th>Número</th><th>Status</th><th>Detalhe / Descrição</th></tr>
@@ -572,7 +574,7 @@
                 <input type="text" id="searchCal" placeholder="Pesquisar razão..." oninput="renderizarCalendario(this.value)" style="border-color: var(--success); margin-bottom: 0;">
             </div>
             <div class="main-view">
-                <div class="table-container" style="overscroll-behavior-y: contain;">
+                <div class="table-container">
                     <table>
                         <thead>
                             <tr><th>Razão</th><th>Data da Próxima Leitura</th></tr>
@@ -610,13 +612,30 @@
                 </div>
             </div>
         </div>
+
+        <!-- ABA ADMIN / NOVOS UTILIZADORES -->
+        <div class="mobile-tab-content" id="tabAdmin" style="flex-direction: column;">
+            <div class="mobile-search-area">
+                <input type="text" id="searchAdminUsers" placeholder="Pesquisar utilizador..." oninput="carregarListaUtilizadoresPendentes(this.value)" style="border-color: var(--success); margin-bottom: 0;">
+            </div>
+            <div class="main-view">
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr><th>Utilizador</th><th>Status</th><th class="no-print">Ação</th></tr>
+                        </thead>
+                        <tbody id="adminUsersCorpo"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div> 
 </div> 
 
 <!-- SCRIPTS DO FIREBASE -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, doc, setDoc, getDoc, getDocs, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyBCyO4flW7U20t2Lh4HQRy5hGBIzxahjp4",
@@ -687,6 +706,34 @@
             return true;
         } catch (e) {
             console.error("Erro ao salvar credenciais:", e);
+            return false;
+        }
+    };
+
+    window.cloudListAllUsers = async function() {
+        try {
+            const querySnapshot = await getDocs(collection(dbCloud, "usuarios"));
+            let lista = [];
+            querySnapshot.forEach((docSnap) => {
+                lista.push({
+                    nome: docSnap.id,
+                    ...docSnap.data()
+                });
+            });
+            return lista;
+        } catch (e) {
+            console.error("Erro ao listar utilizadores:", e);
+            return [];
+        }
+    };
+
+    window.cloudSetUserActive = async function(user, statusAtivo) {
+        try {
+            const docRef = doc(dbCloud, "usuarios", user);
+            await setDoc(docRef, { ativo: statusAtivo }, { merge: true });
+            return true;
+        } catch (e) {
+            console.error("Erro ao atualizar status do utilizador:", e);
             return false;
         }
     };
@@ -838,6 +885,10 @@
         if(btnElement) btnElement.classList.add('active');
         
         sessionStorage.setItem('gpl_active_tab', tabId);
+
+        if(tabId === 'tabAdmin' && currentIsAdmin) {
+            carregarListaUtilizadoresPendentes();
+        }
     }
 
     async function atualizarDadosManualmente(btnElement = null) {
@@ -861,6 +912,7 @@
                 renderizarCalendario();
                 renderizarTabelaRelatorioAtual();
                 verificarSabadosAlertas();
+                if(currentIsAdmin) carregarListaUtilizadoresPendentes();
                 
                 return true;
             } else {
@@ -890,6 +942,7 @@
 
         document.getElementById('userInput').value = "";
         document.getElementById('passInput').value = "";
+        document.getElementById('btnTabAdmin').style.display = 'none';
         
         const loginScreen = document.getElementById('loginScreen');
         loginScreen.style.display = 'flex';
@@ -955,6 +1008,57 @@
             indicator.style.transform = `translateY(0px)`;
         }
     });
+
+    async function carregarListaUtilizadoresPendentes(filtro = '') {
+        if (!currentIsAdmin) return;
+        const corpo = document.getElementById('adminUsersCorpo');
+        if (!corpo) return;
+
+        const termo = filtro.toUpperCase();
+        const todosUsuarios = await window.cloudListAllUsers();
+
+        const filtrados = todosUsuarios.filter(u => u.nome.toUpperCase().includes(termo));
+
+        if (filtrados.length === 0) {
+            corpo.innerHTML = `<tr><td colspan="3" style="text-align: center; padding: 20px; color: var(--text-p);">Nenhum utilizador encontrado.</td></tr>`;
+            return;
+        }
+
+        corpo.innerHTML = filtrados.map(u => {
+            const isAtivo = u.ativo === true;
+            const isAdmUser = u.isAdmin === true || u.nome === 'ADMIN';
+
+            return `
+                <tr>
+                    <td style="font-weight: bold; color: var(--accent);">${u.nome}</td>
+                    <td>
+                        <span style="color: ${isAtivo ? 'var(--success)' : 'var(--warning)'}; font-weight: bold;">
+                            ${isAtivo ? 'Ativo' : 'Aguardando PIX'}
+                        </span>
+                    </td>
+                    <td class="no-print">
+                        ${isAdmUser ? '<span style="color:var(--purple); font-weight:bold; font-size:10px;">ADMINISTRADOR</span>' : `
+                            <button type="button" onclick="alternarAtivacaoUsuario('${u.nome}',${!isAtivo})" class="header-btn" style="background: ${isAtivo ? 'var(--danger)' : 'var(--success)'}; color: ${isAtivo ? '#fff' : '#000'}; padding: 4px 8px; font-size: 10px;">
+                                ${isAtivo ? 'Bloquear' : 'Aprovar'}
+                            </button>
+                        `}
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    async function alternarAtivacaoUsuario(nomeUsuario, novoStatus) {
+        if (!confirm(`Deseja realmente ${novoStatus ? 'APROVAR' : 'BLOQUEAR'} o acesso do utilizador ${nomeUsuario}?`)) return;
+
+        let sucesso = await window.cloudSetUserActive(nomeUsuario, novoStatus);
+        if (sucesso) {
+            alert(`Utilizador ${nomeUsuario} atualizado com sucesso!`);
+            carregarListaUtilizadoresPendentes(document.getElementById('searchAdminUsers').value);
+        } else {
+            alert("Erro ao atualizar status do utilizador.");
+        }
+    }
 
     function popularSelectRazoesRelatorio() {
         const sel = document.getElementById('selectRazaoRelatorio');
@@ -1331,6 +1435,13 @@
         document.getElementById('loginScreen').style.display = 'none'; 
         document.getElementById('headerUserDisplay').innerText = currentUser;
         
+        const btnAdmin = document.getElementById('btnTabAdmin');
+        if (currentIsAdmin) {
+            btnAdmin.style.display = 'block';
+        } else {
+            btnAdmin.style.display = 'none';
+        }
+
         let nomeMes = msNomesCompletos[viewDate.getMonth()];
         document.getElementById('currentMonthDisplay').innerText = nomeMes; 
         document.getElementById('printSubHeader').innerText = `Utilizador: ${currentUser}  |  Período: ${nomeMes}/2026`;
@@ -1342,6 +1453,7 @@
         renderizarTabelaRelatorioAtual();
         verificarSabadosAlertas();
         atualizarTabela(); 
+        if(currentIsAdmin) carregarListaUtilizadoresPendentes();
 
         window.escutarAlteracoesNuvem(currentUser, (dadosNuvem) => {
             if (dadosNuvem.dados) db = dadosNuvem.dados;
