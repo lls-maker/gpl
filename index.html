@@ -746,17 +746,19 @@
             const userTrim = user.trim();
             const userUpper = userTrim.toUpperCase();
             
-            let docRef = doc(dbCloud, "usuarios", userUpper);
-            let docSnap = await getDoc(docRef);
-            
-            if (!docSnap.exists()) {
-                docRef = doc(dbCloud, "usuarios", userTrim);
-                docSnap = await getDoc(docRef);
-            }
+            // Leitura em paralelo (muito mais rápida)
+            const [userDocSnap, calGlobalSnap] = await Promise.all([
+                getDoc(doc(dbCloud, "usuarios", userUpper)).then(async (snap) => {
+                    if (!snap.exists()) {
+                        return await getDoc(doc(dbCloud, "usuarios", userTrim));
+                    }
+                    return snap;
+                }),
+                getDoc(doc(dbCloud, "config", "calendarioGlobal"))
+            ]);
 
-            let userData = docSnap.exists() ? docSnap.data() : {};
+            let userData = userDocSnap.exists() ? userDocSnap.data() : {};
 
-            const calGlobalSnap = await getDoc(doc(dbCloud, "config", "calendarioGlobal"));
             if (calGlobalSnap.exists()) {
                 const globalData = calGlobalSnap.data();
                 const calendarioExtraido = globalData.calendario || globalData;
@@ -841,7 +843,13 @@
         onSnapshot(docRef, (docSnap) => {
             if (docSnap.exists()) {
                 const dadosNuvem = docSnap.data();
-                callbackAtualizacao(dadosNuvem);
+                getDoc(doc(dbCloud, "config", "calendarioGlobal")).then(calSnap => {
+                    if (calSnap.exists()) {
+                        const globalData = calSnap.data();
+                        dadosNuvem.calendario = globalData.calendario || globalData;
+                    }
+                    callbackAtualizacao(dadosNuvem);
+                });
             }
         });
 
