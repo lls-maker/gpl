@@ -40,7 +40,7 @@
             justify-content: center;
             align-items: center;
             overflow: hidden;
-            overscroll-behavior-y: contain; /* Evita o bounce padrão do navegador no mobile */
+            overscroll-behavior-y: contain;
         } 
 
         body::before {
@@ -338,6 +338,13 @@
             padding: 8px 12px; border-radius: 9px; cursor: pointer; font-weight: 800; font-size: 11px; text-transform: uppercase;
         }
 
+        /* Oculta o botão de atualizar especificamente em telas menores (celulares) */
+        @media (max-width: 768px) {
+            .btn-atualizar-mobile {
+                display: none !important;
+            }
+        }
+
         .mobile-nav-tabs {
             display: flex; width: 100%; background: var(--surface); border: 1px solid var(--border);
             border-radius: 10px; z-index: 9; justify-content: space-between; padding: 4px;
@@ -405,13 +412,6 @@
             th, td { border: 1px solid #999 !important; color: black !important; padding: 6px !important; }
             th { background: #eee !important; color: black !important; }
         }
-
-        /* Oculta o botão de atualizar em telas menores (celulares) */
-@media (max-width: 768px) {
-    header .header-btn[title="Atualizar dados da nuvem"] {
-        display: none !important;
-    }
-}
     </style> 
 </head> 
 <body>
@@ -457,8 +457,8 @@
             <button class="header-btn" onclick="toggleMonthGrid()" id="currentMonthDisplay" style="background: var(--accent); border-color: var(--accent);">SETEMBRO</button> 
             <div id="monthGrid" class="month-grid"></div> 
             
-            <!-- BOTÃO DE ATUALIZAR MANUAL (DESKTOP/GERAL) -->
-            <button class="header-btn" onclick="atualizarDadosManualmente(this)" title="Atualizar dados da nuvem" style="background: var(--success); color: black;">🔄</button>
+            <!-- BOTÃO DE ATUALIZAR (VISÍVEL NO DESKTOP, OCULTO NO MOBILE) -->
+            <button class="header-btn btn-atualizar-mobile" onclick="atualizarDadosManualmente(this)" title="Atualizar dados da nuvem" style="background: var(--success); color: black;">🔄</button>
 
             <button class="header-btn" onclick="window.print()">IMPRIMIR</button> 
         </div> 
