@@ -507,7 +507,7 @@
             <span style="font-size: 13px; font-weight: 800; color: var(--success); text-transform: uppercase;" id="headerUserDisplay"></span>
         </div>
         <div style="display: flex; gap: 8px; align-items: center;"> 
-            <button class="header-btn" onclick="toggleMonthGrid()" id="currentMonthDisplay" style="background: var(--accent); border-color: var(--accent);">SETEMBRO</button> 
+            <button class="header-btn" onclick="toggleMonthGrid()" id="currentMonthDisplay" style="background: var(--accent); border-color: var(--accent);">MÊS</button> 
             <div id="monthGrid" class="month-grid"></div> 
             
             <button class="header-btn" onclick="window.print()">IMPRIMIR</button> 
@@ -1139,6 +1139,11 @@
         calendarioDb = {};
         relatorioRazoesDb = {};
 
+        // Sincroniza o mês para o mês atual real do sistema
+        let d = new Date();
+        viewDate = new Date(d.getFullYear(), d.getMonth(), 1);
+
+        // Limpa todos os campos de formulário e inputs de pesquisa
         document.getElementById('loginUser').value = "";
         document.getElementById('loginPass').value = "";
         document.getElementById('searchRazao').value = "";
@@ -1738,6 +1743,7 @@
             btnAdmin.style.display = 'none';
         }
 
+        // Abre sempre na aba Dashboard ao iniciar/logar
         switchMobileTab('tabDashboard', document.getElementById('btnTabDashboard'));
 
         let nomeMes = msNomesCompletos[viewDate.getMonth()];
