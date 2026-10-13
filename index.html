@@ -654,7 +654,7 @@
                     <span style="font-weight: 800; color: transparent; font-size: 10.5px; display: block; margin-bottom: 4px;">AÇÃO</span>
                     <input type="file" id="inputTxtOcorrencia" accept=".txt,.csv" style="display:none" onchange="processarArquivoTxtSelecionado(this)">
                     <button type="button" onclick="document.getElementById('inputTxtOcorrencia').click()" class="auth-btn" style="width: auto; margin-top: 0; padding: 8px 14px; font-size: 11px; background: var(--purple); color: #fff;">
-                        📂 Importar
+                        📂 Importar TXT Mês Atual
                     </button>
                 </div>
             </div>
@@ -1361,7 +1361,6 @@
         if (!relatorioRazoesDb) relatorioRazoesDb = {};
         if (!relatorioRazoesDb[razaoSelecionada]) relatorioRazoesDb[razaoSelecionada] = {};
 
-        // Substitui ou cria o mês correspondente, preservando os outros meses
         relatorioRazoesDb[razaoSelecionada][anoMesRef] = {
             resumoOC: contagemOC,
             medidores: listaMedidores
@@ -1463,18 +1462,23 @@
             }
 
             const mediaConsumo12 = qtdMesesComConsumo > 0 ? (somaConsumo12 / qtdMesesComConsumo).toFixed(1) : 0;
-            const primeiroItem = historicoMedidor[mesesEncontrados[mesesEncontrados.length - 1]];
+            const ultimoMesChave = mesesEncontrados[mesesEncontrados.length - 1];
+            const ultimoItem = historicoMedidor[ultimoMesChave];
+            const leituraMaisRecente = typeof ultimoItem.leit === 'number' ? ultimoItem.leit : Number(ultimoItem.leit) || 0;
 
             corpo.innerHTML = `
                 <div class="medidor-card" style="max-width: 100%;">
-                    <div class="oc-card-header">
-                        <span class="oc-code" style="font-size: 1rem; color: var(--success);">Medidor / Instalação: ${termoBusca}</span>
-                        <span class="oc-count" style="font-size: 0.85rem; background: rgba(0, 112, 243, 0.2); color: var(--accent); border-color: var(--accent);">Média Consumo: ${mediaConsumo12}</span>
+                    <div class="oc-card-header" style="align-items: flex-start;">
+                        <div>
+                            <span class="oc-code" style="font-size: 0.95rem; color: var(--success); display: block;">Medidor: ${termoBusca}</span>
+                            <span style="font-size: 10px; font-weight: bold; color: var(--text-p);">Razão: ${razaoSelecionada} | Última NL: <span style="color: var(--warning);">${ultimoItem.oc}</span></span>
+                        </div>
+                        <div style="display: flex; gap: 4px; flex-direction: column; align-items: flex-end;">
+                            <span class="oc-count" style="font-size: 0.75rem; background: rgba(0, 255, 136, 0.15); color: var(--success); border-color: var(--success);">Leitura: ${leituraMaisRecente.toLocaleString()}</span>
+                            <span class="oc-count" style="font-size: 0.75rem; background: rgba(0, 112, 243, 0.2); color: var(--accent); border-color: var(--accent);">Média Consumo: ${mediaConsumo12}</span>
+                        </div>
                     </div>
-                    <div style="font-size: 11px; font-weight: bold; color: var(--text-p); margin-bottom: 6px;">
-                        Razão: ${razaoSelecionada} | Última NL: <span style="color: var(--warning);">${primeiroItem.oc}</span>
-                    </div>
-                    <div style="max-height: 220px; overflow-y: auto; padding-right: 2px;">
+                    <div style="max-height: 220px; overflow-y: auto; padding-right: 2px; margin-top: 4px;">
                         <div style="font-size: 10px; font-weight: 900; color: var(--accent); text-transform: uppercase; margin-bottom: 4px;">Histórico de Consumo (Meses Anteriores):</div>
                         ${htmlHistoricoMeses.reverse().join('')}
                     </div>
