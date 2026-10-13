@@ -1,6 +1,6 @@
 const CACHE_NAME = 'gpl-2026-v14';
 
-// Apenas arquivos locais da aplicação
+// Arquivos locais essenciais da aplicação para funcionamento offline
 const ASSETS = [
     './',
     './index.html',
@@ -11,49 +11,7 @@ const ASSETS = [
 
 // Instalação: armazena os recursos essenciais em cache
 self.addEventListener('install', (event) => {
-    event.waitUntil(const CACHE_NAME = 'gpl-cache-v14';
-const urlsToCache = [
-  './index.html',
-  './manifest.json',
-  './icon-192.png',
-  './icon-512.png'
-];
-
-// Instalação do Service Worker e salvamento dos arquivos no cache
-self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then((cache) => {
-        return cache.addAll(urlsToCache);
-      })
-      .then(() => self.skipWaiting())
-  );
-});
-
-// Ativação e limpeza de caches antigos
-self.addEventListener('activate', (event) => {
-  event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cacheName) => {
-          if (cacheName !== CACHE_NAME) {
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    }).then(() => self.clients.claim())
-  );
-});
-
-// Intercepta as requisições para permitir funcionamento offline
-self.addEventListener('fetch', (event) => {
-  event.respondWith(
-    caches.match(event.request)
-      .then((response) => {
-        return response || fetch(event.request);
-      })
-  );
-});
+    event.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
             return cache.addAll(ASSETS);
         }).then(() => self.skipWaiting())
@@ -75,7 +33,7 @@ self.addEventListener('activate', (event) => {
     );
 });
 
-// Interceptação: serve a versão em cache e tenta a rede em seguida (Cache First)
+// Interceptação: serve a versão em cache e busca na rede em segundo plano (ou fallback offline)
 self.addEventListener('fetch', (event) => {
     event.respondWith(
         caches.match(event.request).then((cachedResponse) => {
@@ -83,7 +41,7 @@ self.addEventListener('fetch', (event) => {
                 return cachedResponse;
             }
             return fetch(event.request).catch(() => {
-                // Se a requisição falhar (offline) e for uma navegação de página, envia o index.html
+                // Se a requisição falhar (offline) e for uma navegação, retorna o index.html do cache
                 if (event.request.mode === 'navigate') {
                     return caches.match('./index.html');
                 }
