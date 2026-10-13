@@ -106,9 +106,9 @@
             z-index: 99999; display: flex; align-items: center; justify-content: center; 
         } 
         .login-box { 
-            background: rgba(11, 15, 21, 0.95); padding: 30px; border-radius: 24px; 
+            background: rgba(11, 15, 21, 0.95); padding: 25px; border-radius: 20px; 
             border: 1px solid var(--border); border-top: 4px solid var(--success); 
-            width: 100%; max-width: 360px; text-align: center; backdrop-filter: blur(10px); 
+            width: 100%; max-width: 340px; text-align: center; backdrop-filter: blur(10px); 
             box-shadow: 0 20px 50px rgba(0,0,0,0.8); 
             max-height: 95vh; overflow-y: auto;
             margin: 10px;
@@ -119,7 +119,7 @@
             background: #000;
             border: 1px solid var(--border);
             border-radius: 10px;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             padding: 3px;
             gap: 3px;
         }
@@ -132,7 +132,7 @@
             text-transform: uppercase;
             cursor: pointer;
             flex: 1;
-            padding: 8px;
+            padding: 7px;
             border-radius: 8px;
             transition: 0.3s;
         }
@@ -150,13 +150,13 @@
         }
 
         .auth-btn { 
-            background: var(--success); color: black; width: 100%; padding: 12px; 
-            border-radius: 12px; font-weight: 900; cursor: pointer; border: none; 
-            text-transform: uppercase; margin-top: 10px; transition: 0.3s; 
+            background: var(--success); color: black; width: 100%; padding: 11px; 
+            border-radius: 10px; font-weight: 900; cursor: pointer; border: none; 
+            text-transform: uppercase; margin-top: 8px; transition: 0.3s; 
         } 
         .auth-link { 
-            color: var(--accent); font-size: 11px; cursor: pointer; 
-            font-weight: 700; margin-top: 12px; display: inline-block; text-transform: uppercase; text-align: center; width: 100%;
+            color: var(--accent); font-size: 10.5px; cursor: pointer; 
+            font-weight: 700; margin-top: 10px; display: inline-block; text-transform: uppercase; text-align: center; width: 100%;
         } 
 
         .container { 
@@ -172,20 +172,21 @@
             border-radius: 0;
             border: none;
             box-shadow: none;
-            padding: 8px;
+            padding: 6px;
         } 
         @media (min-width: 500px) {
             .container {
                 height: 95vh;
                 max-height: 920px;
-                border-radius: 24px;
+                border-radius: 20px;
                 border: 1px solid var(--grey-border);
                 box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+                padding: 8px;
             }
         }
 
         header { 
-            background: var(--surface); padding: 8px 12px; border-radius: 16px; 
+            background: var(--surface); padding: 8px 10px; border-radius: 14px; 
             border: 1px solid var(--border); display: flex; justify-content: space-between; 
             align-items: center; flex-shrink: 0; position: relative; 
         } 
@@ -197,25 +198,25 @@
         }
         
         .observations { 
-            background: var(--surface); padding: 10px 14px; border-radius: 14px; 
-            border: 1.8px solid #ffffff; display: flex; flex-direction: column; 
-            justify-content: center; gap: 6px; flex-shrink: 0;
+            background: var(--surface); padding: 10px 12px; border-radius: 12px; 
+            border: 1.5px solid #ffffff; display: flex; flex-direction: column; 
+            justify-content: center; gap: 5px; flex-shrink: 0;
             white-space: nowrap; overflow-x: auto;
         } 
-        .obs-item { font-size: 11px; color: #ffffff; display: flex; align-items: center; gap: 8px; font-weight: 700; } 
-        .dot { height: 8px; width: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; } 
+        .obs-item { font-size: 11px; color: #ffffff; display: flex; align-items: center; gap: 6px; font-weight: 700; } 
+        .dot { height: 7px; width: 7px; border-radius: 50%; display: inline-block; flex-shrink: 0; } 
 
         .alert-saturday-box {
             background: rgba(255, 204, 0, 0.15);
             border: 1.5px solid var(--warning);
-            padding: 10px 14px;
-            border-radius: 12px;
+            padding: 8px 12px;
+            border-radius: 10px;
             color: var(--warning);
-            font-size: 11.5px;
+            font-size: 11px;
             font-weight: 800;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             animation: pulseAlert 2s infinite;
         }
         @keyframes pulseAlert {
@@ -227,20 +228,20 @@
         .summary-grid { 
             display: grid; 
             grid-template-columns: repeat(2, 1fr); 
-            gap: 6px; 
+            gap: 5px; 
             height: auto; 
         } 
         .summary-card { 
-            background: var(--surface); padding: 8px 6px; border-radius: 12px; 
-            border: 1.5px solid var(--grey-border); border-top: 5px solid; 
-            display: flex; flex-direction: column; justify-content: center; text-align: center; height: 72px; 
+            background: var(--surface); padding: 7px 5px; border-radius: 10px; 
+            border: 1.5px solid var(--grey-border); border-top: 4px solid; 
+            display: flex; flex-direction: column; justify-content: center; text-align: center; height: 68px; 
         } 
-        .summary-card p { font-size: 9.5px; font-weight: 800; text-transform: uppercase; margin: 0; } 
-        .summary-card h2 { margin: 4px 0 0; font-size: 1.05rem; color: var(--text-h); font-weight: 900; word-break: break-all; } 
+        .summary-card p { font-size: 9px; font-weight: 800; text-transform: uppercase; margin: 0; } 
+        .summary-card h2 { margin: 3px 0 0; font-size: 1rem; color: var(--text-h); font-weight: 900; word-break: break-all; } 
 
         .neon-acumulado {
             grid-column: span 2;
-            height: 68px;
+            height: 64px;
         }
 
         .neon-leituras { border-top-color: var(--white-neon); } 
@@ -272,30 +273,31 @@
             overflow: hidden; 
             padding: 8px;
             background: linear-gradient(180deg, rgba(0, 112, 243, 0.08) 0%, var(--surface) 100%);
-            border-radius: 16px;
+            border-radius: 14px;
             border: 1.5px solid var(--accent);
         } 
         .form-content-area { overflow-y: auto; flex-grow: 1; min-height: 0; padding-right: 2px; }
-        .form-group { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
-        .form-group label { width: 80px; flex-shrink: 0; font-size: 10px; font-weight: 800; color: var(--accent); text-transform: uppercase; }
+        .form-group { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+        .form-group label { width: 75px; flex-shrink: 0; font-size: 10px; font-weight: 800; color: var(--accent); text-transform: uppercase; }
         
-        .actions-footer { display: flex; flex-direction: column; gap: 5px; margin-top: 6px; flex-shrink: 0; } 
-        .btn-add { background: var(--accent); color: #fff; width: 100%; padding: 11px; border-radius: 12px; font-weight: 900; cursor: pointer; border: none; text-transform: uppercase; font-size: 11px; } 
-        .btn-clear { background: transparent; color: var(--danger); width: 100%; padding: 7px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--danger); text-transform: uppercase; font-size: 9.5px; } 
-        .btn-clear-year { background: transparent; color: var(--purple); width: 100%; padding: 7px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--purple); text-transform: uppercase; font-size: 9.5px; } 
-        .backup-row { display: flex; gap: 6px; width: 100%; }
-        .btn-backup { background: transparent; color: var(--success); width: 50%; padding: 7px 4px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--success); text-transform: uppercase; font-size: 9.5px; text-align: center; } 
-        .btn-import { background: transparent; color: var(--warning); width: 50%; padding: 7px 4px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--warning); text-transform: uppercase; font-size: 9.5px; text-align: center; } 
+        .actions-footer { display: flex; flex-direction: column; gap: 4px; margin-top: 6px; flex-shrink: 0; } 
+        .btn-add { background: var(--accent); color: #fff; width: 100%; padding: 10px; border-radius: 10px; font-weight: 900; cursor: pointer; border: none; text-transform: uppercase; font-size: 11px; } 
+        .btn-clear { background: transparent; color: var(--danger); width: 100%; padding: 6px; border-radius: 10px; font-weight: 800; cursor: pointer; border: 1px solid var(--danger); text-transform: uppercase; font-size: 9.5px; } 
+        .btn-clear-year { background: transparent; color: var(--purple); width: 100%; padding: 6px; border-radius: 10px; font-weight: 800; cursor: pointer; border: 1px solid var(--purple); text-transform: uppercase; font-size: 9.5px; } 
+        .backup-row { display: flex; gap: 5px; width: 100%; }
+        .btn-backup { background: transparent; color: var(--success); width: 50%; padding: 6px 4px; border-radius: 10px; font-weight: 800; cursor: pointer; border: 1px solid var(--success); text-transform: uppercase; font-size: 9.5px; text-align: center; } 
+        .btn-import { background: transparent; color: var(--warning); width: 50%; padding: 6px 4px; border-radius: 10px; font-weight: 800; cursor: pointer; border: 1px solid var(--warning); text-transform: uppercase; font-size: 9.5px; text-align: center; } 
 
         .main-view { 
-            background: var(--surface); border-radius: 16px; border: 1.5px solid var(--brown-border); 
-            display: flex; flex-direction: column; flex-grow: 1; min-height: 0; overflow: hidden; 
+            background: var(--surface); border-radius: 14px; border: 1.5px solid var(--brown-border); 
+            display: flex; flex-direction: column; flex-grow: 1; min-height: 0; overflow: hidden; width: 100%;
         } 
         .table-container { flex-grow: 1; min-height: 0; overflow-y: auto; overscroll-behavior-y: contain; width: 100%; } 
 
+        /* Tabela perfeitamente contida e responsiva dentro da tela mobile */
         table { width: 100%; border-collapse: collapse; table-layout: fixed; } 
-        th, td { padding: 8px 4px; text-align: center; border-bottom: 1px solid var(--border); font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } 
-        th { background: #0d1117; color: var(--accent); font-size: 9.5px; text-transform: uppercase; position: sticky; top: 0; z-index: 5; } 
+        th, td { padding: 7px 2px; text-align: center; border-bottom: 1px solid var(--border); font-size: 10.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } 
+        th { background: #0d1117; color: var(--accent); font-size: 9px; text-transform: uppercase; position: sticky; top: 0; z-index: 5; } 
 
         .cards-container {
             display: grid;
@@ -323,7 +325,7 @@
             flex-direction: column;
             justify-content: space-between;
             box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-            height: 92px;
+            height: 90px;
             width: 100%;
         }
         .medidor-card {
@@ -386,7 +388,7 @@
         
         .header-btn {
             background: #1e2633; border: 1px solid var(--border); color: white;
-            padding: 7px 10px; border-radius: 9px; cursor: pointer; font-weight: 800; font-size: 10.5px; text-transform: uppercase;
+            padding: 6px 9px; border-radius: 8px; cursor: pointer; font-weight: 800; font-size: 10px; text-transform: uppercase;
         }
 
         @media (max-width: 768px) {
@@ -487,7 +489,7 @@
 <!-- TELA DE LOGIN / PAGAMENTO -->
 <div id="loginScreen"> 
     <div class="login-box"> 
-        <div style="background:var(--success); color:black; padding:10px; border-radius:12px; font-weight:900; margin-bottom:15px;">GPL</div> 
+        <div style="background:var(--success); color:black; padding:10px; border-radius:10px; font-weight:900; margin-bottom:12px;">GPL</div> 
         
         <div class="login-tabs-header">
             <button class="login-tab-btn active" id="btnPaneLogin" onclick="switchLoginPane('loginPane')">Acessar</button>
@@ -517,11 +519,11 @@
 <div class="container"> 
     <!-- CABEÇALHO -->
     <header> 
-        <div style="display: flex; align-items: center; gap: 8px; overflow: hidden;">
-            <div style="background:var(--success); color:black; padding:6px 10px; border-radius:8px; font-weight:900; font-size:12px; flex-shrink:0;">GPL</div> 
-            <span style="font-size: 11.5px; font-weight: 800; color: var(--success); text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" id="headerUserDisplay"></span>
+        <div style="display: flex; align-items: center; gap: 6px; overflow: hidden;">
+            <div style="background:var(--success); color:black; padding:5px 8px; border-radius:6px; font-weight:900; font-size:11px; flex-shrink:0;">GPL</div> 
+            <span style="font-size: 11px; font-weight: 800; color: var(--success); text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" id="headerUserDisplay"></span>
         </div>
-        <div style="display: flex; gap: 6px; align-items: center; flex-shrink: 0;"> 
+        <div style="display: flex; gap: 5px; align-items: center; flex-shrink: 0;"> 
             <button class="header-btn" onclick="toggleMonthGrid()" id="currentMonthDisplay" style="background: var(--accent); border-color: var(--accent);">MÊS</button> 
             <div id="monthGrid" class="month-grid"></div> 
             
@@ -532,10 +534,10 @@
     </header> 
 
     <div id="progArea" class="prog-area"> 
-        <div style="width:100%; background:#1e2633; height:7px; border-radius:10px; overflow:hidden; border:1px solid var(--border); margin-bottom:2px;"> 
+        <div style="width:100%; background:#1e2633; height:6px; border-radius:10px; overflow:hidden; border:1px solid var(--border); margin-bottom:2px;"> 
             <div id="barFill" style="height:100%; width:0%; background:linear-gradient(90deg, var(--accent), var(--success)); transition:0.8s;"></div> 
         </div> 
-        <div style="display:flex; justify-content:space-between; font-size:9.5px; font-weight:bold; color:var(--text-p); text-transform: uppercase;"> 
+        <div style="display:flex; justify-content:space-between; font-size:9px; font-weight:bold; color:var(--text-p); text-transform: uppercase;"> 
             <span id="barTxt">Progresso Meta: 0 / 8.000</span> 
             <span id="barPerc" style="color:var(--success)">0%</span> 
         </div> 
@@ -615,7 +617,16 @@
                 <div class="table-container"> 
                     <table> 
                         <thead> 
-                            <tr><th style="width: 14%;">Data</th><th style="width: 16%;">Local</th><th style="width: 16%;">Razão</th><th style="width: 14%;">Rotas</th><th style="width: 15%;">Leit.</th><th style="width: 10%;">Imp</th><th style="width: 15%;">%</th><th class="no-print" style="width: 0%; display:none;"></th></tr> 
+                            <tr>
+                                <th style="width: 14%;">Data</th>
+                                <th style="width: 15%;">Local</th>
+                                <th style="width: 15%;">Razão</th>
+                                <th style="width: 12%;">Rotas</th>
+                                <th style="width: 14%;">Leit.</th>
+                                <th style="width: 9%;">Imp</th>
+                                <th style="width: 12%;">%</th>
+                                <th class="no-print" style="width: 9%;">Ação</th>
+                            </tr> 
                         </thead> 
                         <tbody id="tabelaCorpo"></tbody> 
                     </table> 
@@ -668,7 +679,7 @@
                 <div>
                     <span style="font-weight: 800; color: transparent; font-size: 10px; display: block; margin-bottom: 3px;">AÇÃO</span>
                     <input type="file" id="inputTxtOcorrencia" accept=".txt,.csv" style="display:none" onchange="processarArquivoTxtSelecionado(this)">
-                    <button type="button" onclick="document.getElementById('inputTxtOcorrencia').click()" class="auth-btn" style="width: auto; margin-top: 0; padding: 7px 10px; font-size: 10.5px; background: var(--purple); color: #fff;">
+                    <button type="button" onclick="document.getElementById('inputTxtOcorrencia').click()" class="auth-btn" style="width: auto; margin-top: 0; padding: 7px 10px; font-size: 10px; background: var(--purple); color: #fff;">
                         📂 Importar
                     </button>
                 </div>
@@ -678,7 +689,7 @@
             </div>
             <div class="main-view" style="margin-top: 4px;">
                 <div id="relatorioCardsCorpo" class="cards-container">
-                    <div style="grid-column: 1 / -1; text-align: center; color: var(--text-p); padding: 20px; font-weight: 700; font-size: 11.5px;">
+                    <div style="grid-column: 1 / -1; text-align: center; color: var(--text-p); padding: 25px; font-weight: 700; font-size: 11px;">
                         Carregue um arquivo TXT ou pesquise pelo número do medidor para visualizar o histórico.
                     </div>
                 </div>
@@ -1080,27 +1091,24 @@
 
     function dispararSalvamentoAutomatico() {
         if (!currentUser) return;
+        
+        // 1. Salva instantaneamente no dispositivo (garantia absoluta contra perda ao fechar)
+        const pacoteLocal = {
+            dados: db,
+            calendario: calendarioDb,
+            relatorios: relatorioRazoesDb
+        };
+        localStorage.setItem('gpl_cache_' + currentUser, JSON.stringify(pacoteLocal));
+
+        // 2. Envia para a nuvem do Firebase
         if (window.cloudSave) {
             window.cloudSave(currentUser, db, calendarioDb, relatorioRazoesDb);
         }
     }
 
-    // Solução robusta: beacon síncrono/keepalive na nuvem ao fechar a página
-    window.addEventListener('beforeunload', (e) => {
-        if (!currentUser) return;
-        const payload = JSON.stringify({
-            user: currentUser,
-            dados: db,
-            calendario: calendarioDb,
-            relatorios: relatorioRazoesDb
-        });
-        // Utiliza Beacon nativo para garantir envio ao fechar no mobile/desktop
-        const endpoint = "https://firestore.googleapis.com/v1/projects/gestaoprodutividadeleituras/databases/(default)/documents/usuarios/" + currentUser.toUpperCase();
-        if (navigator.sendBeacon) {
-            navigator.sendBeacon(endpoint, payload);
-        } else {
-            dispararSalvamentoAutomatico();
-        }
+    // Salva ao fechar ou ocultar a aba
+    window.addEventListener('beforeunload', () => {
+        dispararSalvamentoAutomatico();
     });
 
     document.addEventListener('visibilitychange', () => {
@@ -1151,6 +1159,7 @@
                 if (cloudData.calendario) calendarioDb = cloudData.calendario;
                 if (cloudData.relatorios) relatorioRazoesDb = cloudData.relatorios;
 
+                dispararSalvamentoAutomatico();
                 atualizarTabela();
                 renderizarCalendario();
                 renderizarTabelaRelatorioAtual();
@@ -1291,8 +1300,8 @@
                         </span>
                     </td>
                     <td class="no-print">
-                        ${isAdmUser ? '<span style="color:var(--purple); font-weight:bold; font-size:9.5px;">ADMIN</span>' : `
-                            <button type="button" onclick="alternarAtivacaoUsuario('${u.nome}',${!isAtivo})" class="header-btn" style="background: ${isAtivo ? 'var(--danger)' : 'var(--success)'}; color: ${isAtivo ? '#fff' : '#000'}; padding: 3px 6px; font-size: 9.5px;">
+                        ${isAdmUser ? '<span style="color:var(--purple); font-weight:bold; font-size:9px;">ADMIN</span>' : `
+                            <button type="button" onclick="alternarAtivacaoUsuario('${u.nome}',${!isAtivo})" class="header-btn" style="background: ${isAtivo ? 'var(--danger)' : 'var(--success)'}; color: ${isAtivo ? '#fff' : '#000'}; padding: 3px 6px; font-size: 9px;">
                                 ${isAtivo ? 'Bloquear' : 'Aprovar'}
                             </button>
                         `}
@@ -1442,7 +1451,7 @@
 
         if (!dadosRazao || Object.keys(dadosRazao).length === 0) {
             corpo.innerHTML = `
-                <div style="grid-column: 1 / -1; text-align: center; color: var(--text-p); padding: 25px; font-weight: 700; font-size: 11.5px;">
+                <div style="grid-column: 1 / -1; text-align: center; color: var(--text-p); padding: 25px; font-weight: 700; font-size: 11px;">
                     Nenhum arquivo TXT carregado para esta razão. Clique em "Importar".
                 </div>`;
             return;
@@ -1464,7 +1473,7 @@
 
             if (mesesEncontrados.length === 0) {
                 corpo.innerHTML = `
-                    <div style="grid-column: 1 / -1; text-align: center; color: var(--text-p); padding: 25px; font-weight: 700; font-size: 11.5px;">
+                    <div style="grid-column: 1 / -1; text-align: center; color: var(--text-p); padding: 25px; font-weight: 700; font-size: 11px;">
                         Nenhum medidor encontrado com o termo "${termoBusca}".
                     </div>`;
                 return;
@@ -1509,12 +1518,12 @@
                 }
 
                 htmlHistoricoMeses.push(`
-                    <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 8px; padding: 6px 8px; margin-bottom: 4px; font-size: 10.5px;">
+                    <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 8px; padding: 6px 8px; margin-bottom: 4px; font-size: 10px;">
                         <div style="display: flex; justify-content: space-between; font-weight: bold; color: var(--text-h);">
                             <span>📅 ${nomeMesStr}/${ano}</span>
                             <span style="color: var(--success);">Consumo: ${typeof consumoMes === 'number' ? consumoMes.toLocaleString() : consumoMes}</span>
                         </div>
-                        <div style="display: flex; justify-content: space-between; margin-top: 2px; font-size: 9.5px; color: var(--text-p);">
+                        <div style="display: flex; justify-content: space-between; margin-top: 2px; font-size: 9px; color: var(--text-p);">
                             <span>Leitura: ${leituraAtual.toLocaleString()}</span>
                             <span style="color: ${isComLeitura ? 'var(--success)' : 'var(--warning)'};">${infoNL.status} (NL ${dados.oc})</span>
                         </div>
@@ -1531,17 +1540,17 @@
                 <div class="medidor-card">
                     <div class="oc-card-header" style="align-items: flex-start; gap: 4px;">
                         <div style="overflow: hidden;">
-                            <span class="oc-code" style="font-size: 0.9rem; color: var(--success); display: block; word-break: break-all;">Medidor: ${termoBusca}</span>
-                            <span style="font-size: 9.5px; font-weight: bold; color: var(--text-p);">Razão: ${razaoSelecionada} | NL: <span style="color: var(--warning);">${ultimoItem.oc}</span></span>
+                            <span class="oc-code" style="font-size: 0.85rem; color: var(--success); display: block; word-break: break-all;">Medidor: ${termoBusca}</span>
+                            <span style="font-size: 9px; font-weight: bold; color: var(--text-p);">Razão: ${razaoSelecionada} | NL: <span style="color: var(--warning);">${ultimoItem.oc}</span></span>
                         </div>
                         <div style="display: flex; gap: 3px; flex-direction: column; align-items: flex-end; flex-shrink: 0;">
-                            <span class="oc-count" style="font-size: 0.7rem; background: rgba(0, 255, 136, 0.15); color: var(--success); border-color: var(--success);">Leit: ${leituraMaisRecente.toLocaleString()}</span>
-                            <span class="oc-count" style="font-size: 0.7rem; background: rgba(255, 204, 0, 0.15); color: var(--warning); border-color: var(--warning);">Cons: ${typeof consumoMesAtual === 'number' ? consumoMesAtual.toLocaleString() : consumoMesAtual}</span>
-                            <span class="oc-count" style="font-size: 0.7rem; background: rgba(0, 112, 243, 0.2); color: var(--accent); border-color: var(--accent);">Méd: ${mediaConsumo12}</span>
+                            <span class="oc-count" style="font-size: 0.65rem; background: rgba(0, 255, 136, 0.15); color: var(--success); border-color: var(--success);">Leit: ${leituraMaisRecente.toLocaleString()}</span>
+                            <span class="oc-count" style="font-size: 0.65rem; background: rgba(255, 204, 0, 0.15); color: var(--warning); border-color: var(--warning);">Cons: ${typeof consumoMesAtual === 'number' ? consumoMesAtual.toLocaleString() : consumoMesAtual}</span>
+                            <span class="oc-count" style="font-size: 0.65rem; background: rgba(0, 112, 243, 0.2); color: var(--accent); border-color: var(--accent);">Méd: ${mediaConsumo12}</span>
                         </div>
                     </div>
-                    <div style="max-height: 200px; overflow-y: auto; padding-right: 2px; margin-top: 4px;">
-                        <div style="font-size: 9.5px; font-weight: 900; color: var(--accent); text-transform: uppercase; margin-bottom: 3px;">Histórico de Consumo:</div>
+                    <div style="max-height: 190px; overflow-y: auto; padding-right: 2px; margin-top: 4px;">
+                        <div style="font-size: 9px; font-weight: 900; color: var(--accent); text-transform: uppercase; margin-bottom: 3px;">Histórico de Consumo:</div>
                         ${htmlHistoricoMeses.reverse().join('')}
                     </div>
                 </div>
@@ -1554,7 +1563,7 @@
 
         if (!dadosMesAtual || Object.keys(dadosMesAtual).length === 0) {
             corpo.innerHTML = `
-                <div style="grid-column: 1 / -1; text-align: center; color: var(--text-p); padding: 25px; font-weight: 700; font-size: 11.5px;">
+                <div style="grid-column: 1 / -1; text-align: center; color: var(--text-p); padding: 25px; font-weight: 700; font-size: 11px;">
                     Nenhum TXT importado para ${msNomesCompletos[viewDate.getMonth()]} nesta razão.
                 </div>`;
             return;
@@ -1605,9 +1614,9 @@
                         <td style="font-weight: bold; color: var(--accent);">${razao}</td>
                         <td>
                             ${currentIsAdmin ? `
-                                <input type="date" value="${dataSalva}" onchange="salvarDataCalendario('${razao}', this.value)" style="margin-bottom:0; font-size:10.5px; padding:4px;">
+                                <input type="date" value="${dataSalva}" onchange="salvarDataCalendario('${razao}', this.value)" style="margin-bottom:0; font-size:10px; padding:3px;">
                             ` : `
-                                <div style="font-weight: bold; color: ${dataSalva ? 'var(--text-h)' : 'var(--text-p)'}; font-size: 11.5px; padding: 4px;">
+                                <div style="font-weight: bold; color: ${dataSalva ? 'var(--text-h)' : 'var(--text-p)'}; font-size: 11px; padding: 4px;">
                                     ${dataFormatadaExibicao}
                                 </div>
                             `}
@@ -1659,7 +1668,7 @@
             <tr>
                 <td style="font-weight: bold; color: var(--accent);">${item.numero}</td>
                 <td><span style="color: ${item.status === 'Com leitura' ? 'var(--success)' : 'var(--warning)'}; font-weight: bold;">${item.status}</span></td>
-                <td style="text-align: left; font-size: 11px;">${item.detalhe}</td>
+                <td style="text-align: left; font-size: 10.5px;">${item.detalhe}</td>
             </tr>
         `).join('');
 
@@ -1792,11 +1801,23 @@
         document.getElementById('currentMonthDisplay').innerText = nomeMes; 
         document.getElementById('printSubHeader').innerText = `Utilizador: ${currentUser}  |  Período: ${nomeMes}/2026`;
         
+        // Carrega do cache local primeiro para zero perda e velocidade
+        const cacheLocalStr = localStorage.getItem('gpl_cache_' + currentUser);
+        if (cacheLocalStr) {
+            try {
+                const cacheLocal = JSON.parse(cacheLocalStr);
+                if (cacheLocal.dados) db = cacheLocal.dados;
+                if (cacheLocal.calendario) calendarioDb = cacheLocal.calendario;
+                if (cacheLocal.relatorios) relatorioRazoesDb = cacheLocal.relatorios;
+            } catch(e) {}
+        }
+
         let cloudData = await window.cloudLoad(currentUser);
         if (cloudData) {
             if (cloudData.dados) db = cloudData.dados;
             if (cloudData.calendario) calendarioDb = cloudData.calendario;
             if (cloudData.relatorios) relatorioRazoesDb = cloudData.relatorios;
+            dispararSalvamentoAutomatico();
         }
 
         renderMonths(); 
@@ -1817,6 +1838,7 @@
             }
             if (dadosNuvem.relatorios) relatorioRazoesDb = dadosNuvem.relatorios;
 
+            dispararSalvamentoAutomatico();
             atualizarTabela();
             renderizarTabelaRelatorioAtual();
         });
@@ -1829,6 +1851,16 @@
     });
 
     async function handleLoginAuto() {
+        const cacheLocalStr = localStorage.getItem('gpl_cache_' + currentUser);
+        if (cacheLocalStr) {
+            try {
+                const cacheLocal = JSON.parse(cacheLocalStr);
+                if (cacheLocal.dados) db = cacheLocal.dados;
+                if (cacheLocal.calendario) calendarioDb = cacheLocal.calendario;
+                if (cacheLocal.relatorios) relatorioRazoesDb = cacheLocal.relatorios;
+            } catch(e) {}
+        }
+
         let cloudData = await window.cloudLoad(currentUser);
         if (cloudData) {
             if (cloudData.dados) db = cloudData.dados;
@@ -1867,13 +1899,15 @@
             sL += i.leituras; sI += i.imped; 
             return `<tr>
                 <td>${i.data.split('-').reverse().slice(0,2).join('/')}</td>
-                <td style="text-overflow: ellipsis;">${i.localidade}</td>
+                <td>${i.localidade}</td>
                 <td>${i.razao}</td>
                 <td>${i.rotas}</td>
                 <td>${i.leituras.toLocaleString()}</td>
                 <td>${i.imped}</td>
                 <td><span style="color:${calcPercentual <= 0.5 ? 'var(--success)' : 'var(--danger)'}; font-weight:900;">${calcPercentual.toFixed(1)}%</span></td>
-                <td class="no-print" style="display:none;"></td>
+                <td class="no-print">
+                    <button type="button" onclick="editar(${i.id})" title="Editar" style="background:none; border:none; color:var(--accent); cursor:pointer; font-size:12px; padding:2px;">✏️</button>
+                </td>
             </tr>`; 
         }).join('');
 
@@ -1930,7 +1964,7 @@
                 id: Date.now(), 
                 ...dadosForm
             }); 
-            alert("Registro salvo na nuvem com sucesso!");
+            alert("Registro salvo com sucesso!");
         }
 
         dispararSalvamentoAutomatico();
@@ -1981,7 +2015,7 @@
                 db = []; 
                 dispararSalvamentoAutomatico();
                 atualizarTabela(); 
-                alert("Dados de 2026 removidos da nuvem."); 
+                alert("Dados de 2026 removidos."); 
             } 
         } 
     } 
@@ -2047,7 +2081,7 @@
                     renderizarTabelaRelatorioAtual();
                     verificarSabadosAlertas();
                     
-                    alert("Backup restaurado e sincronizado com a nuvem!");
+                    alert("Backup restaurado e sincronizado!");
                 }
             } catch (err) { 
                 alert("Erro ao ler o arquivo JSON."); 
