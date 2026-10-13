@@ -1419,6 +1419,7 @@
             let qtdMesesComConsumo = 0;
 
             let htmlHistoricoMeses = [];
+            let consumoMesAtual = "-";
 
             for (let i = 0; i < ultimos12Meses.length; i++) {
                 const anoMes = ultimos12Meses[i];
@@ -1440,6 +1441,10 @@
                     if (consumoMes < 0) consumoMes = 0;
                 } else {
                     consumoMes = "-";
+                }
+
+                if (i === ultimos12Meses.length - 1) {
+                    consumoMesAtual = consumoMes;
                 }
 
                 if (typeof consumoMes === 'number') {
@@ -1475,6 +1480,7 @@
                         </div>
                         <div style="display: flex; gap: 4px; flex-direction: column; align-items: flex-end;">
                             <span class="oc-count" style="font-size: 0.75rem; background: rgba(0, 255, 136, 0.15); color: var(--success); border-color: var(--success);">Leitura: ${leituraMaisRecente.toLocaleString()}</span>
+                            <span class="oc-count" style="font-size: 0.75rem; background: rgba(255, 204, 0, 0.15); color: var(--warning); border-color: var(--warning);">Consumo: ${typeof consumoMesAtual === 'number' ? consumoMesAtual.toLocaleString() : consumoMesAtual}</span>
                             <span class="oc-count" style="font-size: 0.75rem; background: rgba(0, 112, 243, 0.2); color: var(--accent); border-color: var(--accent);">Média Consumo: ${mediaConsumo12}</span>
                         </div>
                     </div>
