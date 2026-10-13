@@ -901,35 +901,6 @@
         }
     };
 
-    window.escutarAlteracoesNuvem = function(user, callbackAtualizacao) {
-        const userTrim = user.trim();
-        const userUpper = userTrim.toUpperCase();
-        let docRef = doc(dbCloud, "usuarios", userUpper);
-        
-        onSnapshot(docRef, (docSnap) => {
-            if (docSnap.exists()) {
-                const dadosNuvem = docSnap.data();
-                getDoc(doc(dbCloud, "config", "calendarioGlobal")).then(calSnap => {
-                    if (calSnap.exists()) {
-                        const globalData = calSnap.data();
-                        dadosNuvem.calendario = globalData.calendario || globalData;
-                    }
-                    callbackAtualizacao(dadosNuvem);
-                });
-            }
-        });
-
-        onSnapshot(doc(dbCloud, "config", "calendarioGlobal"), (docSnap) => {
-            if (docSnap.exists()) {
-                const dadosGlobal = docSnap.data();
-                const calendarioExtraido = dadosGlobal.calendario || dadosGlobal;
-                if (calendarioExtraido) {
-                    callbackAtualizacao({ calendario: calendarioExtraido });
-                }
-            }
-        });
-    };
-
     window.escutarNovosCadastrosAdmin = function(callbackNotificacao) {
         onSnapshot(collection(dbCloud, "usuarios"), (snapshot) => {
             let pendentes = 0;
@@ -1079,13 +1050,9 @@
         }
     }
 
-    window.addEventListener('beforeunload', () => {
-        dispararSalvamentoAutomatico();
-    });
-
-    document.addEventListener('visibilitychange', () => {
-        if (document.visibilityState === 'hidden') {
-            dispararSalvamentoAutomatico();
+    window.addEventListener('pagehide', () => {
+        if (currentUser && window.cloudSave) {
+            window.cloudSave(currentUser, db, calendarioDb, relatorioRazoesDb);
         }
     });
 
@@ -1127,9 +1094,9 @@
         try {
             const cloudData = await window.cloudLoad(currentUser);
             if (cloudData) {
-                if (cloudData.dados) db = cloudData.dados;
-                if (cloudData.calendario) calendarioDb = cloudData.calendario;
-                if (cloudData.relatorios) relatorioRazoesDb = cloudData.relatorios;
+                db = cloudData.dados || [];
+                calendarioDb = cloudData.calendario || {};
+                relatorioRazoesDb = cloudData.relatorios || {};
 
                 atualizarTabela();
                 renderizarCalendario();
@@ -1144,7 +1111,7 @@
             }
         } catch (error) {
             console.error("Erro ao atualizar:", error);
-            alert("Erro ao conectar com a nuvem. Verifique a conexão.");
+            alert("Erro de conexão com a nuvem. Verifique a conexão.");
             return false;
         } finally {
             if (btnElement) {
@@ -1154,10 +1121,16 @@
         }
     }
 
-    function sairDaConta() {
+    async function sairDaConta() {
         if (!confirm("Deseja realmente fechar a sessão / sair da conta?")) return;
 
-        dispararSalvamentoAutomatico();
+        if (currentUser && window.cloudSave) {
+            try {
+                await window.cloudSave(currentUser, db, calendarioDb, relatorioRazoesDb);
+            } catch (e) {
+                console.error("Erro ao salvar ao sair:", e);
+            }
+        }
 
         currentUser = "";
         currentIsAdmin = false;
@@ -1772,11 +1745,16 @@
         document.getElementById('currentMonthDisplay').innerText = nomeMes; 
         document.getElementById('printSubHeader').innerText = `Utilizador: ${currentUser}  |  Período: ${nomeMes}/2026`;
         
+        // CARREGAMENTO ÚNICO E CENTRALIZADO DA NUVEM (SEM DUPLICIDADE)
         let cloudData = await window.cloudLoad(currentUser);
         if (cloudData) {
-            if (cloudData.dados) db = cloudData.dados;
-            if (cloudData.calendario) calendarioDb = cloudData.calendario;
-            if (cloudData.relatorios) relatorioRazoesDb = cloudData.relatorios;
+            db = cloudData.dados || [];
+            calendarioDb = cloudData.calendario || {};
+            relatorioRazoesDb = cloudData.relatorios || {};
+        } else {
+            db = [];
+            calendarioDb = {};
+            relatorioRazoesDb = {};
         }
 
         renderMonths(); 
@@ -1787,19 +1765,6 @@
         verificarSabadosAlertas();
         atualizarTabela(); 
         if(currentIsAdmin) carregarListaUtilizadoresPendentes();
-
-        window.escutarAlteracoesNuvem(currentUser, (dadosNuvem) => {
-            if (dadosNuvem.dados) db = dadosNuvem.dados;
-            if (dadosNuvem.calendario) {
-                calendarioDb = dadosNuvem.calendario;
-                renderizarCalendario();
-                verificarSabadosAlertas();
-            }
-            if (dadosNuvem.relatorios) relatorioRazoesDb = dadosNuvem.relatorios;
-
-            atualizarTabela();
-            renderizarTabelaRelatorioAtual();
-        });
     }
 
     window.addEventListener('DOMContentLoaded', () => {
@@ -1811,9 +1776,9 @@
     async function handleLoginAuto() {
         let cloudData = await window.cloudLoad(currentUser);
         if (cloudData) {
-            if (cloudData.dados) db = cloudData.dados;
-            if (cloudData.calendario) calendarioDb = cloudData.calendario;
-            if (cloudData.relatorios) relatorioRazoesDb = cloudData.relatorios;
+            db = cloudData.dados || [];
+            calendarioDb = cloudData.calendario || {};
+            relatorioRazoesDb = cloudData.relatorios || {};
         }
         initSystem();
     }
