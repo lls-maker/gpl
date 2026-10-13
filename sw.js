@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gpl-2026-v8';
+const CACHE_NAME = 'gpl-2026-v9';
 
 // Apenas arquivos locais da aplicação
 const ASSETS = [
