@@ -2,7 +2,7 @@
 <html lang="pt-br"> 
 <head> 
     <meta charset="UTF-8"> 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"> 
     <title>Gestão de Produtividade de Leituras</title> 
 
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzMiAzMicgd2lkdGg9JzMyJyBoZWlnaHQ9JzMyJz48cmVjdCB3aWR0aD0nMzInIGhlaWdodD0nMzInIHJ4PSc2JyBmaWxsPScjMGIwZjE1Jz48L3JlY3Q+PHRleHQgeD0nNTAlJyB5PSc1NSUnIGRvbWluYW50LWJhc2VsaW5lPSdtaWRkbGUnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJyBmb250LXdlaWdodD0nOTAwJyBmb250LXdlaWdodD0nMTAwMCcgZm9udC1zaXplPScxMCcgZmlsbD0nIzAwZmY4OCcgbGV0dGVyLXNwYWNpbmdzPScwLjUnPkdQTDwvdGV4dD48L3N2Zz4=">
@@ -281,11 +281,21 @@
             background: var(--surface); border-radius: 16px; border: 1.5px solid var(--brown-border); 
             display: flex; flex-direction: column; flex-grow: 1; min-height: 0; overflow: hidden; 
         } 
-        .table-container { flex-grow: 1; min-height: 0; overflow-y: auto; overscroll-behavior-y: contain; } 
+        .table-container { flex-grow: 1; min-height: 0; overflow-y: auto; overflow-x: auto; overscroll-behavior-y: contain; } 
 
-        table { width: 100%; border-collapse: collapse; } 
-        th, td { padding: 9px 6px; text-align: center; border-bottom: 1px solid var(--border); font-size: 12px; } 
-        th { background: #0d1117; color: var(--accent); font-size: 10px; text-transform: uppercase; position: sticky; top: 0; z-index: 5; } 
+        table { width: 100%; border-collapse: collapse; table-layout: fixed; } 
+        th, td { padding: 6px 4px; text-align: center; border-bottom: 1px solid var(--border); font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } 
+        th { background: #0d1117; color: var(--accent); font-size: 9.5px; text-transform: uppercase; position: sticky; top: 0; z-index: 5; } 
+
+        /* Larguras otimizadas para a tabela de registros caber perfeitamente no celular */
+        th:nth-child(1), td:nth-child(1) { width: 15%; } /* Data */
+        th:nth-child(2), td:nth-child(2) { width: 18%; } /* Localidade */
+        th:nth-child(3), td:nth-child(3) { width: 17%; } /* Razão */
+        th:nth-child(4), td:nth-child(4) { width: 14%; } /* Rotas */
+        th:nth-child(5), td:nth-child(5) { width: 15%; } /* Leituras */
+        th:nth-child(6), td:nth-child(6) { width: 10% !important; } /* Imp. */
+        th:nth-child(7), td:nth-child(7) { width: 11%; } /* % */
+        th:nth-child(8), td:nth-child(8) { width: 10%; } /* Ação */
 
         .cards-container {
             display: grid;
@@ -512,7 +522,7 @@
             
             <button class="header-btn" onclick="window.print()">IMPRIMIR</button> 
             <button class="header-btn btn-atualizar-mobile" onclick="atualizarDadosManualmente(this)" title="Atualizar dados da nuvem" style="background: var(--success); color: black;">🔄</button>
-            <button class="header-btn" onclick="sairDaConta()" title="Sair da Conta" style="background: var(--danger); color: white;">🚪</button>
+            <button class="header-btn" onclick="sairDaConta()" title="Fechar Aplicativo / Sair" style="background: var(--danger); color: white;">🚪</button>
         </div> 
     </header> 
 
@@ -600,7 +610,7 @@
                 <div class="table-container"> 
                     <table> 
                         <thead> 
-                            <tr><th>Data</th><th>Localidade</th><th>Razão</th><th>Rotas</th><th>Leituras</th><th>Imp.</th><th>%</th><th class="no-print">Ação</th></tr> 
+                            <tr><th>Data</th><th>Local</th><th>Razão</th><th>Rotas</th><th>Leit.</th><th>Imp.</th><th>%</th><th class="no-print">Ação</th></tr> 
                         </thead> 
                         <tbody id="tabelaCorpo"></tbody> 
                     </table> 
@@ -1069,7 +1079,6 @@
         }
     }
 
-    // SALVA AUTOMATICAMENTE QUANDO O UTILIZADOR FECHA A ABA, O NAVEGADOR OU MUDA DE APLICATIVO
     window.addEventListener('beforeunload', () => {
         dispararSalvamentoAutomatico();
     });
@@ -1146,7 +1155,7 @@
     }
 
     function sairDaConta() {
-        if (!confirm("Deseja realmente sair da conta?")) return;
+        if (!confirm("Deseja realmente fechar a sessão / sair da conta?")) return;
 
         dispararSalvamentoAutomatico();
 
@@ -1845,7 +1854,7 @@
                 <td>${i.imped}</td>
                 <td><span style="color:${calcPercentual <= 0.5 ? 'var(--success)' : 'var(--danger)'}; font-weight:900;">${calcPercentual.toFixed(2)}%</span></td>
                 <td class="no-print">
-                    <button type="button" onclick="editar(${i.id})" title="Editar" style="background:none; border:none; color:var(--accent); cursor:pointer; font-size:14px; padding:4px;">✏️</button>
+                    <button type="button" onclick="editar(${i.id})" title="Editar" style="background:none; border:none; color:var(--accent); cursor:pointer; font-size:13px; padding:2px;">✏️</button>
                 </td>
             </tr>`; 
         }).join('');
@@ -2071,5 +2080,4 @@
         }
     };
 </script> 
-</body> 
-</html>
+</body> </html>
