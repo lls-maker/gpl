@@ -1139,11 +1139,9 @@
         calendarioDb = {};
         relatorioRazoesDb = {};
 
-        // Sincroniza o mês para o mês atual real do sistema
         let d = new Date();
         viewDate = new Date(d.getFullYear(), d.getMonth(), 1);
 
-        // Limpa todos os campos de formulário e inputs de pesquisa
         document.getElementById('loginUser').value = "";
         document.getElementById('loginPass').value = "";
         document.getElementById('searchRazao').value = "";
@@ -1743,7 +1741,6 @@
             btnAdmin.style.display = 'none';
         }
 
-        // Abre sempre na aba Dashboard ao iniciar/logar
         switchMobileTab('tabDashboard', document.getElementById('btnTabDashboard'));
 
         let nomeMes = msNomesCompletos[viewDate.getMonth()];
