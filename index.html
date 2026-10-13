@@ -942,7 +942,9 @@
     let currentIsAdmin = sessionStorage.getItem('gpl_is_admin') === 'true';
 
     let dataAtualDoSistema = new Date();
-    let viewDate = new Date(2026, dataAtualDoSistema.getMonth(), 1); 
+    let savedMonth = sessionStorage.getItem('gpl_active_month');
+    let initialMonth = (savedMonth !== null) ? parseInt(savedMonth, 10) : dataAtualDoSistema.getMonth();
+    let viewDate = new Date(2026, initialMonth, 1); 
 
     const lista18Razoes = Array.from({length: 18}, (_, i) => `RAZÃO ${String(i + 1).padStart(2, '0')}`);
     
@@ -1136,6 +1138,7 @@
         currentIsAdmin = false;
         sessionStorage.removeItem('gpl_user');
         sessionStorage.removeItem('gpl_is_admin');
+        sessionStorage.removeItem('gpl_active_month');
         
         db = [];
         calendarioDb = {};
@@ -1795,6 +1798,7 @@
      
     function selectMonth(m) { 
         viewDate.setMonth(m); 
+        sessionStorage.setItem('gpl_active_month', m);
         let nomeMes = msNomesCompletos[m];
         document.getElementById('currentMonthDisplay').innerText = nomeMes; 
         document.getElementById('printSubHeader').innerText = `Utilizador: ${currentUser}  |  Período: ${nomeMes}/2026`;
