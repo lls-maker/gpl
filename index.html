@@ -760,6 +760,7 @@
     };
 
     window.cloudSave = async function(user, data, calendario, relatorios) {
+        if (!user) return;
         try {
             const userTrim = user.trim();
             const userUpper = userTrim.toUpperCase();
@@ -1062,6 +1063,23 @@
     const msNomesCompletos = ["JANEIRO", "FEVEREIRO", "MARÇO", "ABRIL", "MAIO", "JUNHO", "JULHO", "AGOSTO", "SETEMBRO", "OUTUBRO", "NOVEMBRO", "DEZEMBRO"]; 
     const fM = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); 
 
+    function dispararSalvamentoAutomatico() {
+        if (currentUser && window.cloudSave) {
+            window.cloudSave(currentUser, db, calendarioDb, relatorioRazoesDb);
+        }
+    }
+
+    // SALVA AUTOMATICAMENTE QUANDO O UTILIZADOR FECHA A ABA, O NAVEGADOR OU MUDA DE APLICATIVO
+    window.addEventListener('beforeunload', () => {
+        dispararSalvamentoAutomatico();
+    });
+
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'hidden') {
+            dispararSalvamentoAutomatico();
+        }
+    });
+
     function switchLoginPane(paneId) {
         document.querySelectorAll('.login-form-pane').forEach(el => el.classList.remove('active'));
         document.querySelectorAll('.login-tab-btn').forEach(el => el.classList.remove('active'));
@@ -1129,6 +1147,8 @@
 
     function sairDaConta() {
         if (!confirm("Deseja realmente sair da conta?")) return;
+
+        dispararSalvamentoAutomatico();
 
         currentUser = "";
         currentIsAdmin = false;
@@ -1373,7 +1393,7 @@
             medidores: listaMedidores
         };
 
-        if (window.cloudSave) window.cloudSave(currentUser, db, calendarioDb, relatorioRazoesDb);
+        dispararSalvamentoAutomatico();
 
         renderizarTabelaRelatorioAtual();
         alert(`Arquivo da ${razaoSelecionada} para o período ${msNomesCompletos[viewDate.getMonth()]} importado e atualizado com sucesso!`);
@@ -1573,11 +1593,7 @@
     async function salvarDataCalendario(razao, data) {
         if (!currentIsAdmin) return;
         calendarioDb[razao] = data;
-        
-        if (window.cloudSave) {
-            await window.cloudSave(currentUser, db, calendarioDb, relatorioRazoesDb);
-        }
-        
+        dispararSalvamentoAutomatico();
         verificarSabadosAlertas();
     }
 
@@ -1890,7 +1906,7 @@
             alert("Registro salvo na nuvem com sucesso!");
         }
 
-        if (window.cloudSave) window.cloudSave(currentUser, db, calendarioDb, relatorioRazoesDb);
+        dispararSalvamentoAutomatico();
 
         limparFormulario();
         atualizarTabela(); 
@@ -1927,7 +1943,7 @@
         if(confirm("Deseja limpar todos os registros deste mês?")) { 
             const mesF = "2026-" + String(viewDate.getMonth() + 1).padStart(2, '0'); 
             db = db.filter(i => !i.data.startsWith(mesF)); 
-            if (window.cloudSave) window.cloudSave(currentUser, db, calendarioDb, relatorioRazoesDb);
+            dispararSalvamentoAutomatico();
             atualizarTabela(); 
         } 
     } 
@@ -1936,7 +1952,7 @@
         if(confirm("ATENÇÃO: Você está prestes a apagar TODOS os registros de 2026!")) { 
             if(confirm("Tem certeza absoluta?")) { 
                 db = []; 
-                if (window.cloudSave) window.cloudSave(currentUser, db, calendarioDb, relatorioRazoesDb);
+                dispararSalvamentoAutomatico();
                 atualizarTabela(); 
                 alert("Dados de 2026 removidos da nuvem."); 
             } 
@@ -1996,7 +2012,7 @@
                         return alert("Arquivo de backup inválido.");
                     }
 
-                    if (window.cloudSave) window.cloudSave(currentUser, db, calendarioDb, relatorioRazoesDb);
+                    dispararSalvamentoAutomatico();
                     
                     atualizarTabela();
                     renderizarCalendario();
