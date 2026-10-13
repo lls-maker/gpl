@@ -1095,18 +1095,20 @@
         }
     }
 
-    // Dispara salvamento imediato e por Beacon síncrono no fechamento para garantir envio ao Firebase
+    // Salva automaticamente ao fechar o app/aba usando o Firebase puro
     window.addEventListener('beforeunload', () => {
         if (!currentUser) return;
         const payload = JSON.stringify({
-            user: currentUser,
-            dados: db,
-            calendario: calendarioDb,
-            relatorios: relatorioRazoesDb
+            fields: {
+                dados: { stringValue: JSON.stringify(db) },
+                calendario: { stringValue: JSON.stringify(calendarioDb) },
+                relatorios: { stringValue: JSON.stringify(relatorioRazoesDb) }
+            }
         });
-        const endpoint = "https://firestore.googleapis.com/v1/projects/gestaoprodutividadeleituras/databases/(default)/documents/usuarios/" + currentUser.toUpperCase();
+        const endpoint = "https://firestore.googleapis.com/v1/projects/gestaoprodutividadeleituras/databases/(default)/documents/usuarios/" + currentUser.toUpperCase() + "?updateMask.fieldPaths=dados&updateMask.fieldPaths=calendario&updateMask.fieldPaths=relatorios";
         if (navigator.sendBeacon) {
-            navigator.sendBeacon(endpoint, payload);
+            let blob = new Blob([payload], { type: 'application/json' });
+            navigator.sendBeacon(endpoint, blob);
         } else {
             dispararSalvamentoAutomatico();
         }
