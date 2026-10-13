@@ -942,7 +942,7 @@
     let currentIsAdmin = sessionStorage.getItem('gpl_is_admin') === 'true';
 
     let dataAtualDoSistema = new Date();
-    let viewDate = new Date(2026, dataAtualDoSistema.getMonth(), 1); 
+    let viewDate = new Date(dataAtualDoSistema.getFullYear(), dataAtualDoSistema.getMonth(), 1); 
 
     const lista18Razoes = Array.from({length: 18}, (_, i) => `RAZÃO ${String(i + 1).padStart(2, '0')}`);
     
@@ -1082,8 +1082,6 @@
         document.querySelectorAll('.mob-tab-btn').forEach(btn => btn.classList.remove('active'));
         if(btnElement) btnElement.classList.add('active');
         
-        sessionStorage.setItem('gpl_active_tab', tabId);
-
         if(tabId === 'tabAdmin' && currentIsAdmin) {
             carregarListaUtilizadoresPendentes();
         }
@@ -1143,6 +1141,12 @@
 
         document.getElementById('loginUser').value = "";
         document.getElementById('loginPass').value = "";
+        document.getElementById('searchRazao').value = "";
+        document.getElementById('searchNL').value = "";
+        document.getElementById('searchCal').value = "";
+        document.getElementById('searchMedidorRelatorio').value = "";
+        document.getElementById('searchAdminUsers').value = "";
+        
         document.getElementById('btnTabAdmin').style.display = 'none';
         document.getElementById('adminNotificationBadge').style.display = 'none';
         
