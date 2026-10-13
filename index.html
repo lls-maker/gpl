@@ -654,7 +654,7 @@
                     <span style="font-weight: 800; color: transparent; font-size: 10.5px; display: block; margin-bottom: 4px;">AÇÃO</span>
                     <input type="file" id="inputTxtOcorrencia" accept=".txt,.csv" style="display:none" onchange="processarArquivoTxtSelecionado(this)">
                     <button type="button" onclick="document.getElementById('inputTxtOcorrencia').click()" class="auth-btn" style="width: auto; margin-top: 0; padding: 8px 14px; font-size: 11px; background: var(--purple); color: #fff;">
-                        📂 Importar
+                        📂 Importar TXT
                     </button>
                 </div>
             </div>
@@ -942,9 +942,7 @@
     let currentIsAdmin = sessionStorage.getItem('gpl_is_admin') === 'true';
 
     let dataAtualDoSistema = new Date();
-    let savedMonth = sessionStorage.getItem('gpl_active_month');
-    let initialMonth = (savedMonth !== null) ? parseInt(savedMonth, 10) : dataAtualDoSistema.getMonth();
-    let viewDate = new Date(2026, initialMonth, 1); 
+    let viewDate = new Date(2026, dataAtualDoSistema.getMonth(), 1); 
 
     const lista18Razoes = Array.from({length: 18}, (_, i) => `RAZÃO ${String(i + 1).padStart(2, '0')}`);
     
@@ -1138,7 +1136,6 @@
         currentIsAdmin = false;
         sessionStorage.removeItem('gpl_user');
         sessionStorage.removeItem('gpl_is_admin');
-        sessionStorage.removeItem('gpl_active_month');
         
         db = [];
         calendarioDb = {};
@@ -1798,7 +1795,6 @@
      
     function selectMonth(m) { 
         viewDate.setMonth(m); 
-        sessionStorage.setItem('gpl_active_month', m);
         let nomeMes = msNomesCompletos[m];
         document.getElementById('currentMonthDisplay').innerText = nomeMes; 
         document.getElementById('printSubHeader').innerText = `Utilizador: ${currentUser}  |  Período: ${nomeMes}/2026`;
