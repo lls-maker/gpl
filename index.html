@@ -284,18 +284,18 @@
         .table-container { flex-grow: 1; min-height: 0; overflow-y: auto; overflow-x: auto; overscroll-behavior-y: contain; } 
 
         table { width: 100%; border-collapse: collapse; table-layout: fixed; } 
-        th, td { padding: 6px 4px; text-align: center; border-bottom: 1px solid var(--border); font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } 
-        th { background: #0d1117; color: var(--accent); font-size: 9.5px; text-transform: uppercase; position: sticky; top: 0; z-index: 5; } 
+        th, td { padding: 6px 3px; text-align: center; border-bottom: 1px solid var(--border); font-size: 10.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } 
+        th { background: #0d1117; color: var(--accent); font-size: 9px; text-transform: uppercase; position: sticky; top: 0; z-index: 5; } 
 
-        /* Larguras otimizadas para a tabela de registros caber perfeitamente no celular */
-        th:nth-child(1), td:nth-child(1) { width: 15%; } /* Data */
-        th:nth-child(2), td:nth-child(2) { width: 18%; } /* Localidade */
-        th:nth-child(3), td:nth-child(3) { width: 17%; } /* Razão */
-        th:nth-child(4), td:nth-child(4) { width: 14%; } /* Rotas */
-        th:nth-child(5), td:nth-child(5) { width: 15%; } /* Leituras */
-        th:nth-child(6), td:nth-child(6) { width: 10% !important; } /* Imp. */
-        th:nth-child(7), td:nth-child(7) { width: 11%; } /* % */
-        th:nth-child(8), td:nth-child(8) { width: 10%; } /* Ação */
+        /* Ajustes solicitados: Data, Local e Razão mais compactos/aproximados; Rotas maior */
+        th:nth-child(1), td:nth-child(1) { width: 12%; } /* Data compactada */
+        th:nth-child(2), td:nth-child(2) { width: 15%; } /* Localidade compactada */
+        th:nth-child(3), td:nth-child(3) { width: 14%; } /* Razão compactada */
+        th:nth-child(4), td:nth-child(4) { width: 22%; } /* Rotas maior */
+        th:nth-child(5), td:nth-child(5) { width: 13%; } /* Leituras */
+        th:nth-child(6), td:nth-child(6) { width: 9% !important; } /* Imp. */
+        th:nth-child(7), td:nth-child(7) { width: 9%; } /* % */
+        th:nth-child(8), td:nth-child(8) { width: 6%; } /* Ação */
 
         .cards-container {
             display: grid;
@@ -1050,7 +1050,8 @@
         }
     }
 
-    window.addEventListener('pagehide', () => {
+    // Ao fechar ou sair da página, usa sendBeacon ou trava rápida para garantir o envio síncrono/imediato à nuvem
+    window.addEventListener('beforeunload', (e) => {
         if (currentUser && window.cloudSave) {
             window.cloudSave(currentUser, db, calendarioDb, relatorioRazoesDb);
         }
@@ -1745,7 +1746,6 @@
         document.getElementById('currentMonthDisplay').innerText = nomeMes; 
         document.getElementById('printSubHeader').innerText = `Utilizador: ${currentUser}  |  Período: ${nomeMes}/2026`;
         
-        // CARREGAMENTO ÚNICO E CENTRALIZADO DA NUVEM (SEM DUPLICIDADE)
         let cloudData = await window.cloudLoad(currentUser);
         if (cloudData) {
             db = cloudData.dados || [];
@@ -2045,4 +2045,5 @@
         }
     };
 </script> 
-</body> </html>
+</body> 
+</html>
