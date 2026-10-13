@@ -1095,25 +1095,6 @@
         }
     }
 
-    // Salva automaticamente ao fechar o app/aba usando o Firebase puro
-    window.addEventListener('beforeunload', () => {
-        if (!currentUser) return;
-        const payload = JSON.stringify({
-            fields: {
-                dados: { stringValue: JSON.stringify(db) },
-                calendario: { stringValue: JSON.stringify(calendarioDb) },
-                relatorios: { stringValue: JSON.stringify(relatorioRazoesDb) }
-            }
-        });
-        const endpoint = "https://firestore.googleapis.com/v1/projects/gestaoprodutividadeleituras/databases/(default)/documents/usuarios/" + currentUser.toUpperCase() + "?updateMask.fieldPaths=dados&updateMask.fieldPaths=calendario&updateMask.fieldPaths=relatorios";
-        if (navigator.sendBeacon) {
-            let blob = new Blob([payload], { type: 'application/json' });
-            navigator.sendBeacon(endpoint, blob);
-        } else {
-            dispararSalvamentoAutomatico();
-        }
-    });
-
     document.addEventListener('visibilitychange', () => {
         if (document.visibilityState === 'hidden') {
             dispararSalvamentoAutomatico();
@@ -1920,8 +1901,13 @@
         animarContagem('totAcumulado', acum, true); 
     } 
 
-    document.getElementById('gplForm').onsubmit = (e) => { 
+    document.getElementById('gplForm').onsubmit = async (e) => { 
         e.preventDefault(); 
+        const btnSalvar = document.getElementById('btnSalvarRegistro');
+        const textoOriginal = btnSalvar.innerText;
+        btnSalvar.innerText = "Salvando na nuvem...";
+        btnSalvar.disabled = true;
+
         const editIdField = document.getElementById('editId').value;
         const dadosForm = {
             data: document.getElementById('data').value, 
@@ -1937,24 +1923,28 @@
             const index = db.findIndex(i => Number(i.id) === idNum);
             if (index !== -1) {
                 db[index] = { id: idNum, ...dadosForm };
-                alert("Registro atualizado com sucesso!");
             } else {
                 db.push({ id: idNum, ...dadosForm });
-                alert("Registro salvo com sucesso!");
             }
         } else {
             db.push({ 
                 id: Date.now(), 
                 ...dadosForm
             }); 
-            alert("Registro salvo com sucesso!");
         }
 
-        dispararSalvamentoAutomatico();
+        // Aguarda a confirmação de salvamento do Firebase antes de liberar a tela
+        if (window.cloudSave) {
+            await window.cloudSave(currentUser, db, calendarioDb, relatorioRazoesDb);
+        }
+
+        btnSalvar.innerText = textoOriginal;
+        btnSalvar.disabled = false;
 
         limparFormulario();
         atualizarTabela(); 
         switchMobileTab('tabTabela', document.getElementById('btnTabTabela'));
+        alert("Salvo e sincronizado na nuvem com sucesso!");
     }; 
 
     function editar(id) {
@@ -1983,7 +1973,7 @@
         document.getElementById('btnCancelarEdicao').style.display = "none";
     }
 
-    function limparTudo() { 
+    async function limparTudo() { 
         if(confirm("Deseja limpar todos os registros deste mês?")) { 
             const mesF = "2026-" + String(viewDate.getMonth() + 1).padStart(2, '0'); 
             db = db.filter(i => !i.data.startsWith(mesF)); 
@@ -1992,7 +1982,7 @@
         } 
     } 
      
-    function limparAno() { 
+    async function limparAno() { 
         if(confirm("ATENÇÃO: Você está prestes a apagar TODOS os registros de 2026!")) { 
             if(confirm("Tem certeza absoluta?")) { 
                 db = []; 
