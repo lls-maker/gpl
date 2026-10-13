@@ -294,7 +294,6 @@
         } 
         .table-container { flex-grow: 1; min-height: 0; overflow-y: auto; overscroll-behavior-y: contain; width: 100%; } 
 
-        /* Tabela perfeitamente contida e responsiva dentro da tela mobile */
         table { width: 100%; border-collapse: collapse; table-layout: fixed; } 
         th, td { padding: 7px 2px; text-align: center; border-bottom: 1px solid var(--border); font-size: 10.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } 
         th { background: #0d1117; color: var(--accent); font-size: 9px; text-transform: uppercase; position: sticky; top: 0; z-index: 5; } 
@@ -1091,24 +1090,26 @@
 
     function dispararSalvamentoAutomatico() {
         if (!currentUser) return;
-        
-        // 1. Salva instantaneamente no dispositivo (garantia absoluta contra perda ao fechar)
-        const pacoteLocal = {
-            dados: db,
-            calendario: calendarioDb,
-            relatorios: relatorioRazoesDb
-        };
-        localStorage.setItem('gpl_cache_' + currentUser, JSON.stringify(pacoteLocal));
-
-        // 2. Envia para a nuvem do Firebase
         if (window.cloudSave) {
             window.cloudSave(currentUser, db, calendarioDb, relatorioRazoesDb);
         }
     }
 
-    // Salva ao fechar ou ocultar a aba
+    // Dispara salvamento imediato e por Beacon síncrono no fechamento para garantir envio ao Firebase
     window.addEventListener('beforeunload', () => {
-        dispararSalvamentoAutomatico();
+        if (!currentUser) return;
+        const payload = JSON.stringify({
+            user: currentUser,
+            dados: db,
+            calendario: calendarioDb,
+            relatorios: relatorioRazoesDb
+        });
+        const endpoint = "https://firestore.googleapis.com/v1/projects/gestaoprodutividadeleituras/databases/(default)/documents/usuarios/" + currentUser.toUpperCase();
+        if (navigator.sendBeacon) {
+            navigator.sendBeacon(endpoint, payload);
+        } else {
+            dispararSalvamentoAutomatico();
+        }
     });
 
     document.addEventListener('visibilitychange', () => {
@@ -1159,7 +1160,6 @@
                 if (cloudData.calendario) calendarioDb = cloudData.calendario;
                 if (cloudData.relatorios) relatorioRazoesDb = cloudData.relatorios;
 
-                dispararSalvamentoAutomatico();
                 atualizarTabela();
                 renderizarCalendario();
                 renderizarTabelaRelatorioAtual();
@@ -1801,23 +1801,11 @@
         document.getElementById('currentMonthDisplay').innerText = nomeMes; 
         document.getElementById('printSubHeader').innerText = `Utilizador: ${currentUser}  |  Período: ${nomeMes}/2026`;
         
-        // Carrega do cache local primeiro para zero perda e velocidade
-        const cacheLocalStr = localStorage.getItem('gpl_cache_' + currentUser);
-        if (cacheLocalStr) {
-            try {
-                const cacheLocal = JSON.parse(cacheLocalStr);
-                if (cacheLocal.dados) db = cacheLocal.dados;
-                if (cacheLocal.calendario) calendarioDb = cacheLocal.calendario;
-                if (cacheLocal.relatorios) relatorioRazoesDb = cacheLocal.relatorios;
-            } catch(e) {}
-        }
-
         let cloudData = await window.cloudLoad(currentUser);
         if (cloudData) {
             if (cloudData.dados) db = cloudData.dados;
             if (cloudData.calendario) calendarioDb = cloudData.calendario;
             if (cloudData.relatorios) relatorioRazoesDb = cloudData.relatorios;
-            dispararSalvamentoAutomatico();
         }
 
         renderMonths(); 
@@ -1838,7 +1826,6 @@
             }
             if (dadosNuvem.relatorios) relatorioRazoesDb = dadosNuvem.relatorios;
 
-            dispararSalvamentoAutomatico();
             atualizarTabela();
             renderizarTabelaRelatorioAtual();
         });
@@ -1851,16 +1838,6 @@
     });
 
     async function handleLoginAuto() {
-        const cacheLocalStr = localStorage.getItem('gpl_cache_' + currentUser);
-        if (cacheLocalStr) {
-            try {
-                const cacheLocal = JSON.parse(cacheLocalStr);
-                if (cacheLocal.dados) db = cacheLocal.dados;
-                if (cacheLocal.calendario) calendarioDb = cacheLocal.calendario;
-                if (cacheLocal.relatorios) relatorioRazoesDb = cacheLocal.relatorios;
-            } catch(e) {}
-        }
-
         let cloudData = await window.cloudLoad(currentUser);
         if (cloudData) {
             if (cloudData.dados) db = cloudData.dados;
@@ -1943,7 +1920,7 @@
 
     document.getElementById('gplForm').onsubmit = (e) => { 
         e.preventDefault(); 
-        const editId = document.getElementById('editId').value;
+        const editIdField = document.getElementById('editId').value;
         const dadosForm = {
             data: document.getElementById('data').value, 
             localidade: document.getElementById('localidade').value.toUpperCase(), 
@@ -1953,12 +1930,16 @@
             imped: Number(document.getElementById('imped').value)
         };
 
-        if (editId) {
-            const index = db.findIndex(i => i.id == editId);
+        if (editIdField !== "") {
+            const idNum = Number(editIdField);
+            const index = db.findIndex(i => Number(i.id) === idNum);
             if (index !== -1) {
-                db[index] = { id: Number(editId), ...dadosForm };
+                db[index] = { id: idNum, ...dadosForm };
+                alert("Registro atualizado com sucesso!");
+            } else {
+                db.push({ id: idNum, ...dadosForm });
+                alert("Registro salvo com sucesso!");
             }
-            alert("Registro atualizado com sucesso!");
         } else {
             db.push({ 
                 id: Date.now(), 
@@ -1976,7 +1957,7 @@
 
     function editar(id) {
         if (!confirm("Deseja realmente editar este registro?")) return;
-        const item = db.find(i => i.id === id);
+        const item = db.find(i => Number(i.id) === Number(id));
         if (!item) return;
 
         document.getElementById('editId').value = item.id;
