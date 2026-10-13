@@ -12,7 +12,7 @@
     <style> 
         :root { 
             --bg: #030508; 
-            --surface: #0b0f15; 
+            --surface: #0b0f15;
             --accent: #0070f3;
             --success: #00ff88; 
             --danger: #ff4d4d;
@@ -318,7 +318,7 @@
             padding: 12px;
             display: flex;
             flex-direction: column;
-            gap: 4px;
+            gap: 6px;
             box-shadow: 0 4px 15px rgba(0,255,136,0.15);
             max-width: 380px;
             margin: 6px auto;
@@ -654,17 +654,17 @@
                     <span style="font-weight: 800; color: transparent; font-size: 10.5px; display: block; margin-bottom: 4px;">AÇÃO</span>
                     <input type="file" id="inputTxtOcorrencia" accept=".txt,.csv" style="display:none" onchange="processarArquivoTxtSelecionado(this)">
                     <button type="button" onclick="document.getElementById('inputTxtOcorrencia').click()" class="auth-btn" style="width: auto; margin-top: 0; padding: 8px 14px; font-size: 11px; background: var(--purple); color: #fff;">
-                        📂 Importar
+                        📂 Importar TXT Mês Atual
                     </button>
                 </div>
             </div>
             <div class="mobile-search-area" style="margin-top: 4px;">
-                <input type="text" id="searchMedidorRelatorio" placeholder="Pesquisar número do medidor..." oninput="buscarMedidorNoRelatorio()" style="border-color: var(--success); margin-bottom: 0;">
+                <input type="text" id="searchMedidorRelatorio" placeholder="Pesquisar medidor, instalação ou unidade..." oninput="buscarMedidorNoRelatorio()" style="border-color: var(--success); margin-bottom: 0;">
             </div>
             <div class="main-view" style="margin-top: 6px;">
                 <div id="relatorioCardsCorpo" class="cards-container">
                     <div style="grid-column: 1 / -1; text-align: center; color: var(--text-p); padding: 30px; font-weight: 700; font-size: 12px;">
-                        Carregue um arquivo TXT para visualizar os cartões de Ocorrências (NL).
+                        Carregue um arquivo TXT ou pesquise pelo número do medidor para visualizar o histórico.
                     </div>
                 </div>
             </div>
@@ -1283,6 +1283,7 @@
 
     function processarConteudoTxtTerceiros(conteudo) {
         const razaoSelecionada = document.getElementById('selectRazaoRelatorio').value;
+        const anoMesRef = "2026-" + String(viewDate.getMonth() + 1).padStart(2, '0');
         const linhas = conteudo.split(/\r?\n/);
         let contagemOC = {};
         let listaMedidores = [];
@@ -1351,13 +1352,17 @@
                     listaMedidores.push({
                         medidor: medidorEncontrado.toUpperCase(),
                         oc: ocEncontrada || "N/A",
-                        leit: leitEncontrada || "N/A"
+                        leit: Number(leitEncontrada) || 0
                     });
                 }
             }
         });
 
-        relatorioRazoesDb[razaoSelecionada] = {
+        if (!relatorioRazoesDb) relatorioRazoesDb = {};
+        if (!relatorioRazoesDb[razaoSelecionada]) relatorioRazoesDb[razaoSelecionada] = {};
+
+        // Substitui ou cria o mês correspondente, preservando o histórico dos outros meses
+        relatorioRazoesDb[razaoSelecionada][anoMesRef] = {
             resumoOC: contagemOC,
             medidores: listaMedidores
         };
@@ -1365,7 +1370,7 @@
         if (window.cloudSave) window.cloudSave(currentUser, db, calendarioDb, relatorioRazoesDb);
 
         renderizarTabelaRelatorioAtual();
-        alert(`Arquivo da ${razaoSelecionada} processado e salvo na nuvem!`);
+        alert(`Arquivo da ${razaoSelecionada} para o período ${msNomesCompletos[viewDate.getMonth()]} importado, substituindo dados anteriores do mês com sucesso!`);
     }
 
     function buscarMedidorNoRelatorio() {
@@ -1380,64 +1385,106 @@
 
         const dadosRazao = (relatorioRazoesDb && relatorioRazoesDb[razaoSelecionada]) ? relatorioRazoesDb[razaoSelecionada] : null;
 
-        if (!dadosRazao || (!dadosRazao.resumoOC && !dadosRazao.medidores)) {
+        if (!dadosRazao || Object.keys(dadosRazao).length === 0) {
             corpo.innerHTML = `
                 <div style="grid-column: 1 / -1; text-align: center; color: var(--text-p); padding: 30px; font-weight: 700; font-size: 12px;">
-                    Nenhum arquivo TXT carregado para esta razão. Clique em "Importar" acima.
+                    Nenhum arquivo TXT carregado para esta razão. Clique em "Importar TXT Mês Atual".
                 </div>`;
             return;
         }
 
         if (termoBusca) {
-            const listaMedidores = Array.isArray(dadosRazao.medidores) ? dadosRazao.medidores : [];
-            const resultados = listaMedidores.filter(item => item.medidor.includes(termoBusca));
+            let historicoMedidor = {};
 
-            if (resultados.length === 0) {
+            // Varre todos os meses salvos para construir a linha do tempo do medidor pesquisado
+            for (const [anoMes, conteudoMes] of Object.entries(dadosRazao)) {
+                if (conteudoMes && Array.isArray(conteudoMes.medidores)) {
+                    const encontrado = conteudoMes.medidores.find(item => item.medidor.includes(termoBusca));
+                    if (encontrado) {
+                        historicoMedidor[anoMes] = encontrado;
+                    }
+                }
+            }
+
+            const mesesEncontrados = Object.keys(historicoMedidor).sort();
+
+            if (mesesEncontrados.length === 0) {
                 corpo.innerHTML = `
                     <div style="grid-column: 1 / -1; text-align: center; color: var(--text-p); padding: 30px; font-weight: 700; font-size: 12px;">
-                        Nenhum medidor encontrado com o número "${termoBusca}".
+                        Nenhum medidor encontrado com o termo "${termoBusca}" em nenhum mês.
                     </div>`;
                 return;
             }
 
-            corpo.innerHTML = resultados.map(item => {
-                const infoNL = notasDeLeitura.find(n => n.numero === item.oc) || { status: 'Ocorrência', detalhe: 'Nota de Leitura detectada no arquivo' };
+            // Pega os 12 últimos meses para cálculo da média
+            const ultimos12Meses = mesesEncontrados.slice(-12);
+            let somaLeituras12 = 0;
+            let qtdMesesComLeitura = 0;
+
+            let htmlHistoricoMeses = ultimos12Meses.map(anoMes => {
+                const dados = historicoMedidor[anoMes];
+                const [ano, mes] = anoMes.split('-');
+                const nomeMesStr = msNomesCompletos[parseInt(mes, 10) - 1] || mes;
+                const infoNL = notasDeLeitura.find(n => n.numero === dados.oc) || { status: 'Ocorrência', detalhe: 'Nota de Leitura' };
                 const isComLeitura = infoNL.status.toLowerCase().includes('com');
 
+                if (typeof dados.leit === 'number' && dados.leit > 0) {
+                    somaLeituras12 += dados.leit;
+                    qtdMesesComLeitura++;
+                }
+
                 return `
-                    <div class="medidor-card">
-                        <div class="oc-card-header">
-                            <span class="oc-code" style="font-size: 0.95rem; color: var(--success);">Medidor: ${item.medidor}</span>
-                            <span class="oc-count" style="font-size: 0.85rem;">Leit: ${item.leit}</span>
+                    <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; margin-bottom: 4px; font-size: 11px;">
+                        <div style="display: flex; justify-content: space-between; font-weight: bold; color: var(--text-h);">
+                            <span>📅 ${nomeMesStr}/${ano}</span>
+                            <span style="color: var(--success);">Leitura: ${dados.leit}</span>
                         </div>
-                        <div style="font-size: 11.5px; font-weight: bold; color: var(--warning); display: flex; justify-content: space-between; align-items: center;">
-                            <span>NL: ${item.oc}</span>
-                            <span class="oc-status" style="background: ${isComLeitura ? 'rgba(0,255,136,0.1)' : 'rgba(255,204,0,0.1)'}; color: ${isComLeitura ? 'var(--success)' : 'var(--warning)'}; border: 1px solid ${isComLeitura ? 'var(--success)' : 'var(--warning)'};">
-                                ${infoNL.status}
-                            </span>
+                        <div style="display: flex; justify-content: space-between; margin-top: 2px; font-size: 10px;">
+                            <span style="color: var(--warning);">NL: ${dados.oc}</span>
+                            <span style="color: ${isComLeitura ? 'var(--success)' : 'var(--warning)'};">${infoNL.status}</span>
                         </div>
-                        <div class="oc-desc" style="-webkit-line-clamp: 1; margin-bottom: 0;">${infoNL.detalhe}</div>
                     </div>
                 `;
             }).join('');
+
+            const media12Meses = qtdMesesComLeitura > 0 ? (somaLeituras12 / qtdMesesComLeitura).toFixed(1) : 0;
+            const primeiroItem = historicoMedidor[mesesEncontrados[mesesEncontrados.length - 1]];
+
+            corpo.innerHTML = `
+                <div class="medidor-card" style="max-width: 100%;">
+                    <div class="oc-card-header">
+                        <span class="oc-code" style="font-size: 1rem; color: var(--success);">Medidor / Instalação: ${termoBusca}</span>
+                        <span class="oc-count" style="font-size: 0.85rem; background: rgba(0, 112, 243, 0.2); color: var(--accent); border-color: var(--accent);">Média (12m): ${media12Meses}</span>
+                    </div>
+                    <div style="font-size: 11px; font-weight: bold; color: var(--text-p); margin-bottom: 6px;">
+                        Razão: ${razaoSelecionada} | Última NL: <span style="color: var(--warning);">${primeiroItem.oc}</span>
+                    </div>
+                    <div style="max-height: 220px; overflow-y: auto; padding-right: 2px;">
+                        <div style="font-size: 10px; font-weight: 900; color: var(--accent); text-transform: uppercase; margin-bottom: 4px;">Histórico de Meses Anteriores:</div>
+                        ${htmlHistoricoMeses}
+                    </div>
+                </div>
+            `;
             return;
         }
 
-        const resumo = dadosRazao.resumoOC || dadosRazao;
-        const chavesOC = Object.keys(resumo);
+        // Caso não haja termo de busca digitado, exibe o resumo das Ocorrências do mês atual selecionado
+        const anoMesRef = "2026-" + String(viewDate.getMonth() + 1).padStart(2, '0');
+        const dadosMesAtual = dadosRazao[anoMesRef] ? dadosRazao[anoMesRef].resumoOC : null;
 
-        if (chavesOC.length === 0) {
+        if (!dadosMesAtual || Object.keys(dadosMesAtual).length === 0) {
             corpo.innerHTML = `
                 <div style="grid-column: 1 / -1; text-align: center; color: var(--text-p); padding: 30px; font-weight: 700; font-size: 12px;">
-                    Nenhuma ocorrência encontrada no arquivo para esta razão.
+                    Nenhum arquivo TXT importado para ${msNomesCompletos[viewDate.getMonth()]} nesta razão.
                 </div>`;
             return;
         }
 
+        const chavesOC = Object.keys(dadosMesAtual);
         chavesOC.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
 
         corpo.innerHTML = chavesOC.map(oc => {
-            const qtd = resumo[oc];
+            const qtd = dadosMesAtual[oc];
             const infoNL = notasDeLeitura.find(item => item.numero === oc) || { status: 'Desconhecido', detalhe: 'Nota de Leitura mapeada' };
             const isComLeitura = infoNL.status.toLowerCase().includes('com');
 
@@ -1728,7 +1775,8 @@
         document.getElementById('currentMonthDisplay').innerText = nomeMes; 
         document.getElementById('printSubHeader').innerText = `Utilizador: ${currentUser}  |  Período: ${nomeMes}/2026`;
         toggleMonthGrid(); 
-        atualizarTabela(); 
+        atualizarTabela();
+        renderizarTabelaRelatorioAtual(); 
     } 
 
     function atualizarTabela() { 
