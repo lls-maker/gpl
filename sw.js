@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gpl-2026-v12';
+const CACHE_NAME = 'gpl-2026-v13';
 
 // Apenas arquivos locais da aplicação
 const ASSETS = [
@@ -11,7 +11,7 @@ const ASSETS = [
 
 // Instalação: armazena os recursos essenciais em cache
 self.addEventListener('install', (event) => {
-    event.waitUntil(const CACHE_NAME = 'gpl-cache-v2';
+    event.waitUntil(const CACHE_NAME = 'gpl-cache-v13';
 const urlsToCache = [
   './index.html',
   './manifest.json',
