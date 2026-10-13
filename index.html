@@ -2,7 +2,7 @@
 <html lang="pt-br"> 
 <head> 
     <meta charset="UTF-8"> 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
     <title>Gestão de Produtividade de Leituras</title> 
 
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzMiAzMicgd2lkdGg9JzMyJyBoZWlnaHQ9JzMyJz48cmVjdCB3aWR0aD0nMzInIGhlaWdodD0nMzInIHJ4PSc2JyBmaWxsPScjMGIwZjE1Jz48L3JlY3Q+PHRleHQgeD0nNTAlJyB5PSc1NSUnIGRvbWluYW50LWJhc2VsaW5lPSdtaWRkbGUnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJyBmb250LXdlaWdodD0nOTAwJyBmb250LXdlaWdodD0nMTAwMCcgZm9udC1zaXplPScxMCcgZmlsbD0nIzAwZmY4OCcgbGV0dGVyLXNwYWNpbmdzPScwLjUnPkdQTDwvdGV4dD48L3N2Zz4=">
@@ -30,7 +30,8 @@
 
         html, body {
             width: 100%;
-            height: 100vh;
+            min-height: 100vh;
+            height: auto;
             font-family: 'Inter', system-ui, sans-serif; 
             background-color: var(--bg); 
             color: var(--text-p); 
@@ -39,7 +40,8 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            overflow: hidden;
+            overflow-x: hidden;
+            overflow-y: auto;
             overscroll-behavior-y: contain;
         } 
 
@@ -161,17 +163,19 @@
         .container { 
             max-width: 480px; 
             width: 100%; 
-            height: 100vh;
-            max-height: 920px;
+            height: auto;
+            min-height: 920px;
+            max-height: none;
             display: flex; 
             flex-direction: column; 
             gap: 6px; 
-            overflow: hidden;
+            overflow: visible;
             background: var(--bg);
             border-radius: 24px;
             border: 1px solid var(--grey-border);
             box-shadow: 0 20px 40px rgba(0,0,0,0.6);
             padding: 8px;
+            margin: 10px 0;
         } 
 
         header { 
@@ -183,7 +187,7 @@
         
         .top-dashboard {
             display: flex; flex-direction: column; gap: 6px; flex-shrink: 0;
-            overflow-y: auto; max-height: calc(100vh - 120px); padding-bottom: 4px;
+            overflow-y: visible; max-height: none; padding-bottom: 4px;
         }
         
         .observations { 
@@ -245,27 +249,27 @@
             display: block; 
             flex-grow: 1; 
             min-height: 0; 
-            overflow: hidden; 
+            overflow: visible; 
         } 
         
-        .mobile-tab-content { display: none; height: 100%; min-height: 0; overflow: hidden; }
+        .mobile-tab-content { display: none; height: auto; min-height: 0; overflow: visible; }
         .mobile-tab-content.active-tab {
-            display: flex; flex-direction: column; flex-grow: 1; min-height: 0; overflow: hidden;
+            display: flex; flex-direction: column; flex-grow: 1; min-height: 0; overflow: visible;
         }
 
         aside.mobile-tab-content .sidebar { 
-            height: 100%; 
-            max-height: 100%; 
+            height: auto; 
+            max-height: none; 
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            overflow: hidden; 
+            overflow: visible; 
             padding: 10px;
             background: linear-gradient(180deg, rgba(0, 112, 243, 0.08) 0%, var(--surface) 100%);
             border-radius: 16px;
             border: 1.5px solid var(--accent);
         } 
-        .form-content-area { overflow-y: auto; flex-grow: 1; min-height: 0; padding-right: 2px; }
+        .form-content-area { overflow-y: visible; flex-grow: 1; min-height: 0; padding-right: 2px; }
         .form-group { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
         .form-group label { width: 80px; flex-shrink: 0; font-size: 10.5px; font-weight: 800; color: var(--accent); text-transform: uppercase; }
         
@@ -279,9 +283,9 @@
 
         .main-view { 
             background: var(--surface); border-radius: 16px; border: 1.5px solid var(--brown-border); 
-            display: flex; flex-direction: column; flex-grow: 1; min-height: 0; overflow: hidden; 
+            display: flex; flex-direction: column; flex-grow: 1; min-height: 0; overflow: visible; 
         } 
-        .table-container { flex-grow: 1; min-height: 0; overflow-y: auto; overscroll-behavior-y: contain; } 
+        .table-container { flex-grow: 1; min-height: 0; overflow-x: auto; overflow-y: visible; overscroll-behavior-y: contain; } 
 
         table { width: 100%; border-collapse: collapse; } 
         th, td { padding: 9px 6px; text-align: center; border-bottom: 1px solid var(--border); font-size: 12px; } 
@@ -292,9 +296,9 @@
             grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
             gap: 8px;
             padding: 10px;
-            overflow-y: auto;
+            overflow-y: visible;
             flex-grow: 1;
-            height: 100%;
+            height: auto;
             align-content: start;
             overscroll-behavior-y: contain;
         }
@@ -1150,9 +1154,6 @@
         
         const loginScreen = document.getElementById('loginScreen');
         loginScreen.style.display = 'flex';
-
-        document.body.style.overflow = "hidden";
-        document.documentElement.style.overflow = "hidden";
     }
 
     let startY = 0;
