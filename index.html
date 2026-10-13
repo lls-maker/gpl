@@ -2,7 +2,7 @@
 <html lang="pt-br"> 
 <head> 
     <meta charset="UTF-8"> 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
     <title>Gestão de Produtividade de Leituras</title> 
 
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzMiAzMicgd2lkdGg9JzMyJyBoZWlnaHQ9JzMyJz48cmVjdCB3aWR0aD0nMzInIGhlaWdodD0nMzInIHJ4PSc2JyBmaWxsPScjMGIwZjE1Jz48L3JlY3Q+PHRleHQgeD0nNTAlJyB5PSc1NSUnIGRvbWluYW50LWJhc2VsaW5lPSdtaWRkbGUnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJyBmb250LXdlaWdodD0nOTAwJyBmb250LXdlaWdodD0nMTAwMCcgZm9udC1zaXplPScxMCcgZmlsbD0nIzAwZmY4OCcgbGV0dGVyLXNwYWNpbmdzPScwLjUnPkdQTDwvdGV4dD48L3N2Zz4=">
@@ -51,6 +51,24 @@
             z-index: -1;
         }
 
+        #pullToRefreshIndicator {
+            position: fixed;
+            top: -50px;
+            left: 0;
+            width: 100%;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(11, 15, 21, 0.95);
+            color: var(--success);
+            font-weight: 900;
+            font-size: 11px;
+            border-bottom: 1px solid var(--border);
+            z-index: 99999;
+            transition: transform 0.2s ease;
+        }
+
         input, select { 
             background: #000; 
             color: white; 
@@ -80,6 +98,64 @@
         input[type=number] { 
             appearance: textfield;
             -moz-appearance: textfield; 
+        } 
+
+        #loginScreen { 
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; 
+            background: radial-gradient(circle at center, #0b0f15 0%, #030508 100%); 
+            z-index: 99999; display: flex; align-items: center; justify-content: center; 
+        } 
+        .login-box { 
+            background: rgba(11, 15, 21, 0.95); padding: 30px; border-radius: 24px; 
+            border: 1px solid var(--border); border-top: 4px solid var(--success); 
+            width: 360px; text-align: center; backdrop-filter: blur(10px); 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8); 
+            max-height: 95vh; overflow-y: auto;
+        } 
+
+        .login-tabs-header {
+            display: flex;
+            background: #000;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            margin-bottom: 15px;
+            padding: 3px;
+            gap: 3px;
+        }
+        .login-tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-p);
+            font-size: 10px;
+            font-weight: 900;
+            text-transform: uppercase;
+            cursor: pointer;
+            flex: 1;
+            padding: 8px;
+            border-radius: 8px;
+            transition: 0.3s;
+        }
+        .login-tab-btn.active {
+            background: var(--accent);
+            color: #fff;
+            box-shadow: 0 0 10px rgba(0, 112, 243, 0.4);
+        }
+        .login-form-pane {
+            display: none;
+            text-align: left;
+        }
+        .login-form-pane.active {
+            display: block;
+        }
+
+        .auth-btn { 
+            background: var(--success); color: black; width: 100%; padding: 12px; 
+            border-radius: 12px; font-weight: 900; cursor: pointer; border: none; 
+            text-transform: uppercase; margin-top: 10px; transition: 0.3s; 
+        } 
+        .auth-link { 
+            color: var(--accent); font-size: 11px; cursor: pointer; 
+            font-weight: 700; margin-top: 12px; display: inline-block; text-transform: uppercase; text-align: center; width: 100%;
         } 
 
         .container { 
@@ -119,6 +195,25 @@
         .obs-item { font-size: 12px; color: #ffffff; display: flex; align-items: center; gap: 8px; font-weight: 700; } 
         .dot { height: 8px; width: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; } 
 
+        .alert-saturday-box {
+            background: rgba(255, 204, 0, 0.15);
+            border: 1.5px solid var(--warning);
+            padding: 10px 14px;
+            border-radius: 12px;
+            color: var(--warning);
+            font-size: 11.5px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            animation: pulseAlert 2s infinite;
+        }
+        @keyframes pulseAlert {
+            0% { opacity: 0.8; }
+            50% { opacity: 1; border-color: #fff; }
+            100% { opacity: 0.8; }
+        }
+
         .summary-grid { 
             display: grid; 
             grid-template-columns: repeat(2, 1fr); 
@@ -133,7 +228,11 @@
         .summary-card p { font-size: 10px; font-weight: 800; text-transform: uppercase; margin: 0; } 
         .summary-card h2 { margin: 4px 0 0; font-size: 1.1rem; color: var(--text-h); font-weight: 900; } 
 
-        .neon-acumulado { grid-column: span 2; height: 70px; }
+        .neon-acumulado {
+            grid-column: span 2;
+            height: 70px;
+        }
+
         .neon-leituras { border-top-color: var(--white-neon); } 
         .neon-impedimentos { border-top-color: var(--orange-neon); } 
         .neon-meta { border-top-color: var(--warning); } 
@@ -169,7 +268,7 @@
         .form-content-area { overflow-y: auto; flex-grow: 1; min-height: 0; padding-right: 2px; }
         .form-group { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
         .form-group label { width: 80px; flex-shrink: 0; font-size: 10.5px; font-weight: 800; color: var(--accent); text-transform: uppercase; }
-
+        
         .actions-footer { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; flex-shrink: 0; } 
         .btn-add { background: var(--accent); color: #fff; width: 100%; padding: 12px; border-radius: 12px; font-weight: 900; cursor: pointer; border: none; text-transform: uppercase; font-size: 11.5px; } 
         .btn-clear { background: transparent; color: var(--danger); width: 100%; padding: 8px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--danger); text-transform: uppercase; font-size: 10px; } 
@@ -221,15 +320,50 @@
             flex-direction: column;
             gap: 6px;
             box-shadow: 0 4px 15px rgba(0,255,136,0.15);
-            max-width: 420px;
+            max-width: 380px;
             margin: 6px auto;
             width: 100%;
         }
-        .oc-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
-        .oc-code { font-size: 1rem; font-weight: 900; color: var(--text-h); }
-        .oc-count { background: rgba(0, 255, 136, 0.12); color: var(--success); border: 1px solid var(--success); padding: 3px 8px; border-radius: 8px; font-size: 0.85rem; font-weight: 900; }
-        .oc-desc { font-size: 10.5px; color: var(--text-p); margin-bottom: 4px; line-height: 1.25; font-weight: 600; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        .oc-status { font-size: 9.5px; font-weight: 800; text-transform: uppercase; padding: 2px 6px; border-radius: 4px; display: inline-block; width: fit-content; }
+        .oc-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+        .oc-code {
+            font-size: 1rem;
+            font-weight: 900;
+            color: var(--text-h);
+        }
+        .oc-count {
+            background: rgba(0, 255, 136, 0.12);
+            color: var(--success);
+            border: 1px solid var(--success);
+            padding: 3px 8px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 900;
+        }
+        .oc-desc {
+            font-size: 10.5px;
+            color: var(--text-p);
+            margin-bottom: 4px;
+            line-height: 1.25;
+            font-weight: 600;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .oc-status {
+            font-size: 9.5px;
+            font-weight: 800;
+            text-transform: uppercase;
+            padding: 2px 6px;
+            border-radius: 4px;
+            display: inline-block;
+            width: fit-content;
+        }
 
         .month-grid { display: none; position: absolute; top: 50px; right: 15px; background: #0d1117; border: 1px solid var(--accent); padding: 12px; border-radius: 12px; grid-template-columns: repeat(3, 1fr); gap: 6px; z-index: 1000; } 
         .month-grid.active { display: grid; } 
@@ -238,6 +372,12 @@
         .header-btn {
             background: #1e2633; border: 1px solid var(--border); color: white;
             padding: 8px 12px; border-radius: 9px; cursor: pointer; font-weight: 800; font-size: 11px; text-transform: uppercase;
+        }
+
+        @media (max-width: 768px) {
+            .btn-atualizar-mobile {
+                display: none !important;
+            }
         }
 
         .mobile-nav-tabs {
@@ -249,7 +389,7 @@
             background: rgba(255, 255, 255, 0.03); 
             border: 1.5px solid var(--grey-border); 
             color: var(--text-p); 
-            font-size: 8px;
+            font-size: 7.5px;
             font-weight: 900; 
             text-transform: uppercase; 
             cursor: pointer; 
@@ -258,6 +398,7 @@
             border-radius: 8px; 
             text-align: center; 
             transition: 0.3s;
+            position: relative;
         }
         .mob-tab-btn.active { 
             background: var(--accent); 
@@ -266,7 +407,21 @@
             box-shadow: 0 0 10px rgba(0, 112, 243, 0.5);
         }
 
+        .admin-badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background: var(--danger);
+            color: #fff;
+            font-size: 7px;
+            font-weight: 900;
+            padding: 2px 4px;
+            border-radius: 50%;
+            display: none;
+        }
+
         .mobile-search-area { display: block; margin-bottom: 4px; flex-shrink: 0; }
+
         .print-header { display: none; }
 
         @media print {
@@ -311,14 +466,53 @@
 </head> 
 <body>
 
+<!-- INDICADOR DE PULL TO REFRESH -->
+<div id="pullToRefreshIndicator">🔄 Puxe mais para atualizar...</div>
+
+<!-- TELA DE LOGIN / PAGAMENTO -->
+<div id="loginScreen"> 
+    <div class="login-box"> 
+        <div style="background:var(--success); color:black; padding:10px; border-radius:12px; font-weight:900; margin-bottom:15px;">GPL</div> 
+        
+        <div class="login-tabs-header">
+            <button class="login-tab-btn active" id="btnPaneLogin" onclick="switchLoginPane('loginPane')">Acessar</button>
+            <button class="login-tab-btn" id="btnPaneCreate" onclick="switchLoginPane('createPane')">Criar Conta</button>
+        </div>
+
+        <div class="login-form-pane active" id="loginPane">
+            <input type="text" id="loginUser" placeholder="Utilizador"> 
+            <input type="password" id="loginPass" placeholder="Senha"> 
+            <button onclick="handleLogin()" class="auth-btn">ENTRAR</button> 
+            <span class="auth-link" style="color:var(--warning)" onclick="recoverPass()">Recuperar Senha</span> 
+        </div>
+
+        <div class="login-form-pane" id="createPane">
+            <div style="background: rgba(0, 255, 136, 0.1); border: 1px solid var(--success); padding: 8px; border-radius: 8px; margin-bottom: 8px; font-size: 10px; color: var(--success); font-weight: bold;">
+                💡 Depósito/PIX de R$ 10,00 necessário para liberação após criar a conta.
+            </div>
+            <input type="text" id="regUser" placeholder="Utilizador"> 
+            <input type="password" id="regPass" placeholder="Senha"> 
+            <input type="password" id="regPassConfirm" placeholder="Confirmar Senha"> 
+            <input type="text" id="regRecovery" placeholder="Palavra/Dica de recuperar senha"> 
+            <button onclick="handleCreateAccount()" class="auth-btn" style="background: var(--accent); color: white;">REGISTRAR</button> 
+        </div>
+    </div> 
+</div>
+
 <div class="container"> 
     <!-- CABEÇALHO -->
     <header> 
-        <div style="background:var(--success); color:black; padding:8px 14px; border-radius:10px; font-weight:900; font-size:13px;">GPL</div> 
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="background:var(--success); color:black; padding:8px 14px; border-radius:10px; font-weight:900; font-size:13px;">GPL</div> 
+            <span style="font-size: 13px; font-weight: 800; color: var(--success); text-transform: uppercase;" id="headerUserDisplay"></span>
+        </div>
         <div style="display: flex; gap: 8px; align-items: center;"> 
-            <button class="header-btn" onclick="toggleMonthGrid()" id="currentMonthDisplay" style="background: var(--accent); border-color: var(--accent);">SETEMBRO</button> 
+            <button class="header-btn" onclick="toggleMonthGrid()" id="currentMonthDisplay" style="background: var(--accent); border-color: var(--accent);">MÊS</button> 
             <div id="monthGrid" class="month-grid"></div> 
+            
             <button class="header-btn" onclick="window.print()">IMPRIMIR</button> 
+            <button class="header-btn btn-atualizar-mobile" onclick="atualizarDadosManualmente(this)" title="Atualizar dados da nuvem" style="background: var(--success); color: black;">🔄</button>
+            <button class="header-btn" onclick="sairDaConta()" title="Sair da Conta" style="background: var(--danger); color: white;">🚪</button>
         </div> 
     </header> 
 
@@ -340,6 +534,7 @@
         <button class="mob-tab-btn" id="btnTabNL" onclick="switchMobileTab('tabNL', this)">🔍 NL</button>
         <button class="mob-tab-btn" id="btnTabCal" onclick="switchMobileTab('tabCal', this)">📅 Cal</button>
         <button class="mob-tab-btn" id="btnTabRelatorio" onclick="switchMobileTab('tabRelatorio', this)">📑 Relat.</button>
+        <button class="mob-tab-btn" id="btnTabAdmin" onclick="switchMobileTab('tabAdmin', this)" style="display:none;">👑 Adm<span id="adminNotificationBadge" class="admin-badge">0</span></button>
     </nav>
 
     <!-- CONTEÚDO PRINCIPAL EM ABAS -->
@@ -351,6 +546,8 @@
                 <div class="obs-item"><span class="dot" style="background:var(--danger)"></span> Desconto: R$ 1,50 p/ impedimento</div> 
                 <div class="obs-item"><span class="dot" style="background:var(--warning)"></span> Qualidade: Meta ≤ 0,50%</div> 
             </div> 
+
+            <div id="saturdayAlertContainer" style="display:none;" class="no-print"></div>
 
             <div class="summary-grid"> 
                 <div class="summary-card neon-leituras"><p>Leituras</p><h2 id="totL">0</h2></div> 
@@ -380,7 +577,7 @@
                     <button type="button" onclick="document.getElementById('gplForm').requestSubmit()" class="btn-add" id="btnSalvarRegistro">Salvar Registro</button> 
                     <button type="button" onclick="limparFormulario()" class="btn-clear" style="color: var(--warning); border-color: var(--warning); display: none;" id="btnCancelarEdicao">Cancelar Edição</button>
                     <button type="button" onclick="limparTudo()" class="btn-clear">Limpar Mês</button> 
-                    <button type="button" onclick="limparAno()" class="btn-clear-year">Limpar Ano</button> 
+                    <button type="button" onclick="limparAno()" class="btn-clear-year">Limpar todos os dados</button> 
                     <div class="backup-row">
                         <button type="button" onclick="exportarBackup()" class="btn-backup">Backup</button>
                         <button type="button" onclick="dispararImportacao()" class="btn-import">Restaurar</button>
@@ -393,7 +590,7 @@
         <main class="mobile-tab-content" id="tabTabela"> 
             <div class="print-header">
                 <h1>Gestão de Produtividade de Leituras</h1>
-                <p id="printSubHeader">Período: -</p>
+                <p id="printSubHeader">Utilizador: - | Período: -</p>
             </div>
 
             <div class="mobile-search-area no-print">
@@ -430,6 +627,9 @@
 
         <!-- ABA CALENDÁRIO -->
         <div class="mobile-tab-content" id="tabCal" style="flex-direction: column;">
+            <div class="mobile-search-area">
+                <input type="text" id="searchCal" placeholder="Pesquisar razão..." oninput="renderizarCalendario(this.value)" style="border-color: var(--success); margin-bottom: 0;">
+            </div>
             <div class="main-view">
                 <div class="table-container">
                     <table>
@@ -459,7 +659,7 @@
                 </div>
             </div>
             <div class="mobile-search-area" style="margin-top: 4px;">
-                <input type="text" id="searchMedidorRelatorio" placeholder="Pesquisar número do medidor..." oninput="buscarMedidorNoRelatorio()" style="border-color: var(--success); margin-bottom: 0;">
+                <input type="text" id="searchMedidorRelatorio" placeholder="Pesquisar medidor, instalação ou unidade..." oninput="buscarMedidorNoRelatorio()" style="border-color: var(--success); margin-bottom: 0;">
             </div>
             <div class="main-view" style="margin-top: 6px;">
                 <div id="relatorioCardsCorpo" class="cards-container">
@@ -469,19 +669,284 @@
                 </div>
             </div>
         </div>
+
+        <!-- ABA ADMIN / NOVOS UTILIZADORES -->
+        <div class="mobile-tab-content" id="tabAdmin" style="flex-direction: column;">
+            <div class="mobile-search-area">
+                <input type="text" id="searchAdminUsers" placeholder="Pesquisar utilizador..." oninput="carregarListaUtilizadoresPendentes(this.value)" style="border-color: var(--success); margin-bottom: 0;">
+            </div>
+            <div class="main-view">
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr><th>Utilizador</th><th>Status</th><th class="no-print">Ação</th></tr>
+                        </thead>
+                        <tbody id="adminUsersCorpo"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div> 
 </div> 
+
+<!-- SCRIPTS DO FIREBASE -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, doc, setDoc, getDoc, getDocs, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyBCyO4flW7U20t2Lh4HQRy5hGBIzxahjp4",
+        authDomain: "gestaoprodutividadeleituras.firebaseapp.com",
+        projectId: "gestaoprodutividadeleituras",
+        storageBucket: "gestaoprodutividadeleituras.firebasestorage.app",
+        messagingSenderId: "1053226233050",
+        appId: "1:1053226233050:web:964e6c40891fe4973a89e3"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const dbCloud = getFirestore(app);
+
+    async function hashSenha(senha) {
+        const encoder = new TextEncoder();
+        const data = encoder.encode(senha);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    window.cloudVerificarLogin = async function(user, senhaDigitada) {
+        try {
+            const userTrim = user.trim();
+            const userUpper = userTrim.toUpperCase();
+            
+            let docRef = doc(dbCloud, "usuarios", userUpper);
+            let docSnap = await getDoc(docRef);
+            
+            if (!docSnap.exists()) {
+                docRef = doc(dbCloud, "usuarios", userTrim);
+                docSnap = await getDoc(docRef);
+            }
+
+            if (!docSnap.exists()) return { sucesso: false, erro: "Utilizador não encontrado. Crie uma conta." };
+
+            const dadosUsuario = docSnap.data();
+            const senhaArmazenada = dadosUsuario.senha;
+
+            const senhaHashDigitada = await hashSenha(senhaDigitada);
+            
+            let senhaValida = false;
+            let precisaAtualizarHash = false;
+
+            if (senhaArmazenada === senhaHashDigitada) {
+                senhaValida = true;
+            } else if (senhaArmazenada === senhaDigitada) {
+                senhaValida = true;
+                precisaAtualizarHash = true;
+            }
+
+            if (!senhaValida) {
+                return { sucesso: false, erro: "Senha incorreta!" };
+            }
+
+            if (precisaAtualizarHash) {
+                await setDoc(docRef, { senha: senhaHashDigitada }, { merge: true });
+            }
+
+            return { sucesso: true, dados: dadosUsuario };
+        } catch (e) {
+            console.error("Erro no login:", e);
+            return { sucesso: false, erro: "Erro de conexão com a nuvem." };
+        }
+    };
+
+    window.cloudSave = async function(user, data, calendario, relatorios) {
+        if (!user) return;
+        try {
+            const userTrim = user.trim();
+            const userUpper = userTrim.toUpperCase();
+            let docRef = doc(dbCloud, "usuarios", userUpper);
+            let docSnap = await getDoc(docRef);
+            if (!docSnap.exists()) {
+                docRef = doc(dbCloud, "usuarios", userTrim);
+                docSnap = await getDoc(docRef);
+            }
+
+            let senhaAtual = docSnap.exists() ? docSnap.data().senha : "";
+            let dicaAtual = docSnap.exists() ? docSnap.data().dica : "";
+            let isAdminAtual = docSnap.exists() ? !!docSnap.data().isAdmin : false;
+            let ativoAtual = docSnap.exists() ? (docSnap.data().ativo !== undefined ? docSnap.data().ativo : true) : true;
+
+            await setDoc(docRef, {
+                senha: senhaAtual,
+                dica: dicaAtual,
+                isAdmin: isAdminAtual,
+                ativo: ativoAtual,
+                dados: data,
+                calendario: calendario,
+                relatorios: relatorios || {},
+                ultimaAtualizacao: new Date()
+            }, { merge: true });
+
+            if (userUpper === "ADMIN") {
+                await setDoc(doc(dbCloud, "config", "calendarioGlobal"), { calendario: calendario }, { merge: true });
+            }
+        } catch (e) {
+            console.error("Erro ao salvar na nuvem:", e);
+        }
+    };
+
+    window.cloudLoad = async function(user) {
+        try {
+            const userTrim = user.trim();
+            const userUpper = userTrim.toUpperCase();
+            
+            const [userDocSnap, calGlobalSnap] = await Promise.all([
+                getDoc(doc(dbCloud, "usuarios", userUpper)).then(async (snap) => {
+                    if (!snap.exists()) {
+                        return await getDoc(doc(dbCloud, "usuarios", userTrim));
+                    }
+                    return snap;
+                }),
+                getDoc(doc(dbCloud, "config", "calendarioGlobal"))
+            ]);
+
+            let userData = userDocSnap.exists() ? userDocSnap.data() : {};
+
+            if (calGlobalSnap.exists()) {
+                const globalData = calGlobalSnap.data();
+                const calendarioExtraido = globalData.calendario || globalData;
+                if (calendarioExtraido && Object.keys(calendarioExtraido).length > 0) {
+                    userData.calendario = calendarioExtraido;
+                }
+            }
+
+            return userData;
+        } catch (e) {
+            console.error("Erro ao carregar da nuvem:", e);
+        }
+        return null;
+    };
+
+    window.cloudSaveNewUserAuth = async function(user, senha, dica) {
+        try {
+            const userTrim = user.trim();
+            const userUpper = userTrim.toUpperCase();
+            const docRef = doc(dbCloud, "usuarios", userUpper);
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists() && docSnap.data().senha) {
+                return false; 
+            }
+            
+            const senhaSegura = await hashSenha(senha);
+            const isAdminUser = (userUpper === "ADMIN");
+            
+            await setDoc(docRef, {
+                senha: senhaSegura,
+                dica: dica || "",
+                isAdmin: isAdminUser,
+                ativo: isAdminUser ? true : false,
+                dados: [],
+                calendario: {},
+                relatorios: {},
+                ultimaAtualizacao: new Date()
+            });
+            return true;
+        } catch (e) {
+            console.error("Erro ao salvar credenciais:", e);
+            return false;
+        }
+    };
+
+    window.cloudListAllUsers = async function() {
+        try {
+            const querySnapshot = await getDocs(collection(dbCloud, "usuarios"));
+            let lista = [];
+            querySnapshot.forEach((docSnap) => {
+                lista.push({
+                    nome: docSnap.id,
+                    ...docSnap.data()
+                });
+            });
+            return lista;
+        } catch (e) {
+            console.error("Erro ao listar utilizadores:", e);
+            return [];
+        }
+    };
+
+    window.cloudSetUserActive = async function(user, statusAtivo) {
+        try {
+            const userTrim = user.trim();
+            const userUpper = userTrim.toUpperCase();
+            let docRef = doc(dbCloud, "usuarios", userUpper);
+            let docSnap = await getDoc(docRef);
+            if (!docSnap.exists()) {
+                docRef = doc(dbCloud, "usuarios", userTrim);
+            }
+            await setDoc(docRef, { ativo: statusAtivo }, { merge: true });
+            return true;
+        } catch (e) {
+            console.error("Erro ao atualizar status do utilizador:", e);
+            return false;
+        }
+    };
+
+    window.escutarAlteracoesNuvem = function(user, callbackAtualizacao) {
+        const userTrim = user.trim();
+        const userUpper = userTrim.toUpperCase();
+        let docRef = doc(dbCloud, "usuarios", userUpper);
+        
+        onSnapshot(docRef, (docSnap) => {
+            if (docSnap.exists()) {
+                const dadosNuvem = docSnap.data();
+                getDoc(doc(dbCloud, "config", "calendarioGlobal")).then(calSnap => {
+                    if (calSnap.exists()) {
+                        const globalData = calSnap.data();
+                        dadosNuvem.calendario = globalData.calendario || globalData;
+                    }
+                    callbackAtualizacao(dadosNuvem);
+                });
+            }
+        });
+
+        onSnapshot(doc(dbCloud, "config", "calendarioGlobal"), (docSnap) => {
+            if (docSnap.exists()) {
+                const dadosGlobal = docSnap.data();
+                const calendarioExtraido = dadosGlobal.calendario || dadosGlobal;
+                if (calendarioExtraido) {
+                    callbackAtualizacao({ calendario: calendarioExtraido });
+                }
+            }
+        });
+    };
+
+    window.escutarNovosCadastrosAdmin = function(callbackNotificacao) {
+        onSnapshot(collection(dbCloud, "usuarios"), (snapshot) => {
+            let pendentes = 0;
+            snapshot.forEach((docSnap) => {
+                const dados = docSnap.data();
+                if (dados.ativo === false && !dados.isAdmin && docSnap.id !== 'ADMIN') {
+                    pendentes++;
+                }
+            });
+            callbackNotificacao(pendentes);
+        });
+    };
+</script>
 
 <script> 
     let db = []; 
     let calendarioDb = {}; 
     let relatorioRazoesDb = {};
+    
+    let currentUser = sessionStorage.getItem('gpl_user') || ""; 
+    let currentIsAdmin = sessionStorage.getItem('gpl_is_admin') === 'true';
 
     let dataAtualDoSistema = new Date();
-    let viewDate = new Date(2026, dataAtualDoSistema.getMonth(), 1); 
+    let viewDate = new Date(dataAtualDoSistema.getFullYear(), dataAtualDoSistema.getMonth(), 1); 
 
     const lista18Razoes = Array.from({length: 18}, (_, i) => `RAZÃO ${String(i + 1).padStart(2, '0')}`);
-
+    
     const notasDeLeitura = [
       { numero: '1100', status: 'Com leitura', detalhe: 'INSTALAÇÃO COM ENTREGA DE FLYER' },
       { numero: '1101', status: 'Com leitura', detalhe: 'LEITURA DIFICULTADA POR CÃES/ANIMAIS' },
@@ -598,13 +1063,226 @@
     const msNomesCompletos = ["JANEIRO", "FEVEREIRO", "MARÇO", "ABRIL", "MAIO", "JUNHO", "JULHO", "AGOSTO", "SETEMBRO", "OUTUBRO", "NOVEMBRO", "DEZEMBRO"]; 
     const fM = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); 
 
+    function dispararSalvamentoAutomatico() {
+        if (currentUser && window.cloudSave) {
+            window.cloudSave(currentUser, db, calendarioDb, relatorioRazoesDb);
+        }
+    }
+
+    // SALVA AUTOMATICAMENTE QUANDO O UTILIZADOR FECHA A ABA, O NAVEGADOR OU MUDA DE APLICATIVO
+    window.addEventListener('beforeunload', () => {
+        dispararSalvamentoAutomatico();
+    });
+
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'hidden') {
+            dispararSalvamentoAutomatico();
+        }
+    });
+
+    function switchLoginPane(paneId) {
+        document.querySelectorAll('.login-form-pane').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.login-tab-btn').forEach(el => el.classList.remove('active'));
+        
+        document.getElementById(paneId).classList.add('active');
+        if (paneId === 'loginPane') {
+            document.getElementById('btnPaneLogin').classList.add('active');
+        } else {
+            document.getElementById('btnPaneCreate').classList.add('active');
+        }
+    }
+
     function switchMobileTab(tabId, btnElement) {
         document.querySelectorAll('.mobile-tab-content').forEach(el => el.classList.remove('active-tab'));
         const target = document.getElementById(tabId);
         if(target) target.classList.add('active-tab');
-
+        
         document.querySelectorAll('.mob-tab-btn').forEach(btn => btn.classList.remove('active'));
         if(btnElement) btnElement.classList.add('active');
+        
+        if(tabId === 'tabAdmin' && currentIsAdmin) {
+            carregarListaUtilizadoresPendentes();
+        }
+    }
+
+    async function atualizarDadosManualmente(btnElement = null) {
+        if (!currentUser) return alert("Nenhum utilizador logado.");
+        
+        let iconeOriginal = "";
+        if (btnElement) {
+            iconeOriginal = btnElement.innerText;
+            btnElement.innerText = "⏳";
+            btnElement.disabled = true;
+        }
+
+        try {
+            const cloudData = await window.cloudLoad(currentUser);
+            if (cloudData) {
+                if (cloudData.dados) db = cloudData.dados;
+                if (cloudData.calendario) calendarioDb = cloudData.calendario;
+                if (cloudData.relatorios) relatorioRazoesDb = cloudData.relatorios;
+
+                atualizarTabela();
+                renderizarCalendario();
+                renderizarTabelaRelatorioAtual();
+                verificarSabadosAlertas();
+                if(currentIsAdmin) carregarListaUtilizadoresPendentes();
+                
+                return true;
+            } else {
+                alert("Nenhum dado encontrado na nuvem para este utilizador.");
+                return false;
+            }
+        } catch (error) {
+            console.error("Erro ao atualizar:", error);
+            alert("Erro ao conectar com a nuvem. Verifique a conexão.");
+            return false;
+        } finally {
+            if (btnElement) {
+                btnElement.innerText = iconeOriginal;
+                btnElement.disabled = false;
+            }
+        }
+    }
+
+    function sairDaConta() {
+        if (!confirm("Deseja realmente sair da conta?")) return;
+
+        dispararSalvamentoAutomatico();
+
+        currentUser = "";
+        currentIsAdmin = false;
+        sessionStorage.removeItem('gpl_user');
+        sessionStorage.removeItem('gpl_is_admin');
+        
+        db = [];
+        calendarioDb = {};
+        relatorioRazoesDb = {};
+
+        let d = new Date();
+        viewDate = new Date(d.getFullYear(), d.getMonth(), 1);
+
+        document.getElementById('loginUser').value = "";
+        document.getElementById('loginPass').value = "";
+        document.getElementById('searchRazao').value = "";
+        document.getElementById('searchNL').value = "";
+        document.getElementById('searchCal').value = "";
+        document.getElementById('searchMedidorRelatorio').value = "";
+        document.getElementById('searchAdminUsers').value = "";
+        
+        document.getElementById('btnTabAdmin').style.display = 'none';
+        document.getElementById('adminNotificationBadge').style.display = 'none';
+        
+        const loginScreen = document.getElementById('loginScreen');
+        loginScreen.style.display = 'flex';
+    }
+
+    let startY = 0;
+    let isPulling = false;
+    const pullThreshold = 80;
+
+    window.addEventListener('touchstart', (e) => {
+        const activeTabEl = document.querySelector('.mobile-tab-content.active-tab');
+        const scrollableChild = activeTabEl ? activeTabEl.querySelector('.table-container, .form-content-area, .top-dashboard, .cards-container') : null;
+        const isAtTop = scrollableChild ? scrollableChild.scrollTop <= 0 : (window.scrollY <= 0);
+
+        if (isAtTop) {
+            startY = e.touches[0].clientY;
+            isPulling = true;
+        } else {
+            isPulling = false;
+        }
+    }, { passive: true });
+
+    window.addEventListener('touchmove', (e) => {
+        if (!isPulling) return;
+        const currentY = e.touches[0].clientY;
+        const diff = currentY - startY;
+
+        const indicator = document.getElementById('pullToRefreshIndicator');
+        if (diff > 0 && diff < 150) {
+            indicator.style.transform = `translateY(${diff}px)`;
+            if (diff >= pullThreshold) {
+                indicator.innerText = "Solte para atualizar os dados 🔄";
+            } else {
+                indicator.innerText = "Puxe mais para atualizar...";
+            }
+        }
+    }, { passive: true });
+
+    window.addEventListener('touchend', async (e) => {
+        if (!isPulling) return;
+        isPulling = false;
+        const indicator = document.getElementById('pullToRefreshIndicator');
+        const endY = e.changedTouches[0].clientY;
+        const diff = endY - startY;
+
+        if (diff >= pullThreshold && currentUser) {
+            indicator.innerText = "Atualizando dados da nuvem...";
+            indicator.style.transform = `translateY(50px)`;
+            
+            await atualizarDadosManualmente();
+            
+            setTimeout(() => {
+                indicator.innerText = "Atualizado com sucesso! ✨";
+                setTimeout(() => {
+                    indicator.style.transform = `translateY(0px)`;
+                }, 600);
+            }, 400);
+        } else {
+            indicator.style.transform = `translateY(0px)`;
+        }
+    });
+
+    async function carregarListaUtilizadoresPendentes(filtro = '') {
+        if (!currentIsAdmin) return;
+        const corpo = document.getElementById('adminUsersCorpo');
+        if (!corpo) return;
+
+        const termo = filtro.toUpperCase();
+        const todosUsuarios = await window.cloudListAllUsers();
+
+        const filtrados = todosUsuarios.filter(u => u.nome.toUpperCase().includes(termo));
+
+        if (filtrados.length === 0) {
+            corpo.innerHTML = `<tr><td colspan="3" style="text-align: center; padding: 20px; color: var(--text-p);">Nenhum utilizador encontrado.</td></tr>`;
+            return;
+        }
+
+        corpo.innerHTML = filtrados.map(u => {
+            const isAtivo = u.ativo === true;
+            const isAdmUser = u.isAdmin === true || u.nome === 'ADMIN';
+
+            return `
+                <tr>
+                    <td style="font-weight: bold; color: var(--accent);">${u.nome}</td>
+                    <td>
+                        <span style="color: ${isAtivo ? 'var(--success)' : 'var(--warning)'}; font-weight: bold;">
+                            ${isAtivo ? 'Ativo' : 'Aguardando PIX'}
+                        </span>
+                    </td>
+                    <td class="no-print">
+                        ${isAdmUser ? '<span style="color:var(--purple); font-weight:bold; font-size:10px;">ADMIN</span>' : `
+                            <button type="button" onclick="alternarAtivacaoUsuario('${u.nome}',${!isAtivo})" class="header-btn" style="background: ${isAtivo ? 'var(--danger)' : 'var(--success)'}; color: ${isAtivo ? '#fff' : '#000'}; padding: 4px 8px; font-size: 10px;">
+                                ${isAtivo ? 'Bloquear' : 'Aprovar'}
+                            </button>
+                        `}
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    async function alternarAtivacaoUsuario(nomeUsuario, novoStatus) {
+        if (!confirm(`Deseja realmente ${novoStatus ? 'APROVAR' : 'BLOQUEAR'} o acesso do utilizador ${nomeUsuario}?`)) return;
+
+        let sucesso = await window.cloudSetUserActive(nomeUsuario, novoStatus);
+        if (sucesso) {
+            alert(`Utilizador ${nomeUsuario} atualizado com sucesso!`);
+            carregarListaUtilizadoresPendentes(document.getElementById('searchAdminUsers').value);
+        } else {
+            alert("Erro ao atualizar status do utilizador.");
+        }
     }
 
     function popularSelectRazoesRelatorio() {
@@ -621,7 +1299,7 @@
     function processarArquivoTxtSelecionado(input) {
         const file = input.files[0];
         if (!file) return;
-
+        
         const reader = new FileReader();
         reader.onload = function(e) {
             let conteudo = e.target.result;
@@ -715,8 +1393,10 @@
             medidores: listaMedidores
         };
 
+        dispararSalvamentoAutomatico();
+
         renderizarTabelaRelatorioAtual();
-        alert(`Arquivo da ${razaoSelecionada} para o período ${msNomesCompletos[viewDate.getMonth()]} importado com sucesso!`);
+        alert(`Arquivo da ${razaoSelecionada} para o período ${msNomesCompletos[viewDate.getMonth()]} importado e atualizado com sucesso!`);
     }
 
     function buscarMedidorNoRelatorio() {
@@ -734,7 +1414,7 @@
         if (!dadosRazao || Object.keys(dadosRazao).length === 0) {
             corpo.innerHTML = `
                 <div style="grid-column: 1 / -1; text-align: center; color: var(--text-p); padding: 30px; font-weight: 700; font-size: 12px;">
-                    Nenhum arquivo TXT carregado para esta razão. Clique em "Importar" acima.
+                    Nenhum arquivo TXT carregado para esta razão. Clique em "Importar TXT Mês Atual".
                 </div>`;
             return;
         }
@@ -756,7 +1436,7 @@
             if (mesesEncontrados.length === 0) {
                 corpo.innerHTML = `
                     <div style="grid-column: 1 / -1; text-align: center; color: var(--text-p); padding: 30px; font-weight: 700; font-size: 12px;">
-                        Nenhum medidor encontrado com o número "${termoBusca}".
+                        Nenhum medidor encontrado com o termo "${termoBusca}" em nenhum mês.
                     </div>`;
                 return;
             }
@@ -764,6 +1444,7 @@
             const ultimos12Meses = mesesEncontrados.slice(-12);
             let somaConsumo12 = 0;
             let qtdMesesComConsumo = 0;
+
             let htmlHistoricoMeses = [];
             let consumoMesAtual = "-";
 
@@ -782,6 +1463,7 @@
                     const mesAnterior = ultimos12Meses[i - 1];
                     const dadosAnterior = historicoMedidor[mesAnterior];
                     let leituraAnterior = typeof dadosAnterior.leit === 'number' ? dadosAnterior.leit : Number(dadosAnterior.leit) || 0;
+                    
                     consumoMes = leituraAtual - leituraAnterior;
                     if (consumoMes < 0) consumoMes = 0;
                 } else {
@@ -798,12 +1480,12 @@
                 }
 
                 htmlHistoricoMeses.push(`
-                    <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; margin-bottom: 5px; font-size: 11px;">
+                    <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; margin-bottom: 4px; font-size: 11px;">
                         <div style="display: flex; justify-content: space-between; font-weight: bold; color: var(--text-h);">
                             <span>📅 ${nomeMesStr}/${ano}</span>
                             <span style="color: var(--success);">Consumo: ${typeof consumoMes === 'number' ? consumoMes.toLocaleString() : consumoMes}</span>
                         </div>
-                        <div style="display: flex; justify-content: space-between; margin-top: 3px; font-size: 10px; color: var(--text-p);">
+                        <div style="display: flex; justify-content: space-between; margin-top: 2px; font-size: 10px; color: var(--text-p);">
                             <span>Leitura: ${leituraAtual.toLocaleString()}</span>
                             <span style="color: ${isComLeitura ? 'var(--success)' : 'var(--warning)'};">${infoNL.status} (NL ${dados.oc})</span>
                         </div>
@@ -817,20 +1499,20 @@
             const leituraMaisRecente = typeof ultimoItem.leit === 'number' ? ultimoItem.leit : Number(ultimoItem.leit) || 0;
 
             corpo.innerHTML = `
-                <div class="medidor-card">
-                    <div class="oc-card-header" style="align-items: flex-start; gap: 6px;">
-                        <div style="overflow: hidden;">
-                            <span class="oc-code" style="font-size: 0.95rem; color: var(--success); display: block; word-break: break-all;">Medidor: ${termoBusca}</span>
-                            <span style="font-size: 10px; font-weight: bold; color: var(--text-p);">Razão: ${razaoSelecionada} | NL: <span style="color: var(--warning);">${ultimoItem.oc}</span></span>
+                <div class="medidor-card" style="max-width: 100%;">
+                    <div class="oc-card-header" style="align-items: flex-start;">
+                        <div>
+                            <span class="oc-code" style="font-size: 0.95rem; color: var(--success); display: block;">Medidor: ${termoBusca}</span>
+                            <span style="font-size: 10px; font-weight: bold; color: var(--text-p);">Razão: ${razaoSelecionada} | Última NL: <span style="color: var(--warning);">${ultimoItem.oc}</span></span>
                         </div>
-                        <div style="display: flex; gap: 4px; flex-direction: column; align-items: flex-end; flex-shrink: 0;">
-                            <span class="oc-count" style="font-size: 0.7rem; background: rgba(0, 255, 136, 0.15); color: var(--success); border-color: var(--success);">Leit: ${leituraMaisRecente.toLocaleString()}</span>
-                            <span class="oc-count" style="font-size: 0.7rem; background: rgba(255, 204, 0, 0.15); color: var(--warning); border-color: var(--warning);">Cons: ${typeof consumoMesAtual === 'number' ? consumoMesAtual.toLocaleString() : consumoMesAtual}</span>
-                            <span class="oc-count" style="font-size: 0.7rem; background: rgba(0, 112, 243, 0.2); color: var(--accent); border-color: var(--accent);">Méd: ${mediaConsumo12}</span>
+                        <div style="display: flex; gap: 4px; flex-direction: column; align-items: flex-end;">
+                            <span class="oc-count" style="font-size: 0.75rem; background: rgba(0, 255, 136, 0.15); color: var(--success); border-color: var(--success);">Leitura: ${leituraMaisRecente.toLocaleString()}</span>
+                            <span class="oc-count" style="font-size: 0.75rem; background: rgba(255, 204, 0, 0.15); color: var(--warning); border-color: var(--warning);">Consumo: ${typeof consumoMesAtual === 'number' ? consumoMesAtual.toLocaleString() : consumoMesAtual}</span>
+                            <span class="oc-count" style="font-size: 0.75rem; background: rgba(0, 112, 243, 0.2); color: var(--accent); border-color: var(--accent);">Média Consumo: ${mediaConsumo12}</span>
                         </div>
                     </div>
-                    <div style="max-height: 220px; overflow-y: auto; padding-right: 4px; margin-top: 6px;">
-                        <div style="font-size: 10px; font-weight: 900; color: var(--accent); text-transform: uppercase; margin-bottom: 4px;">Histórico de Consumo (12 Meses):</div>
+                    <div style="max-height: 220px; overflow-y: auto; padding-right: 2px; margin-top: 4px;">
+                        <div style="font-size: 10px; font-weight: 900; color: var(--accent); text-transform: uppercase; margin-bottom: 4px;">Histórico de Consumo (Meses Anteriores):</div>
                         ${htmlHistoricoMeses.reverse().join('')}
                     </div>
                 </div>
@@ -844,7 +1526,7 @@
         if (!dadosMesAtual || Object.keys(dadosMesAtual).length === 0) {
             corpo.innerHTML = `
                 <div style="grid-column: 1 / -1; text-align: center; color: var(--text-p); padding: 30px; font-weight: 700; font-size: 12px;">
-                    Nenhum TXT importado para ${msNomesCompletos[viewDate.getMonth()]} nesta razão.
+                    Nenhum arquivo TXT importado para ${msNomesCompletos[viewDate.getMonth()]} nesta razão.
                 </div>`;
             return;
         }
@@ -854,7 +1536,7 @@
 
         corpo.innerHTML = chavesOC.map(oc => {
             const qtd = dadosMesAtual[oc];
-            const infoNL = notasDeLeitura.find(item => item.numero === oc) || { status: 'Desconhecido', detalhe: 'Nota de Leitura' };
+            const infoNL = notasDeLeitura.find(item => item.numero === oc) || { status: 'Desconhecido', detalhe: 'Nota de Leitura mapeada' };
             const isComLeitura = infoNL.status.toLowerCase().includes('com');
 
             return `
@@ -874,6 +1556,75 @@
         }).join('');
     }
 
+    function renderizarCalendario(filtro = '') {
+        const termo = filtro.toUpperCase();
+        const corpo = document.getElementById('calCorpo');
+        if(!corpo) return;
+
+        const html = lista18Razoes
+            .filter(razao => razao.includes(termo))
+            .map(razao => {
+                const dataSalva = calendarioDb[razao] || '';
+                let dataFormatadaExibicao = "Não definida";
+                if (dataSalva) {
+                    const [ano, mes, dia] = dataSalva.split('-');
+                    dataFormatadaExibicao = `${dia}/${mes}/${ano}`;
+                }
+
+                return `
+                    <tr>
+                        <td style="font-weight: bold; color: var(--accent);">${razao}</td>
+                        <td>
+                            ${currentIsAdmin ? `
+                                <input type="date" value="${dataSalva}" onchange="salvarDataCalendario('${razao}', this.value)" style="margin-bottom:0; font-size:11px;">
+                            ` : `
+                                <div style="font-weight: bold; color: ${dataSalva ? 'var(--text-h)' : 'var(--text-p)'}; font-size: 12px; padding: 6px;">
+                                    ${dataFormatadaExibicao}
+                                </div>
+                            `}
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+        corpo.innerHTML = html;
+    }
+
+    async function salvarDataCalendario(razao, data) {
+        if (!currentIsAdmin) return;
+        calendarioDb[razao] = data;
+        dispararSalvamentoAutomatico();
+        verificarSabadosAlertas();
+    }
+
+    function verificarSabadosAlertas() {
+        const alertaContainer = document.getElementById('saturdayAlertContainer');
+        if(!alertaContainer) return;
+
+        let alertas = [];
+        for (const [razao, dataStr] of Object.entries(calendarioDb)) {
+            if (dataStr) {
+                const [ano, mes, dia] = dataStr.split('-');
+                const dataObj = new Date(ano, mes - 1, dia);
+                
+                if (dataObj.getDay() === 6) {
+                    const dataFormatada = `${dia}/${mes}/${ano}`;
+                    alertas.push(`⚠️ Alerta: ${razao} está marcada para Sábado, dia ${dataFormatada}!`);
+                }
+            }
+        }
+
+        if (alertas.length > 0) {
+            alertaContainer.style.display = 'flex';
+            alertaContainer.innerHTML = `<div style="display:flex; flex-direction:column; gap:4px; width:100%;">` + 
+                alertas.map(a => `<div class="alert-saturday-box"><span>${a}</span></div>`).join('') + 
+                `</div>`;
+        } else {
+            alertaContainer.style.display = 'none';
+            alertaContainer.innerHTML = '';
+        }
+    }
+
     function renderizarNL(lista = notasDeLeitura) {
         const htmlContent = lista.map(item => `
             <tr>
@@ -882,6 +1633,7 @@
                 <td style="text-align: left; font-size: 11.5px;">${item.detalhe}</td>
             </tr>
         `).join('');
+
         const el = document.getElementById('nlCorpo');
         if(el) el.innerHTML = htmlContent;
     }
@@ -890,27 +1642,6 @@
         const termo = val.toUpperCase();
         const filtrado = notasDeLeitura.filter(i => i.numero.includes(termo) || i.detalhe.includes(termo));
         renderizarNL(filtrado);
-    }
-
-    function renderizarCalendario() {
-        const corpo = document.getElementById('calCorpo');
-        if(!corpo) return;
-
-        corpo.innerHTML = lista18Razoes.map(razao => {
-            const dataSalva = calendarioDb[razao] || '';
-            return `
-                <tr>
-                    <td style="font-weight: bold; color: var(--accent);">${razao}</td>
-                    <td>
-                        <input type="date" value="${dataSalva}" onchange="salvarDataCalendario('${razao}', this.value)" style="margin-bottom:0; font-size:11px;">
-                    </td>
-                </tr>
-            `;
-        }).join('');
-    }
-
-    function salvarDataCalendario(razao, data) {
-        calendarioDb[razao] = data;
     }
 
     function animarContagem(id, final, isMoeda = false) { 
@@ -933,27 +1664,173 @@
         }, 20); 
     } 
 
+    async function handleLogin() {
+        const u = document.getElementById('loginUser').value.trim();
+        const p = document.getElementById('loginPass').value;
+
+        if(!u || !p) return alert("Preencha Utilizador e Senha.");
+
+        const resultadoLogin = await window.cloudVerificarLogin(u, p);
+        if (!resultadoLogin.sucesso) {
+            return alert(resultadoLogin.erro);
+        }
+
+        const cloudData = resultadoLogin.dados;
+        const isAdminUser = (u.toUpperCase() === "ADMIN" || cloudData.isAdmin === true);
+        
+        if (!isAdminUser && cloudData.ativo !== true) {
+            return alert("⚠️ Acesso bloqueado por falta de pagamento. Efetue o pagamento para ter acesso à conta.");
+        }
+
+        currentUser = u.toUpperCase();
+        currentIsAdmin = isAdminUser;
+        
+        sessionStorage.setItem('gpl_user', currentUser);
+        sessionStorage.setItem('gpl_is_admin', currentIsAdmin);
+
+        if (cloudData.dados) db = cloudData.dados;
+        if (cloudData.calendario) calendarioDb = cloudData.calendario;
+        if (cloudData.relatorios) relatorioRazoesDb = cloudData.relatorios;
+
+        document.getElementById('loginScreen').style.display = 'none';
+        initSystem();
+    }
+
+    async function handleCreateAccount() {
+        const u = document.getElementById('regUser').value.trim();
+        const p = document.getElementById('regPass').value;
+        const pConf = document.getElementById('regPassConfirm').value;
+        const r = document.getElementById('regRecovery').value.trim();
+
+        if(!u || !p || !pConf || !r) return alert("Preencha todos os campos do cadastro.");
+        if(p !== pConf) return alert("As senhas não coincidem! Verifique e tente novamente.");
+
+        let cloudData = window.cloudLoad ? await window.cloudLoad(u) : null;
+        if (cloudData && cloudData.senha) {
+            return alert("Este nome de utilizador já existe! Escolha outro nome.");
+        }
+
+        let criado = await window.cloudSaveNewUserAuth(u, p, r);
+        if (!criado) return alert("Erro ao criar utilizador.");
+
+        alert("Conta criada com sucesso! Efetue o PIX de R$ 10,00 e informe o comprovante ao Administrador para ativação.");
+        
+        document.getElementById('regUser').value = "";
+        document.getElementById('regPass').value = "";
+        document.getElementById('regPassConfirm').value = "";
+        document.getElementById('regRecovery').value = "";
+        switchLoginPane('loginPane');
+    }
+
+    function recoverPass() { 
+        const u = document.getElementById('loginUser').value.trim(); 
+        if(!u) return alert("Digite o seu nome de utilizador no campo 'Utilizador' para recuperar a senha.");
+        
+        window.cloudLoad(u).then(cloudData => {
+            if(cloudData && cloudData.dica) {
+                alert("Palavra/Dica de segurança cadastrada: " + cloudData.dica);
+            } else {
+                alert("Utilizador não encontrado na nuvem ou sem dica de recuperação cadastrada.");
+            }
+        });
+    }
+
+    async function initSystem() { 
+        document.getElementById('loginScreen').style.display = 'none'; 
+        document.getElementById('headerUserDisplay').innerText = currentUser;
+        
+        const btnAdmin = document.getElementById('btnTabAdmin');
+        if (currentIsAdmin) {
+            btnAdmin.style.display = 'flex';
+            window.escutarNovosCadastrosAdmin((qtdPendentes) => {
+                const badge = document.getElementById('adminNotificationBadge');
+                if (badge) {
+                    if (qtdPendentes > 0) {
+                        badge.innerText = qtdPendentes;
+                        badge.style.display = 'block';
+                    } else {
+                        badge.style.display = 'none';
+                    }
+                }
+            });
+        } else {
+            btnAdmin.style.display = 'none';
+        }
+
+        switchMobileTab('tabDashboard', document.getElementById('btnTabDashboard'));
+
+        let nomeMes = msNomesCompletos[viewDate.getMonth()];
+        document.getElementById('currentMonthDisplay').innerText = nomeMes; 
+        document.getElementById('printSubHeader').innerText = `Utilizador: ${currentUser}  |  Período: ${nomeMes}/2026`;
+        
+        let cloudData = await window.cloudLoad(currentUser);
+        if (cloudData) {
+            if (cloudData.dados) db = cloudData.dados;
+            if (cloudData.calendario) calendarioDb = cloudData.calendario;
+            if (cloudData.relatorios) relatorioRazoesDb = cloudData.relatorios;
+        }
+
+        renderMonths(); 
+        renderizarNL();
+        renderizarCalendario();
+        popularSelectRazoesRelatorio();
+        renderizarTabelaRelatorioAtual();
+        verificarSabadosAlertas();
+        atualizarTabela(); 
+        if(currentIsAdmin) carregarListaUtilizadoresPendentes();
+
+        window.escutarAlteracoesNuvem(currentUser, (dadosNuvem) => {
+            if (dadosNuvem.dados) db = dadosNuvem.dados;
+            if (dadosNuvem.calendario) {
+                calendarioDb = dadosNuvem.calendario;
+                renderizarCalendario();
+                verificarSabadosAlertas();
+            }
+            if (dadosNuvem.relatorios) relatorioRazoesDb = dadosNuvem.relatorios;
+
+            atualizarTabela();
+            renderizarTabelaRelatorioAtual();
+        });
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+        if (currentUser) {
+            handleLoginAuto();
+        }
+    });
+
+    async function handleLoginAuto() {
+        let cloudData = await window.cloudLoad(currentUser);
+        if (cloudData) {
+            if (cloudData.dados) db = cloudData.dados;
+            if (cloudData.calendario) calendarioDb = cloudData.calendario;
+            if (cloudData.relatorios) relatorioRazoesDb = cloudData.relatorios;
+        }
+        initSystem();
+    }
+
     function renderMonths() { 
         const ms = ["JAN", "FEV", "MAR", "ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ"]; 
         document.getElementById('monthGrid').innerHTML = ms.map((m, i) => `<div class="month-item" onclick="selectMonth(${i})">${m}</div>`).join(''); 
     } 
 
     function toggleMonthGrid() { document.getElementById('monthGrid').classList.toggle('active'); } 
-
+     
     function selectMonth(m) { 
         viewDate.setMonth(m); 
         let nomeMes = msNomesCompletos[m];
         document.getElementById('currentMonthDisplay').innerText = nomeMes; 
-        document.getElementById('printSubHeader').innerText = `Período: ${nomeMes}/2026`;
+        document.getElementById('printSubHeader').innerText = `Utilizador: ${currentUser}  |  Período: ${nomeMes}/2026`;
         toggleMonthGrid(); 
-        atualizarTabela(); 
+        atualizarTabela();
+        renderizarTabelaRelatorioAtual(); 
     } 
 
     function atualizarTabela() { 
         const mesF = "2026-" + String(viewDate.getMonth() + 1).padStart(2, '0'); 
         const busca = document.getElementById('searchRazao').value.toUpperCase(); 
         const regs = db.filter(i => i.data.startsWith(mesF) && i.razao.includes(busca)).sort((a,b) => new Date(a.data) - new Date(b.data)); 
-
+         
         let sL=0, sI=0; 
 
         const htmlRegistros = regs.map(i => { 
@@ -1022,9 +1899,14 @@
             }
             alert("Registro atualizado com sucesso!");
         } else {
-            db.push({ id: Date.now(), ...dadosForm }); 
-            alert("Registro salvo com sucesso!");
+            db.push({ 
+                id: Date.now(), 
+                ...dadosForm
+            }); 
+            alert("Registro salvo na nuvem com sucesso!");
         }
+
+        dispararSalvamentoAutomatico();
 
         limparFormulario();
         atualizarTabela(); 
@@ -1061,60 +1943,132 @@
         if(confirm("Deseja limpar todos os registros deste mês?")) { 
             const mesF = "2026-" + String(viewDate.getMonth() + 1).padStart(2, '0'); 
             db = db.filter(i => !i.data.startsWith(mesF)); 
+            dispararSalvamentoAutomatico();
             atualizarTabela(); 
         } 
     } 
      
     function limparAno() { 
-        if(confirm("ATENÇÃO: Você vai apagar TODOS os registros de 2026!")) { 
-            db = []; 
-            atualizarTabela(); 
-            alert("Dados limpos."); 
+        if(confirm("ATENÇÃO: Você está prestes a apagar TODOS os registros de 2026!")) { 
+            if(confirm("Tem certeza absoluta?")) { 
+                db = []; 
+                dispararSalvamentoAutomatico();
+                atualizarTabela(); 
+                alert("Dados de 2026 removidos da nuvem."); 
+            } 
         } 
     } 
 
     function exportarBackup() {
-        const dadosBackup = { registros: db, calendario: calendarioDb, relatorios: relatorioRazoesDb };
-        const blob = new Blob([JSON.stringify(dadosBackup, null, 2)], { type: 'application/json' });
+        if ((!db || db.length === 0) && Object.keys(calendarioDb).length === 0 && Object.keys(relatorioRazoesDb).length === 0) {
+            return alert("Sem dados para exportar.");
+        }
+        
+        const dadosBackup = {
+            registros: db,
+            calendario: calendarioDb,
+            relatorios: relatorioRazoesDb
+        };
+
+        const dataStr = JSON.stringify(dadosBackup, null, 2);
+        const blob = new Blob([dataStr], { type: 'application/json;charset=utf-8;' });
         const url = URL.createObjectURL(blob);
+        
         const dl = document.createElement('a');
         dl.href = url;
-        dl.download = `backup_gpl_2026.json`;
-        dl.click();
-        URL.revokeObjectURL(url);
+        dl.download = `backup_gpl_${currentUser.toLowerCase()}_2026.json`;
+        document.body.appendChild(dl); 
+        dl.click(); 
+        dl.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
     }
 
     function dispararImportacao() { 
-        document.getElementById('importFile').click(); 
+        const fileInput = document.getElementById('importFile');
+        fileInput.value = '';
+        fileInput.click(); 
     }
 
     function importarBackup(event) {
         const file = event.target.files[0];
         if (!file) return;
+        
         const reader = new FileReader();
         reader.onload = function(e) {
             try {
-                const imp = JSON.parse(e.target.result);
-                if (imp.registros) db = imp.registros;
-                if (imp.calendario) calendarioDb = imp.calendario;
-                if (imp.relatorios) relatorioRazoesDb = imp.relatorios;
-                atualizarTabela();
-                renderizarCalendario();
-                popularSelectRazoesRelatorio();
-                renderizarTabelaRelatorioAtual();
-                alert("Backup restaurado com sucesso!");
-            } catch (err) { alert("Erro ao ler arquivo."); }
+                const importedData = JSON.parse(e.target.result);
+                if (confirm(`Substituir dados atuais pelo arquivo "${file.name}"?`)) {
+                    if (Array.isArray(importedData)) {
+                        db = importedData;
+                    } else if (importedData && typeof importedData === 'object') {
+                        db = Array.isArray(importedData.registros) ? importedData.registros : [];
+                        if (importedData.calendario) {
+                            calendarioDb = importedData.calendario;
+                        }
+                        if (importedData.relatorios) {
+                            relatorioRazoesDb = importedData.relatorios;
+                        }
+                    } else {
+                        return alert("Arquivo de backup inválido.");
+                    }
+
+                    dispararSalvamentoAutomatico();
+                    
+                    atualizarTabela();
+                    renderizarCalendario();
+                    popularSelectRazoesRelatorio();
+                    renderizarTabelaRelatorioAtual();
+                    verificarSabadosAlertas();
+                    
+                    alert("Backup restaurado e sincronizado com a nuvem!");
+                }
+            } catch (err) { 
+                alert("Erro ao ler o arquivo JSON."); 
+            }
+            event.target.value = "";
         };
         reader.readAsText(file);
     }
 
     window.onload = function() {
-        renderMonths();
-        renderizarNL();
-        renderizarCalendario();
-        popularSelectRazoesRelatorio();
-        renderizarTabelaRelatorioAtual();
-        atualizarTabela();
+        window.addEventListener("keydown", (e) => {
+            if (e.key === "F5") {
+                e.preventDefault();
+                if (currentUser) {
+                    atualizarDadosManualmente();
+                } else {
+                    location.reload();
+                }
+            }
+        });
+
+        const loginPassEl = document.getElementById('loginPass');
+        if(loginPassEl) {
+            loginPassEl.addEventListener("keydown", (e) => {
+                if (e.key === "Enter") {
+                    e.preventDefault();
+                    handleLogin();
+                }
+            });
+        }
+
+        const form = document.getElementById("gplForm");
+        if (form) {
+            const inputs = Array.from(form.querySelectorAll("input"));
+            inputs.forEach((input, index) => {
+                input.addEventListener("keydown", (e) => {
+                    if (e.key === "Enter") {
+                        e.preventDefault();
+                        const nextInput = inputs[index + 1];
+                        if (nextInput) {
+                            nextInput.focus();
+                        } else {
+                            form.requestSubmit();
+                        }
+                    }
+                });
+            });
+        }
     };
 </script> 
 </body> 
