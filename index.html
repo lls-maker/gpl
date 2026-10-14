@@ -2,7 +2,7 @@
 <html lang="pt-br"> 
 <head> 
     <meta charset="UTF-8"> 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"> 
     <title>Gestão de Produtividade de Leituras</title> 
 
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzMiAzMicgd2lkdGg9JzMyJyBoZWlnaHQ9JzMyJz48cmVjdCB3aWR0aD0nMzInIGhlaWdodD0nMzInIHJ4PSc2JyBmaWxsPScjMGIwZjE1Jz48L3JlY3Q+PHRleHQgeD0nNTAlJyB5PSc1NSUnIGRvbWluYW50LWJhc2VsaW5lPSdtaWRkbGUnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJyBmb250LXdlaWdodD0nOTAwJyBmb250LXdlaWdodD0nMTAwMCcgZm9udC1zaXplPScxMCcgZmlsbD0nIzAwZmY4OCcgbGV0dGVyLXNwYWNpbmdzPScwLjUnPkdQTDwvdGV4dD48L3N2Zz4=">
@@ -30,15 +30,16 @@
 
         html, body {
             width: 100%;
-            min-height: 100vh;
+            height: 100vh;
             font-family: 'Inter', system-ui, sans-serif; 
             background-color: var(--bg); 
             color: var(--text-p); 
             margin: 0; 
-            padding: 10px; 
+            padding: 0; 
             display: flex;
             justify-content: center;
             align-items: center;
+            overflow: hidden;
             overscroll-behavior-y: contain;
         } 
 
@@ -72,12 +73,12 @@
             background: #000; 
             color: white; 
             border: 1px solid var(--border); 
-            padding: 10px 12px; 
-            border-radius: 10px; 
+            padding: 8px 10px; 
+            border-radius: 9px; 
             outline: none; 
             width: 100%; 
-            font-size: 13px; 
-            margin-bottom: 6px; 
+            font-size: 12px; 
+            margin-bottom: 5px; 
             transition: 0.3s; 
         } 
         input:focus, select:focus { 
@@ -107,7 +108,7 @@
         .login-box { 
             background: rgba(11, 15, 21, 0.95); padding: 30px; border-radius: 24px; 
             border: 1px solid var(--border); border-top: 4px solid var(--success); 
-            width: 380px; text-align: center; backdrop-filter: blur(10px); 
+            width: 360px; text-align: center; backdrop-filter: blur(10px); 
             box-shadow: 0 20px 50px rgba(0,0,0,0.8); 
             max-height: 95vh; overflow-y: auto;
         } 
@@ -125,12 +126,12 @@
             background: transparent;
             border: none;
             color: var(--text-p);
-            font-size: 11px;
+            font-size: 10px;
             font-weight: 900;
             text-transform: uppercase;
             cursor: pointer;
             flex: 1;
-            padding: 10px;
+            padding: 8px;
             border-radius: 8px;
             transition: 0.3s;
         }
@@ -158,30 +159,30 @@
         } 
 
         .container { 
-            max-width: 720px; 
+            max-width: 480px; 
             width: 100%; 
-            height: 92vh;
-            max-height: 980px;
+            height: 100vh;
+            max-height: 920px;
             display: flex; 
             flex-direction: column; 
-            gap: 8px; 
+            gap: 6px; 
             overflow: hidden;
             background: var(--bg);
             border-radius: 24px;
             border: 1px solid var(--grey-border);
             box-shadow: 0 20px 40px rgba(0,0,0,0.6);
-            padding: 12px;
+            padding: 8px;
         } 
 
         header { 
-            background: var(--surface); padding: 10px 16px; border-radius: 16px; 
+            background: var(--surface); padding: 8px 12px; border-radius: 16px; 
             border: 1px solid var(--border); display: flex; justify-content: space-between; 
             align-items: center; flex-shrink: 0; position: relative; 
         } 
         .prog-area { width: 100%; flex-shrink: 0; padding: 0 2px; } 
         
         .top-dashboard {
-            display: flex; flex-direction: column; gap: 8px; flex-shrink: 0;
+            display: flex; flex-direction: column; gap: 6px; flex-shrink: 0;
             overflow-y: auto; max-height: calc(100vh - 120px); padding-bottom: 4px;
         }
         
@@ -215,21 +216,21 @@
 
         .summary-grid { 
             display: grid; 
-            grid-template-columns: repeat(3, 1fr); 
-            gap: 8px; 
+            grid-template-columns: repeat(2, 1fr); 
+            gap: 6px; 
             height: auto; 
         } 
         .summary-card { 
-            background: var(--surface); padding: 12px 8px; border-radius: 14px; 
+            background: var(--surface); padding: 10px 6px; border-radius: 12px; 
             border: 1.5px solid var(--grey-border); border-top: 5px solid; 
-            display: flex; flex-direction: column; justify-content: center; text-align: center; height: 85px; 
+            display: flex; flex-direction: column; justify-content: center; text-align: center; height: 75px; 
         } 
-        .summary-card p { font-size: 11px; font-weight: 800; text-transform: uppercase; margin: 0; } 
-        .summary-card h2 { margin: 6px 0 0; font-size: 1.25rem; color: var(--text-h); font-weight: 900; } 
+        .summary-card p { font-size: 10px; font-weight: 800; text-transform: uppercase; margin: 0; } 
+        .summary-card h2 { margin: 4px 0 0; font-size: 1.1rem; color: var(--text-h); font-weight: 900; } 
 
         .neon-acumulado {
-            grid-column: span 3;
-            height: 75px;
+            grid-column: span 2;
+            height: 70px;
         }
 
         .neon-leituras { border-top-color: var(--white-neon); } 
@@ -259,22 +260,22 @@
             flex-direction: column;
             justify-content: space-between;
             overflow: hidden; 
-            padding: 12px;
+            padding: 10px;
             background: linear-gradient(180deg, rgba(0, 112, 243, 0.08) 0%, var(--surface) 100%);
             border-radius: 16px;
             border: 1.5px solid var(--accent);
         } 
         .form-content-area { overflow-y: auto; flex-grow: 1; min-height: 0; padding-right: 2px; }
-        .form-group { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
-        .form-group label { width: 90px; flex-shrink: 0; font-size: 11px; font-weight: 800; color: var(--accent); text-transform: uppercase; }
+        .form-group { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
+        .form-group label { width: 80px; flex-shrink: 0; font-size: 10.5px; font-weight: 800; color: var(--accent); text-transform: uppercase; }
         
-        .actions-footer { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; flex-shrink: 0; } 
-        .btn-add { background: var(--accent); color: #fff; width: 100%; padding: 14px; border-radius: 12px; font-weight: 900; cursor: pointer; border: none; text-transform: uppercase; font-size: 12px; } 
-        .btn-clear { background: transparent; color: var(--danger); width: 100%; padding: 10px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--danger); text-transform: uppercase; font-size: 11px; } 
-        .btn-clear-year { background: transparent; color: var(--purple); width: 100%; padding: 10px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--purple); text-transform: uppercase; font-size: 11px; } 
-        .backup-row { display: flex; gap: 8px; width: 100%; }
-        .btn-backup { background: transparent; color: var(--success); width: 50%; padding: 10px 6px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--success); text-transform: uppercase; font-size: 11px; text-align: center; } 
-        .btn-import { background: transparent; color: var(--warning); width: 50%; padding: 10px 6px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--warning); text-transform: uppercase; font-size: 11px; text-align: center; } 
+        .actions-footer { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; flex-shrink: 0; } 
+        .btn-add { background: var(--accent); color: #fff; width: 100%; padding: 12px; border-radius: 12px; font-weight: 900; cursor: pointer; border: none; text-transform: uppercase; font-size: 11.5px; } 
+        .btn-clear { background: transparent; color: var(--danger); width: 100%; padding: 8px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--danger); text-transform: uppercase; font-size: 10px; } 
+        .btn-clear-year { background: transparent; color: var(--purple); width: 100%; padding: 8px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--purple); text-transform: uppercase; font-size: 10px; } 
+        .backup-row { display: flex; gap: 6px; width: 100%; }
+        .btn-backup { background: transparent; color: var(--success); width: 50%; padding: 8px 4px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--success); text-transform: uppercase; font-size: 10px; text-align: center; } 
+        .btn-import { background: transparent; color: var(--warning); width: 50%; padding: 8px 4px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--warning); text-transform: uppercase; font-size: 10px; text-align: center; } 
 
         .main-view { 
             background: var(--surface); border-radius: 16px; border: 1.5px solid var(--brown-border); 
@@ -283,8 +284,8 @@
         .table-container { flex-grow: 1; min-height: 0; overflow-y: auto; overflow-x: auto; overscroll-behavior-y: contain; } 
 
         table { width: 100%; border-collapse: collapse; table-layout: fixed; } 
-        th, td { padding: 8px 4px; text-align: center; border-bottom: 1px solid var(--border); font-size: 11.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } 
-        th { background: #0d1117; color: var(--accent); font-size: 10px; text-transform: uppercase; position: sticky; top: 0; z-index: 5; } 
+        th, td { padding: 6px 3px; text-align: center; border-bottom: 1px solid var(--border); font-size: 10.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } 
+        th { background: #0d1117; color: var(--accent); font-size: 9px; text-transform: uppercase; position: sticky; top: 0; z-index: 5; } 
 
         #tabTabela th:nth-child(1), #tabTabela td:nth-child(1) { width: 12%; } 
         #tabTabela th:nth-child(2), #tabTabela td:nth-child(2) { width: 15%; } 
@@ -297,13 +298,13 @@
 
         #tabNL th:nth-child(1), #tabNL td:nth-child(1) { width: 15%; text-align: center; } 
         #tabNL th:nth-child(2), #tabNL td:nth-child(2) { width: 20%; text-align: center; } 
-        #tabNL th:nth-child(3), #tabNL td:nth-child(3) { width: 65%; text-align: left; padding-left: 10px; } 
+        #tabNL th:nth-child(3), #tabNL td:nth-child(3) { width: 65%; text-align: left; padding-left: 8px; } 
 
         .cards-container {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-            gap: 10px;
-            padding: 12px;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 8px;
+            padding: 10px;
             overflow-y: auto;
             flex-grow: 1;
             height: 100%;
@@ -315,25 +316,25 @@
             border: 1px solid var(--border);
             border-left: 4px solid var(--accent);
             border-radius: 12px;
-            padding: 12px;
+            padding: 10px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-            height: 105px;
+            height: 95px;
         }
         .medidor-card {
             background: linear-gradient(145deg, #0d121a, var(--surface));
             border: 1px solid var(--success);
             border-left: 5px solid var(--success);
             border-radius: 12px;
-            padding: 14px;
+            padding: 12px;
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 6px;
             box-shadow: 0 4px 15px rgba(0,255,136,0.15);
-            max-width: 440px;
-            margin: 8px auto;
+            max-width: 380px;
+            margin: 6px auto;
             width: 100%;
         }
         .oc-card-header {
@@ -343,7 +344,7 @@
             margin-bottom: 4px;
         }
         .oc-code {
-            font-size: 1.05rem;
+            font-size: 1rem;
             font-weight: 900;
             color: var(--text-h);
         }
@@ -351,16 +352,16 @@
             background: rgba(0, 255, 136, 0.12);
             color: var(--success);
             border: 1px solid var(--success);
-            padding: 4px 10px;
+            padding: 3px 8px;
             border-radius: 8px;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: 900;
         }
         .oc-desc {
-            font-size: 11px;
+            font-size: 10.5px;
             color: var(--text-p);
             margin-bottom: 4px;
-            line-height: 1.3;
+            line-height: 1.25;
             font-weight: 600;
             display: -webkit-box;
             -webkit-line-clamp: 2;
@@ -368,22 +369,22 @@
             overflow: hidden;
         }
         .oc-status {
-            font-size: 10px;
+            font-size: 9.5px;
             font-weight: 800;
             text-transform: uppercase;
-            padding: 3px 8px;
+            padding: 2px 6px;
             border-radius: 4px;
             display: inline-block;
             width: fit-content;
         }
 
-        .month-grid { display: none; position: absolute; top: 55px; right: 15px; background: #0d1117; border: 1px solid var(--accent); padding: 14px; border-radius: 14px; grid-template-columns: repeat(3, 1fr); gap: 8px; z-index: 1000; } 
+        .month-grid { display: none; position: absolute; top: 50px; right: 15px; background: #0d1117; border: 1px solid var(--accent); padding: 12px; border-radius: 12px; grid-template-columns: repeat(3, 1fr); gap: 6px; z-index: 1000; } 
         .month-grid.active { display: grid; } 
-        .month-item { background: #000; color: white; border: 1px solid var(--border); padding: 10px; border-radius: 8px; cursor: pointer; font-size: 11px; font-weight: bold; text-align: center; }
+        .month-item { background: #000; color: white; border: 1px solid var(--border); padding: 8px; border-radius: 6px; cursor: pointer; font-size: 10px; font-weight: bold; text-align: center; }
         
         .header-btn {
             background: #1e2633; border: 1px solid var(--border); color: white;
-            padding: 9px 14px; border-radius: 10px; cursor: pointer; font-weight: 800; font-size: 11.5px; text-transform: uppercase;
+            padding: 8px 12px; border-radius: 9px; cursor: pointer; font-weight: 800; font-size: 11px; text-transform: uppercase;
         }
 
         @media (max-width: 768px) {
@@ -394,20 +395,20 @@
 
         .mobile-nav-tabs {
             display: flex; width: 100%; background: var(--surface); border: 1px solid var(--border);
-            border-radius: 12px; z-index: 9; justify-content: space-between; padding: 5px;
-            gap: 4px; flex-shrink: 0;
+            border-radius: 10px; z-index: 9; justify-content: space-between; padding: 4px;
+            gap: 3px; flex-shrink: 0;
         }
         .mob-tab-btn {
             background: rgba(255, 255, 255, 0.03); 
             border: 1.5px solid var(--grey-border); 
             color: var(--text-p); 
-            font-size: 8.5px;
+            font-size: 7.5px;
             font-weight: 900; 
             text-transform: uppercase; 
             cursor: pointer; 
             flex: 1; 
-            padding: 9px 2px;
-            border-radius: 9px; 
+            padding: 8px 1px;
+            border-radius: 8px; 
             text-align: center; 
             transition: 0.3s;
             position: relative;
@@ -425,14 +426,14 @@
             right: -4px;
             background: var(--danger);
             color: #fff;
-            font-size: 8px;
+            font-size: 7px;
             font-weight: 900;
-            padding: 2px 5px;
+            padding: 2px 4px;
             border-radius: 50%;
             display: none;
         }
 
-        .mobile-search-area { display: block; margin-bottom: 6px; flex-shrink: 0; }
+        .mobile-search-area { display: block; margin-bottom: 4px; flex-shrink: 0; }
         .print-header { display: none; }
 
         @media print {
@@ -496,7 +497,7 @@
         </div>
 
         <div class="login-form-pane" id="createPane">
-            <div style="background: rgba(0, 255, 136, 0.1); border: 1px solid var(--success); padding: 8px; border-radius: 8px; margin-bottom: 8px; font-size: 11px; color: var(--success); font-weight: bold;">
+            <div style="background: rgba(0, 255, 136, 0.1); border: 1px solid var(--success); padding: 8px; border-radius: 8px; margin-bottom: 8px; font-size: 10px; color: var(--success); font-weight: bold;">
                 💡 Depósito/PIX de R$ 10,00 necessário para liberação após criar a conta.
             </div>
             <input type="text" id="regUser" placeholder="Utilizador"> 
@@ -512,7 +513,7 @@
     <header> 
         <div style="display: flex; align-items: center; gap: 12px;">
             <div style="background:var(--success); color:black; padding:8px 14px; border-radius:10px; font-weight:900; font-size:13px;">GPL</div> 
-            <span style="font-size: 13.5px; font-weight: 800; color: var(--success); text-transform: uppercase;" id="headerUserDisplay"></span>
+            <span style="font-size: 13px; font-weight: 800; color: var(--success); text-transform: uppercase;" id="headerUserDisplay"></span>
         </div>
         <div style="display: flex; gap: 8px; align-items: center; position: relative;"> 
             <button class="header-btn" onclick="toggleMonthGrid(event)" id="currentMonthDisplay" style="background: var(--accent); border-color: var(--accent);">MÊS</button> 
@@ -524,10 +525,10 @@
     </header> 
 
     <div id="progArea" class="prog-area"> 
-        <div style="width:100%; background:#1e2633; height:9px; border-radius:10px; overflow:hidden; border:1px solid var(--border); margin-bottom:4px;"> 
+        <div style="width:100%; background:#1e2633; height:8px; border-radius:10px; overflow:hidden; border:1px solid var(--border); margin-bottom:3px;"> 
             <div id="barFill" style="height:100%; width:0%; background:linear-gradient(90deg, var(--accent), var(--success)); transition:0.8s;"></div> 
         </div> 
-        <div style="display:flex; justify-content:space-between; font-size:11px; font-weight:bold; color:var(--text-p); text-transform: uppercase;"> 
+        <div style="display:flex; justify-content:space-between; font-size:10px; font-weight:bold; color:var(--text-p); text-transform: uppercase;"> 
             <span id="barTxt">Progresso Meta: 0 / 8.000</span> 
             <span id="barPerc" style="color:var(--success)">0%</span> 
         </div> 
@@ -620,7 +621,7 @@
                 <div class="table-container">
                     <table>
                         <thead>
-                            <tr><th>Número</th><th>Status</th><th style="text-align: left; padding-left: 10px;">Detalhe / Descrição</th></tr>
+                            <tr><th>Número</th><th>Status</th><th style="text-align: left; padding-left: 8px;">Detalhe / Descrição</th></tr>
                         </thead>
                         <tbody id="nlCorpo"></tbody>
                     </table>
@@ -647,14 +648,14 @@
         <div class="mobile-tab-content" id="tabRelatorio" style="flex-direction: column;">
             <div class="mobile-search-area" style="display: flex; gap: 8px; align-items: center; background: var(--surface); padding: 10px; border-radius: 12px; border: 1px solid var(--border);">
                 <div style="flex: 1;">
-                    <span style="font-weight: 800; color: #fff; font-size: 11px; display: block; margin-bottom: 4px;">RAZÃO</span>
-                    <select id="selectRazaoRelatorio" onchange="mudarRazaoRelatorio()" style="margin-bottom: 0; font-weight: bold; color: var(--accent); font-size: 11.5px;">
+                    <span style="font-weight: 800; color: #fff; font-size: 10.5px; display: block; margin-bottom: 4px;">RAZÃO</span>
+                    <select id="selectRazaoRelatorio" onchange="mudarRazaoRelatorio()" style="margin-bottom: 0; font-weight: bold; color: var(--accent); font-size: 11px;">
                     </select>
                 </div>
                 <div>
-                    <span style="font-weight: 800; color: transparent; font-size: 11px; display: block; margin-bottom: 4px;">AÇÃO</span>
+                    <span style="font-weight: 800; color: transparent; font-size: 10.5px; display: block; margin-bottom: 4px;">AÇÃO</span>
                     <input type="file" id="inputTxtOcorrencia" accept=".txt,.csv" style="display:none" onchange="processarArquivoTxtSelecionado(this)">
-                    <button type="button" onclick="document.getElementById('inputTxtOcorrencia').click()" class="auth-btn" style="width: auto; margin-top: 0; padding: 10px 14px; font-size: 11.5px; background: var(--purple); color: #fff;">
+                    <button type="button" onclick="document.getElementById('inputTxtOcorrencia').click()" class="auth-btn" style="width: auto; margin-top: 0; padding: 8px 14px; font-size: 11px; background: var(--purple); color: #fff;">
                         📂 Importar
                     </button>
                 </div>
@@ -758,6 +759,7 @@
         }
     };
 
+    // Salvamento otimizado em segundo plano (fire-and-forget acelerado)
     window.cloudSaveRegistros = function(user, dataRegistros) {
         if (!user) return;
         const userTrim = user.trim();
@@ -1458,12 +1460,12 @@
                 }
 
                 htmlHistoricoMeses.push(`
-                    <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; margin-bottom: 6px; font-size: 11.5px;">
+                    <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; margin-bottom: 4px; font-size: 11px;">
                         <div style="display: flex; justify-content: space-between; font-weight: bold; color: var(--text-h);">
                             <span>📅 ${nomeMesStr}/${ano}</span>
                             <span style="color: var(--success);">Consumo: ${typeof consumoMes === 'number' ? consumoMes.toLocaleString() : consumoMes}</span>
                         </div>
-                        <div style="display: flex; justify-content: space-between; margin-top: 3px; font-size: 10.5px; color: var(--text-p);">
+                        <div style="display: flex; justify-content: space-between; margin-top: 2px; font-size: 10px; color: var(--text-p);">
                             <span>Leitura: ${leituraAtual.toLocaleString()}</span>
                             <span style="color: ${isComLeitura ? 'var(--success)' : 'var(--warning)'};">${infoNL.status} (NL ${dados.oc})</span>
                         </div>
@@ -1480,17 +1482,17 @@
                 <div class="medidor-card" style="max-width: 100%;">
                     <div class="oc-card-header" style="align-items: flex-start;">
                         <div>
-                            <span class="oc-code" style="font-size: 1rem; color: var(--success); display: block;">Medidor: ${termoBusca}</span>
-                            <span style="font-size: 11px; font-weight: bold; color: var(--text-p);">Razão: ${razaoSelecionada} | Última NL: <span style="color: var(--warning);">${ultimoItem.oc}</span></span>
+                            <span class="oc-code" style="font-size: 0.95rem; color: var(--success); display: block;">Medidor: ${termoBusca}</span>
+                            <span style="font-size: 10px; font-weight: bold; color: var(--text-p);">Razão: ${razaoSelecionada} | Última NL: <span style="color: var(--warning);">${ultimoItem.oc}</span></span>
                         </div>
-                        <div style="display: flex; gap: 5px; flex-direction: column; align-items: flex-end;">
-                            <span class="oc-count" style="font-size: 0.8rem; background: rgba(0, 255, 136, 0.15); color: var(--success); border-color: var(--success);">Leitura: ${leituraMaisRecente.toLocaleString()}</span>
-                            <span class="oc-count" style="font-size: 0.8rem; background: rgba(255, 204, 0, 0.15); color: var(--warning); border-color: var(--warning);">Consumo: ${typeof consumoMesAtual === 'number' ? consumoMesAtual.toLocaleString() : consumoMesAtual}</span>
-                            <span class="oc-count" style="font-size: 0.8rem; background: rgba(0, 112, 243, 0.2); color: var(--accent); border-color: var(--accent);">Média Consumo: ${mediaConsumo12}</span>
+                        <div style="display: flex; gap: 4px; flex-direction: column; align-items: flex-end;">
+                            <span class="oc-count" style="font-size: 0.75rem; background: rgba(0, 255, 136, 0.15); color: var(--success); border-color: var(--success);">Leitura: ${leituraMaisRecente.toLocaleString()}</span>
+                            <span class="oc-count" style="font-size: 0.75rem; background: rgba(255, 204, 0, 0.15); color: var(--warning); border-color: var(--warning);">Consumo: ${typeof consumoMesAtual === 'number' ? consumoMesAtual.toLocaleString() : consumoMesAtual}</span>
+                            <span class="oc-count" style="font-size: 0.75rem; background: rgba(0, 112, 243, 0.2); color: var(--accent); border-color: var(--accent);">Média Consumo: ${mediaConsumo12}</span>
                         </div>
                     </div>
-                    <div style="max-height: 250px; overflow-y: auto; padding-right: 2px; margin-top: 6px;">
-                        <div style="font-size: 10.5px; font-weight: 900; color: var(--accent); text-transform: uppercase; margin-bottom: 6px;">Histórico de Consumo (Meses Anteriores):</div>
+                    <div style="max-height: 220px; overflow-y: auto; padding-right: 2px; margin-top: 4px;">
+                        <div style="font-size: 10px; font-weight: 900; color: var(--accent); text-transform: uppercase; margin-bottom: 4px;">Histórico de Consumo (Meses Anteriores):</div>
                         ${htmlHistoricoMeses.reverse().join('')}
                     </div>
                 </div>
@@ -1554,9 +1556,9 @@
                         <td style="font-weight: bold; color: var(--accent);">${razao}</td>
                         <td>
                             ${currentIsAdmin ? `
-                                <input type="date" value="${dataSalva}" onchange="salvarDataCalendario('${razao}', this.value)" style="margin-bottom:0; font-size:11.5px;">
+                                <input type="date" value="${dataSalva}" onchange="salvarDataCalendario('${razao}', this.value)" style="margin-bottom:0; font-size:11px;">
                             ` : `
-                                <div style="font-weight: bold; color: ${dataSalva ? 'var(--text-h)' : 'var(--text-p)'}; font-size: 12.5px; padding: 6px;">
+                                <div style="font-weight: bold; color: ${dataSalva ? 'var(--text-h)' : 'var(--text-p)'}; font-size: 12px; padding: 6px;">
                                     ${dataFormatadaExibicao}
                                 </div>
                             `}
@@ -1610,7 +1612,7 @@
             <tr>
                 <td style="font-weight: bold; color: var(--accent); text-align: center;">${item.numero}</td>
                 <td style="text-align: center;"><span style="color: ${item.status === 'Com leitura' ? 'var(--success)' : 'var(--warning)'}; font-weight: bold;">${item.status}</span></td>
-                <td style="text-align: left; font-size: 12px; padding-left: 10px;">${item.detalhe}</td>
+                <td style="text-align: left; font-size: 11.5px; padding-left: 8px;">${item.detalhe}</td>
             </tr>
         `).join('');
 
@@ -1777,6 +1779,7 @@
         renderizarTabelaRelatorioAtual(); 
     } 
 
+    // Fecha o grid de meses ao clicar em qualquer lugar da tela
     window.addEventListener('click', (e) => {
         const monthGrid = document.getElementById('monthGrid');
         const btnMes = document.getElementById('currentMonthDisplay');
@@ -1806,7 +1809,7 @@
                 <td>${i.imped}</td>
                 <td><span style="color:${calcPercentual <= 0.5 ? 'var(--success)' : 'var(--danger)'}; font-weight:900;">${calcPercentual.toFixed(2)}%</span></td>
                 <td class="no-print">
-                    <button type="button" onclick="editar(${i.id})" title="Editar" style="background:none; border:none; color:var(--accent); cursor:pointer; font-size:14px; padding:2px;">✏️</button>
+                    <button type="button" onclick="editar(${i.id})" title="Editar" style="background:none; border:none; color:var(--accent); cursor:pointer; font-size:13px; padding:2px;">✏️</button>
                 </td>
             </tr>`; 
         }).join('');
