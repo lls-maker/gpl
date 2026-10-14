@@ -1255,7 +1255,7 @@
             mapValidosNL[String(item.numero).trim()] = true;
         });
 
-        // Mapeia o último estado de cada medidor mantendo a ordem exata da sequência do arquivo
+        // Mapeia estrictamente o último estado do medidor ao longo da sequência do arquivo
         let mapUltimoPorMedidor = {};
 
         linhas.forEach(linha => {
@@ -1317,21 +1317,23 @@
 
                 if (medidorEncontrado) {
                     let medKey = medidorEncontrado.toUpperCase();
-                    
-                    // Sobrescreve com o último estado válido na sequência (se houver correção posterior para o mesmo medidor)
+                    let regAnt = mapUltimoPorMedidor[medKey];
+
+                    // Atualiza o dicionário mantendo sempre o último estado da sequência por medidor
                     mapUltimoPorMedidor[medKey] = {
                         medidor: medKey,
-                        oc: ocEncontrada || (mapUltimoPorMedidor[medKey] ? mapUltimoPorMedidor[medKey].oc : "N/A"),
-                        leit: Number(leitEncontrada) || (mapUltimoPorMedidor[medKey] ? mapUltimoPorMedidor[medKey].leit : 0),
-                        tipoRgZ3: tipoRgZ3 || (mapUltimoPorMedidor[medKey] ? mapUltimoPorMedidor[medKey].tipoRgZ3 : "")
+                        oc: ocEncontrada || (regAnt ? regAnt.oc : "N/A"),
+                        leit: Number(leitEncontrada) || (regAnt ? regAnt.leit : 0),
+                        tipoRgZ3: tipoRgZ3 || (regAnt ? regAnt.tipoRgZ3 : "")
                     };
                 }
             }
         });
 
+        // Converte o dicionário em lista única consolidada (excluindo duplicados na exibição inicial e na pesquisa)
         let listaMedidores = Object.values(mapUltimoPorMedidor);
 
-        // Recalcula o resumo de Ocorrências (OC/NL) utilizando estritamente a última leitura/correção de cada medidor
+        // Recalcula o resumo de Ocorrências (OC/NL) usando apenas o último estado de cada medidor
         let contagemOC = {};
         listaMedidores.forEach(item => {
             if (mapValidosNL[item.oc]) {
@@ -1387,9 +1389,10 @@
             return;
         }
 
+        // Se o usuário digitou algo na busca de medidores OU se quisermos exibir a lista completa de medidores após a importação:
+        // Nota: se preferir que ao abrir a aba mostre as Ocorrências (OC/NL) e só mostre os medidores ao pesquisar, mantemos o comportamento abaixo.
         if (termoBusca) {
             const medidoresLista = dadosRegistro.medidores || [];
-            // Filtra os medidores correspondentes
             const encontrados = medidoresLista.filter(item => item.medidor.includes(termoBusca));
 
             if (encontrados.length === 0) {
