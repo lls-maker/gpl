@@ -1319,7 +1319,7 @@
                     let medKey = medidorEncontrado.toUpperCase();
                     let regAnt = mapUltimoPorMedidor[medKey];
 
-                    // Mantém SEMPRE o último estado da sequência do arquivo para o medidor
+                    // Sobrescreve sempre com a última linha encontrada para garantir que erros corrigidos fiquem com o estado final correto
                     mapUltimoPorMedidor[medKey] = {
                         medidor: medKey,
                         oc: ocEncontrada || (regAnt ? regAnt.oc : "N/A"),
@@ -1332,7 +1332,7 @@
 
         let listaMedidores = Object.values(mapUltimoPorMedidor);
 
-        // Recalcula o resumo de Ocorrências (OC/NL) usando apenas o último estado de cada medidor
+        // Recalcula o resumo de Ocorrências (OC/NL) usando exclusivamente o último estado de cada medidor
         let contagemOC = {};
         listaMedidores.forEach(item => {
             if (mapValidosNL[item.oc]) {
@@ -1356,7 +1356,6 @@
         renderizarTabelaRelatorioAtual();
         alert(`Relatório da ${razaoSelecionada} importado e atualizado com sucesso!`);
     }
-
     function buscarMedidorNoRelatorio() {
         renderizarTabelaRelatorioAtual();
     }
