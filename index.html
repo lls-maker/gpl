@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"> 
     <title>Gestão de Produtividade de Leituras</title> 
 
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzMiAzMicgd2lkdGg9JzMyJyBoZWlnaHQ9JzMyJz48cmVjdCB3aWR0aD0nMzInIGhlaWdodD0nMzInIHJ4PSc2JyBmaWxsPScjMGIwZjE1Jz48L3JlY3Q+PHRleHQgeD0nNTAlJyB5PSc1NSUnIGRvbWluYW50LWJhc2VsaW5lPSdtaWRkbGUnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJyBmb250LXdlaWdodD0nOTAwJyBmb250LXdlaWdodD0nMTAwMCcgZm9udC1zaXplPScxMCcgZmlsbD0nIzAwZmY4OCcgbGV0dGVyLXNwYWNpbmdzPScwLjUnPkdQTDwvdGV4dD48L3N2Zz4=">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzMiAzMicgd2lkdGg9JzMyJyBoZWlnaHQ9JzMyJz48cmVjdCB3aWR0aD0nMzInIGhlaWdodD0nMzInIHJ4PSc2JyBmaWxsPScówYjBmMTUnPjwvcmVjdD48dGV4dCB4PSc1MCUnIHk9JzU1JScgZG9taW5hbnQtYmFzZWxpbmU9J21pZGRsZScgdGV4dC1hbmNob3I9J21pZGRsZScgZm9udC1mYW1pbHk9J3NhbnMtc2VyaWYnIGZvbnQtd2VpZ2h0PSc5MDAnIGZvbnQtd2VpZ2h0PScxMDAwJyBmb250LXNpemU9JzEwJyBmaWxsPScjMDBmODg4JyBsZXR0ZXItc3BhY2luZz0nMC41Jz5HUEw8L3RleHQ+PC9zdmc+">
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#030508">
 
@@ -1739,12 +1739,20 @@
         document.getElementById('currentMonthDisplay').innerText = nomeMes; 
         document.getElementById('printSubHeader').innerText = `Utilizador: ${currentUser}  |  Período: ${nomeMes}/2026`;
         
-        db = await window.cloudLoadLeve(currentUser);
+        // Carrega dados e calendário em paralelo logo na entrada do sistema
+        const [dadosLeves, calCarregado] = await Promise.all([
+            window.cloudLoadLeve(currentUser),
+            window.cloudLoadCalendario(currentUser)
+        ]);
+
+        db = dadosLeves;
+        calendarioDb = calCarregado;
 
         renderMonths(); 
         renderizarNL();
         switchMobileTab('tabDashboard', document.getElementById('btnTabDashboard'));
         atualizarTabela(); 
+        verificarSabadosAlertas(); // <-- Executa o alerta de sábados imediatamente ao entrar!
         if(currentIsAdmin) carregarListaUtilizadoresPendentes();
     }
 
@@ -1755,7 +1763,6 @@
     });
 
     async function handleLoginAuto() {
-        db = await window.cloudLoadLeve(currentUser);
         initSystem();
     }
 
@@ -1779,7 +1786,6 @@
         renderizarTabelaRelatorioAtual(); 
     } 
 
-    // Fecha o grid de meses ao clicar em qualquer lugar da tela
     window.addEventListener('click', (e) => {
         const monthGrid = document.getElementById('monthGrid');
         const btnMes = document.getElementById('currentMonthDisplay');
