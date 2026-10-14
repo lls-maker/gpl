@@ -287,15 +287,20 @@
         th, td { padding: 6px 3px; text-align: center; border-bottom: 1px solid var(--border); font-size: 10.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } 
         th { background: #0d1117; color: var(--accent); font-size: 9px; text-transform: uppercase; position: sticky; top: 0; z-index: 5; } 
 
-        /* Larguras das colunas otimizadas */
-        th:nth-child(1), td:nth-child(1) { width: 12%; } /* Data */
-        th:nth-child(2), td:nth-child(2) { width: 15%; } /* Local */
-        th:nth-child(3), td:nth-child(3) { width: 14%; } /* Razão */
-        th:nth-child(4), td:nth-child(4) { width: 22%; } /* Rotas */
-        th:nth-child(5), td:nth-child(5) { width: 13%; } /* Leituras */
-        th:nth-child(6), td:nth-child(6) { width: 9% !important; } /* Imp. */
-        th:nth-child(7), td:nth-child(7) { width: 9%; } /* % */
-        th:nth-child(8), td:nth-child(8) { width: 6%; } /* Ação */
+        /* Larguras das colunas otimizadas para Registros */
+        #tabTabela th:nth-child(1), #tabTabela td:nth-child(1) { width: 12%; } /* Data */
+        #tabTabela th:nth-child(2), #tabTabela td:nth-child(2) { width: 15%; } /* Local */
+        #tabTabela th:nth-child(3), #tabTabela td:nth-child(3) { width: 14%; } /* Razão */
+        #tabTabela th:nth-child(4), #tabTabela td:nth-child(4) { width: 22%; } /* Rotas */
+        #tabTabela th:nth-child(5), #tabTabela td:nth-child(5) { width: 13%; } /* Leituras */
+        #tabTabela th:nth-child(6), #tabTabela td:nth-child(6) { width: 9% !important; } /* Imp. */
+        #tabTabela th:nth-child(7), #tabTabela td:nth-child(7) { width: 9%; } /* % */
+        #tabTabela th:nth-child(8), #tabTabela td:nth-child(8) { width: 6%; } /* Ação */
+
+        /* Larguras otimizadas para NL (Aproximando Status do Número) */
+        #tabNL th:nth-child(1), #tabNL td:nth-child(1) { width: 15%; text-align: center; } /* Número */
+        #tabNL th:nth-child(2), #tabNL td:nth-child(2) { width: 20%; text-align: center; } /* Status */
+        #tabNL th:nth-child(3), #tabNL td:nth-child(3) { width: 65%; text-align: left; padding-left: 8px; } /* Descrição */
 
         .cards-container {
             display: grid;
@@ -625,7 +630,7 @@
                 <div class="table-container">
                     <table>
                         <thead>
-                            <tr><th>Número</th><th>Status</th><th>Detalhe / Descrição</th></tr>
+                            <tr><th>Número</th><th>Status</th><th style="text-align: left; padding-left: 8px;">Detalhe / Descrição</th></tr>
                         </thead>
                         <tbody id="nlCorpo"></tbody>
                     </table>
@@ -767,7 +772,6 @@
         }
     };
 
-    // SALVAMENTO APENAS DOS REGISTROS (MUITO MAIS RÁPIDO)
     window.cloudSaveRegistros = async function(user, dataRegistros) {
         if (!user) return;
         try {
@@ -780,7 +784,6 @@
         }
     };
 
-    // SALVAMENTO APENAS DO CALENDÁRIO
     window.cloudSaveCalendario = async function(user, calendario) {
         if (!user) return;
         try {
@@ -797,7 +800,6 @@
         }
     };
 
-    // SALVAMENTO APENAS DOS RELATÓRIOS TXT
     window.cloudSaveRelatorios = async function(user, relatorios) {
         if (!user) return;
         try {
@@ -810,34 +812,76 @@
         }
     };
 
-    window.cloudLoad = async function(user) {
+    // FUNÇÕES DE LEITURA ESPECÍFICA (SOB DEMANDA) PARA CADA ABA
+    window.cloudLoadLeve = async function(user) {
         try {
             const userTrim = user.trim();
             const userUpper = userTrim.toUpperCase();
-            
+            const docSnap = await getDoc(doc(dbCloud, "usuarios", userUpper));
+            if (docSnap.exists()) {
+                return docSnap.data().dados || [];
+            }
+        } catch (e) {
+            console.error("Erro ao carregar dados:", e);
+        }
+        return [];
+    };
+
+    window.cloudLoadCalendario = async function(user) {
+        try {
+            const userTrim = user.trim();
+            const userUpper = userTrim.toUpperCase();
+            const [userDocSnap, calGlobalSnap] = await Promise.all([
+                getDoc(doc(dbCloud, "usuarios", userUpper)),
+                getDoc(doc(dbCloud, "config", "calendarioGlobal"))
+            ]);
+            let cal = userDocSnap.exists() ? (userDocSnap.data().calendario || {}) : {};
+            if (calGlobalSnap.exists()) {
+                const globalData = calGlobalSnap.data();
+                const extraido = globalData.calendario || globalData;
+                if (extraido && Object.keys(extraido).length > 0) cal = extraido;
+            }
+            return cal;
+        } catch (e) {
+            console.error("Erro ao carregar calendário:", e);
+        }
+        return {};
+    };
+
+    window.cloudLoadRelatorios = async function(user) {
+        try {
+            const userTrim = user.trim();
+            const userUpper = userTrim.toUpperCase();
+            const docSnap = await getDoc(doc(dbCloud, "usuarios", userUpper));
+            if (docSnap.exists()) {
+                return docSnap.data().relatorios || {};
+            }
+        } catch (e) {
+            console.error("Erro ao carregar relatórios:", e);
+        }
+        return {};
+    };
+
+    window.cloudLoadAll = async function(user) {
+        try {
+            const userTrim = user.trim();
+            const userUpper = userTrim.toUpperCase();
             const [userDocSnap, calGlobalSnap] = await Promise.all([
                 getDoc(doc(dbCloud, "usuarios", userUpper)).then(async (snap) => {
-                    if (!snap.exists()) {
-                        return await getDoc(doc(dbCloud, "usuarios", userTrim));
-                    }
+                    if (!snap.exists()) return await getDoc(doc(dbCloud, "usuarios", userTrim));
                     return snap;
                 }),
                 getDoc(doc(dbCloud, "config", "calendarioGlobal"))
             ]);
-
             let userData = userDocSnap.exists() ? userDocSnap.data() : {};
-
             if (calGlobalSnap.exists()) {
                 const globalData = calGlobalSnap.data();
-                const calendarioExtraido = globalData.calendario || globalData;
-                if (calendarioExtraido && Object.keys(calendarioExtraido).length > 0) {
-                    userData.calendario = calendarioExtraido;
-                }
+                const extraido = globalData.calendario || globalData;
+                if (extraido && Object.keys(extraido).length > 0) userData.calendario = extraido;
             }
-
             return userData;
         } catch (e) {
-            console.error("Erro ao carregar da nuvem:", e);
+            console.error("Erro ao carregar tudo:", e);
         }
         return null;
     };
@@ -848,9 +892,7 @@
             const userUpper = userTrim.toUpperCase();
             const docRef = doc(dbCloud, "usuarios", userUpper);
             const docSnap = await getDoc(docRef);
-            if (docSnap.exists() && docSnap.data().senha) {
-                return false; 
-            }
+            if (docSnap.exists() && docSnap.data().senha) return false; 
             
             const senhaSegura = await hashSenha(senha);
             const isAdminUser = (userUpper === "ADMIN");
@@ -877,10 +919,7 @@
             const querySnapshot = await getDocs(collection(dbCloud, "usuarios"));
             let lista = [];
             querySnapshot.forEach((docSnap) => {
-                lista.push({
-                    nome: docSnap.id,
-                    ...docSnap.data()
-                });
+                lista.push({ nome: docSnap.id, ...docSnap.data() });
             });
             return lista;
         } catch (e) {
@@ -895,9 +934,7 @@
             const userUpper = userTrim.toUpperCase();
             let docRef = doc(dbCloud, "usuarios", userUpper);
             let docSnap = await getDoc(docRef);
-            if (!docSnap.exists()) {
-                docRef = doc(dbCloud, "usuarios", userTrim);
-            }
+            if (!docSnap.exists()) docRef = doc(dbCloud, "usuarios", userTrim);
             await setDoc(docRef, { ativo: statusAtivo }, { merge: true });
             return true;
         } catch (e) {
@@ -911,9 +948,7 @@
             let pendentes = 0;
             snapshot.forEach((docSnap) => {
                 const dados = docSnap.data();
-                if (dados.ativo === false && !dados.isAdmin && docSnap.id !== 'ADMIN') {
-                    pendentes++;
-                }
+                if (dados.ativo === false && !dados.isAdmin && docSnap.id !== 'ADMIN') pendentes++;
             });
             callbackNotificacao(pendentes);
         });
@@ -1073,7 +1108,8 @@
         }
     }
 
-    function switchMobileTab(tabId, btnElement) {
+    // NAVEGAÇÃO ENTRE ABAS COM CARREGAMENTO SOB DEMANDA (SOB NESCESSIDADE)
+    async function switchMobileTab(tabId, btnElement) {
         document.querySelectorAll('.mobile-tab-content').forEach(el => el.classList.remove('active-tab'));
         const target = document.getElementById(tabId);
         if(target) target.classList.add('active-tab');
@@ -1081,8 +1117,28 @@
         document.querySelectorAll('.mob-tab-btn').forEach(btn => btn.classList.remove('active'));
         if(btnElement) btnElement.classList.add('active');
         
-        if(tabId === 'tabAdmin' && currentIsAdmin) {
-            carregarListaUtilizadoresPendentes();
+        // LEITURA SOB DEMANDA APENAS DA ABA CORRESPONDENTE
+        if (currentUser) {
+            if (tabId === 'tabDashboard' || tabId === 'tabTabela') {
+                if (db.length === 0) {
+                    db = await window.cloudLoadLeve(currentUser);
+                }
+                atualizarTabela();
+            } else if (tabId === 'tabCal') {
+                if (Object.keys(calendarioDb).length === 0) {
+                    calendarioDb = await window.cloudLoadCalendario(currentUser);
+                }
+                renderizarCalendario();
+                verificarSabadosAlertas();
+            } else if (tabId === 'tabRelatorio') {
+                if (Object.keys(relatorioRazoesDb).length === 0) {
+                    relatorioRazoesDb = await window.cloudLoadRelatorios(currentUser);
+                }
+                popularSelectRazoesRelatorio();
+                renderizarTabelaRelatorioAtual();
+            } else if (tabId === 'tabAdmin' && currentIsAdmin) {
+                carregarListaUtilizadoresPendentes();
+            }
         }
     }
 
@@ -1097,7 +1153,7 @@
         }
 
         try {
-            const cloudData = await window.cloudLoad(currentUser);
+            const cloudData = await window.cloudLoadAll(currentUser);
             if (cloudData) {
                 db = cloudData.dados || [];
                 calendarioDb = cloudData.calendario || {};
@@ -1581,9 +1637,9 @@
     function renderizarNL(lista = notasDeLeitura) {
         const htmlContent = lista.map(item => `
             <tr>
-                <td style="font-weight: bold; color: var(--accent);">${item.numero}</td>
-                <td><span style="color: ${item.status === 'Com leitura' ? 'var(--success)' : 'var(--warning)'}; font-weight: bold;">${item.status}</span></td>
-                <td style="text-align: left; font-size: 11.5px;">${item.detalhe}</td>
+                <td style="font-weight: bold; color: var(--accent); text-align: center;">${item.numero}</td>
+                <td style="text-align: center;"><span style="color: ${item.status === 'Com leitura' ? 'var(--success)' : 'var(--warning)'}; font-weight: bold;">${item.status}</span></td>
+                <td style="text-align: left; font-size: 11.5px; padding-left: 8px;">${item.detalhe}</td>
             </tr>
         `).join('');
 
@@ -1641,10 +1697,6 @@
         sessionStorage.setItem('gpl_user', currentUser);
         sessionStorage.setItem('gpl_is_admin', currentIsAdmin);
 
-        if (cloudData.dados) db = cloudData.dados;
-        if (cloudData.calendario) calendarioDb = cloudData.calendario;
-        if (cloudData.relatorios) relatorioRazoesDb = cloudData.relatorios;
-
         document.getElementById('loginScreen').style.display = 'none';
         initSystem();
     }
@@ -1658,7 +1710,7 @@
         if(!u || !p || !pConf || !r) return alert("Preencha todos os campos do cadastro.");
         if(p !== pConf) return alert("As senhas não coincidem! Verifique e tente novamente.");
 
-        let cloudData = window.cloudLoad ? await window.cloudLoad(u) : null;
+        let cloudData = window.cloudLoadAll ? await window.cloudLoadAll(u) : null;
         if (cloudData && cloudData.senha) {
             return alert("Este nome de utilizador já existe! Escolha outro nome.");
         }
@@ -1679,7 +1731,7 @@
         const u = document.getElementById('loginUser').value.trim(); 
         if(!u) return alert("Digite o seu nome de utilizador no campo 'Utilizador' para recuperar a senha.");
         
-        window.cloudLoad(u).then(cloudData => {
+        window.cloudLoadAll(u).then(cloudData => {
             if(cloudData && cloudData.dica) {
                 alert("Palavra/Dica de segurança cadastrada: " + cloudData.dica);
             } else {
@@ -1710,29 +1762,16 @@
             btnAdmin.style.display = 'none';
         }
 
-        switchMobileTab('tabDashboard', document.getElementById('btnTabDashboard'));
-
         let nomeMes = msNomesCompletos[viewDate.getMonth()];
         document.getElementById('currentMonthDisplay').innerText = nomeMes; 
         document.getElementById('printSubHeader').innerText = `Utilizador: ${currentUser}  |  Período: ${nomeMes}/2026`;
         
-        let cloudData = await window.cloudLoad(currentUser);
-        if (cloudData) {
-            db = cloudData.dados || [];
-            calendarioDb = cloudData.calendario || {};
-            relatorioRazoesDb = cloudData.relatorios || {};
-        } else {
-            db = [];
-            calendarioDb = {};
-            relatorioRazoesDb = {};
-        }
+        // Carrega apenas os dados da aba inicial (Dashboard/Registros) ao logar
+        db = await window.cloudLoadLeve(currentUser);
 
         renderMonths(); 
         renderizarNL();
-        renderizarCalendario();
-        popularSelectRazoesRelatorio();
-        renderizarTabelaRelatorioAtual();
-        verificarSabadosAlertas();
+        switchMobileTab('tabDashboard', document.getElementById('btnTabDashboard'));
         atualizarTabela(); 
         if(currentIsAdmin) carregarListaUtilizadoresPendentes();
     }
@@ -1744,12 +1783,7 @@
     });
 
     async function handleLoginAuto() {
-        let cloudData = await window.cloudLoad(currentUser);
-        if (cloudData) {
-            db = cloudData.dados || [];
-            calendarioDb = cloudData.calendario || {};
-            relatorioRazoesDb = cloudData.relatorios || {};
-        }
+        db = await window.cloudLoadLeve(currentUser);
         initSystem();
     }
 
@@ -1948,12 +1982,8 @@
                         db = importedData;
                     } else if (importedData && typeof importedData === 'object') {
                         db = Array.isArray(importedData.registros) ? importedData.registros : [];
-                        if (importedData.calendario) {
-                            calendarioDb = importedData.calendario;
-                        }
-                        if (importedData.relatorios) {
-                            relatorioRazoesDb = importedData.relatorios;
-                        }
+                        if (importedData.calendario) calendarioDb = importedData.calendario;
+                        if (importedData.relatorios) relatorioRazoesDb = importedData.relatorios;
                     } else {
                         return alert("Arquivo de backup inválido.");
                     }
