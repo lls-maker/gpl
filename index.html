@@ -2,7 +2,7 @@
 <html lang="pt-br"> 
 <head> 
     <meta charset="UTF-8"> 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
     <title>Gestão de Produtividade de Leituras</title> 
 
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzMiAzMicgd2lkdGg9JzMyJyBoZWlnaHQ9JzMyJz48cmVjdCB3aWR0aD0nMzInIGhlaWdodD0nMzInIHJ4PSc2JyBmaWxsPScjMGIwZjE1Jz48L3JlY3Q+PHRleHQgeD0nNTAlJyB5PSc1NSUnIGRvbWluYW50LWJhc2VsaW5lPSdtaWRkbGUnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJyBmb250LXdlaWdodD0nOTAwJyBmb250LXdlaWdodD0nMTAwMCcgZm9udC1zaXplPScxMCcgZmlsbD0nIzAwZmY4OCcgbGV0dGVyLXNwYWNpbmdzPScwLjUnPkdQTDwvdGV4dD48L3N2Zz4=">
@@ -30,7 +30,7 @@
 
         html, body {
             width: 100%;
-            height: 100vh;
+            min-height: 100vh;
             font-family: 'Inter', system-ui, sans-serif; 
             background-color: var(--bg); 
             color: var(--text-p); 
@@ -39,8 +39,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            overflow: hidden;
-            overscroll-behavior-y: contain;
+            touch-action: manipulation;
         } 
 
         body::before {
@@ -161,12 +160,11 @@
         .container { 
             max-width: 480px; 
             width: 100%; 
-            height: 100vh;
+            height: 90vh;
             max-height: 920px;
             display: flex; 
             flex-direction: column; 
             gap: 6px; 
-            overflow: hidden;
             background: var(--bg);
             border-radius: 24px;
             border: 1px solid var(--grey-border);
@@ -759,7 +757,6 @@
         }
     };
 
-    // Salvamento otimizado em segundo plano (fire-and-forget acelerado)
     window.cloudSaveRegistros = function(user, dataRegistros) {
         if (!user) return;
         const userTrim = user.trim();
@@ -1160,6 +1157,7 @@
     const pullThreshold = 80;
 
     window.addEventListener('touchstart', (e) => {
+        if (e.touches.length > 1) return; // Ignora se for gesto de pinça (zoom)
         const activeTabEl = document.querySelector('.mobile-tab-content.active-tab');
         const scrollableChild = activeTabEl ? activeTabEl.querySelector('.table-container, .form-content-area, .top-dashboard, .cards-container') : null;
         const isAtTop = scrollableChild ? scrollableChild.scrollTop <= 0 : (window.scrollY <= 0);
@@ -1173,7 +1171,7 @@
     }, { passive: true });
 
     window.addEventListener('touchmove', (e) => {
-        if (!isPulling) return;
+        if (!isPulling || e.touches.length > 1) return;
         const currentY = e.touches[0].clientY;
         const diff = currentY - startY;
 
@@ -1779,7 +1777,6 @@
         renderizarTabelaRelatorioAtual(); 
     } 
 
-    // Fecha o grid de meses ao clicar em qualquer lugar da tela
     window.addEventListener('click', (e) => {
         const monthGrid = document.getElementById('monthGrid');
         const btnMes = document.getElementById('currentMonthDisplay');
