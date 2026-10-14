@@ -2,7 +2,6 @@
 <html lang="pt-br"> 
 <head> 
     <meta charset="UTF-8"> 
-    <!-- Alterado de maximum-scale=1.0 para permitir o zoom livre por toque -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes"> 
     <title>Gestão de Produtividade de Leituras</title> 
 
@@ -1390,6 +1389,7 @@
 
         if (termoBusca) {
             const medidoresLista = dadosRegistro.medidores || [];
+            // Filtra os medidores correspondentes
             const encontrados = medidoresLista.filter(item => item.medidor.includes(termoBusca));
 
             if (encontrados.length === 0) {
