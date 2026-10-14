@@ -770,18 +770,12 @@
         }
     };
 
-    // Salvamento ultra-blindado e direto na subcoleção (sem ler nem tocar no documento principal do usuário)
-    window.cloudSaveRazaoRelatorio = async function(user, razao, anoMes, dadosRazaoMes) {
+    // Salvamento cirúrgico original utilizando campos aninhados no documento do utilizador
+    window.cloudSaveRazaoRelatorio = function(user, razao, anoMes, dadosRazaoMes) {
         if (!user) return;
-        try {
-            const docId = `${razao}_${anoMes}`.replace(/\s+/g, '_');
-            // Aponta diretamente para a subcoleção "relatorios" do usuário, ignorando qualquer dado da raiz
-            const subDocRef = doc(dbCloud, "usuarios", user.toUpperCase(), "relatorios", docId);
-            await setDoc(subDocRef, dadosRazaoMes);
-            console.log("Relatório salvo com sucesso na subcoleção isolada!");
-        } catch (e) {
-            console.error("Erro ao salvar relatório isolado:", e);
-        }
+        const docRef = doc(dbCloud, "usuarios", user.toUpperCase());
+        const fieldPath = `relatorios.${razao}.${anoMes}`;
+        setDoc(docRef, { [fieldPath]: dadosRazaoMes }, { merge: true }).catch(e => console.error("Erro ao salvar razão:", e));
     };
 
     window.cloudLoadLeve = async function(user) {
@@ -811,23 +805,13 @@
 
     window.cloudLoadRazaoRelatorio = async function(user, razao) {
         try {
-            const colRef = collection(dbCloud, "usuarios", user.toUpperCase(), "relatorios");
-            const snapshot = await getDocs(colRef);
-            let razaoObj = {};
-            
-            snapshot.forEach(docSnap => {
-                const id = docSnap.id;
-                const razaoFormatada = razao.replace(/\s+/g, '_');
-                if (id.startsWith(razaoFormatada)) {
-                    const anoMes = id.replace(razaoFormatada + '_', '');
-                    razaoObj[anoMes] = docSnap.data();
-                }
-            });
-            return razaoObj;
-        } catch (e) { 
-            console.error("Erro relatório razão:", e); 
-            return {}; 
-        }
+            const docSnap = await getDoc(doc(dbCloud, "usuarios", user.toUpperCase()));
+            if (docSnap.exists()) {
+                const rels = docSnap.data().relatorios || {};
+                return rels[razao] || {};
+            }
+        } catch (e) { console.error("Erro relatório razão:", e); }
+        return {};
     };
 
     window.cloudLoadAll = async function(user) {
@@ -865,6 +849,7 @@
                 ativo: isAdminUser ? true : false,
                 dados: [],
                 calendario: {},
+                relatorios: {},
                 ultimaAtualizacao: new Date()
             });
             return true;
@@ -1055,7 +1040,6 @@
         }
     }
 
-    // Abas totalmente blindadas e independentes
     async function switchMobileTab(tabId, btnElement) {
         document.querySelectorAll('.mobile-tab-content').forEach(el => el.classList.remove('active-tab'));
         const target = document.getElementById(tabId);
@@ -1077,7 +1061,6 @@
                 renderizarCalendario();
                 verificarSabadosAlertas();
             } else if (tabId === 'tabRelatorio') {
-                // Carrega de forma isolada apenas quando o utilizador clica na aba de relatórios
                 popularSelectRazoesRelatorio();
                 await carregarRazaoAtualRelatorio(); 
             } else if (tabId === 'tabAdmin' && currentIsAdmin) {
@@ -1099,12 +1082,7 @@
         try {
             db = await window.cloudLoadLeve(currentUser);
             calendarioDb = await window.cloudLoadCalendario(currentUser);
-            
-            // Se estiver na aba relatórios, atualiza ela também
-            const activeTab = document.querySelector('.mobile-tab-content.active-tab');
-            if (activeTab && activeTab.id === 'tabRelatorio') {
-                await carregarRazaoAtualRelatorio();
-            }
+            await carregarRazaoAtualRelatorio();
 
             atualizarTabela();
             renderizarCalendario();
@@ -1282,19 +1260,19 @@
             mapValidosNL[String(item.numero).trim()] = true;
         });
 
-        for (let i = 0; i < linhas.length; i++) {
-            let linhaLimpa = linhas[i].trim();
-            if (!linhaLimpa) continue;
+        linhas.forEach(linha => {
+            let linhaLimpa = linha.trim();
+            if (!linhaLimpa) return;
 
             if (linhaLimpa.includes("MEDIDOR") || linhaLimpa.includes("OC") || linhaLimpa.includes("LEIT.")) {
                 let cabecalhos = linhaLimpa.split(/\s+/);
-                for (let c = 0; c < cabecalhos.length; c++) {
-                    let h = cabecalhos[c].toUpperCase();
-                    if (h.includes("MEDIDOR")) idxMedidor = c;
-                    if (h === "OC") idxOC = c;
-                    if (h.includes("LEIT")) idxLeit = c;
+                for (let i = 0; i < cabecalhos.length; i++) {
+                    let h = cabecalhos[i].toUpperCase();
+                    if (h.includes("MEDIDOR")) idxMedidor = i;
+                    if (h === "OC") idxOC = i;
+                    if (h.includes("LEIT")) idxLeit = i;
                 }
-                continue;
+                return;
             }
 
             let tokens = linhaLimpa.split(/\s+/);
@@ -1335,13 +1313,13 @@
 
                 if (medidorEncontrado) {
                     listaMedidores.push({
-                        m: medidorEncontrado.toUpperCase(),
-                        o: ocEncontrada || "N/A",
-                        l: Number(leitEncontrada) || 0
+                        m: medidorEncontrado.toUpperCase(), 
+                        o: ocEncontrada || "N/A",           
+                        l: Number(leitEncontrada) || 0      
                     });
                 }
             }
-        }
+        });
 
         const dadosRazaoMes = {
             resumoOC: contagemOC,
@@ -1352,7 +1330,7 @@
         relatorioRazoesDb[razaoSelecionada][anoMesRef] = dadosRazaoMes;
 
         renderizarTabelaRelatorioAtual();
-        alert(`Arquivo da ${razaoSelecionada} processado! Salvando relatório na nuvem...`);
+        alert(`Arquivo da ${razaoSelecionada} processado! Salvando apenas este mês na nuvem...`);
 
         if (currentUser && window.cloudSaveRazaoRelatorio) {
             window.cloudSaveRazaoRelatorio(currentUser, razaoSelecionada, anoMesRef, dadosRazaoMes);
@@ -1719,7 +1697,6 @@
         document.getElementById('currentMonthDisplay').innerText = nomeMes; 
         document.getElementById('printSubHeader').innerText = `Utilizador: ${currentUser}  |  Período: ${nomeMes}/2026`;
         
-        // Carrega APENAS o essencial ao iniciar (dashboard e calendário) de forma rápida
         const [dadosLeves, calCarregado] = await Promise.all([
             window.cloudLoadLeve(currentUser),
             window.cloudLoadCalendario(currentUser)
@@ -1763,12 +1740,7 @@
         document.getElementById('printSubHeader').innerText = `Utilizador: ${currentUser}  |  Período: ${nomeMes}/2026`;
         document.getElementById('monthGrid').classList.remove('active'); 
         atualizarTabela();
-        
-        // Se estiver na aba de relatório, atualiza o mês selecionado
-        const activeTab = document.querySelector('.mobile-tab-content.active-tab');
-        if (activeTab && activeTab.id === 'tabRelatorio') {
-            await carregarRazaoAtualRelatorio();
-        }
+        await carregarRazaoAtualRelatorio(); 
     } 
 
     window.addEventListener('click', (e) => {
