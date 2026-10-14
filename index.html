@@ -1947,7 +1947,6 @@
                         return alert("Arquivo de backup inválido.");
                     }
 
-                    // Aguarda o salvamento completo e síncrono na nuvem
                     if (currentUser && window.cloudSave) {
                         await window.cloudSave(currentUser, db, calendarioDb, relatorioRazoesDb);
                     }
