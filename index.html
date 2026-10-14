@@ -1246,8 +1246,7 @@
         const razaoSelecionada = document.getElementById('selectRazaoRelatorio').value;
         const chaveUnicaAtual = "UNICO";
         const linhas = conteudo.split(/\r?\n/);
-        let listaMedidoresBrutos = [];
-
+        
         let idxMedidor = -1;
         let idxOC = -1;
         let idxLeit = -1;
@@ -1256,6 +1255,9 @@
         notasDeLeitura.forEach(item => {
             mapValidosNL[String(item.numero).trim()] = true;
         });
+
+        // Mapeia o último estado de cada medidor mantendo a ordem exata da sequência do arquivo
+        let mapUltimoPorMedidor = {};
 
         linhas.forEach(linha => {
             let linhaLimpa = linha.trim();
@@ -1315,26 +1317,22 @@
                 }
 
                 if (medidorEncontrado) {
-                    listaMedidoresBrutos.push({
-                        medidor: medidorEncontrado.toUpperCase(),
-                        oc: ocEncontrada || "N/A",
-                        leit: Number(leitEncontrada) || 0,
-                        tipoRgZ3: tipoRgZ3
-                    });
+                    let medKey = medidorEncontrado.toUpperCase();
+                    
+                    // Sobrescreve com o último estado válido na sequência (se houver correção posterior para o mesmo medidor)
+                    mapUltimoPorMedidor[medKey] = {
+                        medidor: medKey,
+                        oc: ocEncontrada || (mapUltimoPorMedidor[medKey] ? mapUltimoPorMedidor[medKey].oc : "N/A"),
+                        leit: Number(leitEncontrada) || (mapUltimoPorMedidor[medKey] ? mapUltimoPorMedidor[medKey].leit : 0),
+                        tipoRgZ3: tipoRgZ3 || (mapUltimoPorMedidor[medKey] ? mapUltimoPorMedidor[medKey].tipoRgZ3 : "")
+                    };
                 }
             }
         });
 
-        // Lógica de consolidação: Se houver múltiplas ocorrências/leituras para o mesmo medidor 
-        // (ex: erros e correções subsequentes com RG 03, Z3, etc.), prevalece sempre o último estado informado.
-        let mapUltimoPorMedidor = {};
-        listaMedidoresBrutos.forEach(item => {
-            mapUltimoPorMedidor[item.medidor] = item;
-        });
-
         let listaMedidores = Object.values(mapUltimoPorMedidor);
 
-        // Recalcular o resumo das ocorrências (contagens) baseado apenas no último estado de cada medidor
+        // Recalcula o resumo de Ocorrências (OC/NL) utilizando estritamente a última leitura/correção de cada medidor
         let contagemOC = {};
         listaMedidores.forEach(item => {
             if (mapValidosNL[item.oc]) {
@@ -1402,6 +1400,7 @@
                 return;
             }
 
+            // Exibição em card único do último estado do medidor encontrado
             corpo.innerHTML = encontrados.map(reg => {
                 const infoNL = notasDeLeitura.find(n => n.numero === reg.oc) || { status: 'Ocorrência', detalhe: reg.oc };
                 const isComLeitura = infoNL.status.toLowerCase().includes('com');
