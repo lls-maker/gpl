@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes"> 
     <title>Gestão de Produtividade de Leituras</title> 
 
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzMiAzMicgd2lkdGg9JzMyJyBoZWlnaHQ9JzMyJz48cmVjdCB3aWR0aD0nMzInIGhlaWdodD0nMzInIHJ4PSc2JyBmaWxsPScjMGIwZjE1Jz48L3JlY3Q+PHRleHQgeD0nNTAlJyB5PSc1NSUnIGRvbWluYW50LWJhc2VsaW5lPSdtaWRkbGUnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJyBmb250LXdlaWdodD0nOTAwJyBmb250LXdlaWdodD0nMTAwMCcgZm9udC1zaXplPScxMCcgZmlsbD0nIzAwZmY4OCcgbGV0dGVyLXNwYWNpbmdzPScwLjUnPkdQTDwvdGV4dD48L3N2Zz4=">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzMiAzMicgd2lkdGg9JzMyJyBoZWlnaHQ9JzMyJz48cmVjdCB3aWR0aD0nMzInIGhlaWdodD0nMzInIHJ4PSc2JyBmaWxsPSdjMGIwZjE1Jz48L3JlY3Q+PHRleHQgeD0nNTAlJyB5PSc1NSUnIGRvbWluYW50LWJhc2VsaW5lPSdtaWRkbGUnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJyBmb250LXdlaWdodD0nOTAwJyBmb250LXdlaWdodD0nMTAwMCcgZm9udC1zaXplPScxMCcgZmlsbD0nIzAwZmY4OCcgbGV0dGVyLXNwYWNpbmdzPScwLjUnPkdQTDwvdGV4dD48L3N2Zz4=">
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#030508">
 
@@ -1246,8 +1246,7 @@
         const razaoSelecionada = document.getElementById('selectRazaoRelatorio').value;
         const chaveUnicaAtual = "UNICO";
         const linhas = conteudo.split(/\r?\n/);
-        let contagemOC = {};
-        let listaMedidores = [];
+        let listaMedidoresBrutos = [];
 
         let idxMedidor = -1;
         let idxOC = -1;
@@ -1315,18 +1314,31 @@
                     leitEncontrada = tokens[tokens.length - 1].replace(/["']/g, '').trim();
                 }
 
-                if (ocEncontrada && mapValidosNL[ocEncontrada]) {
-                    contagemOC[ocEncontrada] = (contagemOC[ocEncontrada] || 0) + 1;
-                }
-
                 if (medidorEncontrado) {
-                    listaMedidores.push({
+                    listaMedidoresBrutos.push({
                         medidor: medidorEncontrado.toUpperCase(),
                         oc: ocEncontrada || "N/A",
                         leit: Number(leitEncontrada) || 0,
                         tipoRgZ3: tipoRgZ3
                     });
                 }
+            }
+        });
+
+        // Lógica de consolidação: Se houver múltiplas ocorrências/leituras para o mesmo medidor 
+        // (ex: erros e correções subsequentes com RG 03, Z3, etc.), prevalece sempre o último estado informado.
+        let mapUltimoPorMedidor = {};
+        listaMedidoresBrutos.forEach(item => {
+            mapUltimoPorMedidor[item.medidor] = item;
+        });
+
+        let listaMedidores = Object.values(mapUltimoPorMedidor);
+
+        // Recalcular o resumo das ocorrências (contagens) baseado apenas no último estado de cada medidor
+        let contagemOC = {};
+        listaMedidores.forEach(item => {
+            if (mapValidosNL[item.oc]) {
+                contagemOC[item.oc] = (contagemOC[item.oc] || 0) + 1;
             }
         });
 
@@ -1390,24 +1402,18 @@
                 return;
             }
 
-            let agrupadoPorMedidor = {};
-            encontrados.forEach(item => {
-                if (!agrupadoPorMedidor[item.medidor]) {
-                    agrupadoPorMedidor[item.medidor] = [];
-                }
-                agrupadoPorMedidor[item.medidor].push(item);
-            });
+            corpo.innerHTML = encontrados.map(reg => {
+                const infoNL = notasDeLeitura.find(n => n.numero === reg.oc) || { status: 'Ocorrência', detalhe: reg.oc };
+                const isComLeitura = infoNL.status.toLowerCase().includes('com');
+                
+                const tagRgZ3 = reg.tipoRgZ3 ? `<span style="background: rgba(156, 39, 176, 0.25); color: #e1bee7; border: 1px solid var(--purple); padding: 2px 6px; border-radius: 6px; font-size: 9.5px; font-weight: 900; margin-left: 6px;">${reg.tipoRgZ3}</span>` : '';
 
-            corpo.innerHTML = Object.keys(agrupadoPorMedidor).map(numMedidor => {
-                const registrosDoMedidor = agrupadoPorMedidor[numMedidor];
-
-                const itensHtml = registrosDoMedidor.map(reg => {
-                    const infoNL = notasDeLeitura.find(n => n.numero === reg.oc) || { status: 'Ocorrência', detalhe: reg.oc };
-                    const isComLeitura = infoNL.status.toLowerCase().includes('com');
-                    
-                    const tagRgZ3 = reg.tipoRgZ3 ? `<span style="background: rgba(156, 39, 176, 0.25); color: #e1bee7; border: 1px solid var(--purple); padding: 2px 6px; border-radius: 6px; font-size: 9.5px; font-weight: 900; margin-left: 6px;">${reg.tipoRgZ3}</span>` : '';
-
-                    return `
+                return `
+                    <div class="medidor-card" style="max-width: 100%;">
+                        <div class="oc-card-header" style="border-bottom: 1px solid var(--border); padding-bottom: 4px; margin-bottom: 2px;">
+                            <span class="oc-code" style="font-size: 1rem; color: var(--success);">Medidor: ${reg.medidor}</span>
+                            <span style="font-size: 9.5px; font-weight: bold; color: var(--text-p);">Razão: ${razaoSelecionada}</span>
+                        </div>
                         <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border); border-radius: 8px; padding: 8px; margin-top: 6px;">
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; flex-wrap: wrap; gap: 4px;">
                                 <div style="display: flex; align-items: center; flex-wrap: wrap;">
@@ -1423,19 +1429,6 @@
                                 ${infoNL.status}
                             </span>
                         </div>
-                    `;
-                }).join('');
-
-                return `
-                    <div class="medidor-card" style="max-width: 100%;">
-                        <div class="oc-card-header" style="border-bottom: 1px solid var(--border); padding-bottom: 4px; margin-bottom: 2px;">
-                            <span class="oc-code" style="font-size: 1rem; color: var(--success);">Medidor: ${numMedidor}</span>
-                            <span style="font-size: 9.5px; font-weight: bold; color: var(--text-p);">Razão: ${razaoSelecionada}</span>
-                        </div>
-                        <div style="font-size: 10px; font-weight: bold; color: var(--accent); margin-bottom: 2px;">
-                            Leituras / Registros (${registrosDoMedidor.length}):
-                        </div>
-                        ${itensHtml}
                     </div>
                 `;
             }).join('');
