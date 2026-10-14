@@ -387,7 +387,6 @@
             padding: 8px 12px; border-radius: 9px; cursor: pointer; font-weight: 800; font-size: 11px; text-transform: uppercase;
         }
 
-        /* Oculta o botão de atualizar no mobile, exibe apenas em desktop */
         .desktop-sync-btn {
             display: none;
         }
@@ -792,7 +791,6 @@
         setDoc(docRef, { relatorios: relatorios || {} }, { merge: true }).catch(e => console.error("Erro ao salvar relatórios:", e));
     };
 
-    // Sincronização ultrarrápida paralela ao carregar tudo
     window.cloudLoadAll = async function(user) {
         try {
             const userTrim = user.trim();
@@ -1331,8 +1329,12 @@
             }
         });
 
-        if (!relatorioRazoesDb) relatorioRazoesDb = {};
-        if (!relatorioRazoesDb[razaoSelecionada]) relatorioRazoesDb[razaoSelecionada] = {};
+        if (!relatorioRazoesDb || typeof relatorioRazoesDb !== 'object') relatorioRazoesDb = {};
+        
+        // PADRONIZAÇÃO RIGOROSA: Garante objeto estruturado limpo para evitar chaves achatadas
+        if (!relatorioRazoesDb[razaoSelecionada] || typeof relatorioRazoesDb[razaoSelecionada] !== 'object') {
+            relatorioRazoesDb[razaoSelecionada] = {};
+        }
 
         relatorioRazoesDb[razaoSelecionada][anoMesRef] = {
             resumoOC: contagemOC,
@@ -1357,7 +1359,7 @@
         const termoBusca = (document.getElementById('searchMedidorRelatorio')?.value || '').trim().toUpperCase();
         if (!corpo) return;
 
-        const dadosRazao = (relatorioRazoesDb && relatorioRazoesDb[razaoSelecionada]) ? relatorioRazoesDb[razaoSelecionada] : null;
+        const dadosRazao = (relatorioRazoesDb && relatorioRazoesDb[razaoSelecionada] && typeof relatorioRazoesDb[razaoSelecionada] === 'object') ? relatorioRazoesDb[razaoSelecionada] : null;
 
         if (!dadosRazao || Object.keys(dadosRazao).length === 0) {
             corpo.innerHTML = `
@@ -1367,32 +1369,29 @@
             return;
         }
 
-        const anoMesRef = "2026-" + String(viewDate.getMonth() + 1).padStart(2, '0');
-        const dadosMesAtual = dadosRazao[anoMesRef] ? dadosRazao[anoMesRef] : null;
-
-        if (!dadosMesAtual || (!dadosMesAtual.resumoOC && !dadosMesAtual.medidores)) {
-            corpo.innerHTML = `
-                <div style="grid-column: 1 / -1; text-align: center; color: var(--text-p); padding: 30px; font-weight: 700; font-size: 12px;">
-                    Nenhum dado importado para ${msNomesCompletos[viewDate.getMonth()]} nesta razão.
-                </div>`;
-            return;
-        }
-
         if (termoBusca) {
-            const medidoresEncontrados = (dadosMesAtual.medidores || []).filter(item => 
-                item.medidor.includes(termoBusca)
-            );
+            let todosMedidoresEncontrados = [];
+            
+            Object.keys(dadosRazao).forEach(chaveMes => {
+                const objMes = dadosRazao[chaveMes];
+                if (objMes && objMes.medidores) {
+                    const encontradosNoMes = objMes.medidores.filter(item => item.medidor.includes(termoBusca));
+                    encontradosNoMes.forEach(m => {
+                        todosMedidoresEncontrados.push({ ...m, mesRef: chaveMes });
+                    });
+                }
+            });
 
-            if (medidoresEncontrados.length === 0) {
+            if (todosMedidoresEncontrados.length === 0) {
                 corpo.innerHTML = `
                     <div style="grid-column: 1 / -1; text-align: center; color: var(--text-p); padding: 30px; font-weight: 700; font-size: 12px;">
-                        Nenhum medidor encontrado com o número "${termoBusca}" neste mês.
+                        Nenhum medidor encontrado com o número "${termoBusca}" em nenhum período desta razão.
                     </div>`;
                 return;
             }
 
             let agrupadoPorMedidor = {};
-            medidoresEncontrados.forEach(item => {
+            todosMedidoresEncontrados.forEach(item => {
                 if (!agrupadoPorMedidor[item.medidor]) {
                     agrupadoPorMedidor[item.medidor] = [];
                 }
@@ -1407,6 +1406,7 @@
                     const isComLeitura = infoNL.status.toLowerCase().includes('com');
                     
                     const tagRgZ3 = reg.tipoRgZ3 ? `<span style="background: rgba(156, 39, 176, 0.25); color: #e1bee7; border: 1px solid var(--purple); padding: 2px 6px; border-radius: 6px; font-size: 9.5px; font-weight: 900; margin-left: 6px;">${reg.tipoRgZ3}</span>` : '';
+                    const badgeMes = `<span style="background: rgba(0, 112, 243, 0.2); color: #90caf9; border: 1px solid var(--accent); padding: 2px 6px; border-radius: 6px; font-size: 9.5px; font-weight: 900; margin-left: 4px;">Ref: ${reg.mesRef}</span>`;
 
                     return `
                         <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border); border-radius: 8px; padding: 8px; margin-top: 6px;">
@@ -1414,6 +1414,7 @@
                                 <div style="display: flex; align-items: center; flex-wrap: wrap;">
                                     <span style="font-weight: 900; color: var(--warning); font-size: 11px;">NL: ${reg.oc}</span>
                                     ${tagRgZ3}
+                                    ${badgeMes}
                                 </div>
                                 <span style="font-weight: 900; color: var(--success); font-size: 11px;">Leitura: ${reg.leit.toLocaleString()}</span>
                             </div>
@@ -1440,6 +1441,17 @@
                     </div>
                 `;
             }).join('');
+            return;
+        }
+
+        const anoMesRef = "2026-" + String(viewDate.getMonth() + 1).padStart(2, '0');
+        const dadosMesAtual = dadosRazao[anoMesRef] ? dadosRazao[anoMesRef] : null;
+
+        if (!dadosMesAtual || (!dadosMesAtual.resumoOC && !dadosMesAtual.medidores)) {
+            corpo.innerHTML = `
+                <div style="grid-column: 1 / -1; text-align: center; color: var(--text-p); padding: 30px; font-weight: 700; font-size: 12px;">
+                    Nenhum dado importado para ${msNomesCompletos[viewDate.getMonth()]} nesta razão.
+                </div>`;
             return;
         }
 
