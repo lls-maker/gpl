@@ -521,7 +521,6 @@
             
             <button class="header-btn" onclick="window.print()">IMPRIMIR</button> 
             <button class="header-btn btn-atualizar-mobile" onclick="atualizarDadosManualmente(this)" title="Atualizar dados da nuvem" style="background: var(--success); color: black;">🔄</button>
-            <button class="header-btn" onclick="sairDaConta()" title="Fechar Aplicativo / Sair" style="background: var(--danger); color: white;">🚪</button>
         </div> 
     </header> 
 
@@ -1049,6 +1048,12 @@
         }
     }
 
+    window.addEventListener('beforeunload', () => {
+        if (currentUser && window.cloudSave) {
+            window.cloudSave(currentUser, db, calendarioDb, relatorioRazoesDb);
+        }
+    });
+
     function switchLoginPane(paneId) {
         document.querySelectorAll('.login-form-pane').forEach(el => el.classList.remove('active'));
         document.querySelectorAll('.login-tab-btn').forEach(el => el.classList.remove('active'));
@@ -1112,44 +1117,6 @@
                 btnElement.disabled = false;
             }
         }
-    }
-
-    async function sairDaConta() {
-        if (!confirm("Deseja realmente fechar a sessão / sair da conta?")) return;
-
-        if (currentUser && window.cloudSave) {
-            try {
-                await window.cloudSave(currentUser, db, calendarioDb, relatorioRazoesDb);
-            } catch (e) {
-                console.error("Erro ao salvar ao sair:", e);
-            }
-        }
-
-        currentUser = "";
-        currentIsAdmin = false;
-        sessionStorage.removeItem('gpl_user');
-        sessionStorage.removeItem('gpl_is_admin');
-        
-        db = [];
-        calendarioDb = {};
-        relatorioRazoesDb = {};
-
-        let d = new Date();
-        viewDate = new Date(d.getFullYear(), d.getMonth(), 1);
-
-        document.getElementById('loginUser').value = "";
-        document.getElementById('loginPass').value = "";
-        document.getElementById('searchRazao').value = "";
-        document.getElementById('searchNL').value = "";
-        document.getElementById('searchCal').value = "";
-        document.getElementById('searchMedidorRelatorio').value = "";
-        document.getElementById('searchAdminUsers').value = "";
-        
-        document.getElementById('btnTabAdmin').style.display = 'none';
-        document.getElementById('adminNotificationBadge').style.display = 'none';
-        
-        const loginScreen = document.getElementById('loginScreen');
-        loginScreen.style.display = 'flex';
     }
 
     let startY = 0;
@@ -1962,7 +1929,7 @@
         if (!file) return;
         
         const reader = new FileReader();
-        reader.onload = function(e) {
+        reader.onload = async function(e) {
             try {
                 const importedData = JSON.parse(e.target.result);
                 if (confirm(`Substituir dados atuais pelo arquivo "${file.name}"?`)) {
@@ -1980,8 +1947,10 @@
                         return alert("Arquivo de backup inválido.");
                     }
 
-                    // CORREÇÃO: Dispara o salvamento automático para a nuvem logo após restaurar
-                    dispararSalvamentoAutomatico();
+                    // Aguarda o salvamento completo e síncrono na nuvem
+                    if (currentUser && window.cloudSave) {
+                        await window.cloudSave(currentUser, db, calendarioDb, relatorioRazoesDb);
+                    }
                     
                     atualizarTabela();
                     renderizarCalendario();
@@ -2040,4 +2009,5 @@
         }
     };
 </script> 
-</body> </html>
+</body> 
+</html>
