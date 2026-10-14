@@ -770,12 +770,15 @@
         }
     };
 
+    // Salvamento ultra-blindado e direto na subcoleção (sem ler nem tocar no documento principal do usuário)
     window.cloudSaveRazaoRelatorio = async function(user, razao, anoMes, dadosRazaoMes) {
         if (!user) return;
         try {
             const docId = `${razao}_${anoMes}`.replace(/\s+/g, '_');
+            // Aponta diretamente para a subcoleção "relatorios" do usuário, ignorando qualquer dado da raiz
             const subDocRef = doc(dbCloud, "usuarios", user.toUpperCase(), "relatorios", docId);
             await setDoc(subDocRef, dadosRazaoMes);
+            console.log("Relatório salvo com sucesso na subcoleção isolada!");
         } catch (e) {
             console.error("Erro ao salvar relatório isolado:", e);
         }
