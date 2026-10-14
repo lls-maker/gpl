@@ -2,7 +2,8 @@
 <html lang="pt-br"> 
 <head> 
     <meta charset="UTF-8"> 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"> 
+    <!-- Alterado de maximum-scale=1.0 para permitir o zoom livre por toque -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes"> 
     <title>Gestão de Produtividade de Leituras</title> 
 
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzMiAzMicgd2lkdGg9JzMyJyBoZWlnaHQ9JzMyJz48cmVjdCB3aWR0aD0nMzInIGhlaWdodD0nMzInIHJ4PSc2JyBmaWxsPScjMGIwZjE1Jz48L3JlY3Q+PHRleHQgeD0nNTAlJyB5PSc1NSUnIGRvbWluYW50LWJhc2VsaW5lPSdtaWRkbGUnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJyBmb250LXdlaWdodD0nOTAwJyBmb250LXdlaWdodD0nMTAwMCcgZm9udC1zaXplPScxMCcgZmlsbD0nIzAwZmY4OCcgbGV0dGVyLXNwYWNpbmdzPScwLjUnPkdQTDwvdGV4dD48L3N2Zz4=">
@@ -1243,7 +1244,7 @@
 
     function processarConteudoTxtTerceiros(conteudo) {
         const razaoSelecionada = document.getElementById('selectRazaoRelatorio').value;
-        const chaveUnicaAtual = "UNICO"; // Chave única para substituir sempre pelo relatório mais recente enviado
+        const chaveUnicaAtual = "UNICO";
         const linhas = conteudo.split(/\r?\n/);
         let contagemOC = {};
         let listaMedidores = [];
@@ -1331,7 +1332,6 @@
 
         if (!relatorioRazoesDb || typeof relatorioRazoesDb !== 'object') relatorioRazoesDb = {};
         
-        // Substitui diretamente o relatório da razão pelo mais recente importado
         relatorioRazoesDb[razaoSelecionada] = {
             [chaveUnicaAtual]: {
                 resumoOC: contagemOC,
@@ -1367,7 +1367,6 @@
             return;
         }
 
-        // Pega o relatório atual (independente de mês)
         const chaveUnicaAtual = Object.keys(dadosRazao)[0];
         const dadosRegistro = dadosRazao[chaveUnicaAtual];
 
@@ -1379,7 +1378,6 @@
             return;
         }
 
-        // Se houver termo de busca por medidor
         if (termoBusca) {
             const medidoresLista = dadosRegistro.medidores || [];
             const encontrados = medidoresLista.filter(item => item.medidor.includes(termoBusca));
@@ -1444,7 +1442,6 @@
             return;
         }
 
-        // Sem busca de medidor: Exibe o resumo das Ocorrências (NL) da razão selecionada
         const resumoOC = dadosRegistro.resumoOC || {};
         const chavesOC = Object.keys(resumoOC);
         chavesOC.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
