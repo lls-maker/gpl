@@ -770,49 +770,11 @@
         }
     };
 
-    // Substitui diretamente o relatório do mês (1 arquivo por razão por mês)
     window.cloudSaveRazaoRelatorio = function(user, razao, anoMes, dadosRazaoMes) {
         if (!user) return;
         const docRef = doc(dbCloud, "usuarios", user.toUpperCase());
         const fieldPath = `relatorios.${razao}.${anoMes}`;
-        // Sobrescreve especificamente o mês daquela razão, garantindo que o novo arquivo substitua o antigo perfeitamente
         setDoc(docRef, { [fieldPath]: dadosRazaoMes }, { merge: true }).catch(e => console.error("Erro ao salvar razão:", e));
-    };
-
-    window.cloudLoadLeve = async function(user) {
-        try {
-            const docSnap = await getDoc(doc(dbCloud, "usuarios", user.toUpperCase()));
-            if (docSnap.exists()) return docSnap.data().dados || [];
-        } catch (e) { console.error("Erro ao carregar dados:", e); }
-        return [];
-    };
-
-    window.cloudLoadCalendario = async function(user) {
-        try {
-            const [userDocSnap, calGlobalSnap] = await Promise.all([
-                getDoc(doc(dbCloud, "usuarios", user.toUpperCase())),
-                getDoc(doc(dbCloud, "config", "calendarioGlobal"))
-            ]);
-            let cal = userDocSnap.exists() ? (userDocSnap.data().calendario || {}) : {};
-            if (calGlobalSnap.exists()) {
-                const globalData = calGlobalSnap.data();
-                const extraido = globalData.calendario || globalData;
-                if (extraido && Object.keys(extraido).length > 0) cal = extraido;
-            }
-            return cal;
-        } catch (e) { console.error("Erro calendário:", e); }
-        return {};
-    };
-
-    window.cloudLoadRazaoRelatorio = async function(user, razao) {
-        try {
-            const docSnap = await getDoc(doc(dbCloud, "usuarios", user.toUpperCase()));
-            if (docSnap.exists()) {
-                const rels = docSnap.data().relatorios || {};
-                return rels[razao] || {};
-            }
-        } catch (e) { console.error("Erro relatório razão:", e); }
-        return {};
     };
 
     window.cloudLoadAll = async function(user) {
@@ -1041,33 +1003,13 @@
         }
     }
 
-    async function switchMobileTab(tabId, btnElement) {
+    function switchMobileTab(tabId, btnElement) {
         document.querySelectorAll('.mobile-tab-content').forEach(el => el.classList.remove('active-tab'));
         const target = document.getElementById(tabId);
         if(target) target.classList.add('active-tab');
         
         document.querySelectorAll('.mob-tab-btn').forEach(btn => btn.classList.remove('active'));
         if(btnElement) btnElement.classList.add('active');
-        
-        if (currentUser) {
-            if (tabId === 'tabDashboard' || tabId === 'tabTabela') {
-                if (db.length === 0) {
-                    db = await window.cloudLoadLeve(currentUser);
-                }
-                atualizarTabela();
-            } else if (tabId === 'tabCal') {
-                if (Object.keys(calendarioDb).length === 0) {
-                    calendarioDb = await window.cloudLoadCalendario(currentUser);
-                }
-                renderizarCalendario();
-                verificarSabadosAlertas();
-            } else if (tabId === 'tabRelatorio') {
-                popularSelectRazoesRelatorio();
-                await carregarRazaoAtualRelatorio(); 
-            } else if (tabId === 'tabAdmin' && currentIsAdmin) {
-                carregarListaUtilizadoresPendentes();
-            }
-        }
     }
 
     async function atualizarDadosManualmente(btnElement = null) {
@@ -1081,13 +1023,18 @@
         }
 
         try {
-            db = await window.cloudLoadLeve(currentUser);
-            calendarioDb = await window.cloudLoadCalendario(currentUser);
-            await carregarRazaoAtualRelatorio();
+            const cloudData = await window.cloudLoadAll(currentUser);
+            if (cloudData) {
+                db = cloudData.dados || [];
+                calendarioDb = cloudData.calendario || {};
+                relatorioRazoesDb = cloudData.relatorios || {};
+            }
 
             atualizarTabela();
             renderizarCalendario();
             verificarSabadosAlertas();
+            popularSelectRazoesRelatorio();
+            renderizarTabelaRelatorioAtual();
             if(currentIsAdmin) carregarListaUtilizadoresPendentes();
             return true;
         } catch (error) {
@@ -1218,19 +1165,9 @@
         if(selecionadoAtual) sel.value = selecionadoAtual;
     }
 
-    async function carregarRazaoAtualRelatorio() {
-        const sel = document.getElementById('selectRazaoRelatorio');
-        const razaoSelecionada = sel ? sel.value || lista18Razoes[0] : lista18Razoes[0];
-        
-        const dadosRazaoNuvem = await window.cloudLoadRazaoRelatorio(currentUser, razaoSelecionada);
-        relatorioRazoesDb[razaoSelecionada] = dadosRazaoNuvem;
-        
-        renderizarTabelaRelatorioAtual();
-    }
-
-    async function mudarRazaoRelatorio() {
+    function mudarRazaoRelatorio() {
         document.getElementById('searchMedidorRelatorio').value = '';
-        await carregarRazaoAtualRelatorio(); 
+        renderizarTabelaRelatorioAtual(); 
     }
 
     function processarArquivoTxtSelecionado(input) {
@@ -1328,7 +1265,6 @@
         };
 
         if (!relatorioRazoesDb[razaoSelecionada]) relatorioRazoesDb[razaoSelecionada] = {};
-        // Substitui o mês diretamente na memória
         relatorioRazoesDb[razaoSelecionada][anoMesRef] = dadosRazaoMes;
 
         renderizarTabelaRelatorioAtual();
@@ -1699,19 +1635,22 @@
         document.getElementById('currentMonthDisplay').innerText = nomeMes; 
         document.getElementById('printSubHeader').innerText = `Utilizador: ${currentUser}  |  Período: ${nomeMes}/2026`;
         
-        const [dadosLeves, calCarregado] = await Promise.all([
-            window.cloudLoadLeve(currentUser),
-            window.cloudLoadCalendario(currentUser)
-        ]);
-
-        db = dadosLeves;
-        calendarioDb = calCarregado;
+        // CARREGAMENTO UNIFICADO NO LOGIN: Traz TUDO da nuvem de uma só vez
+        const cloudData = await window.cloudLoadAll(currentUser);
+        if (cloudData) {
+            db = cloudData.dados || [];
+            calendarioDb = cloudData.calendario || {};
+            relatorioRazoesDb = cloudData.relatorios || {};
+        }
 
         renderMonths(); 
         renderizarNL();
         switchMobileTab('tabDashboard', document.getElementById('btnTabDashboard'));
         atualizarTabela(); 
+        renderizarCalendario();
         verificarSabadosAlertas(); 
+        popularSelectRazoesRelatorio();
+        renderizarTabelaRelatorioAtual();
         if(currentIsAdmin) carregarListaUtilizadoresPendentes();
     }
 
@@ -1735,14 +1674,14 @@
         document.getElementById('monthGrid').classList.toggle('active'); 
     } 
      
-    async function selectMonth(m) { 
+    function selectMonth(m) { 
         viewDate.setMonth(m); 
         let nomeMes = msNomesCompletos[m];
         document.getElementById('currentMonthDisplay').innerText = nomeMes; 
         document.getElementById('printSubHeader').innerText = `Utilizador: ${currentUser}  |  Período: ${nomeMes}/2026`;
         document.getElementById('monthGrid').classList.remove('active'); 
         atualizarTabela();
-        await carregarRazaoAtualRelatorio(); 
+        renderizarTabelaRelatorioAtual(); 
     } 
 
     window.addEventListener('click', (e) => {
@@ -1944,7 +1883,7 @@
                     atualizarTabela();
                     renderizarCalendario();
                     popularSelectRazoesRelatorio();
-                    await carregarRazaoAtualRelatorio();
+                    renderizarTabelaRelatorioAtual();
                     verificarSabadosAlertas();
                     
                     alert("Backup restaurado e sincronizado com a nuvem com sucesso! ✨");
