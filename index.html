@@ -302,7 +302,7 @@
 
         .cards-container {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
             gap: 8px;
             padding: 10px;
             overflow-y: auto;
@@ -331,9 +331,9 @@
             padding: 12px;
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 8px;
             box-shadow: 0 4px 15px rgba(0,255,136,0.15);
-            max-width: 380px;
+            max-width: 420px;
             margin: 6px auto;
             width: 100%;
         }
@@ -661,12 +661,12 @@
                 </div>
             </div>
             <div class="mobile-search-area" style="margin-top: 4px;">
-                <input type="text" id="searchMedidorRelatorio" placeholder="Pesquisar medidor, instalação ou texto (ex: PRE)..." oninput="buscarMedidorNoRelatorio()" style="border-color: var(--success); margin-bottom: 0;">
+                <input type="text" id="searchMedidorRelatorio" placeholder="Pesquisar por número do medidor..." oninput="buscarMedidorNoRelatorio()" style="border-color: var(--success); margin-bottom: 0;">
             </div>
             <div class="main-view" style="margin-top: 6px;">
                 <div id="relatorioCardsCorpo" class="cards-container">
                     <div style="grid-column: 1 / -1; text-align: center; color: var(--text-p); padding: 30px; font-weight: 700; font-size: 12px;">
-                        Carregue um arquivo TXT ou pesquise pelo termo desejado para visualizar os dados.
+                        Carregue um arquivo TXT ou digite o número do medidor para visualizar as leituras e correções.
                     </div>
                 </div>
             </div>
@@ -1409,41 +1409,62 @@
             return;
         }
 
-        // Se o usuário digitou algum termo de busca (número ou texto/letras)
+        // Se o usuário buscou por um medidor específico, agrupamos todas as leituras/correções do mesmo medidor em UM ÚNICO CARD
         if (termoBusca) {
             const medidoresEncontrados = (dadosMesAtual.medidores || []).filter(item => 
-                item.medidor.includes(termoBusca) || item.oc.includes(termoBusca)
+                item.medidor.includes(termoBusca)
             );
 
             if (medidoresEncontrados.length === 0) {
                 corpo.innerHTML = `
                     <div style="grid-column: 1 / -1; text-align: center; color: var(--text-p); padding: 30px; font-weight: 700; font-size: 12px;">
-                        Nenhum registro encontrado com o termo "${termoBusca}" neste mês.
+                        Nenhum medidor encontrado com o número "${termoBusca}" neste mês.
                     </div>`;
                 return;
             }
 
-            corpo.innerHTML = medidoresEncontrados.map(item => {
-                const infoNL = notasDeLeitura.find(n => n.numero === item.oc) || { status: 'Ocorrência', detalhe: item.oc };
-                const isComLeitura = infoNL.status.toLowerCase().includes('com');
+            // Agrupando por número do medidor exato
+            let agrupadoPorMedidor = {};
+            medidoresEncontrados.forEach(item => {
+                if (!agrupadoPorMedidor[item.medidor]) {
+                    agrupadoPorMedidor[item.medidor] = [];
+                }
+                agrupadoPorMedidor[item.medidor].push(item);
+            });
 
-                return `
-                    <div class="medidor-card" style="max-width: 100%;">
-                        <div class="oc-card-header" style="align-items: flex-start;">
-                            <div>
-                                <span class="oc-code" style="font-size: 0.95rem; color: var(--success); display: block;">Medidor: ${item.medidor}</span>
-                                <span style="font-size: 10px; font-weight: bold; color: var(--text-p);">Razão: ${razaoSelecionada} | NL: <span style="color: var(--warning);">${item.oc}</span></span>
+            corpo.innerHTML = Object.keys(agrupadoPorMedidor).map(numMedidor => {
+                const registrosDoMedidor = agrupadoPorMedidor[numMedidor];
+
+                const itensHtml = registrosDoMedidor.map(reg => {
+                    const infoNL = notasDeLeitura.find(n => n.numero === reg.oc) || { status: 'Ocorrência', detalhe: reg.oc };
+                    const isComLeitura = infoNL.status.toLowerCase().includes('com');
+
+                    return `
+                        <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border); border-radius: 8px; padding: 8px; margin-top: 4px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+                                <span style="font-weight: 900; color: var(--warning); font-size: 11px;">OC / NL: ${reg.oc}</span>
+                                <span style="font-weight: 900; color: var(--success); font-size: 11px;">Leitura: ${reg.leit.toLocaleString()}</span>
                             </div>
-                            <span class="oc-count" style="font-size: 0.75rem; background: rgba(0, 255, 136, 0.15); color: var(--success); border-color: var(--success);">Leitura: ${item.leit.toLocaleString()}</span>
-                        </div>
-                        <div style="margin-top: 4px; font-size: 11px; color: var(--text-h); font-weight: 600;">
-                            ${infoNL.detalhe}
-                        </div>
-                        <div>
-                            <span class="oc-status" style="margin-top: 4px; background: ${isComLeitura ? 'rgba(0,255,136,0.1)' : 'rgba(255,204,0,0.1)'}; color: ${isComLeitura ? 'var(--success)' : 'var(--warning)'}; border: 1px solid ${isComLeitura ? 'var(--success)' : 'var(--warning)'};">
+                            <div style="font-size: 10px; color: var(--text-h); font-weight: 600; margin-bottom: 3px;">
+                                ${infoNL.detalhe}
+                            </div>
+                            <span class="oc-status" style="background: ${isComLeitura ? 'rgba(0,255,136,0.1)' : 'rgba(255,204,0,0.1)'}; color: ${isComLeitura ? 'var(--success)' : 'var(--warning)'}; border: 1px solid ${isComLeitura ? 'var(--success)' : 'var(--warning)'};">
                                 ${infoNL.status}
                             </span>
                         </div>
+                    `;
+                }).join('');
+
+                return `
+                    <div class="medidor-card" style="max-width: 100%;">
+                        <div class="oc-card-header" style="border-bottom: 1px solid var(--border); padding-bottom: 4px; margin-bottom: 2px;">
+                            <span class="oc-code" style="font-size: 1rem; color: var(--success);">Medidor: ${numMedidor}</span>
+                            <span style="font-size: 9.5px; font-weight: bold; color: var(--text-p);">Razão: ${razaoSelecionada}</span>
+                        </div>
+                        <div style="font-size: 10px; font-weight: bold; color: var(--accent); margin-bottom: 2px;">
+                            Registros (${registrosDoMedidor.length}):
+                        </div>
+                        ${itensHtml}
                     </div>
                 `;
             }).join('');
