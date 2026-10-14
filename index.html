@@ -1319,7 +1319,7 @@
                     let medKey = medidorEncontrado.toUpperCase();
                     let regAnt = mapUltimoPorMedidor[medKey];
 
-                    // Sobrescreve sempre com a última linha encontrada para garantir que erros corrigidos fiquem com o estado final correto
+                    // Mantém SEMPRE o último estado da sequência do arquivo para o medidor
                     mapUltimoPorMedidor[medKey] = {
                         medidor: medKey,
                         oc: ocEncontrada || (regAnt ? regAnt.oc : "N/A"),
@@ -1356,6 +1356,7 @@
         renderizarTabelaRelatorioAtual();
         alert(`Relatório da ${razaoSelecionada} importado e atualizado com sucesso!`);
     }
+
     function buscarMedidorNoRelatorio() {
         renderizarTabelaRelatorioAtual();
     }
@@ -1387,7 +1388,7 @@
             return;
         }
 
-        // Se houver termo de busca, filtra no array de medidores consolidados (que já contém apenas o último estado único de cada medidor)
+        // Se houver termo de busca, filtra no array de medidores consolidados (que já contém estritamente o último estado único de cada medidor)
         if (termoBusca) {
             const medidoresLista = dadosRegistro.medidores || [];
             const encontrados = medidoresLista.filter(item => item.medidor.includes(termoBusca));
@@ -1400,7 +1401,7 @@
                 return;
             }
 
-            // Exibe estritamente em um card único por medidor
+            // Exibe estritamente em um card único por medidor com o seu último estado corrigido
             corpo.innerHTML = encontrados.map(reg => {
                 const infoNL = notasDeLeitura.find(n => n.numero === reg.oc) || { status: 'Ocorrência', detalhe: reg.oc };
                 const isComLeitura = infoNL.status.toLowerCase().includes('com');
