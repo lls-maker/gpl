@@ -759,7 +759,6 @@
         }
     };
 
-    // FUNÇÕES DE PERSISTÊNCIA INDIVIDUALIZADA (SOB DEMANDA)
     window.cloudSaveRegistros = function(user, dataRegistros) {
         if (!user) return;
         const docRef = doc(dbCloud, "usuarios", user.toUpperCase());
@@ -777,7 +776,6 @@
         }
     };
 
-    // NOVO: Salva apenas a Razão e Mês específico do relatório de forma isolada!
     window.cloudSaveRazaoRelatorio = function(user, razao, anoMes, dadosRazaoMes) {
         if (!user) return;
         const docRef = doc(dbCloud, "usuarios", user.toUpperCase());
@@ -810,7 +808,6 @@
         return {};
     };
 
-    // NOVO: Carrega apenas os relatórios de uma razão específica sob demanda
     window.cloudLoadRazaoRelatorio = async function(user, razao) {
         try {
             const docSnap = await getDoc(doc(dbCloud, "usuarios", user.toUpperCase()));
@@ -898,7 +895,7 @@
 <script> 
     let db = []; 
     let calendarioDb = {}; 
-    let relatorioRazoesDb = {}; // Cache local da razão atualmente aberta
+    let relatorioRazoesDb = {}; 
     
     let currentUser = sessionStorage.getItem('gpl_user') || ""; 
     let currentIsAdmin = sessionStorage.getItem('gpl_is_admin') === 'true';
@@ -1048,7 +1045,6 @@
         }
     }
 
-    // CARREGAMENTO SOB DEMANDA POR ABA
     async function switchMobileTab(tabId, btnElement) {
         document.querySelectorAll('.mobile-tab-content').forEach(el => el.classList.remove('active-tab'));
         const target = document.getElementById(tabId);
@@ -1071,7 +1067,7 @@
                 verificarSabadosAlertas();
             } else if (tabId === 'tabRelatorio') {
                 popularSelectRazoesRelatorio();
-                await carregarRazaoAtualRelatorio(); // Carrega apenas a razão selecionada do banco!
+                await carregarRazaoAtualRelatorio(); 
             } else if (tabId === 'tabAdmin' && currentIsAdmin) {
                 carregarListaUtilizadoresPendentes();
             }
@@ -1230,7 +1226,6 @@
         const sel = document.getElementById('selectRazaoRelatorio');
         const razaoSelecionada = sel ? sel.value || lista18Razoes[0] : lista18Razoes[0];
         
-        // Carrega do Firebase apenas os dados desta razão específica sob demanda!
         const dadosRazaoNuvem = await window.cloudLoadRazaoRelatorio(currentUser, razaoSelecionada);
         relatorioRazoesDb[razaoSelecionada] = dadosRazaoNuvem;
         
@@ -1239,7 +1234,7 @@
 
     async function mudarRazaoRelatorio() {
         document.getElementById('searchMedidorRelatorio').value = '';
-        await carregarRazaoAtualRelatorio(); // Busca da nuvem apenas os dados da razão recém-selecionada
+        await carregarRazaoAtualRelatorio(); 
     }
 
     function processarArquivoTxtSelecionado(input) {
@@ -1323,9 +1318,9 @@
 
                 if (medidorEncontrado) {
                     listaMedidores.push({
-                        medidor: medidorEncontrado.toUpperCase(),
-                        oc: ocEncontrada || "N/A",
-                        leit: Number(leitEncontrada) || 0
+                        m: medidorEncontrado.toUpperCase(), 
+                        o: ocEncontrada || "N/A",           
+                        l: Number(leitEncontrada) || 0      
                     });
                 }
             }
@@ -1339,13 +1334,12 @@
         if (!relatorioRazoesDb[razaoSelecionada]) relatorioRazoesDb[razaoSelecionada] = {};
         relatorioRazoesDb[razaoSelecionada][anoMesRef] = dadosRazaoMes;
 
-        // Gravação individual na nuvem: atualiza APENAS esta razão e mês específico no Firestore!
+        renderizarTabelaRelatorioAtual();
+        alert(`Arquivo da ${razaoSelecionada} processado localmente! Sincronizando com a nuvem...`);
+
         if (currentUser && window.cloudSaveRazaoRelatorio) {
             window.cloudSaveRazaoRelatorio(currentUser, razaoSelecionada, anoMesRef, dadosRazaoMes);
         }
-
-        renderizarTabelaRelatorioAtual();
-        alert(`Arquivo da ${razaoSelecionada} para o período ${msNomesCompletos[viewDate.getMonth()]} importado e salvo individualmente com sucesso!`);
     }
 
     function buscarMedidorNoRelatorio() {
@@ -1373,7 +1367,7 @@
 
             for (const [anoMes, conteudoMes] of Object.entries(dadosRazao)) {
                 if (conteudoMes && Array.isArray(conteudoMes.medidores)) {
-                    const encontrado = conteudoMes.medidores.find(item => item.medidor.includes(termoBusca));
+                    const encontrado = conteudoMes.medidores.find(item => item.m.includes(termoBusca));
                     if (encontrado) {
                         historicoMedidor[anoMes] = encontrado;
                     }
@@ -1402,16 +1396,16 @@
                 const dados = historicoMedidor[anoMes];
                 const [ano, mes] = anoMes.split('-');
                 const nomeMesStr = msNomesCompletos[parseInt(mes, 10) - 1] || mes;
-                const infoNL = notasDeLeitura.find(n => n.numero === dados.oc) || { status: 'Ocorrência', detalhe: 'Nota de Leitura' };
+                const infoNL = notasDeLeitura.find(n => n.numero === dados.o) || { status: 'Ocorrência', detalhe: 'Nota de Leitura' };
                 const isComLeitura = infoNL.status.toLowerCase().includes('com');
 
                 let consumoMes = 0;
-                let leituraAtual = typeof dados.leit === 'number' ? dados.leit : Number(dados.leit) || 0;
+                let leituraAtual = typeof dados.l === 'number' ? dados.l : Number(dados.l) || 0;
 
                 if (i > 0) {
                     const mesAnterior = ultimos12Meses[i - 1];
                     const dadosAnterior = historicoMedidor[mesAnterior];
-                    let leituraAnterior = typeof dadosAnterior.leit === 'number' ? dadosAnterior.leit : Number(dadosAnterior.leit) || 0;
+                    let leituraAnterior = typeof dadosAnterior.l === 'number' ? dadosAnterior.l : Number(dadosAnterior.l) || 0;
                     
                     consumoMes = leituraAtual - leituraAnterior;
                     if (consumoMes < 0) consumoMes = 0;
@@ -1436,7 +1430,7 @@
                         </div>
                         <div style="display: flex; justify-content: space-between; margin-top: 2px; font-size: 10px; color: var(--text-p);">
                             <span>Leitura: ${leituraAtual.toLocaleString()}</span>
-                            <span style="color: ${isComLeitura ? 'var(--success)' : 'var(--warning)'};">${infoNL.status} (NL ${dados.oc})</span>
+                            <span style="color: ${isComLeitura ? 'var(--success)' : 'var(--warning)'};">${infoNL.status} (NL ${dados.o})</span>
                         </div>
                     </div>
                 `);
@@ -1445,14 +1439,14 @@
             const mediaConsumo12 = qtdMesesComConsumo > 0 ? (somaConsumo12 / qtdMesesComConsumo).toFixed(1) : 0;
             const ultimoMesChave = mesesEncontrados[mesesEncontrados.length - 1];
             const ultimoItem = historicoMedidor[ultimoMesChave];
-            const leituraMaisRecente = typeof ultimoItem.leit === 'number' ? ultimoItem.leit : Number(ultimoItem.leit) || 0;
+            const leituraMaisRecente = typeof ultimoItem.l === 'number' ? ultimoItem.l : Number(ultimoItem.l) || 0;
 
             corpo.innerHTML = `
                 <div class="medidor-card" style="max-width: 100%;">
                     <div class="oc-card-header" style="align-items: flex-start;">
                         <div>
                             <span class="oc-code" style="font-size: 0.95rem; color: var(--success); display: block;">Medidor: ${termoBusca}</span>
-                            <span style="font-size: 10px; font-weight: bold; color: var(--text-p);">Razão: ${razaoSelecionada} | Última NL: <span style="color: var(--warning);">${ultimoItem.oc}</span></span>
+                            <span style="font-size: 10px; font-weight: bold; color: var(--text-p);">Razão: ${razaoSelecionada} | Última NL: <span style="color: var(--warning);">${ultimoItem.o}</span></span>
                         </div>
                         <div style="display: flex; gap: 4px; flex-direction: column; align-items: flex-end;">
                             <span class="oc-count" style="font-size: 0.75rem; background: rgba(0, 255, 136, 0.15); color: var(--success); border-color: var(--success);">Leitura: ${leituraMaisRecente.toLocaleString()}</span>
@@ -1466,29 +1460,29 @@
                     </div>
                 </div>
             `;
-            return;
+           return;
         }
 
         const anoMesRef = "2026-" + String(viewDate.getMonth() + 1).padStart(2, '0');
         const dadosMesAtual = dadosRazao[anoMesRef] ? dadosRazao[anoMesRef].resumoOC : null;
 
         if (!dadosMesAtual || Object.keys(dadosMesAtual).length === 0) {
-            corpo.innerHTML = `
+          corpo.innerHTML = `
                 <div style="grid-column: 1 / -1; text-align: center; color: var(--text-p); padding: 30px; font-weight: 700; font-size: 12px;">
                     Nenhum arquivo TXT importado para ${msNomesCompletos[viewDate.getMonth()]} nesta razão.
                 </div>`;
-            return;
+          return;
         }
 
         const chavesOC = Object.keys(dadosMesAtual);
         chavesOC.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
 
         corpo.innerHTML = chavesOC.map(oc => {
-            const qtd = dadosMesAtual[oc];
-            const infoNL = notasDeLeitura.find(item => item.numero === oc) || { status: 'Desconhecido', detalhe: 'Nota de Leitura mapeada' };
-            const isComLeitura = infoNL.status.toLowerCase().includes('com');
+          const qtd = dadosMesAtual[oc];
+          const infoNL = notasDeLeitura.find(item => item.numero === oc) || { status: 'Desconhecido', detalhe: 'Nota de Leitura mapeada' };
+          const isComLeitura = infoNL.status.toLowerCase().includes('com');
 
-            return `
+          return `
                 <div class="oc-card">
                     <div class="oc-card-header">
                         <span class="oc-code">NL ${oc}</span>
@@ -1501,7 +1495,7 @@
                         </span>
                     </div>
                 </div>
-            `;
+          `;
         }).join('');
     }
 
@@ -1526,15 +1520,15 @@
                         <td>
                             ${currentIsAdmin ? `
                                 <input type="date" value="${dataSalva}" onchange="salvarDataCalendario('${razao}', this.value)" style="margin-bottom:0; font-size:11px;">
-                            ` : `
+                              ` : `
                                 <div style="font-weight: bold; color: ${dataSalva ? 'var(--text-h)' : 'var(--text-p)'}; font-size: 12px; padding: 6px;">
                                     ${dataFormatadaExibicao}
                                 </div>
-                            `}
+                              `}
                         </td>
-                    </tr>
-                `;
-            }).join('');
+                   </tr>
+                  `;
+              }).join('');
 
         corpo.innerHTML = html;
     }
@@ -1573,7 +1567,7 @@
         } else {
             alertaContainer.style.display = 'none';
             alertaContainer.innerHTML = '';
-        }
+       }
     }
 
     function renderizarNL(lista = notasDeLeitura) {
@@ -1609,9 +1603,9 @@
                     el.innerText = isMoeda ? fM(final) : Math.floor(final).toLocaleString(); 
                 } 
                 clearInterval(timer); 
-            } else { 
+           } else { 
                 el.innerText = isMoeda ? fM(start) : Math.floor(start).toLocaleString(); 
-            } 
+           } 
         }, 20); 
     } 
 
@@ -1708,7 +1702,6 @@
         document.getElementById('currentMonthDisplay').innerText = nomeMes; 
         document.getElementById('printSubHeader').innerText = `Utilizador: ${currentUser}  |  Período: ${nomeMes}/2026`;
         
-        // Conforme pedido: na entrada carrega os dados gerais e o calendário (para os alertas da Dash) em paralelo
         const [dadosLeves, calCarregado] = await Promise.all([
             window.cloudLoadLeve(currentUser),
             window.cloudLoadCalendario(currentUser)
@@ -1721,7 +1714,7 @@
         renderizarNL();
         switchMobileTab('tabDashboard', document.getElementById('btnTabDashboard'));
         atualizarTabela(); 
-        verificarSabadosAlertas(); // Exibe os alertas de sábados logo na entrada!
+        verificarSabadosAlertas(); 
         if(currentIsAdmin) carregarListaUtilizadoresPendentes();
     }
 
@@ -1752,7 +1745,7 @@
         document.getElementById('printSubHeader').innerText = `Utilizador: ${currentUser}  |  Período: ${nomeMes}/2026`;
         document.getElementById('monthGrid').classList.remove('active'); 
         atualizarTabela();
-        await carregarRazaoAtualRelatorio(); // Recarrega os dados da razão para o novo mês selecionado
+        await carregarRazaoAtualRelatorio(); 
     } 
 
     window.addEventListener('click', (e) => {
@@ -1761,7 +1754,7 @@
         if (monthGrid && monthGrid.classList.contains('active')) {
             if (!monthGrid.contains(e.target) && !btnMes.contains(e.target)) {
                 monthGrid.classList.remove('active');
-            }
+          }
         }
     });
 
@@ -1786,7 +1779,7 @@
                 <td class="no-print">
                     <button type="button" onclick="editar(${i.id})" title="Editar" style="background:none; border:none; color:var(--accent); cursor:pointer; font-size:13px; padding:2px;">✏️</button>
                 </td>
-            </tr>`; 
+           </tr>`; 
         }).join('');
 
         document.getElementById('tabelaCorpo').innerHTML = htmlRegistros; 
