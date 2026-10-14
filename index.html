@@ -387,12 +387,6 @@
             padding: 8px 12px; border-radius: 9px; cursor: pointer; font-weight: 800; font-size: 11px; text-transform: uppercase;
         }
 
-        @media (max-width: 768px) {
-            .btn-atualizar-mobile {
-                display: none !important;
-            }
-        }
-
         .mobile-nav-tabs {
             display: flex; width: 100%; background: var(--surface); border: 1px solid var(--border);
             border-radius: 10px; z-index: 9; justify-content: space-between; padding: 4px;
@@ -520,7 +514,7 @@
             <div id="monthGrid" class="month-grid"></div> 
             
             <button class="header-btn" onclick="window.print()">IMPRIMIR</button> 
-            <button class="header-btn btn-atualizar-mobile" onclick="atualizarDadosManualmente(this)" title="Atualizar dados da nuvem" style="background: var(--success); color: black;">🔄</button>
+            <button class="header-btn" onclick="atualizarDadosManualmente(this)" title="Atualizar dados da nuvem" style="background: var(--success); color: black;">🔄</button>
         </div> 
     </header> 
 
@@ -1335,8 +1329,9 @@
         relatorioRazoesDb[razaoSelecionada][anoMesRef] = dadosRazaoMes;
 
         renderizarTabelaRelatorioAtual();
-        alert(`Arquivo da ${razaoSelecionada} processado localmente! Sincronizando com a nuvem...`);
+        alert(`Arquivo da ${razaoSelecionada} processado! Salvando apenas este mês na nuvem...`);
 
+        // Salvamento cirúrgico e isolado (atualiza apenas a razão e mês correspondentes no Firestore)
         if (currentUser && window.cloudSaveRazaoRelatorio) {
             window.cloudSaveRazaoRelatorio(currentUser, razaoSelecionada, anoMesRef, dadosRazaoMes);
         }
