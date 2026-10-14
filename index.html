@@ -387,12 +387,6 @@
             padding: 8px 12px; border-radius: 9px; cursor: pointer; font-weight: 800; font-size: 11px; text-transform: uppercase;
         }
 
-        @media (max-width: 768px) {
-            .btn-atualizar-mobile {
-                display: none !important;
-            }
-        }
-
         .mobile-nav-tabs {
             display: flex; width: 100%; background: var(--surface); border: 1px solid var(--border);
             border-radius: 10px; z-index: 9; justify-content: space-between; padding: 4px;
@@ -437,7 +431,7 @@
         .print-header { display: none; }
 
         @media print {
-            @page { margin: 0mm; size: auto; }
+            @page { margin: 10mm; size: auto; }
             html, body {
                 background: white !important; color: black !important;
                 display: block !important; overflow: visible !important;
@@ -446,11 +440,11 @@
             }
             body::before { display: none; }
             .container {
-                max-width: 100% !important; width: 100% !important;
+                max-width: 90% !important; width: 90% !important;
                 height: auto !important; max-height: none !important;
                 border: none !important; box-shadow: none !important;
                 background: white !important; padding: 0 !important;
-                margin: 0 !important; display: block !important;
+                margin: 0 auto !important; display: block !important;
                 overflow: visible !important;
             }
             header, .prog-area, .mobile-nav-tabs, .no-print, .mobile-search-area {
@@ -466,12 +460,12 @@
                 margin-top: 0 !important; margin-bottom: 10px;
                 border-bottom: 2px solid #000; padding-bottom: 6px;
             }
-            .print-header h1 { font-size: 16px; text-transform: uppercase; margin: 0 0 4px 0; color: #000; }
-            .print-header p { font-size: 12px; margin: 0; color: #333; font-weight: bold; text-transform: uppercase; }
+            .print-header h1 { font-size: 15px; text-transform: uppercase; margin: 0 0 4px 0; color: #000; }
+            .print-header p { font-size: 11px; margin: 0; color: #333; font-weight: bold; text-transform: uppercase; }
             .main-view { background: white !important; border: none !important; overflow: visible !important; height: auto !important; margin: 0 !important; }
             .table-container { overflow: visible !important; height: auto !important; }
             table { width: 100% !important; border-collapse: collapse !important; }
-            th, td { border: 1px solid #999 !important; color: black !important; padding: 6px !important; }
+            th, td { border: 1px solid #999 !important; color: black !important; padding: 5px !important; font-size: 10px !important; }
             th { background: #eee !important; color: black !important; }
         }
     </style> 
@@ -520,7 +514,7 @@
             <div id="monthGrid" class="month-grid"></div> 
             
             <button class="header-btn" onclick="window.print()">IMPRIMIR</button> 
-            <button class="header-btn btn-atualizar-mobile" onclick="atualizarDadosManualmente(this)" title="Atualizar dados da nuvem" style="background: var(--success); color: black;">🔄</button>
+            <button class="header-btn" onclick="atualizarDadosManualmente(this)" title="Atualizar dados da nuvem" style="background: var(--success); color: black;">🔄</button>
         </div> 
     </header> 
 
@@ -787,55 +781,6 @@
         setDoc(docRef, { relatorios: relatorios || {} }, { merge: true }).catch(e => console.error("Erro ao salvar relatórios:", e));
     };
 
-    window.cloudLoadLeve = async function(user) {
-        try {
-            const userTrim = user.trim();
-            const userUpper = userTrim.toUpperCase();
-            const docSnap = await getDoc(doc(dbCloud, "usuarios", userUpper));
-            if (docSnap.exists()) {
-                return docSnap.data().dados || [];
-            }
-        } catch (e) {
-            console.error("Erro ao carregar dados:", e);
-        }
-        return [];
-    };
-
-    window.cloudLoadCalendario = async function(user) {
-        try {
-            const userTrim = user.trim();
-            const userUpper = userTrim.toUpperCase();
-            const [userDocSnap, calGlobalSnap] = await Promise.all([
-                getDoc(doc(dbCloud, "usuarios", userUpper)),
-                getDoc(doc(dbCloud, "config", "calendarioGlobal"))
-            ]);
-            let cal = userDocSnap.exists() ? (userDocSnap.data().calendario || {}) : {};
-            if (calGlobalSnap.exists()) {
-                const globalData = calGlobalSnap.data();
-                const extraido = globalData.calendario || globalData;
-                if (extraido && Object.keys(extraido).length > 0) cal = extraido;
-            }
-            return cal;
-        } catch (e) {
-            console.error("Erro ao carregar calendário:", e);
-        }
-        return {};
-    };
-
-    window.cloudLoadRelatorios = async function(user) {
-        try {
-            const userTrim = user.trim();
-            const userUpper = userTrim.toUpperCase();
-            const docSnap = await getDoc(doc(dbCloud, "usuarios", userUpper));
-            if (docSnap.exists()) {
-                return docSnap.data().relatorios || {};
-            }
-        } catch (e) {
-            console.error("Erro ao carregar relatórios:", e);
-        }
-        return {};
-    };
-
     window.cloudLoadAll = async function(user) {
         try {
             const userTrim = user.trim();
@@ -1082,7 +1027,18 @@
         }
     }
 
-    async function switchMobileTab(tabId, btnElement) {
+    function switchMobileTab(tabId, btnElement) {
+        const abaAntigaAtiva = document.querySelector('.mobile-tab-content.active-tab');
+        
+        // Limpar pesquisa ao sair da aba de relatórios
+        if (abaAntigaAtiva && abaAntigaAtiva.id === 'tabRelatorio' && tabId !== 'tabRelatorio') {
+            const inputBuscaMedidor = document.getElementById('searchMedidorRelatorio');
+            if (inputBuscaMedidor) {
+                inputBuscaMedidor.value = '';
+                renderizarTabelaRelatorioAtual();
+            }
+        }
+
         document.querySelectorAll('.mobile-tab-content').forEach(el => el.classList.remove('active-tab'));
         const target = document.getElementById(tabId);
         if(target) target.classList.add('active-tab');
@@ -1092,20 +1048,11 @@
         
         if (currentUser) {
             if (tabId === 'tabDashboard' || tabId === 'tabTabela') {
-                if (db.length === 0) {
-                    db = await window.cloudLoadLeve(currentUser);
-                }
                 atualizarTabela();
             } else if (tabId === 'tabCal') {
-                if (Object.keys(calendarioDb).length === 0) {
-                    calendarioDb = await window.cloudLoadCalendario(currentUser);
-                }
                 renderizarCalendario();
                 verificarSabadosAlertas();
             } else if (tabId === 'tabRelatorio') {
-                if (Object.keys(relatorioRazoesDb).length === 0) {
-                    relatorioRazoesDb = await window.cloudLoadRelatorios(currentUser);
-                }
                 popularSelectRazoesRelatorio();
                 renderizarTabelaRelatorioAtual();
             } else if (tabId === 'tabAdmin' && currentIsAdmin) {
@@ -1321,6 +1268,12 @@
                 let medidorEncontrado = "";
                 let ocEncontrada = "";
                 let leitEncontrada = "";
+                let tipoRgZ3 = "";
+
+                // Identifica se há marcações específicas como RG 03 ou Z3 na linha
+                let linhaUpper = linhaLimpa.toUpperCase();
+                if (linhaUpper.includes("RG 03") || linhaUpper.includes("RG03")) tipoRgZ3 = "RG 03";
+                else if (linhaUpper.includes("Z3")) tipoRgZ3 = "LEITURA Z3";
 
                 if (idxMedidor !== -1 && tokens.length > idxMedidor) {
                     medidorEncontrado = tokens[idxMedidor].replace(/["']/g, '').trim();
@@ -1356,7 +1309,8 @@
                     listaMedidores.push({
                         medidor: medidorEncontrado.toUpperCase(),
                         oc: ocEncontrada || "N/A",
-                        leit: Number(leitEncontrada) || 0
+                        leit: Number(leitEncontrada) || 0,
+                        tipoRgZ3: tipoRgZ3
                     });
                 }
             }
@@ -1409,7 +1363,6 @@
             return;
         }
 
-        // Se o usuário buscou por um medidor específico, agrupamos todas as leituras/correções do mesmo medidor em UM ÚNICO CARD
         if (termoBusca) {
             const medidoresEncontrados = (dadosMesAtual.medidores || []).filter(item => 
                 item.medidor.includes(termoBusca)
@@ -1423,7 +1376,6 @@
                 return;
             }
 
-            // Agrupando por número do medidor exato
             let agrupadoPorMedidor = {};
             medidoresEncontrados.forEach(item => {
                 if (!agrupadoPorMedidor[item.medidor]) {
@@ -1438,11 +1390,15 @@
                 const itensHtml = registrosDoMedidor.map(reg => {
                     const infoNL = notasDeLeitura.find(n => n.numero === reg.oc) || { status: 'Ocorrência', detalhe: reg.oc };
                     const isComLeitura = infoNL.status.toLowerCase().includes('com');
+                    const tagRgZ3 = reg.tipoRgZ3 ? `<span style="background: rgba(156, 39, 176, 0.2); color: #ce93d8; border: 1px solid var(--purple); padding: 1px 5px; border-radius: 4px; font-size: 9px; font-weight: 900; margin-left: 6px;">${reg.tipoRgZ3}</span>` : '';
 
                     return `
                         <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border); border-radius: 8px; padding: 8px; margin-top: 4px;">
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
-                                <span style="font-weight: 900; color: var(--warning); font-size: 11px;">OC / NL: ${reg.oc}</span>
+                                <div style="display: flex; align-items: center;">
+                                    <span style="font-weight: 900; color: var(--warning); font-size: 11px;">OC / NL: ${reg.oc}</span>
+                                    ${tagRgZ3}
+                                </div>
                                 <span style="font-weight: 900; color: var(--success); font-size: 11px;">Leitura: ${reg.leit.toLocaleString()}</span>
                             </div>
                             <div style="font-size: 10px; color: var(--text-h); font-weight: 600; margin-bottom: 3px;">
@@ -1471,7 +1427,6 @@
             return;
         }
 
-        // Exibição padrão por Cards de Ocorrências (Resumo do Mês)
         const resumoOC = dadosMesAtual.resumoOC || {};
         const chavesOC = Object.keys(resumoOC);
         chavesOC.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
@@ -1709,18 +1664,20 @@
         document.getElementById('currentMonthDisplay').innerText = nomeMes; 
         document.getElementById('printSubHeader').innerText = `Utilizador: ${currentUser}  |  Período: ${nomeMes}/2026`;
         
-        const [dadosLeves, calCarregado] = await Promise.all([
-            window.cloudLoadLeve(currentUser),
-            window.cloudLoadCalendario(currentUser)
-        ]);
-
-        db = dadosLeves;
-        calendarioDb = calCarregado;
+        const cloudData = await window.cloudLoadAll(currentUser);
+        if (cloudData) {
+            db = cloudData.dados || [];
+            calendarioDb = cloudData.calendario || {};
+            relatorioRazoesDb = cloudData.relatorios || {};
+        }
 
         renderMonths(); 
         renderizarNL();
         switchMobileTab('tabDashboard', document.getElementById('btnTabDashboard'));
         atualizarTabela(); 
+        renderizarCalendario();
+        popularSelectRazoesRelatorio();
+        renderizarTabelaRelatorioAtual();
         verificarSabadosAlertas();
         if(currentIsAdmin) carregarListaUtilizadoresPendentes();
     }
