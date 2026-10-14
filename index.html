@@ -1255,7 +1255,7 @@
             mapValidosNL[String(item.numero).trim()] = true;
         });
 
-        // Mapeia estrictamente o último estado do medidor ao longo da sequência do arquivo
+        // Mapeia restritamente o último estado do medidor ao longo da sequência do arquivo
         let mapUltimoPorMedidor = {};
 
         linhas.forEach(linha => {
@@ -1319,7 +1319,7 @@
                     let medKey = medidorEncontrado.toUpperCase();
                     let regAnt = mapUltimoPorMedidor[medKey];
 
-                    // Atualiza o dicionário mantendo sempre o último estado da sequência por medidor
+                    // Mantém SEMPRE o último estado da sequência do arquivo para o medidor
                     mapUltimoPorMedidor[medKey] = {
                         medidor: medKey,
                         oc: ocEncontrada || (regAnt ? regAnt.oc : "N/A"),
@@ -1330,7 +1330,6 @@
             }
         });
 
-        // Converte o dicionário em lista única consolidada (excluindo duplicados na exibição inicial e na pesquisa)
         let listaMedidores = Object.values(mapUltimoPorMedidor);
 
         // Recalcula o resumo de Ocorrências (OC/NL) usando apenas o último estado de cada medidor
@@ -1389,8 +1388,7 @@
             return;
         }
 
-        // Se o usuário digitou algo na busca de medidores OU se quisermos exibir a lista completa de medidores após a importação:
-        // Nota: se preferir que ao abrir a aba mostre as Ocorrências (OC/NL) e só mostre os medidores ao pesquisar, mantemos o comportamento abaixo.
+        // Se houver termo de busca, filtra no array de medidores consolidados (que já contém apenas o último estado único de cada medidor)
         if (termoBusca) {
             const medidoresLista = dadosRegistro.medidores || [];
             const encontrados = medidoresLista.filter(item => item.medidor.includes(termoBusca));
@@ -1403,7 +1401,7 @@
                 return;
             }
 
-            // Exibição em card único do último estado do medidor encontrado
+            // Exibe estritamente em um card único por medidor
             corpo.innerHTML = encontrados.map(reg => {
                 const infoNL = notasDeLeitura.find(n => n.numero === reg.oc) || { status: 'Ocorrência', detalhe: reg.oc };
                 const isComLeitura = infoNL.status.toLowerCase().includes('com');
