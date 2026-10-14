@@ -387,6 +387,17 @@
             padding: 8px 12px; border-radius: 9px; cursor: pointer; font-weight: 800; font-size: 11px; text-transform: uppercase;
         }
 
+        /* Oculta o botão de atualizar no mobile, exibe apenas em desktop */
+        .desktop-sync-btn {
+            display: none;
+        }
+
+        @media (min-width: 768px) {
+            .desktop-sync-btn {
+                display: inline-block;
+            }
+        }
+
         .mobile-nav-tabs {
             display: flex; width: 100%; background: var(--surface); border: 1px solid var(--border);
             border-radius: 10px; z-index: 9; justify-content: space-between; padding: 4px;
@@ -514,7 +525,7 @@
             <div id="monthGrid" class="month-grid"></div> 
             
             <button class="header-btn" onclick="window.print()">IMPRIMIR</button> 
-            <button class="header-btn" onclick="atualizarDadosManualmente(this)" title="Atualizar dados da nuvem" style="background: var(--success); color: black;">🔄</button>
+            <button class="header-btn desktop-sync-btn" onclick="atualizarDadosManualmente(this)" title="Atualizar dados da nuvem" style="background: var(--success); color: black;">🔄</button>
         </div> 
     </header> 
 
@@ -781,6 +792,7 @@
         setDoc(docRef, { relatorios: relatorios || {} }, { merge: true }).catch(e => console.error("Erro ao salvar relatórios:", e));
     };
 
+    // Sincronização ultrarrápida paralela ao carregar tudo
     window.cloudLoadAll = async function(user) {
         try {
             const userTrim = user.trim();
@@ -1030,7 +1042,6 @@
     function switchMobileTab(tabId, btnElement) {
         const abaAntigaAtiva = document.querySelector('.mobile-tab-content.active-tab');
         
-        // Limpar pesquisa ao sair da aba de relatórios
         if (abaAntigaAtiva && abaAntigaAtiva.id === 'tabRelatorio' && tabId !== 'tabRelatorio') {
             const inputBuscaMedidor = document.getElementById('searchMedidorRelatorio');
             if (inputBuscaMedidor) {
@@ -1252,12 +1263,12 @@
             let linhaLimpa = linha.trim();
             if (!linhaLimpa) return;
 
-            if (linhaLimpa.includes("MEDIDOR") || linhaLimpa.includes("OC") || linhaLimpa.includes("LEIT.")) {
+            if (linhaLimpa.includes("MEDIDOR") || linhaLimpa.includes("OC") || linhaLimpa.includes("LEIT.") || linhaLimpa.includes("RG")) {
                 let cabecalhos = linhaLimpa.split(/\s+/);
                 for (let i = 0; i < cabecalhos.length; i++) {
                     let h = cabecalhos[i].toUpperCase();
                     if (h.includes("MEDIDOR")) idxMedidor = i;
-                    if (h === "OC") idxOC = i;
+                    if (h === "OC" || h === "NL") idxOC = i;
                     if (h.includes("LEIT")) idxLeit = i;
                 }
                 return;
@@ -1270,10 +1281,14 @@
                 let leitEncontrada = "";
                 let tipoRgZ3 = "";
 
-                // Identifica se há marcações específicas como RG 03 ou Z3 na linha
                 let linhaUpper = linhaLimpa.toUpperCase();
-                if (linhaUpper.includes("RG 03") || linhaUpper.includes("RG03")) tipoRgZ3 = "RG 03";
-                else if (linhaUpper.includes("Z3")) tipoRgZ3 = "LEITURA Z3";
+                
+                let matchesRg = linhaUpper.match(/RG\s*\d+|RG\s*[A-Z0-9]+|Z3/g);
+                if (matchesRg) {
+                    tipoRgZ3 = matchesRg.join(" / ");
+                } else if (linhaUpper.includes("Z3")) {
+                    tipoRgZ3 = "Z3";
+                }
 
                 if (idxMedidor !== -1 && tokens.length > idxMedidor) {
                     medidorEncontrado = tokens[idxMedidor].replace(/["']/g, '').trim();
@@ -1390,18 +1405,19 @@
                 const itensHtml = registrosDoMedidor.map(reg => {
                     const infoNL = notasDeLeitura.find(n => n.numero === reg.oc) || { status: 'Ocorrência', detalhe: reg.oc };
                     const isComLeitura = infoNL.status.toLowerCase().includes('com');
-                    const tagRgZ3 = reg.tipoRgZ3 ? `<span style="background: rgba(156, 39, 176, 0.2); color: #ce93d8; border: 1px solid var(--purple); padding: 1px 5px; border-radius: 4px; font-size: 9px; font-weight: 900; margin-left: 6px;">${reg.tipoRgZ3}</span>` : '';
+                    
+                    const tagRgZ3 = reg.tipoRgZ3 ? `<span style="background: rgba(156, 39, 176, 0.25); color: #e1bee7; border: 1px solid var(--purple); padding: 2px 6px; border-radius: 6px; font-size: 9.5px; font-weight: 900; margin-left: 6px;">${reg.tipoRgZ3}</span>` : '';
 
                     return `
-                        <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border); border-radius: 8px; padding: 8px; margin-top: 4px;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
-                                <div style="display: flex; align-items: center;">
-                                    <span style="font-weight: 900; color: var(--warning); font-size: 11px;">OC / NL: ${reg.oc}</span>
+                        <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border); border-radius: 8px; padding: 8px; margin-top: 6px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; flex-wrap: wrap; gap: 4px;">
+                                <div style="display: flex; align-items: center; flex-wrap: wrap;">
+                                    <span style="font-weight: 900; color: var(--warning); font-size: 11px;">NL: ${reg.oc}</span>
                                     ${tagRgZ3}
                                 </div>
                                 <span style="font-weight: 900; color: var(--success); font-size: 11px;">Leitura: ${reg.leit.toLocaleString()}</span>
                             </div>
-                            <div style="font-size: 10px; color: var(--text-h); font-weight: 600; margin-bottom: 3px;">
+                            <div style="font-size: 10px; color: var(--text-h); font-weight: 600; margin-bottom: 4px;">
                                 ${infoNL.detalhe}
                             </div>
                             <span class="oc-status" style="background: ${isComLeitura ? 'rgba(0,255,136,0.1)' : 'rgba(255,204,0,0.1)'}; color: ${isComLeitura ? 'var(--success)' : 'var(--warning)'}; border: 1px solid ${isComLeitura ? 'var(--success)' : 'var(--warning)'};">
@@ -1418,7 +1434,7 @@
                             <span style="font-size: 9.5px; font-weight: bold; color: var(--text-p);">Razão: ${razaoSelecionada}</span>
                         </div>
                         <div style="font-size: 10px; font-weight: bold; color: var(--accent); margin-bottom: 2px;">
-                            Registros (${registrosDoMedidor.length}):
+                            Leituras / Registros (${registrosDoMedidor.length}):
                         </div>
                         ${itensHtml}
                     </div>
