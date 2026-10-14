@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"> 
     <title>Gestão de Produtividade de Leituras</title> 
 
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzMiAzMicgd2lkdGg9JzMyJyBoZWlnaHQ9JzMyJz48cmVjdCB3aWR0aD0nMzInIGhlaWdodD0nMzInIHJ4PSc2JyBmaWxsPScówYjBmMTUnPjwvcmVjdD48dGV4dCB4PSc1MCUnIHk9JzU1JScgZG9taW5hbnQtYmFzZWxpbmU9J21pZGRsZScgdGV4dC1hbmNob3I9J21pZGRsZScgZm9udC1mYW1pbHk9J3NhbnMtc2VyaWYnIGZvbnQtd2VpZ2h0PSc5MDAnIGZvbnQtd2VpZ2h0PScxMDAwJyBmb250LXNpemU9JzEwJyBmaWxsPScjMDBmODg4JyBsZXR0ZXItc3BhY2luZz0nMC41Jz5HUEw8L3RleHQ+PC9zdmc+">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzMiAzMicgd2lkdGg9JzMyJyBoZWlnaHQ9JzMyJz48cmVjdCB3aWR0aD0nMzInIGhlaWdodD0nMzInIHJ4PSc2JyBmaWxsPScjMGIwZjE1Jz48L3JlY3Q+PHRleHQgeD0nNTAlJyB5PSc1NSUnIGRvbWluYW50LWJhc2VsaW5lPSdtaWRkbGUnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJyBmb250LXdlaWdodD0nOTAwJyBmb250LXdlaWdodD0nMTAwMCcgZm9udC1zaXplPScxMCcgZmlsbD0nIzAwZmY4OCcgbGV0dGVyLXNwYWNpbmdzPScwLjUnPkdQTDwvdGV4dD48L3N2Zz4=">
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#030508">
 
@@ -666,7 +666,7 @@
             <div class="main-view" style="margin-top: 6px;">
                 <div id="relatorioCardsCorpo" class="cards-container">
                     <div style="grid-column: 1 / -1; text-align: center; color: var(--text-p); padding: 30px; font-weight: 700; font-size: 12px;">
-                        Carregue um arquivo TXT ou pesquise pelo número do medidor para visualizar o histórico.
+                        Selecione uma razão ou carregue um arquivo TXT.
                     </div>
                 </div>
             </div>
@@ -759,55 +759,44 @@
         }
     };
 
-    // Salvamento otimizado em segundo plano (fire-and-forget acelerado)
+    // FUNÇÕES DE PERSISTÊNCIA INDIVIDUALIZADA (SOB DEMANDA)
     window.cloudSaveRegistros = function(user, dataRegistros) {
         if (!user) return;
-        const userTrim = user.trim();
-        const userUpper = userTrim.toUpperCase();
-        const docRef = doc(dbCloud, "usuarios", userUpper);
-        setDoc(docRef, { dados: dataRegistros }, { merge: true }).catch(e => console.error("Erro ao salvar registros:", e));
+        const docRef = doc(dbCloud, "usuarios", user.toUpperCase());
+        setDoc(docRef, { dados: dataRegistros }, { merge: true }).catch(e => console.error("Erro registros:", e));
     };
 
     window.cloudSaveCalendario = function(user, calendario) {
         if (!user) return;
-        const userTrim = user.trim();
-        const userUpper = userTrim.toUpperCase();
+        const userUpper = user.toUpperCase();
         const docRef = doc(dbCloud, "usuarios", userUpper);
-        setDoc(docRef, { calendario: calendario }, { merge: true }).catch(e => console.error("Erro ao salvar calendário:", e));
+        setDoc(docRef, { calendario: calendario }, { merge: true }).catch(e => console.error("Erro calendário:", e));
 
         if (userUpper === "ADMIN") {
             setDoc(doc(dbCloud, "config", "calendarioGlobal"), { calendario: calendario }, { merge: true }).catch(() => {});
         }
     };
 
-    window.cloudSaveRelatorios = function(user, relatorios) {
+    // NOVO: Salva apenas a Razão e Mês específico do relatório de forma isolada!
+    window.cloudSaveRazaoRelatorio = function(user, razao, anoMes, dadosRazaoMes) {
         if (!user) return;
-        const userTrim = user.trim();
-        const userUpper = userTrim.toUpperCase();
-        const docRef = doc(dbCloud, "usuarios", userUpper);
-        setDoc(docRef, { relatorios: relatorios || {} }, { merge: true }).catch(e => console.error("Erro ao salvar relatórios:", e));
+        const docRef = doc(dbCloud, "usuarios", user.toUpperCase());
+        const fieldPath = `relatorios.${razao}.${anoMes}`;
+        setDoc(docRef, { [fieldPath]: dadosRazaoMes }, { merge: true }).catch(e => console.error("Erro ao salvar razão:", e));
     };
 
     window.cloudLoadLeve = async function(user) {
         try {
-            const userTrim = user.trim();
-            const userUpper = userTrim.toUpperCase();
-            const docSnap = await getDoc(doc(dbCloud, "usuarios", userUpper));
-            if (docSnap.exists()) {
-                return docSnap.data().dados || [];
-            }
-        } catch (e) {
-            console.error("Erro ao carregar dados:", e);
-        }
+            const docSnap = await getDoc(doc(dbCloud, "usuarios", user.toUpperCase()));
+            if (docSnap.exists()) return docSnap.data().dados || [];
+        } catch (e) { console.error("Erro ao carregar dados:", e); }
         return [];
     };
 
     window.cloudLoadCalendario = async function(user) {
         try {
-            const userTrim = user.trim();
-            const userUpper = userTrim.toUpperCase();
             const [userDocSnap, calGlobalSnap] = await Promise.all([
-                getDoc(doc(dbCloud, "usuarios", userUpper)),
+                getDoc(doc(dbCloud, "usuarios", user.toUpperCase())),
                 getDoc(doc(dbCloud, "config", "calendarioGlobal"))
             ]);
             let cal = userDocSnap.exists() ? (userDocSnap.data().calendario || {}) : {};
@@ -817,35 +806,27 @@
                 if (extraido && Object.keys(extraido).length > 0) cal = extraido;
             }
             return cal;
-        } catch (e) {
-            console.error("Erro ao carregar calendário:", e);
-        }
+        } catch (e) { console.error("Erro calendário:", e); }
         return {};
     };
 
-    window.cloudLoadRelatorios = async function(user) {
+    // NOVO: Carrega apenas os relatórios de uma razão específica sob demanda
+    window.cloudLoadRazaoRelatorio = async function(user, razao) {
         try {
-            const userTrim = user.trim();
-            const userUpper = userTrim.toUpperCase();
-            const docSnap = await getDoc(doc(dbCloud, "usuarios", userUpper));
+            const docSnap = await getDoc(doc(dbCloud, "usuarios", user.toUpperCase()));
             if (docSnap.exists()) {
-                return docSnap.data().relatorios || {};
+                const rels = docSnap.data().relatorios || {};
+                return rels[razao] || {};
             }
-        } catch (e) {
-            console.error("Erro ao carregar relatórios:", e);
-        }
+        } catch (e) { console.error("Erro relatório razão:", e); }
         return {};
     };
 
     window.cloudLoadAll = async function(user) {
         try {
-            const userTrim = user.trim();
-            const userUpper = userTrim.toUpperCase();
+            const userUpper = user.toUpperCase();
             const [userDocSnap, calGlobalSnap] = await Promise.all([
-                getDoc(doc(dbCloud, "usuarios", userUpper)).then(async (snap) => {
-                    if (!snap.exists()) return await getDoc(doc(dbCloud, "usuarios", userTrim));
-                    return snap;
-                }),
+                getDoc(doc(dbCloud, "usuarios", userUpper)),
                 getDoc(doc(dbCloud, "config", "calendarioGlobal"))
             ]);
             let userData = userDocSnap.exists() ? userDocSnap.data() : {};
@@ -855,16 +836,13 @@
                 if (extraido && Object.keys(extraido).length > 0) userData.calendario = extraido;
             }
             return userData;
-        } catch (e) {
-            console.error("Erro ao carregar tudo:", e);
-        }
+        } catch (e) { console.error("Erro carregar tudo:", e); }
         return null;
     };
 
     window.cloudSaveNewUserAuth = async function(user, senha, dica) {
         try {
-            const userTrim = user.trim();
-            const userUpper = userTrim.toUpperCase();
+            const userUpper = user.toUpperCase();
             const docRef = doc(dbCloud, "usuarios", userUpper);
             const docSnap = await getDoc(docRef);
             if (docSnap.exists() && docSnap.data().senha) return false; 
@@ -883,10 +861,7 @@
                 ultimaAtualizacao: new Date()
             });
             return true;
-        } catch (e) {
-            console.error("Erro ao salvar credenciais:", e);
-            return false;
-        }
+        } catch (e) { console.error("Erro criar auth:", e); return false; }
     };
 
     window.cloudListAllUsers = async function() {
@@ -897,25 +872,15 @@
                 lista.push({ nome: docSnap.id, ...docSnap.data() });
             });
             return lista;
-        } catch (e) {
-            console.error("Erro ao listar utilizadores:", e);
-            return [];
-        }
+        } catch (e) { console.error("Erro listar utilizadores:", e); return []; }
     };
 
     window.cloudSetUserActive = async function(user, statusAtivo) {
         try {
-            const userTrim = user.trim();
-            const userUpper = userTrim.toUpperCase();
-            let docRef = doc(dbCloud, "usuarios", userUpper);
-            let docSnap = await getDoc(docRef);
-            if (!docSnap.exists()) docRef = doc(dbCloud, "usuarios", userTrim);
+            const docRef = doc(dbCloud, "usuarios", user.toUpperCase());
             await setDoc(docRef, { ativo: statusAtivo }, { merge: true });
             return true;
-        } catch (e) {
-            console.error("Erro ao atualizar status do utilizador:", e);
-            return false;
-        }
+        } catch (e) { console.error("Erro ativar utilizador:", e); return false; }
     };
 
     window.escutarNovosCadastrosAdmin = function(callbackNotificacao) {
@@ -933,7 +898,7 @@
 <script> 
     let db = []; 
     let calendarioDb = {}; 
-    let relatorioRazoesDb = {};
+    let relatorioRazoesDb = {}; // Cache local da razão atualmente aberta
     
     let currentUser = sessionStorage.getItem('gpl_user') || ""; 
     let currentIsAdmin = sessionStorage.getItem('gpl_is_admin') === 'true';
@@ -1083,6 +1048,7 @@
         }
     }
 
+    // CARREGAMENTO SOB DEMANDA POR ABA
     async function switchMobileTab(tabId, btnElement) {
         document.querySelectorAll('.mobile-tab-content').forEach(el => el.classList.remove('active-tab'));
         const target = document.getElementById(tabId);
@@ -1104,11 +1070,8 @@
                 renderizarCalendario();
                 verificarSabadosAlertas();
             } else if (tabId === 'tabRelatorio') {
-                if (Object.keys(relatorioRazoesDb).length === 0) {
-                    relatorioRazoesDb = await window.cloudLoadRelatorios(currentUser);
-                }
                 popularSelectRazoesRelatorio();
-                renderizarTabelaRelatorioAtual();
+                await carregarRazaoAtualRelatorio(); // Carrega apenas a razão selecionada do banco!
             } else if (tabId === 'tabAdmin' && currentIsAdmin) {
                 carregarListaUtilizadoresPendentes();
             }
@@ -1126,26 +1089,18 @@
         }
 
         try {
-            const cloudData = await window.cloudLoadAll(currentUser);
-            if (cloudData) {
-                db = cloudData.dados || [];
-                calendarioDb = cloudData.calendario || {};
-                relatorioRazoesDb = cloudData.relatorios || {};
+            db = await window.cloudLoadLeve(currentUser);
+            calendarioDb = await window.cloudLoadCalendario(currentUser);
+            await carregarRazaoAtualRelatorio();
 
-                atualizarTabela();
-                renderizarCalendario();
-                renderizarTabelaRelatorioAtual();
-                verificarSabadosAlertas();
-                if(currentIsAdmin) carregarListaUtilizadoresPendentes();
-                
-                return true;
-            } else {
-                alert("Nenhum dado encontrado na nuvem para este utilizador.");
-                return false;
-            }
+            atualizarTabela();
+            renderizarCalendario();
+            verificarSabadosAlertas();
+            if(currentIsAdmin) carregarListaUtilizadoresPendentes();
+            return true;
         } catch (error) {
             console.error("Erro ao atualizar:", error);
-            alert("Erro de conexão com a nuvem. Verifique a conexão.");
+            alert("Erro de conexão com a nuvem.");
             return false;
         } finally {
             if (btnElement) {
@@ -1266,12 +1221,25 @@
     function popularSelectRazoesRelatorio() {
         const sel = document.getElementById('selectRazaoRelatorio');
         if(!sel) return;
+        const selecionadoAtual = sel.value;
         sel.innerHTML = lista18Razoes.map(r => `<option value="${r}">${r}</option>`).join('');
+        if(selecionadoAtual) sel.value = selecionadoAtual;
     }
 
-    function mudarRazaoRelatorio() {
-        document.getElementById('searchMedidorRelatorio').value = '';
+    async function carregarRazaoAtualRelatorio() {
+        const sel = document.getElementById('selectRazaoRelatorio');
+        const razaoSelecionada = sel ? sel.value || lista18Razoes[0] : lista18Razoes[0];
+        
+        // Carrega do Firebase apenas os dados desta razão específica sob demanda!
+        const dadosRazaoNuvem = await window.cloudLoadRazaoRelatorio(currentUser, razaoSelecionada);
+        relatorioRazoesDb[razaoSelecionada] = dadosRazaoNuvem;
+        
         renderizarTabelaRelatorioAtual();
+    }
+
+    async function mudarRazaoRelatorio() {
+        document.getElementById('searchMedidorRelatorio').value = '';
+        await carregarRazaoAtualRelatorio(); // Busca da nuvem apenas os dados da razão recém-selecionada
     }
 
     function processarArquivoTxtSelecionado(input) {
@@ -1363,20 +1331,21 @@
             }
         });
 
-        if (!relatorioRazoesDb) relatorioRazoesDb = {};
-        if (!relatorioRazoesDb[razaoSelecionada]) relatorioRazoesDb[razaoSelecionada] = {};
-
-        relatorioRazoesDb[razaoSelecionada][anoMesRef] = {
+        const dadosRazaoMes = {
             resumoOC: contagemOC,
             medidores: listaMedidores
         };
 
-        if (currentUser && window.cloudSaveRelatorios) {
-            window.cloudSaveRelatorios(currentUser, relatorioRazoesDb);
+        if (!relatorioRazoesDb[razaoSelecionada]) relatorioRazoesDb[razaoSelecionada] = {};
+        relatorioRazoesDb[razaoSelecionada][anoMesRef] = dadosRazaoMes;
+
+        // Gravação individual na nuvem: atualiza APENAS esta razão e mês específico no Firestore!
+        if (currentUser && window.cloudSaveRazaoRelatorio) {
+            window.cloudSaveRazaoRelatorio(currentUser, razaoSelecionada, anoMesRef, dadosRazaoMes);
         }
 
         renderizarTabelaRelatorioAtual();
-        alert(`Arquivo da ${razaoSelecionada} para o período ${msNomesCompletos[viewDate.getMonth()]} importado e atualizado com sucesso!`);
+        alert(`Arquivo da ${razaoSelecionada} para o período ${msNomesCompletos[viewDate.getMonth()]} importado e salvo individualmente com sucesso!`);
     }
 
     function buscarMedidorNoRelatorio() {
@@ -1394,7 +1363,7 @@
         if (!dadosRazao || Object.keys(dadosRazao).length === 0) {
             corpo.innerHTML = `
                 <div style="grid-column: 1 / -1; text-align: center; color: var(--text-p); padding: 30px; font-weight: 700; font-size: 12px;">
-                    Nenhum arquivo TXT carregado para esta razão. Clique em "Importar TXT Mês Atual".
+                    Nenhum arquivo TXT carregado para esta razão (${razaoSelecionada}). Clique em "Importar".
                 </div>`;
             return;
         }
@@ -1416,7 +1385,7 @@
             if (mesesEncontrados.length === 0) {
                 corpo.innerHTML = `
                     <div style="grid-column: 1 / -1; text-align: center; color: var(--text-p); padding: 30px; font-weight: 700; font-size: 12px;">
-                        Nenhum medidor encontrado com o termo "${termoBusca}" em nenhum mês.
+                        Nenhum medidor encontrado com o termo "${termoBusca}" nesta razão.
                     </div>`;
                 return;
             }
@@ -1739,7 +1708,7 @@
         document.getElementById('currentMonthDisplay').innerText = nomeMes; 
         document.getElementById('printSubHeader').innerText = `Utilizador: ${currentUser}  |  Período: ${nomeMes}/2026`;
         
-        // Carrega dados e calendário em paralelo logo na entrada do sistema
+        // Conforme pedido: na entrada carrega os dados gerais e o calendário (para os alertas da Dash) em paralelo
         const [dadosLeves, calCarregado] = await Promise.all([
             window.cloudLoadLeve(currentUser),
             window.cloudLoadCalendario(currentUser)
@@ -1752,7 +1721,7 @@
         renderizarNL();
         switchMobileTab('tabDashboard', document.getElementById('btnTabDashboard'));
         atualizarTabela(); 
-        verificarSabadosAlertas(); // <-- Executa o alerta de sábados imediatamente ao entrar!
+        verificarSabadosAlertas(); // Exibe os alertas de sábados logo na entrada!
         if(currentIsAdmin) carregarListaUtilizadoresPendentes();
     }
 
@@ -1776,14 +1745,14 @@
         document.getElementById('monthGrid').classList.toggle('active'); 
     } 
      
-    function selectMonth(m) { 
+    async function selectMonth(m) { 
         viewDate.setMonth(m); 
         let nomeMes = msNomesCompletos[m];
         document.getElementById('currentMonthDisplay').innerText = nomeMes; 
         document.getElementById('printSubHeader').innerText = `Utilizador: ${currentUser}  |  Período: ${nomeMes}/2026`;
         document.getElementById('monthGrid').classList.remove('active'); 
         atualizarTabela();
-        renderizarTabelaRelatorioAtual(); 
+        await carregarRazaoAtualRelatorio(); // Recarrega os dados da razão para o novo mês selecionado
     } 
 
     window.addEventListener('click', (e) => {
@@ -1985,7 +1954,7 @@
                     atualizarTabela();
                     renderizarCalendario();
                     popularSelectRazoesRelatorio();
-                    renderizarTabelaRelatorioAtual();
+                    await carregarRazaoAtualRelatorio();
                     verificarSabadosAlertas();
                     
                     alert("Backup restaurado e sincronizado com a nuvem com sucesso! ✨");
