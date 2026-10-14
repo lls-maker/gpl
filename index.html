@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"> 
     <title>Gestão de Produtividade de Leituras</title> 
 
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzMiAzMicgd2lkdGg9JzMyJyBoZWlnaHQ9JzMyJz48cmVjdCB3aWR0aD0nMzInIGhlaWdodD0nMzInIHJ4PSc2JyBmaWxsPScówYjBmMTUnPjwvcmVjdD48dGV4dCB4PSc1MCUnIHk9JzU1JScgZG9taW5hbnQtYmFzZWxpbmU9J21pZGRsZScgdGV4dC1hbmNob3I9J21pZGRsZScgZm9udC1mYW1pbHk9J3NhbnMtc2VyaWYnIGZvbnQtd2VpZ2h0PSc5MDAnIGZvbnQtd2VpZ2h0PScxMDAwJyBmb250LXNpemU9JzEwJyBmaWxsPScjMDBmODg4JyBsZXR0ZXItc3BhY2luZz0nMC41Jz5HUEw8L3RleHQ+PC9zdmc+">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzMiAzMicgd2lkdGg9JzMyJyBoZWlnaHQ9JzMyJz48cmVjdCB3aWR0aD0nMzInIGhlaWdodD0nMzInIHJ4PSc2JyBmaWxsPScjMGIwZjE1Jz48L3JlY3Q+PHRleHQgeD0nNTAlJyB5PSc1NSUnIGRvbWluYW50LWJhc2VsaW5lPSdtaWRkbGUnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJyBmb250LXdlaWdodD0nOTAwJyBmb250LXdlaWdodD0nMTAwMCcgZm9udC1zaXplPScxMCcgZmlsbD0nIzAwZmY4OCcgbGV0dGVyLXNwYWNpbmdzPScwLjUnPkdQTDwvdGV4dD48L3N2Zz4=">
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#030508">
 
@@ -661,12 +661,12 @@
                 </div>
             </div>
             <div class="mobile-search-area" style="margin-top: 4px;">
-                <input type="text" id="searchMedidorRelatorio" placeholder="Pesquisar medidor, instalação ou unidade..." oninput="buscarMedidorNoRelatorio()" style="border-color: var(--success); margin-bottom: 0;">
+                <input type="text" id="searchMedidorRelatorio" placeholder="Pesquisar medidor, instalação ou texto (ex: PRE)..." oninput="buscarMedidorNoRelatorio()" style="border-color: var(--success); margin-bottom: 0;">
             </div>
             <div class="main-view" style="margin-top: 6px;">
                 <div id="relatorioCardsCorpo" class="cards-container">
                     <div style="grid-column: 1 / -1; text-align: center; color: var(--text-p); padding: 30px; font-weight: 700; font-size: 12px;">
-                        Carregue um arquivo TXT ou pesquise pelo número do medidor para visualizar o histórico.
+                        Carregue um arquivo TXT ou pesquise pelo termo desejado para visualizar os dados.
                     </div>
                 </div>
             </div>
@@ -759,7 +759,6 @@
         }
     };
 
-    // Salvamento otimizado em segundo plano (fire-and-forget acelerado)
     window.cloudSaveRegistros = function(user, dataRegistros) {
         if (!user) return;
         const userTrim = user.trim();
@@ -1376,7 +1375,7 @@
         }
 
         renderizarTabelaRelatorioAtual();
-        alert(`Arquivo da ${razaoSelecionada} para o período ${msNomesCompletos[viewDate.getMonth()]} importado e atualizado com sucesso!`);
+        alert(`Arquivo da ${razaoSelecionada} para o período ${msNomesCompletos[viewDate.getMonth()]} importado com sucesso!`);
     }
 
     function buscarMedidorNoRelatorio() {
@@ -1394,128 +1393,78 @@
         if (!dadosRazao || Object.keys(dadosRazao).length === 0) {
             corpo.innerHTML = `
                 <div style="grid-column: 1 / -1; text-align: center; color: var(--text-p); padding: 30px; font-weight: 700; font-size: 12px;">
-                    Nenhum arquivo TXT carregado para esta razão. Clique em "Importar TXT Mês Atual".
+                    Nenhum arquivo TXT carregado para esta razão. Clique em "Importar".
                 </div>`;
-            return;
-        }
-
-        if (termoBusca) {
-            let historicoMedidor = {};
-
-            for (const [anoMes, conteudoMes] of Object.entries(dadosRazao)) {
-                if (conteudoMes && Array.isArray(conteudoMes.medidores)) {
-                    const encontrado = conteudoMes.medidores.find(item => item.medidor.includes(termoBusca));
-                    if (encontrado) {
-                        historicoMedidor[anoMes] = encontrado;
-                    }
-                }
-            }
-
-            const mesesEncontrados = Object.keys(historicoMedidor).sort();
-
-            if (mesesEncontrados.length === 0) {
-                corpo.innerHTML = `
-                    <div style="grid-column: 1 / -1; text-align: center; color: var(--text-p); padding: 30px; font-weight: 700; font-size: 12px;">
-                        Nenhum medidor encontrado com o termo "${termoBusca}" em nenhum mês.
-                    </div>`;
-                return;
-            }
-
-            const ultimos12Meses = mesesEncontrados.slice(-12);
-            let somaConsumo12 = 0;
-            let qtdMesesComConsumo = 0;
-
-            let htmlHistoricoMeses = [];
-            let consumoMesAtual = "-";
-
-            for (let i = 0; i < ultimos12Meses.length; i++) {
-                const anoMes = ultimos12Meses[i];
-                const dados = historicoMedidor[anoMes];
-                const [ano, mes] = anoMes.split('-');
-                const nomeMesStr = msNomesCompletos[parseInt(mes, 10) - 1] || mes;
-                const infoNL = notasDeLeitura.find(n => n.numero === dados.oc) || { status: 'Ocorrência', detalhe: 'Nota de Leitura' };
-                const isComLeitura = infoNL.status.toLowerCase().includes('com');
-
-                let consumoMes = 0;
-                let leituraAtual = typeof dados.leit === 'number' ? dados.leit : Number(dados.leit) || 0;
-
-                if (i > 0) {
-                    const mesAnterior = ultimos12Meses[i - 1];
-                    const dadosAnterior = historicoMedidor[mesAnterior];
-                    let leituraAnterior = typeof dadosAnterior.leit === 'number' ? dadosAnterior.leit : Number(dadosAnterior.leit) || 0;
-                    
-                    consumoMes = leituraAtual - leituraAnterior;
-                    if (consumoMes < 0) consumoMes = 0;
-                } else {
-                    consumoMes = "-";
-                }
-
-                if (i === ultimos12Meses.length - 1) {
-                    consumoMesAtual = consumoMes;
-                }
-
-                if (typeof consumoMes === 'number') {
-                    somaConsumo12 += consumoMes;
-                    qtdMesesComConsumo++;
-                }
-
-                htmlHistoricoMeses.push(`
-                    <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; margin-bottom: 4px; font-size: 11px;">
-                        <div style="display: flex; justify-content: space-between; font-weight: bold; color: var(--text-h);">
-                            <span>📅 ${nomeMesStr}/${ano}</span>
-                            <span style="color: var(--success);">Consumo: ${typeof consumoMes === 'number' ? consumoMes.toLocaleString() : consumoMes}</span>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; margin-top: 2px; font-size: 10px; color: var(--text-p);">
-                            <span>Leitura: ${leituraAtual.toLocaleString()}</span>
-                            <span style="color: ${isComLeitura ? 'var(--success)' : 'var(--warning)'};">${infoNL.status} (NL ${dados.oc})</span>
-                        </div>
-                    </div>
-                `);
-            }
-
-            const mediaConsumo12 = qtdMesesComConsumo > 0 ? (somaConsumo12 / qtdMesesComConsumo).toFixed(1) : 0;
-            const ultimoMesChave = mesesEncontrados[mesesEncontrados.length - 1];
-            const ultimoItem = historicoMedidor[ultimoMesChave];
-            const leituraMaisRecente = typeof ultimoItem.leit === 'number' ? ultimoItem.leit : Number(ultimoItem.leit) || 0;
-
-            corpo.innerHTML = `
-                <div class="medidor-card" style="max-width: 100%;">
-                    <div class="oc-card-header" style="align-items: flex-start;">
-                        <div>
-                            <span class="oc-code" style="font-size: 0.95rem; color: var(--success); display: block;">Medidor: ${termoBusca}</span>
-                            <span style="font-size: 10px; font-weight: bold; color: var(--text-p);">Razão: ${razaoSelecionada} | Última NL: <span style="color: var(--warning);">${ultimoItem.oc}</span></span>
-                        </div>
-                        <div style="display: flex; gap: 4px; flex-direction: column; align-items: flex-end;">
-                            <span class="oc-count" style="font-size: 0.75rem; background: rgba(0, 255, 136, 0.15); color: var(--success); border-color: var(--success);">Leitura: ${leituraMaisRecente.toLocaleString()}</span>
-                            <span class="oc-count" style="font-size: 0.75rem; background: rgba(255, 204, 0, 0.15); color: var(--warning); border-color: var(--warning);">Consumo: ${typeof consumoMesAtual === 'number' ? consumoMesAtual.toLocaleString() : consumoMesAtual}</span>
-                            <span class="oc-count" style="font-size: 0.75rem; background: rgba(0, 112, 243, 0.2); color: var(--accent); border-color: var(--accent);">Média Consumo: ${mediaConsumo12}</span>
-                        </div>
-                    </div>
-                    <div style="max-height: 220px; overflow-y: auto; padding-right: 2px; margin-top: 4px;">
-                        <div style="font-size: 10px; font-weight: 900; color: var(--accent); text-transform: uppercase; margin-bottom: 4px;">Histórico de Consumo (Meses Anteriores):</div>
-                        ${htmlHistoricoMeses.reverse().join('')}
-                    </div>
-                </div>
-            `;
             return;
         }
 
         const anoMesRef = "2026-" + String(viewDate.getMonth() + 1).padStart(2, '0');
-        const dadosMesAtual = dadosRazao[anoMesRef] ? dadosRazao[anoMesRef].resumoOC : null;
+        const dadosMesAtual = dadosRazao[anoMesRef] ? dadosRazao[anoMesRef] : null;
 
-        if (!dadosMesAtual || Object.keys(dadosMesAtual).length === 0) {
+        if (!dadosMesAtual || (!dadosMesAtual.resumoOC && !dadosMesAtual.medidores)) {
             corpo.innerHTML = `
                 <div style="grid-column: 1 / -1; text-align: center; color: var(--text-p); padding: 30px; font-weight: 700; font-size: 12px;">
-                    Nenhum arquivo TXT importado para ${msNomesCompletos[viewDate.getMonth()]} nesta razão.
+                    Nenhum dado importado para ${msNomesCompletos[viewDate.getMonth()]} nesta razão.
                 </div>`;
             return;
         }
 
-        const chavesOC = Object.keys(dadosMesAtual);
+        // Se o usuário digitou algum termo de busca (número ou texto/letras)
+        if (termoBusca) {
+            const medidoresEncontrados = (dadosMesAtual.medidores || []).filter(item => 
+                item.medidor.includes(termoBusca) || item.oc.includes(termoBusca)
+            );
+
+            if (medidoresEncontrados.length === 0) {
+                corpo.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; color: var(--text-p); padding: 30px; font-weight: 700; font-size: 12px;">
+                        Nenhum registro encontrado com o termo "${termoBusca}" neste mês.
+                    </div>`;
+                return;
+            }
+
+            corpo.innerHTML = medidoresEncontrados.map(item => {
+                const infoNL = notasDeLeitura.find(n => n.numero === item.oc) || { status: 'Ocorrência', detalhe: item.oc };
+                const isComLeitura = infoNL.status.toLowerCase().includes('com');
+
+                return `
+                    <div class="medidor-card" style="max-width: 100%;">
+                        <div class="oc-card-header" style="align-items: flex-start;">
+                            <div>
+                                <span class="oc-code" style="font-size: 0.95rem; color: var(--success); display: block;">Medidor: ${item.medidor}</span>
+                                <span style="font-size: 10px; font-weight: bold; color: var(--text-p);">Razão: ${razaoSelecionada} | NL: <span style="color: var(--warning);">${item.oc}</span></span>
+                            </div>
+                            <span class="oc-count" style="font-size: 0.75rem; background: rgba(0, 255, 136, 0.15); color: var(--success); border-color: var(--success);">Leitura: ${item.leit.toLocaleString()}</span>
+                        </div>
+                        <div style="margin-top: 4px; font-size: 11px; color: var(--text-h); font-weight: 600;">
+                            ${infoNL.detalhe}
+                        </div>
+                        <div>
+                            <span class="oc-status" style="margin-top: 4px; background: ${isComLeitura ? 'rgba(0,255,136,0.1)' : 'rgba(255,204,0,0.1)'}; color: ${isComLeitura ? 'var(--success)' : 'var(--warning)'}; border: 1px solid ${isComLeitura ? 'var(--success)' : 'var(--warning)'};">
+                                ${infoNL.status}
+                            </span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            return;
+        }
+
+        // Exibição padrão por Cards de Ocorrências (Resumo do Mês)
+        const resumoOC = dadosMesAtual.resumoOC || {};
+        const chavesOC = Object.keys(resumoOC);
         chavesOC.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
 
+        if (chavesOC.length === 0) {
+            corpo.innerHTML = `
+                <div style="grid-column: 1 / -1; text-align: center; color: var(--text-p); padding: 30px; font-weight: 700; font-size: 12px;">
+                    Nenhuma ocorrência registrada neste mês.
+                </div>`;
+            return;
+        }
+
         corpo.innerHTML = chavesOC.map(oc => {
-            const qtd = dadosMesAtual[oc];
+            const qtd = resumoOC[oc];
             const infoNL = notasDeLeitura.find(item => item.numero === oc) || { status: 'Desconhecido', detalhe: 'Nota de Leitura mapeada' };
             const isComLeitura = infoNL.status.toLowerCase().includes('com');
 
@@ -1739,7 +1688,6 @@
         document.getElementById('currentMonthDisplay').innerText = nomeMes; 
         document.getElementById('printSubHeader').innerText = `Utilizador: ${currentUser}  |  Período: ${nomeMes}/2026`;
         
-        // Carrega dados e calendário em paralelo logo na entrada do sistema
         const [dadosLeves, calCarregado] = await Promise.all([
             window.cloudLoadLeve(currentUser),
             window.cloudLoadCalendario(currentUser)
@@ -1752,7 +1700,7 @@
         renderizarNL();
         switchMobileTab('tabDashboard', document.getElementById('btnTabDashboard'));
         atualizarTabela(); 
-        verificarSabadosAlertas(); // <-- Executa o alerta de sábados imediatamente ao entrar!
+        verificarSabadosAlertas();
         if(currentIsAdmin) carregarListaUtilizadoresPendentes();
     }
 
