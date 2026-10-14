@@ -1117,7 +1117,7 @@
     async function sairDaConta() {
         if (!confirm("Deseja realmente fechar a sessão / sair da conta?")) return;
 
-        // Aguarda terminantemente o salvamento antes de limpar e sair
+        // Mostra indicador visual ou aguarda com segurança o salvamento final na nuvem
         if (currentUser && window.cloudSave) {
             try {
                 await window.cloudSave(currentUser, db, calendarioDb, relatorioRazoesDb);
@@ -1948,6 +1948,9 @@
         dl.click(); 
         dl.remove();
         setTimeout(() => URL.revokeObjectURL(url), 1000);
+
+        // Mensagem de sucesso solicitada
+        alert("💾 Backup salvo com sucesso no seu dispositivo!");
     }
 
     function dispararImportacao() { 
@@ -2038,5 +2041,4 @@
         }
     };
 </script> 
-</body> 
-</html>
+</body> </html>
