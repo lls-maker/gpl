@@ -767,39 +767,46 @@
         }
     };
 
-    window.cloudSave = async function(user, data, calendario, relatorios) {
+    // SALVAMENTO APENAS DOS REGISTROS (MUITO MAIS RÁPIDO)
+    window.cloudSaveRegistros = async function(user, dataRegistros) {
         if (!user) return;
         try {
             const userTrim = user.trim();
             const userUpper = userTrim.toUpperCase();
-            let docRef = doc(dbCloud, "usuarios", userUpper);
-            let docSnap = await getDoc(docRef);
-            if (!docSnap.exists()) {
-                docRef = doc(dbCloud, "usuarios", userTrim);
-                docSnap = await getDoc(docRef);
-            }
+            const docRef = doc(dbCloud, "usuarios", userUpper);
+            await setDoc(docRef, { dados: dataRegistros }, { merge: true });
+        } catch (e) {
+            console.error("Erro ao salvar registros:", e);
+        }
+    };
 
-            let senhaAtual = docSnap.exists() ? docSnap.data().senha : "";
-            let dicaAtual = docSnap.exists() ? docSnap.data().dica : "";
-            let isAdminAtual = docSnap.exists() ? !!docSnap.data().isAdmin : false;
-            let ativoAtual = docSnap.exists() ? (docSnap.data().ativo !== undefined ? docSnap.data().ativo : true) : true;
-
-            await setDoc(docRef, {
-                senha: senhaAtual,
-                dica: dicaAtual,
-                isAdmin: isAdminAtual,
-                ativo: ativoAtual,
-                dados: data,
-                calendario: calendario,
-                relatorios: relatorios || {},
-                ultimaAtualizacao: new Date()
-            }, { merge: true });
+    // SALVAMENTO APENAS DO CALENDÁRIO
+    window.cloudSaveCalendario = async function(user, calendario) {
+        if (!user) return;
+        try {
+            const userTrim = user.trim();
+            const userUpper = userTrim.toUpperCase();
+            const docRef = doc(dbCloud, "usuarios", userUpper);
+            await setDoc(docRef, { calendario: calendario }, { merge: true });
 
             if (userUpper === "ADMIN") {
                 await setDoc(doc(dbCloud, "config", "calendarioGlobal"), { calendario: calendario }, { merge: true });
             }
         } catch (e) {
-            console.error("Erro ao salvar na nuvem:", e);
+            console.error("Erro ao salvar calendário:", e);
+        }
+    };
+
+    // SALVAMENTO APENAS DOS RELATÓRIOS TXT
+    window.cloudSaveRelatorios = async function(user, relatorios) {
+        if (!user) return;
+        try {
+            const userTrim = user.trim();
+            const userUpper = userTrim.toUpperCase();
+            const docRef = doc(dbCloud, "usuarios", userUpper);
+            await setDoc(docRef, { relatorios: relatorios || {} }, { merge: true });
+        } catch (e) {
+            console.error("Erro ao salvar relatórios:", e);
         }
     };
 
@@ -1042,15 +1049,15 @@
     const msNomesCompletos = ["JANEIRO", "FEVEREIRO", "MARÇO", "ABRIL", "MAIO", "JUNHO", "JULHO", "AGOSTO", "SETEMBRO", "OUTUBRO", "NOVEMBRO", "DEZEMBRO"]; 
     const fM = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); 
 
-    function dispararSalvamentoAutomatico() {
-        if (currentUser && window.cloudSave) {
-            window.cloudSave(currentUser, db, calendarioDb, relatorioRazoesDb);
+    function dispararSalvamentoRegistros() {
+        if (currentUser && window.cloudSaveRegistros) {
+            window.cloudSaveRegistros(currentUser, db);
         }
     }
 
     window.addEventListener('beforeunload', () => {
-        if (currentUser && window.cloudSave) {
-            window.cloudSave(currentUser, db, calendarioDb, relatorioRazoesDb);
+        if (currentUser && window.cloudSaveRegistros) {
+            window.cloudSaveRegistros(currentUser, db);
         }
     });
 
@@ -1335,7 +1342,9 @@
             medidores: listaMedidores
         };
 
-        dispararSalvamentoAutomatico();
+        if (currentUser && window.cloudSaveRelatorios) {
+            window.cloudSaveRelatorios(currentUser, relatorioRazoesDb);
+        }
 
         renderizarTabelaRelatorioAtual();
         alert(`Arquivo da ${razaoSelecionada} para o período ${msNomesCompletos[viewDate.getMonth()]} importado e atualizado com sucesso!`);
@@ -1535,7 +1544,9 @@
     async function salvarDataCalendario(razao, data) {
         if (!currentIsAdmin) return;
         calendarioDb[razao] = data;
-        dispararSalvamentoAutomatico();
+        if (currentUser && window.cloudSaveCalendario) {
+            window.cloudSaveCalendario(currentUser, calendarioDb);
+        }
         verificarSabadosAlertas();
     }
 
@@ -1839,7 +1850,7 @@
             alert("Registro salvo na nuvem com sucesso!");
         }
 
-        dispararSalvamentoAutomatico();
+        dispararSalvamentoRegistros();
 
         limparFormulario();
         atualizarTabela(); 
@@ -1876,7 +1887,7 @@
         if(confirm("Deseja limpar todos os registros deste mês?")) { 
             const mesF = "2026-" + String(viewDate.getMonth() + 1).padStart(2, '0'); 
             db = db.filter(i => !i.data.startsWith(mesF)); 
-            dispararSalvamentoAutomatico();
+            dispararSalvamentoRegistros();
             atualizarTabela(); 
         } 
     } 
@@ -1885,7 +1896,7 @@
         if(confirm("ATENÇÃO: Você está prestes a apagar TODOS os registros de 2026!")) { 
             if(confirm("Tem certeza absoluta?")) { 
                 db = []; 
-                dispararSalvamentoAutomatico();
+                dispararSalvamentoRegistros();
                 atualizarTabela(); 
                 alert("Dados de 2026 removidos da nuvem."); 
             } 
@@ -1947,8 +1958,8 @@
                         return alert("Arquivo de backup inválido.");
                     }
 
-                    if (currentUser && window.cloudSave) {
-                        await window.cloudSave(currentUser, db, calendarioDb, relatorioRazoesDb);
+                    if (currentUser && window.cloudSaveRegistros) {
+                        await window.cloudSaveRegistros(currentUser, db);
                     }
                     
                     atualizarTabela();
