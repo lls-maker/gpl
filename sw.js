@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gpl-2026-v14';
+const CACHE_NAME = 'gpl-2026-v15';
 
 // Arquivos locais essenciais da aplicação para funcionamento offline
 const ASSETS = [
