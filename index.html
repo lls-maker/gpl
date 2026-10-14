@@ -287,20 +287,18 @@
         th, td { padding: 6px 3px; text-align: center; border-bottom: 1px solid var(--border); font-size: 10.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } 
         th { background: #0d1117; color: var(--accent); font-size: 9px; text-transform: uppercase; position: sticky; top: 0; z-index: 5; } 
 
-        /* Larguras das colunas otimizadas para Registros */
-        #tabTabela th:nth-child(1), #tabTabela td:nth-child(1) { width: 12%; } /* Data */
-        #tabTabela th:nth-child(2), #tabTabela td:nth-child(2) { width: 15%; } /* Local */
-        #tabTabela th:nth-child(3), #tabTabela td:nth-child(3) { width: 14%; } /* Razão */
-        #tabTabela th:nth-child(4), #tabTabela td:nth-child(4) { width: 22%; } /* Rotas */
-        #tabTabela th:nth-child(5), #tabTabela td:nth-child(5) { width: 13%; } /* Leituras */
-        #tabTabela th:nth-child(6), #tabTabela td:nth-child(6) { width: 9% !important; } /* Imp. */
-        #tabTabela th:nth-child(7), #tabTabela td:nth-child(7) { width: 9%; } /* % */
-        #tabTabela th:nth-child(8), #tabTabela td:nth-child(8) { width: 6%; } /* Ação */
+        #tabTabela th:nth-child(1), #tabTabela td:nth-child(1) { width: 12%; } 
+        #tabTabela th:nth-child(2), #tabTabela td:nth-child(2) { width: 15%; } 
+        #tabTabela th:nth-child(3), #tabTabela td:nth-child(3) { width: 14%; } 
+        #tabTabela th:nth-child(4), #tabTabela td:nth-child(4) { width: 22%; } 
+        #tabTabela th:nth-child(5), #tabTabela td:nth-child(5) { width: 13%; } 
+        #tabTabela th:nth-child(6), #tabTabela td:nth-child(6) { width: 9% !important; } 
+        #tabTabela th:nth-child(7), #tabTabela td:nth-child(7) { width: 9%; } 
+        #tabTabela th:nth-child(8), #tabTabela td:nth-child(8) { width: 6%; } 
 
-        /* Larguras otimizadas para NL (Aproximando Status do Número) */
-        #tabNL th:nth-child(1), #tabNL td:nth-child(1) { width: 15%; text-align: center; } /* Número */
-        #tabNL th:nth-child(2), #tabNL td:nth-child(2) { width: 20%; text-align: center; } /* Status */
-        #tabNL th:nth-child(3), #tabNL td:nth-child(3) { width: 65%; text-align: left; padding-left: 8px; } /* Descrição */
+        #tabNL th:nth-child(1), #tabNL td:nth-child(1) { width: 15%; text-align: center; } 
+        #tabNL th:nth-child(2), #tabNL td:nth-child(2) { width: 20%; text-align: center; } 
+        #tabNL th:nth-child(3), #tabNL td:nth-child(3) { width: 65%; text-align: left; padding-left: 8px; } 
 
         .cards-container {
             display: grid;
@@ -480,10 +478,8 @@
 </head> 
 <body>
 
-<!-- INDICADOR DE PULL TO REFRESH -->
 <div id="pullToRefreshIndicator">🔄 Puxe mais para atualizar...</div>
 
-<!-- TELA DE LOGIN / PAGAMENTO -->
 <div id="loginScreen"> 
     <div class="login-box"> 
         <div style="background:var(--success); color:black; padding:10px; border-radius:12px; font-weight:900; margin-bottom:15px;">GPL</div> 
@@ -514,14 +510,13 @@
 </div>
 
 <div class="container"> 
-    <!-- CABEÇALHO -->
     <header> 
         <div style="display: flex; align-items: center; gap: 12px;">
             <div style="background:var(--success); color:black; padding:8px 14px; border-radius:10px; font-weight:900; font-size:13px;">GPL</div> 
             <span style="font-size: 13px; font-weight: 800; color: var(--success); text-transform: uppercase;" id="headerUserDisplay"></span>
         </div>
-        <div style="display: flex; gap: 8px; align-items: center;"> 
-            <button class="header-btn" onclick="toggleMonthGrid()" id="currentMonthDisplay" style="background: var(--accent); border-color: var(--accent);">MÊS</button> 
+        <div style="display: flex; gap: 8px; align-items: center; position: relative;"> 
+            <button class="header-btn" onclick="toggleMonthGrid(event)" id="currentMonthDisplay" style="background: var(--accent); border-color: var(--accent);">MÊS</button> 
             <div id="monthGrid" class="month-grid"></div> 
             
             <button class="header-btn" onclick="window.print()">IMPRIMIR</button> 
@@ -539,7 +534,6 @@
         </div> 
     </div> 
 
-    <!-- ABAS DE NAVEGAÇÃO -->
     <nav class="mobile-nav-tabs no-print" id="mainNavTabs">
         <button class="mob-tab-btn active" id="btnTabDashboard" onclick="switchMobileTab('tabDashboard', this)">📊 Dash</button>
         <button class="mob-tab-btn" id="btnTabFormulario" onclick="switchMobileTab('tabFormulario', this)">➕ Novo</button>
@@ -550,9 +544,7 @@
         <button class="mob-tab-btn" id="btnTabAdmin" onclick="switchMobileTab('tabAdmin', this)" style="display:none;">👑 Adm<span id="adminNotificationBadge" class="admin-badge">0</span></button>
     </nav>
 
-    <!-- CONTEÚDO PRINCIPAL EM ABAS -->
     <div class="content-wrap" id="mainContentWrap"> 
-        <!-- DASHBOARD -->
         <div class="top-dashboard mobile-tab-content active-tab" id="tabDashboard">
             <div class="observations no-print"> 
                 <div class="obs-item"><span class="dot" style="background:var(--success)"></span> Bônus de R$ 0,20 por cada leitura excedente a 8000 leituras</div> 
@@ -621,7 +613,6 @@
             </div> 
         </main> 
 
-        <!-- ABA NL -->
         <div class="mobile-tab-content" id="tabNL" style="flex-direction: column;">
             <div class="mobile-search-area">
                 <input type="text" id="searchNL" placeholder="Pesquisar por número ou descrição da nota..." oninput="filtrarNL(this.value)" style="border-color: var(--success);">
@@ -638,7 +629,6 @@
             </div>
         </div>
 
-        <!-- ABA CALENDÁRIO -->
         <div class="mobile-tab-content" id="tabCal" style="flex-direction: column;">
             <div class="mobile-search-area">
                 <input type="text" id="searchCal" placeholder="Pesquisar razão..." oninput="renderizarCalendario(this.value)" style="border-color: var(--success); margin-bottom: 0;">
@@ -655,7 +645,6 @@
             </div>
         </div>
 
-        <!-- ABA RELATÓRIO TXT -->
         <div class="mobile-tab-content" id="tabRelatorio" style="flex-direction: column;">
             <div class="mobile-search-area" style="display: flex; gap: 8px; align-items: center; background: var(--surface); padding: 10px; border-radius: 12px; border: 1px solid var(--border);">
                 <div style="flex: 1;">
@@ -683,7 +672,6 @@
             </div>
         </div>
 
-        <!-- ABA ADMIN / NOVOS UTILIZADORES -->
         <div class="mobile-tab-content" id="tabAdmin" style="flex-direction: column;">
             <div class="mobile-search-area">
                 <input type="text" id="searchAdminUsers" placeholder="Pesquisar utilizador..." oninput="carregarListaUtilizadoresPendentes(this.value)" style="border-color: var(--success); margin-bottom: 0;">
@@ -702,7 +690,6 @@
     </div> 
 </div> 
 
-<!-- SCRIPTS DO FIREBASE -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, doc, setDoc, getDoc, getDocs, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -762,7 +749,7 @@
             }
 
             if (precisaAtualizarHash) {
-                await setDoc(docRef, { senha: senhaHashDigitada }, { merge: true });
+                setDoc(docRef, { senha: senhaHashDigitada }, { merge: true }).catch(() => {});
             }
 
             return { sucesso: true, dados: dadosUsuario };
@@ -772,47 +759,35 @@
         }
     };
 
-    window.cloudSaveRegistros = async function(user, dataRegistros) {
+    // Salvamento otimizado em segundo plano (fire-and-forget acelerado)
+    window.cloudSaveRegistros = function(user, dataRegistros) {
         if (!user) return;
-        try {
-            const userTrim = user.trim();
-            const userUpper = userTrim.toUpperCase();
-            const docRef = doc(dbCloud, "usuarios", userUpper);
-            await setDoc(docRef, { dados: dataRegistros }, { merge: true });
-        } catch (e) {
-            console.error("Erro ao salvar registros:", e);
+        const userTrim = user.trim();
+        const userUpper = userTrim.toUpperCase();
+        const docRef = doc(dbCloud, "usuarios", userUpper);
+        setDoc(docRef, { dados: dataRegistros }, { merge: true }).catch(e => console.error("Erro ao salvar registros:", e));
+    };
+
+    window.cloudSaveCalendario = function(user, calendario) {
+        if (!user) return;
+        const userTrim = user.trim();
+        const userUpper = userTrim.toUpperCase();
+        const docRef = doc(dbCloud, "usuarios", userUpper);
+        setDoc(docRef, { calendario: calendario }, { merge: true }).catch(e => console.error("Erro ao salvar calendário:", e));
+
+        if (userUpper === "ADMIN") {
+            setDoc(doc(dbCloud, "config", "calendarioGlobal"), { calendario: calendario }, { merge: true }).catch(() => {});
         }
     };
 
-    window.cloudSaveCalendario = async function(user, calendario) {
+    window.cloudSaveRelatorios = function(user, relatorios) {
         if (!user) return;
-        try {
-            const userTrim = user.trim();
-            const userUpper = userTrim.toUpperCase();
-            const docRef = doc(dbCloud, "usuarios", userUpper);
-            await setDoc(docRef, { calendario: calendario }, { merge: true });
-
-            if (userUpper === "ADMIN") {
-                await setDoc(doc(dbCloud, "config", "calendarioGlobal"), { calendario: calendario }, { merge: true });
-            }
-        } catch (e) {
-            console.error("Erro ao salvar calendário:", e);
-        }
+        const userTrim = user.trim();
+        const userUpper = userTrim.toUpperCase();
+        const docRef = doc(dbCloud, "usuarios", userUpper);
+        setDoc(docRef, { relatorios: relatorios || {} }, { merge: true }).catch(e => console.error("Erro ao salvar relatórios:", e));
     };
 
-    window.cloudSaveRelatorios = async function(user, relatorios) {
-        if (!user) return;
-        try {
-            const userTrim = user.trim();
-            const userUpper = userTrim.toUpperCase();
-            const docRef = doc(dbCloud, "usuarios", userUpper);
-            await setDoc(docRef, { relatorios: relatorios || {} }, { merge: true });
-        } catch (e) {
-            console.error("Erro ao salvar relatórios:", e);
-        }
-    };
-
-    // FUNÇÕES DE LEITURA ESPECÍFICA (SOB DEMANDA) PARA CADA ABA
     window.cloudLoadLeve = async function(user) {
         try {
             const userTrim = user.trim();
@@ -1108,7 +1083,6 @@
         }
     }
 
-    // NAVEGAÇÃO ENTRE ABAS COM CARREGAMENTO SOB DEMANDA (SOB NESCESSIDADE)
     async function switchMobileTab(tabId, btnElement) {
         document.querySelectorAll('.mobile-tab-content').forEach(el => el.classList.remove('active-tab'));
         const target = document.getElementById(tabId);
@@ -1117,7 +1091,6 @@
         document.querySelectorAll('.mob-tab-btn').forEach(btn => btn.classList.remove('active'));
         if(btnElement) btnElement.classList.add('active');
         
-        // LEITURA SOB DEMANDA APENAS DA ABA CORRESPONDENTE
         if (currentUser) {
             if (tabId === 'tabDashboard' || tabId === 'tabTabela') {
                 if (db.length === 0) {
@@ -1597,7 +1570,7 @@
         corpo.innerHTML = html;
     }
 
-    async function salvarDataCalendario(razao, data) {
+    function salvarDataCalendario(razao, data) {
         if (!currentIsAdmin) return;
         calendarioDb[razao] = data;
         if (currentUser && window.cloudSaveCalendario) {
@@ -1766,7 +1739,6 @@
         document.getElementById('currentMonthDisplay').innerText = nomeMes; 
         document.getElementById('printSubHeader').innerText = `Utilizador: ${currentUser}  |  Período: ${nomeMes}/2026`;
         
-        // Carrega apenas os dados da aba inicial (Dashboard/Registros) ao logar
         db = await window.cloudLoadLeve(currentUser);
 
         renderMonths(); 
@@ -1792,17 +1764,31 @@
         document.getElementById('monthGrid').innerHTML = ms.map((m, i) => `<div class="month-item" onclick="selectMonth(${i})">${m}</div>`).join(''); 
     } 
 
-    function toggleMonthGrid() { document.getElementById('monthGrid').classList.toggle('active'); } 
+    function toggleMonthGrid(event) { 
+        if (event) event.stopPropagation();
+        document.getElementById('monthGrid').classList.toggle('active'); 
+    } 
      
     function selectMonth(m) { 
         viewDate.setMonth(m); 
         let nomeMes = msNomesCompletos[m];
         document.getElementById('currentMonthDisplay').innerText = nomeMes; 
         document.getElementById('printSubHeader').innerText = `Utilizador: ${currentUser}  |  Período: ${nomeMes}/2026`;
-        toggleMonthGrid(); 
+        document.getElementById('monthGrid').classList.remove('active'); 
         atualizarTabela();
         renderizarTabelaRelatorioAtual(); 
     } 
+
+    // Fecha o grid de meses ao clicar em qualquer lugar da tela
+    window.addEventListener('click', (e) => {
+        const monthGrid = document.getElementById('monthGrid');
+        const btnMes = document.getElementById('currentMonthDisplay');
+        if (monthGrid && monthGrid.classList.contains('active')) {
+            if (!monthGrid.contains(e.target) && !btnMes.contains(e.target)) {
+                monthGrid.classList.remove('active');
+            }
+        }
+    });
 
     function atualizarTabela() { 
         const mesF = "2026-" + String(viewDate.getMonth() + 1).padStart(2, '0'); 
@@ -1875,13 +1861,11 @@
             if (index !== -1) {
                 db[index] = { id: Number(editId), ...dadosForm };
             }
-            alert("Registro atualizado com sucesso!");
         } else {
             db.push({ 
                 id: Date.now(), 
                 ...dadosForm
             }); 
-            alert("Registro salvo na nuvem com sucesso!");
         }
 
         dispararSalvamentoRegistros();
@@ -1989,7 +1973,7 @@
                     }
 
                     if (currentUser && window.cloudSaveRegistros) {
-                        await window.cloudSaveRegistros(currentUser, db);
+                        window.cloudSaveRegistros(currentUser, db);
                     }
                     
                     atualizarTabela();
