@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"> 
     <title>Gestão de Produtividade de Leituras</title> 
 
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzMiAzMicgd2lkdGg9JzMyJyBoZWlnaHQ9JzMyJz48cmVjdCB3aWR0aD0nMzInIGhlaWdodD0nMzInIHJ4PSc2JyBmaWxsPScjMGIwZjE1Jz48L3JlY3Q+PHRleHQgeD0nNTAlJyB5PSc1NSUnIGRvbWluYW50LWJhc2VsaW5lPSdtaWRkbGUnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJyBmb250LXdlaWdodD0nOTAwJyBmb250LXdlaWdodD0nMTAwMCcgZm9udC1zaXplPScxMCcgZmlsbD0nIzAwZmY4OCcgbGV0dGVyLXNwYWNpbmdzPScwLjUnPkdQTDwvdGV4dD48L3N2Zz4=">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzMiAzMicgd2lkdGg9JzMyJyBoZWlnaHQ9JzMyJz48cmVjdCB3aWR0aD0nMzInIGhlaWdodD0nMzInIHJ4PSc2JyBmaWxsPScówYjBmMTUnPjwvcmVjdD48dGV4dCB4PSc1MCUnIHk9JzU1JScgZG9taW5hbnQtYmFzZWxpbmU9J21pZGRsZScgdGV4dC1hbmNob3I9J21pZGRsZScgZm9udC1mYW1pbHk9J3NhbnMtc2VyaWYnIGZvbnQtd2VpZ2h0PSc5MDAnIGZvbnQtd2VpZ2h0PScxMDAwJyBmb250LXNpemU9JzEwJyBmaWxsPScjMDBmODg4JyBsZXR0ZXItc3BhY2luZz0nMC41Jz5HUEw8L3RleHQ+PC9zdmc+">
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#030508">
 
@@ -387,6 +387,12 @@
             padding: 8px 12px; border-radius: 9px; cursor: pointer; font-weight: 800; font-size: 11px; text-transform: uppercase;
         }
 
+        @media (max-width: 768px) {
+            .btn-atualizar-mobile {
+                display: none !important;
+            }
+        }
+
         .mobile-nav-tabs {
             display: flex; width: 100%; background: var(--surface); border: 1px solid var(--border);
             border-radius: 10px; z-index: 9; justify-content: space-between; padding: 4px;
@@ -514,7 +520,7 @@
             <div id="monthGrid" class="month-grid"></div> 
             
             <button class="header-btn" onclick="window.print()">IMPRIMIR</button> 
-            <button class="header-btn" onclick="atualizarDadosManualmente(this)" title="Atualizar dados da nuvem" style="background: var(--success); color: black;">🔄</button>
+            <button class="header-btn btn-atualizar-mobile" onclick="atualizarDadosManualmente(this)" title="Atualizar dados da nuvem" style="background: var(--success); color: black;">🔄</button>
         </div> 
     </header> 
 
@@ -660,7 +666,7 @@
             <div class="main-view" style="margin-top: 6px;">
                 <div id="relatorioCardsCorpo" class="cards-container">
                     <div style="grid-column: 1 / -1; text-align: center; color: var(--text-p); padding: 30px; font-weight: 700; font-size: 12px;">
-                        Selecione uma razão ou carregue um arquivo TXT.
+                        Carregue um arquivo TXT ou pesquise pelo número do medidor para visualizar o histórico.
                     </div>
                 </div>
             </div>
@@ -725,6 +731,7 @@
 
             const dadosUsuario = docSnap.data();
             const senhaArmazenada = dadosUsuario.senha;
+
             const senhaHashDigitada = await hashSenha(senhaDigitada);
             
             let senhaValida = false;
@@ -737,7 +744,9 @@
                 precisaAtualizarHash = true;
             }
 
-            if (!senhaValida) return { sucesso: false, erro: "Senha incorreta!" };
+            if (!senhaValida) {
+                return { sucesso: false, erro: "Senha incorreta!" };
+            }
 
             if (precisaAtualizarHash) {
                 setDoc(docRef, { senha: senhaHashDigitada }, { merge: true }).catch(() => {});
@@ -750,81 +759,112 @@
         }
     };
 
+    // Salvamento otimizado em segundo plano (fire-and-forget acelerado)
     window.cloudSaveRegistros = function(user, dataRegistros) {
         if (!user) return;
-        const docRef = doc(dbCloud, "usuarios", user.toUpperCase());
-        setDoc(docRef, { dados: dataRegistros }, { merge: true }).catch(e => console.error("Erro registros:", e));
+        const userTrim = user.trim();
+        const userUpper = userTrim.toUpperCase();
+        const docRef = doc(dbCloud, "usuarios", userUpper);
+        setDoc(docRef, { dados: dataRegistros }, { merge: true }).catch(e => console.error("Erro ao salvar registros:", e));
     };
 
     window.cloudSaveCalendario = function(user, calendario) {
         if (!user) return;
-        const userUpper = user.toUpperCase();
+        const userTrim = user.trim();
+        const userUpper = userTrim.toUpperCase();
         const docRef = doc(dbCloud, "usuarios", userUpper);
-        setDoc(docRef, { calendario: calendario }, { merge: true }).catch(e => console.error("Erro calendário:", e));
+        setDoc(docRef, { calendario: calendario }, { merge: true }).catch(e => console.error("Erro ao salvar calendário:", e));
 
         if (userUpper === "ADMIN") {
             setDoc(doc(dbCloud, "config", "calendarioGlobal"), { calendario: calendario }, { merge: true }).catch(() => {});
         }
     };
 
-    // Salvamento blindado usando chave direta no documento do usuário (ex: rel_RAZAO_01_2026-10)
-    window.cloudSaveRazaoRelatorio = function(user, razao, anoMes, dadosRazaoMes) {
+    window.cloudSaveRelatorios = function(user, relatorios) {
         if (!user) return;
-        const docRef = doc(dbCloud, "usuarios", user.toUpperCase());
-        const chaveRelatorio = `rel_${razao}_${anoMes}`.replace(/\s+/g, '_');
-        setDoc(docRef, { [chaveRelatorio]: dadosRazaoMes }, { merge: true })
-            .then(() => console.log("Relatório salvo com sucesso na nuvem!"))
-            .catch(e => console.error("Erro ao salvar relatório:", e));
+        const userTrim = user.trim();
+        const userUpper = userTrim.toUpperCase();
+        const docRef = doc(dbCloud, "usuarios", userUpper);
+        setDoc(docRef, { relatorios: relatorios || {} }, { merge: true }).catch(e => console.error("Erro ao salvar relatórios:", e));
     };
 
-    // Carregamento inteligente que varre todas as chaves do documento correspondentes aos relatórios salvos
-    window.cloudLoadAll = async function(user) {
+    window.cloudLoadLeve = async function(user) {
         try {
-            const userUpper = user.toUpperCase();
+            const userTrim = user.trim();
+            const userUpper = userTrim.toUpperCase();
+            const docSnap = await getDoc(doc(dbCloud, "usuarios", userUpper));
+            if (docSnap.exists()) {
+                return docSnap.data().dados || [];
+            }
+        } catch (e) {
+            console.error("Erro ao carregar dados:", e);
+        }
+        return [];
+    };
+
+    window.cloudLoadCalendario = async function(user) {
+        try {
+            const userTrim = user.trim();
+            const userUpper = userTrim.toUpperCase();
             const [userDocSnap, calGlobalSnap] = await Promise.all([
                 getDoc(doc(dbCloud, "usuarios", userUpper)),
                 getDoc(doc(dbCloud, "config", "calendarioGlobal"))
             ]);
+            let cal = userDocSnap.exists() ? (userDocSnap.data().calendario || {}) : {};
+            if (calGlobalSnap.exists()) {
+                const globalData = calGlobalSnap.data();
+                const extraido = globalData.calendario || globalData;
+                if (extraido && Object.keys(extraido).length > 0) cal = extraido;
+            }
+            return cal;
+        } catch (e) {
+            console.error("Erro ao carregar calendário:", e);
+        }
+        return {};
+    };
 
+    window.cloudLoadRelatorios = async function(user) {
+        try {
+            const userTrim = user.trim();
+            const userUpper = userTrim.toUpperCase();
+            const docSnap = await getDoc(doc(dbCloud, "usuarios", userUpper));
+            if (docSnap.exists()) {
+                return docSnap.data().relatorios || {};
+            }
+        } catch (e) {
+            console.error("Erro ao carregar relatórios:", e);
+        }
+        return {};
+    };
+
+    window.cloudLoadAll = async function(user) {
+        try {
+            const userTrim = user.trim();
+            const userUpper = userTrim.toUpperCase();
+            const [userDocSnap, calGlobalSnap] = await Promise.all([
+                getDoc(doc(dbCloud, "usuarios", userUpper)).then(async (snap) => {
+                    if (!snap.exists()) return await getDoc(doc(dbCloud, "usuarios", userTrim));
+                    return snap;
+                }),
+                getDoc(doc(dbCloud, "config", "calendarioGlobal"))
+            ]);
             let userData = userDocSnap.exists() ? userDocSnap.data() : {};
-            
-            // Reconstroi o dicionário de relatórios a partir das chaves diretas 'rel_...'
-            let relatoriosReconstruidos = {};
-            for (const [chave, valor] of Object.entries(userData)) {
-                if (chave.startsWith("rel_")) {
-                    // Ex: rel_RAZAO_01_2026-10 -> Razao: RAZAO_01, AnoMes: 2026-10
-                    const partes = chave.replace("rel_", "").split("_2026-");
-                    if (partes.length === 2) {
-                        const razaoKey = partes[0].replace(/_/g, " ");
-                        const anoMesKey = "2026-" + partes[1];
-                        if (!relatoriosReconstruidos[razaoKey]) relatoriosReconstruidos[razaoKey] = {};
-                        relatoriosReconstruidos[razaoKey][anoMesKey] = valor;
-                    }
-                }
-            }
-            // Compatibilidade com estrutura antiga se houver
-            if (userData.relatorios && typeof userData.relatorios === 'object') {
-                for (const [rKey, rVal] of Object.entries(userData.relatorios)) {
-                    if (!relatoriosReconstruidos[rKey]) relatoriosReconstruidos[rKey] = rVal;
-                }
-            }
-            userData.relatorios = relatoriosReconstruidos;
-
             if (calGlobalSnap.exists()) {
                 const globalData = calGlobalSnap.data();
                 const extraido = globalData.calendario || globalData;
                 if (extraido && Object.keys(extraido).length > 0) userData.calendario = extraido;
             }
             return userData;
-        } catch (e) { 
-            console.error("Erro carregar tudo:", e); 
+        } catch (e) {
+            console.error("Erro ao carregar tudo:", e);
         }
         return null;
     };
 
     window.cloudSaveNewUserAuth = async function(user, senha, dica) {
         try {
-            const userUpper = user.toUpperCase();
+            const userTrim = user.trim();
+            const userUpper = userTrim.toUpperCase();
             const docRef = doc(dbCloud, "usuarios", userUpper);
             const docSnap = await getDoc(docRef);
             if (docSnap.exists() && docSnap.data().senha) return false; 
@@ -839,10 +879,14 @@
                 ativo: isAdminUser ? true : false,
                 dados: [],
                 calendario: {},
+                relatorios: {},
                 ultimaAtualizacao: new Date()
             });
             return true;
-        } catch (e) { console.error("Erro criar auth:", e); return false; }
+        } catch (e) {
+            console.error("Erro ao salvar credenciais:", e);
+            return false;
+        }
     };
 
     window.cloudListAllUsers = async function() {
@@ -853,15 +897,25 @@
                 lista.push({ nome: docSnap.id, ...docSnap.data() });
             });
             return lista;
-        } catch (e) { console.error("Erro listar utilizadores:", e); return []; }
+        } catch (e) {
+            console.error("Erro ao listar utilizadores:", e);
+            return [];
+        }
     };
 
     window.cloudSetUserActive = async function(user, statusAtivo) {
         try {
-            const docRef = doc(dbCloud, "usuarios", user.toUpperCase());
+            const userTrim = user.trim();
+            const userUpper = userTrim.toUpperCase();
+            let docRef = doc(dbCloud, "usuarios", userUpper);
+            let docSnap = await getDoc(docRef);
+            if (!docSnap.exists()) docRef = doc(dbCloud, "usuarios", userTrim);
             await setDoc(docRef, { ativo: statusAtivo }, { merge: true });
             return true;
-        } catch (e) { console.error("Erro ativar utilizador:", e); return false; }
+        } catch (e) {
+            console.error("Erro ao atualizar status do utilizador:", e);
+            return false;
+        }
     };
 
     window.escutarNovosCadastrosAdmin = function(callbackNotificacao) {
@@ -875,9 +929,11 @@
         });
     };
 </script>
+
+<script> 
     let db = []; 
     let calendarioDb = {}; 
-    let relatorioRazoesDb = {}; 
+    let relatorioRazoesDb = {};
     
     let currentUser = sessionStorage.getItem('gpl_user') || ""; 
     let currentIsAdmin = sessionStorage.getItem('gpl_is_admin') === 'true';
@@ -1027,13 +1083,36 @@
         }
     }
 
-    function switchMobileTab(tabId, btnElement) {
+    async function switchMobileTab(tabId, btnElement) {
         document.querySelectorAll('.mobile-tab-content').forEach(el => el.classList.remove('active-tab'));
         const target = document.getElementById(tabId);
         if(target) target.classList.add('active-tab');
         
         document.querySelectorAll('.mob-tab-btn').forEach(btn => btn.classList.remove('active'));
         if(btnElement) btnElement.classList.add('active');
+        
+        if (currentUser) {
+            if (tabId === 'tabDashboard' || tabId === 'tabTabela') {
+                if (db.length === 0) {
+                    db = await window.cloudLoadLeve(currentUser);
+                }
+                atualizarTabela();
+            } else if (tabId === 'tabCal') {
+                if (Object.keys(calendarioDb).length === 0) {
+                    calendarioDb = await window.cloudLoadCalendario(currentUser);
+                }
+                renderizarCalendario();
+                verificarSabadosAlertas();
+            } else if (tabId === 'tabRelatorio') {
+                if (Object.keys(relatorioRazoesDb).length === 0) {
+                    relatorioRazoesDb = await window.cloudLoadRelatorios(currentUser);
+                }
+                popularSelectRazoesRelatorio();
+                renderizarTabelaRelatorioAtual();
+            } else if (tabId === 'tabAdmin' && currentIsAdmin) {
+                carregarListaUtilizadoresPendentes();
+            }
+        }
     }
 
     async function atualizarDadosManualmente(btnElement = null) {
@@ -1052,18 +1131,21 @@
                 db = cloudData.dados || [];
                 calendarioDb = cloudData.calendario || {};
                 relatorioRazoesDb = cloudData.relatorios || {};
-            }
 
-            atualizarTabela();
-            renderizarCalendario();
-            verificarSabadosAlertas();
-            popularSelectRazoesRelatorio();
-            renderizarTabelaRelatorioAtual();
-            if(currentIsAdmin) carregarListaUtilizadoresPendentes();
-            return true;
+                atualizarTabela();
+                renderizarCalendario();
+                renderizarTabelaRelatorioAtual();
+                verificarSabadosAlertas();
+                if(currentIsAdmin) carregarListaUtilizadoresPendentes();
+                
+                return true;
+            } else {
+                alert("Nenhum dado encontrado na nuvem para este utilizador.");
+                return false;
+            }
         } catch (error) {
             console.error("Erro ao atualizar:", error);
-            alert("Erro de conexão com a nuvem.");
+            alert("Erro de conexão com a nuvem. Verifique a conexão.");
             return false;
         } finally {
             if (btnElement) {
@@ -1184,14 +1266,12 @@
     function popularSelectRazoesRelatorio() {
         const sel = document.getElementById('selectRazaoRelatorio');
         if(!sel) return;
-        const selecionadoAtual = sel.value;
         sel.innerHTML = lista18Razoes.map(r => `<option value="${r}">${r}</option>`).join('');
-        if(selecionadoAtual) sel.value = selecionadoAtual;
     }
 
     function mudarRazaoRelatorio() {
         document.getElementById('searchMedidorRelatorio').value = '';
-        renderizarTabelaRelatorioAtual(); 
+        renderizarTabelaRelatorioAtual();
     }
 
     function processarArquivoTxtSelecionado(input) {
@@ -1275,28 +1355,28 @@
 
                 if (medidorEncontrado) {
                     listaMedidores.push({
-                        m: medidorEncontrado.toUpperCase(), 
-                        o: ocEncontrada || "N/A",           
-                        l: Number(leitEncontrada) || 0      
+                        medidor: medidorEncontrado.toUpperCase(),
+                        oc: ocEncontrada || "N/A",
+                        leit: Number(leitEncontrada) || 0
                     });
                 }
             }
         });
 
-        const dadosRazaoMes = {
+        if (!relatorioRazoesDb) relatorioRazoesDb = {};
+        if (!relatorioRazoesDb[razaoSelecionada]) relatorioRazoesDb[razaoSelecionada] = {};
+
+        relatorioRazoesDb[razaoSelecionada][anoMesRef] = {
             resumoOC: contagemOC,
             medidores: listaMedidores
         };
 
-        if (!relatorioRazoesDb[razaoSelecionada]) relatorioRazoesDb[razaoSelecionada] = {};
-        relatorioRazoesDb[razaoSelecionada][anoMesRef] = dadosRazaoMes;
+        if (currentUser && window.cloudSaveRelatorios) {
+            window.cloudSaveRelatorios(currentUser, relatorioRazoesDb);
+        }
 
         renderizarTabelaRelatorioAtual();
-        alert(`Arquivo da ${razaoSelecionada} processado e salvo para o mês ${anoMesRef}!`);
-
-        if (currentUser && window.cloudSaveRazaoRelatorio) {
-            window.cloudSaveRazaoRelatorio(currentUser, razaoSelecionada, anoMesRef, dadosRazaoMes);
-        }
+        alert(`Arquivo da ${razaoSelecionada} para o período ${msNomesCompletos[viewDate.getMonth()]} importado e atualizado com sucesso!`);
     }
 
     function buscarMedidorNoRelatorio() {
@@ -1314,7 +1394,7 @@
         if (!dadosRazao || Object.keys(dadosRazao).length === 0) {
             corpo.innerHTML = `
                 <div style="grid-column: 1 / -1; text-align: center; color: var(--text-p); padding: 30px; font-weight: 700; font-size: 12px;">
-                    Nenhum arquivo TXT carregado para esta razão (${razaoSelecionada}). Clique em "Importar".
+                    Nenhum arquivo TXT carregado para esta razão. Clique em "Importar TXT Mês Atual".
                 </div>`;
             return;
         }
@@ -1324,7 +1404,7 @@
 
             for (const [anoMes, conteudoMes] of Object.entries(dadosRazao)) {
                 if (conteudoMes && Array.isArray(conteudoMes.medidores)) {
-                    const encontrado = conteudoMes.medidores.find(item => item.m.includes(termoBusca));
+                    const encontrado = conteudoMes.medidores.find(item => item.medidor.includes(termoBusca));
                     if (encontrado) {
                         historicoMedidor[anoMes] = encontrado;
                     }
@@ -1336,7 +1416,7 @@
             if (mesesEncontrados.length === 0) {
                 corpo.innerHTML = `
                     <div style="grid-column: 1 / -1; text-align: center; color: var(--text-p); padding: 30px; font-weight: 700; font-size: 12px;">
-                        Nenhum medidor encontrado com o termo "${termoBusca}" nesta razão.
+                        Nenhum medidor encontrado com o termo "${termoBusca}" em nenhum mês.
                     </div>`;
                 return;
             }
@@ -1353,16 +1433,16 @@
                 const dados = historicoMedidor[anoMes];
                 const [ano, mes] = anoMes.split('-');
                 const nomeMesStr = msNomesCompletos[parseInt(mes, 10) - 1] || mes;
-                const infoNL = notasDeLeitura.find(n => n.numero === dados.o) || { status: 'Ocorrência', detalhe: 'Nota de Leitura' };
+                const infoNL = notasDeLeitura.find(n => n.numero === dados.oc) || { status: 'Ocorrência', detalhe: 'Nota de Leitura' };
                 const isComLeitura = infoNL.status.toLowerCase().includes('com');
 
                 let consumoMes = 0;
-                let leituraAtual = typeof dados.l === 'number' ? dados.l : Number(dados.l) || 0;
+                let leituraAtual = typeof dados.leit === 'number' ? dados.leit : Number(dados.leit) || 0;
 
                 if (i > 0) {
                     const mesAnterior = ultimos12Meses[i - 1];
                     const dadosAnterior = historicoMedidor[mesAnterior];
-                    let leituraAnterior = typeof dadosAnterior.l === 'number' ? dadosAnterior.l : Number(dadosAnterior.l) || 0;
+                    let leituraAnterior = typeof dadosAnterior.leit === 'number' ? dadosAnterior.leit : Number(dadosAnterior.leit) || 0;
                     
                     consumoMes = leituraAtual - leituraAnterior;
                     if (consumoMes < 0) consumoMes = 0;
@@ -1387,7 +1467,7 @@
                         </div>
                         <div style="display: flex; justify-content: space-between; margin-top: 2px; font-size: 10px; color: var(--text-p);">
                             <span>Leitura: ${leituraAtual.toLocaleString()}</span>
-                            <span style="color: ${isComLeitura ? 'var(--success)' : 'var(--warning)'};">${infoNL.status} (NL ${dados.o})</span>
+                            <span style="color: ${isComLeitura ? 'var(--success)' : 'var(--warning)'};">${infoNL.status} (NL ${dados.oc})</span>
                         </div>
                     </div>
                 `);
@@ -1396,14 +1476,14 @@
             const mediaConsumo12 = qtdMesesComConsumo > 0 ? (somaConsumo12 / qtdMesesComConsumo).toFixed(1) : 0;
             const ultimoMesChave = mesesEncontrados[mesesEncontrados.length - 1];
             const ultimoItem = historicoMedidor[ultimoMesChave];
-            const leituraMaisRecente = typeof ultimoItem.l === 'number' ? ultimoItem.l : Number(ultimoItem.l) || 0;
+            const leituraMaisRecente = typeof ultimoItem.leit === 'number' ? ultimoItem.leit : Number(ultimoItem.leit) || 0;
 
             corpo.innerHTML = `
                 <div class="medidor-card" style="max-width: 100%;">
                     <div class="oc-card-header" style="align-items: flex-start;">
                         <div>
                             <span class="oc-code" style="font-size: 0.95rem; color: var(--success); display: block;">Medidor: ${termoBusca}</span>
-                            <span style="font-size: 10px; font-weight: bold; color: var(--text-p);">Razão: ${razaoSelecionada} | Última NL: <span style="color: var(--warning);">${ultimoItem.o}</span></span>
+                            <span style="font-size: 10px; font-weight: bold; color: var(--text-p);">Razão: ${razaoSelecionada} | Última NL: <span style="color: var(--warning);">${ultimoItem.oc}</span></span>
                         </div>
                         <div style="display: flex; gap: 4px; flex-direction: column; align-items: flex-end;">
                             <span class="oc-count" style="font-size: 0.75rem; background: rgba(0, 255, 136, 0.15); color: var(--success); border-color: var(--success);">Leitura: ${leituraMaisRecente.toLocaleString()}</span>
@@ -1417,29 +1497,29 @@
                     </div>
                 </div>
             `;
-           return;
+            return;
         }
 
         const anoMesRef = "2026-" + String(viewDate.getMonth() + 1).padStart(2, '0');
         const dadosMesAtual = dadosRazao[anoMesRef] ? dadosRazao[anoMesRef].resumoOC : null;
 
         if (!dadosMesAtual || Object.keys(dadosMesAtual).length === 0) {
-          corpo.innerHTML = `
+            corpo.innerHTML = `
                 <div style="grid-column: 1 / -1; text-align: center; color: var(--text-p); padding: 30px; font-weight: 700; font-size: 12px;">
                     Nenhum arquivo TXT importado para ${msNomesCompletos[viewDate.getMonth()]} nesta razão.
                 </div>`;
-          return;
+            return;
         }
 
         const chavesOC = Object.keys(dadosMesAtual);
         chavesOC.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
 
         corpo.innerHTML = chavesOC.map(oc => {
-          const qtd = dadosMesAtual[oc];
-          const infoNL = notasDeLeitura.find(item => item.numero === oc) || { status: 'Desconhecido', detalhe: 'Nota de Leitura mapeada' };
-          const isComLeitura = infoNL.status.toLowerCase().includes('com');
+            const qtd = dadosMesAtual[oc];
+            const infoNL = notasDeLeitura.find(item => item.numero === oc) || { status: 'Desconhecido', detalhe: 'Nota de Leitura mapeada' };
+            const isComLeitura = infoNL.status.toLowerCase().includes('com');
 
-          return `
+            return `
                 <div class="oc-card">
                     <div class="oc-card-header">
                         <span class="oc-code">NL ${oc}</span>
@@ -1452,7 +1532,7 @@
                         </span>
                     </div>
                 </div>
-          `;
+            `;
         }).join('');
     }
 
@@ -1477,15 +1557,15 @@
                         <td>
                             ${currentIsAdmin ? `
                                 <input type="date" value="${dataSalva}" onchange="salvarDataCalendario('${razao}', this.value)" style="margin-bottom:0; font-size:11px;">
-                              ` : `
+                            ` : `
                                 <div style="font-weight: bold; color: ${dataSalva ? 'var(--text-h)' : 'var(--text-p)'}; font-size: 12px; padding: 6px;">
                                     ${dataFormatadaExibicao}
                                 </div>
-                              `}
+                            `}
                         </td>
-                   </tr>
-                  `;
-              }).join('');
+                    </tr>
+                `;
+            }).join('');
 
         corpo.innerHTML = html;
     }
@@ -1524,7 +1604,7 @@
         } else {
             alertaContainer.style.display = 'none';
             alertaContainer.innerHTML = '';
-       }
+        }
     }
 
     function renderizarNL(lista = notasDeLeitura) {
@@ -1560,9 +1640,9 @@
                     el.innerText = isMoeda ? fM(final) : Math.floor(final).toLocaleString(); 
                 } 
                 clearInterval(timer); 
-           } else { 
+            } else { 
                 el.innerText = isMoeda ? fM(start) : Math.floor(start).toLocaleString(); 
-           } 
+            } 
         }, 20); 
     } 
 
@@ -1659,22 +1739,20 @@
         document.getElementById('currentMonthDisplay').innerText = nomeMes; 
         document.getElementById('printSubHeader').innerText = `Utilizador: ${currentUser}  |  Período: ${nomeMes}/2026`;
         
-        // CARREGAMENTO UNIFICADO NO LOGIN: Traz TUDO da nuvem de uma só vez
-        const cloudData = await window.cloudLoadAll(currentUser);
-        if (cloudData) {
-            db = cloudData.dados || [];
-            calendarioDb = cloudData.calendario || {};
-            relatorioRazoesDb = cloudData.relatorios || {};
-        }
+        // Carrega dados e calendário em paralelo logo na entrada do sistema
+        const [dadosLeves, calCarregado] = await Promise.all([
+            window.cloudLoadLeve(currentUser),
+            window.cloudLoadCalendario(currentUser)
+        ]);
+
+        db = dadosLeves;
+        calendarioDb = calCarregado;
 
         renderMonths(); 
         renderizarNL();
         switchMobileTab('tabDashboard', document.getElementById('btnTabDashboard'));
         atualizarTabela(); 
-        renderizarCalendario();
-        verificarSabadosAlertas(); 
-        popularSelectRazoesRelatorio();
-        renderizarTabelaRelatorioAtual();
+        verificarSabadosAlertas(); // <-- Executa o alerta de sábados imediatamente ao entrar!
         if(currentIsAdmin) carregarListaUtilizadoresPendentes();
     }
 
@@ -1714,7 +1792,7 @@
         if (monthGrid && monthGrid.classList.contains('active')) {
             if (!monthGrid.contains(e.target) && !btnMes.contains(e.target)) {
                 monthGrid.classList.remove('active');
-          }
+            }
         }
     });
 
@@ -1739,7 +1817,7 @@
                 <td class="no-print">
                     <button type="button" onclick="editar(${i.id})" title="Editar" style="background:none; border:none; color:var(--accent); cursor:pointer; font-size:13px; padding:2px;">✏️</button>
                 </td>
-           </tr>`; 
+            </tr>`; 
         }).join('');
 
         document.getElementById('tabelaCorpo').innerHTML = htmlRegistros; 
