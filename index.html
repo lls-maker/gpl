@@ -287,11 +287,11 @@
         th, td { padding: 6px 3px; text-align: center; border-bottom: 1px solid var(--border); font-size: 10.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } 
         th { background: #0d1117; color: var(--accent); font-size: 9px; text-transform: uppercase; position: sticky; top: 0; z-index: 5; } 
 
-        /* Ajustes solicitados: Data, Local e Razão mais compactos/aproximados; Rotas maior */
-        th:nth-child(1), td:nth-child(1) { width: 12%; } /* Data compactada */
-        th:nth-child(2), td:nth-child(2) { width: 15%; } /* Localidade compactada */
-        th:nth-child(3), td:nth-child(3) { width: 14%; } /* Razão compactada */
-        th:nth-child(4), td:nth-child(4) { width: 22%; } /* Rotas maior */
+        /* Larguras das colunas otimizadas */
+        th:nth-child(1), td:nth-child(1) { width: 12%; } /* Data */
+        th:nth-child(2), td:nth-child(2) { width: 15%; } /* Local */
+        th:nth-child(3), td:nth-child(3) { width: 14%; } /* Razão */
+        th:nth-child(4), td:nth-child(4) { width: 22%; } /* Rotas */
         th:nth-child(5), td:nth-child(5) { width: 13%; } /* Leituras */
         th:nth-child(6), td:nth-child(6) { width: 9% !important; } /* Imp. */
         th:nth-child(7), td:nth-child(7) { width: 9%; } /* % */
@@ -431,7 +431,6 @@
         }
 
         .mobile-search-area { display: block; margin-bottom: 4px; flex-shrink: 0; }
-
         .print-header { display: none; }
 
         @media print {
@@ -1050,13 +1049,6 @@
         }
     }
 
-    // Ao fechar ou sair da página, usa sendBeacon ou trava rápida para garantir o envio síncrono/imediato à nuvem
-    window.addEventListener('beforeunload', (e) => {
-        if (currentUser && window.cloudSave) {
-            window.cloudSave(currentUser, db, calendarioDb, relatorioRazoesDb);
-        }
-    });
-
     function switchLoginPane(paneId) {
         document.querySelectorAll('.login-form-pane').forEach(el => el.classList.remove('active'));
         document.querySelectorAll('.login-tab-btn').forEach(el => el.classList.remove('active'));
@@ -1125,6 +1117,7 @@
     async function sairDaConta() {
         if (!confirm("Deseja realmente fechar a sessão / sair da conta?")) return;
 
+        // Aguarda terminantemente o salvamento antes de limpar e sair
         if (currentUser && window.cloudSave) {
             try {
                 await window.cloudSave(currentUser, db, calendarioDb, relatorioRazoesDb);
