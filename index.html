@@ -725,7 +725,6 @@
 
             const dadosUsuario = docSnap.data();
             const senhaArmazenada = dadosUsuario.senha;
-
             const senhaHashDigitada = await hashSenha(senhaDigitada);
             
             let senhaValida = false;
@@ -738,9 +737,7 @@
                 precisaAtualizarHash = true;
             }
 
-            if (!senhaValida) {
-                return { sucesso: false, erro: "Senha incorreta!" };
-            }
+            if (!senhaValida) return { sucesso: false, erro: "Senha incorreta!" };
 
             if (precisaAtualizarHash) {
                 setDoc(docRef, { senha: senhaHashDigitada }, { merge: true }).catch(() => {});
@@ -770,13 +767,17 @@
         }
     };
 
+    // Salvamento blindado usando chave direta no documento do usuário (ex: rel_RAZAO_01_2026-10)
     window.cloudSaveRazaoRelatorio = function(user, razao, anoMes, dadosRazaoMes) {
         if (!user) return;
         const docRef = doc(dbCloud, "usuarios", user.toUpperCase());
-        const fieldPath = `relatorios.${razao}.${anoMes}`;
-        setDoc(docRef, { [fieldPath]: dadosRazaoMes }, { merge: true }).catch(e => console.error("Erro ao salvar razão:", e));
+        const chaveRelatorio = `rel_${razao}_${anoMes}`.replace(/\s+/g, '_');
+        setDoc(docRef, { [chaveRelatorio]: dadosRazaoMes }, { merge: true })
+            .then(() => console.log("Relatório salvo com sucesso na nuvem!"))
+            .catch(e => console.error("Erro ao salvar relatório:", e));
     };
 
+    // Carregamento inteligente que varre todas as chaves do documento correspondentes aos relatórios salvos
     window.cloudLoadAll = async function(user) {
         try {
             const userUpper = user.toUpperCase();
@@ -784,14 +785,40 @@
                 getDoc(doc(dbCloud, "usuarios", userUpper)),
                 getDoc(doc(dbCloud, "config", "calendarioGlobal"))
             ]);
+
             let userData = userDocSnap.exists() ? userDocSnap.data() : {};
+            
+            // Reconstroi o dicionário de relatórios a partir das chaves diretas 'rel_...'
+            let relatoriosReconstruidos = {};
+            for (const [chave, valor] of Object.entries(userData)) {
+                if (chave.startsWith("rel_")) {
+                    // Ex: rel_RAZAO_01_2026-10 -> Razao: RAZAO_01, AnoMes: 2026-10
+                    const partes = chave.replace("rel_", "").split("_2026-");
+                    if (partes.length === 2) {
+                        const razaoKey = partes[0].replace(/_/g, " ");
+                        const anoMesKey = "2026-" + partes[1];
+                        if (!relatoriosReconstruidos[razaoKey]) relatoriosReconstruidos[razaoKey] = {};
+                        relatoriosReconstruidos[razaoKey][anoMesKey] = valor;
+                    }
+                }
+            }
+            // Compatibilidade com estrutura antiga se houver
+            if (userData.relatorios && typeof userData.relatorios === 'object') {
+                for (const [rKey, rVal] of Object.entries(userData.relatorios)) {
+                    if (!relatoriosReconstruidos[rKey]) relatoriosReconstruidos[rKey] = rVal;
+                }
+            }
+            userData.relatorios = relatoriosReconstruidos;
+
             if (calGlobalSnap.exists()) {
                 const globalData = calGlobalSnap.data();
                 const extraido = globalData.calendario || globalData;
                 if (extraido && Object.keys(extraido).length > 0) userData.calendario = extraido;
             }
             return userData;
-        } catch (e) { console.error("Erro carregar tudo:", e); }
+        } catch (e) { 
+            console.error("Erro carregar tudo:", e); 
+        }
         return null;
     };
 
@@ -812,7 +839,6 @@
                 ativo: isAdminUser ? true : false,
                 dados: [],
                 calendario: {},
-                relatorios: {},
                 ultimaAtualizacao: new Date()
             });
             return true;
@@ -849,8 +875,6 @@
         });
     };
 </script>
-
-<script> 
     let db = []; 
     let calendarioDb = {}; 
     let relatorioRazoesDb = {}; 
