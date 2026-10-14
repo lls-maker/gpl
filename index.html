@@ -770,11 +770,12 @@
         }
     };
 
-    // Salvamento cirúrgico original utilizando campos aninhados no documento do utilizador
+    // Substitui diretamente o relatório do mês (1 arquivo por razão por mês)
     window.cloudSaveRazaoRelatorio = function(user, razao, anoMes, dadosRazaoMes) {
         if (!user) return;
         const docRef = doc(dbCloud, "usuarios", user.toUpperCase());
         const fieldPath = `relatorios.${razao}.${anoMes}`;
+        // Sobrescreve especificamente o mês daquela razão, garantindo que o novo arquivo substitua o antigo perfeitamente
         setDoc(docRef, { [fieldPath]: dadosRazaoMes }, { merge: true }).catch(e => console.error("Erro ao salvar razão:", e));
     };
 
@@ -1327,10 +1328,11 @@
         };
 
         if (!relatorioRazoesDb[razaoSelecionada]) relatorioRazoesDb[razaoSelecionada] = {};
+        // Substitui o mês diretamente na memória
         relatorioRazoesDb[razaoSelecionada][anoMesRef] = dadosRazaoMes;
 
         renderizarTabelaRelatorioAtual();
-        alert(`Arquivo da ${razaoSelecionada} processado! Salvando apenas este mês na nuvem...`);
+        alert(`Arquivo da ${razaoSelecionada} processado e salvo para o mês ${anoMesRef}!`);
 
         if (currentUser && window.cloudSaveRazaoRelatorio) {
             window.cloudSaveRazaoRelatorio(currentUser, razaoSelecionada, anoMesRef, dadosRazaoMes);
