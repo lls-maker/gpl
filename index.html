@@ -1387,7 +1387,7 @@
         if (termoBusca) {
             const medidoresLista = dadosRegistro.medidores || [];
             
-            // Agrupa todas as passagens/leituras do mesmo medidor
+            // Agrupa todas as passagens do mesmo medidor
             const mapaPassagens = {};
             medidoresLista.forEach(item => {
                 if (item.medidor.includes(termoBusca)) {
@@ -1411,37 +1411,65 @@
             corpo.innerHTML = chavesMedidores.map(medKey => {
                 const passagens = mapaPassagens[medKey];
 
-                const linhasPassagensHtml = passagens.map(reg => {
-                    const infoNL = notasDeLeitura.find(n => n.numero === reg.oc) || { status: 'Ocorrência', detalhe: reg.oc };
-                    const isComLeitura = infoNL.status.toLowerCase().includes('com');
-                    
+                // Pega o último NL válido se houver correções (último item ou último NL não nulo)
+                let ultimoNL = "N/A";
+                for (let i = passagens.length - 1; i >= 0; i--) {
+                    if (passagens[i].oc && passagens[i].oc !== "N/A") {
+                        ultimoNL = passagens[i].oc;
+                        break;
+                    }
+                }
+
+                // Consolida as leituras por RG (03 e Z3)
+                let leiturasPorRg = {};
+                passagens.forEach(p => {
+                    let rg = p.tipoRgZ3 || "03";
+                    leiturasPorRg[rg] = p.leit; // Atualiza com a última leitura informada para aquele RG
+                });
+
+                // Se não tiver o 03 explicitamente mas tiver leituras, garante o 03 padrão
+                if (!leiturasPorRg["03"] && passagens.length > 0) {
+                    leiturasPorRg["03"] = passagens[0].leit;
+                }
+
+                const rgsKeys = Object.keys(leiturasPorRg);
+                
+                const linhasRgsHtml = rgsKeys.map(rg => {
+                    let leitVal = leiturasPorRg[rg];
                     return `
                         <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border); border-radius: 8px; padding: 8px; margin-bottom: 6px;">
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; flex-wrap: wrap; gap: 4px;">
-                                <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 6px;">
-                                    <span style="font-weight: 900; color: var(--warning); font-size: 11px;">NL: ${reg.oc}</span>
-                                    <span style="background: rgba(156, 39, 176, 0.25); color: #e1bee7; border: 1px solid var(--purple); padding: 2px 6px; border-radius: 6px; font-size: 9.5px; font-weight: 900;">${reg.tipoRgZ3}</span>
-                                </div>
-                                <span style="font-weight: 900; color: var(--success); font-size: 11px;">Leitura: ${reg.leit.toLocaleString()}</span>
+                                <span style="background: rgba(156, 39, 176, 0.25); color: #e1bee7; border: 1px solid var(--purple); padding: 2px 8px; border-radius: 6px; font-size: 10px; font-weight: 900;">RG ${rg}</span>
+                                <span style="font-weight: 900; color: var(--success); font-size: 11px;">Leitura: ${leitVal.toLocaleString()}</span>
                             </div>
-                            <div style="font-size: 10px; color: var(--text-h); font-weight: 600; margin-bottom: 4px;">
-                                ${infoNL.detalhe}
-                            </div>
-                            <span class="oc-status" style="background: ${isComLeitura ? 'rgba(0,255,136,0.1)' : 'rgba(255,204,0,0.1)'}; color: ${isComLeitura ? 'var(--success)' : 'var(--warning)'}; border: 1px solid ${isComLeitura ? 'var(--success)' : 'var(--warning)'};">
-                                ${infoNL.status}
-                            </span>
                         </div>
                     `;
                 }).join('');
 
+                const infoNL = notasDeLeitura.find(n => n.numero === ultimoNL) || { status: 'Ocorrência', detalhe: ultimoNL };
+                const isComLeitura = infoNL.status.toLowerCase().includes('com');
+
                 return `
                     <div class="medidor-card" style="max-width: 100%;">
-                        <div class="oc-card-header" style="border-bottom: 1px solid var(--border); padding-bottom: 4px; margin-bottom: 2px;">
+                        <div class="oc-card-header" style="border-bottom: 1px solid var(--border); padding-bottom: 4px; margin-bottom: 6px;">
                             <span class="oc-code" style="font-size: 1rem; color: var(--success);">Medidor: ${medKey}</span>
                             <span style="font-size: 9.5px; font-weight: bold; color: var(--text-p);">Razão: ${razaoSelecionada}</span>
                         </div>
-                        <div style="margin-top: 4px;">
-                            ${linhasPassagensHtml}
+                        
+                        <div style="margin-bottom: 6px; background: rgba(0, 112, 243, 0.08); border: 1px solid var(--accent); border-radius: 8px; padding: 8px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                                <span style="font-weight: 900; color: var(--warning); font-size: 11.5px;">NL: ${ultimoNL}</span>
+                                <span class="oc-status" style="background: ${isComLeitura ? 'rgba(0,255,136,0.1)' : 'rgba(255,204,0,0.1)'}; color: ${isComLeitura ? 'var(--success)' : 'var(--warning)'}; border: 1px solid ${isComLeitura ? 'var(--success)' : 'var(--warning)'};">
+                                    ${infoNL.status}
+                                </span>
+                            </div>
+                            <div style="font-size: 10px; color: var(--text-h); font-weight: 600;">
+                                ${infoNL.detalhe}
+                            </div>
+                        </div>
+
+                        <div>
+                            ${linhasRgsHtml}
                         </div>
                     </div>
                 `;
