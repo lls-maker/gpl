@@ -788,7 +788,11 @@
         const userTrim = user.trim();
         const userUpper = userTrim.toUpperCase();
         const docRef = doc(dbCloud, "usuarios", userUpper);
-        setDoc(docRef, { relatorios: relatorios || {} }, { merge: true }).catch(e => console.error("Erro ao salvar relatórios:", e));
+        
+        const relatoriosLimpos = JSON.parse(JSON.stringify(relatorios || {}));
+        setDoc(docRef, { relatorios: relatoriosLimpos }, { merge: true }).catch(e => {
+            console.error("Erro ao salvar relatórios em segundo plano:", e);
+        });
     };
 
     window.cloudLoadAll = async function(user) {
@@ -1339,22 +1343,25 @@
             relatorioRazoesDb = {};
         }
 
-        // 1. EXCLUI O ARQUIVO VELHO DAQUELA RAZÃO ESPECIFICAMENTE
+        // Exclui completamente o arquivo velho daquela razão na memória
         delete relatorioRazoesDb[razaoSelecionada];
 
-        // 2. SALVA O NOVO ARQUIVO NO LUGAR
+        // Atribui o novo arquivo perfeitamente
         relatorioRazoesDb[razaoSelecionada] = {
             resumoOC: contagemOC,
             medidores: listaMedidores
         };
 
-        // 3. GRAVA IMEDIATAMENTE NA NUVEM
+        // Salva na nuvem em segundo plano de forma totalmente silenciosa
         if (currentUser && window.cloudSaveRelatorios) {
             window.cloudSaveRelatorios(currentUser, relatorioRazoesDb);
         }
 
         renderizarTabelaRelatorioAtual();
-        alert(`Arquivo anterior excluído e novo relatório da ${razaoSelecionada} salvo com sucesso!`);
+    }
+
+    function buscarMedidorNoRelatorio() {
+        renderizarTabelaRelatorioAtual();
     }
 
     function renderizarTabelaRelatorioAtual() {
@@ -1940,6 +1947,9 @@
 
                     if (currentUser && window.cloudSaveRegistros) {
                         window.cloudSaveRegistros(currentUser, db);
+                    }
+                    if (currentUser && window.cloudSaveRelatorios) {
+                        window.cloudSaveRelatorios(currentUser, relatorioRazoesDb);
                     }
                     
                     atualizarTabela();
