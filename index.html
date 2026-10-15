@@ -783,35 +783,66 @@
         }
     };
 
-    window.cloudSaveRelatorios = function(user, relatorios) {
+    // SALVAMENTO SEPARADO DOS TXT: Cada razão salva em um documento próprio na coleção relatorios_txt
+    window.cloudSaveRelatorioRazao = async function(user, razao, dadosRelatorio) {
         if (!user) return;
-        const userTrim = user.trim();
-        const userUpper = userTrim.toUpperCase();
-        const docRef = doc(dbCloud, "usuarios", userUpper);
+        const userUpper = user.trim().toUpperCase();
+        const razaoId = razao.trim().replace(/\s+/g, '_').toUpperCase();
+        // ID único para o documento: USER_RAZAO_01
+        const docId = `${userUpper}_${razaoId}`;
         
-        const relatoriosLimpos = JSON.parse(JSON.stringify(relatorios || {}));
-        // SEGURANÇA TOTAL: Usamos merge: true para nunca apagar dados de outras abas (como dados e calendário)
-        setDoc(docRef, { relatorios: relatoriosLimpos }, { merge: true }).catch(e => {
-            console.error("Erro ao salvar relatórios em segundo plano:", e);
-        });
+        try {
+            await setDoc(doc(dbCloud, "relatorios_txt", docId), {
+                usuario: userUpper,
+                razao: razao,
+                conteudo: JSON.parse(JSON.stringify(dadosRelatorio)),
+                atualizadoEm: new Date()
+            });
+        } catch (e) {
+            console.error("Erro ao salvar relatório separado:", e);
+        }
+    };
+
+    // CARREGAMENTO SEPARADO DOS TXT: Busca todos os relatórios salvos independentemente
+    window.cloudLoadAllRelatoriosTxt = async function(user) {
+        try {
+            const userUpper = user.trim().toUpperCase();
+            const querySnapshot = await getDocs(collection(dbCloud, "relatorios_txt"));
+            let relatoriosMap = {};
+            
+            querySnapshot.forEach((docSnap) => {
+                const data = docSnap.data();
+                if (data.usuario === userUpper && data.razao && data.conteudo) {
+                    relatoriosMap[data.razao] = data.conteudo;
+                }
+            });
+            return relatoriosMap;
+        } catch (e) {
+            console.error("Erro ao carregar relatórios separados:", e);
+            return {};
+        }
     };
 
     window.cloudLoadAll = async function(user) {
         try {
             const userTrim = user.trim();
             const userUpper = userTrim.toUpperCase();
-            const [userDocSnap, calGlobalSnap] = await Promise.all([
+            const [userDocSnap, calGlobalSnap, relatoriosTxtMap] = await Promise.all([
                 getDoc(doc(dbCloud, "usuarios", userUpper)).then(async (snap) => {
                     if (!snap.exists()) return await getDoc(doc(dbCloud, "usuarios", userTrim));
                     return snap;
                 }),
-                getDoc(doc(dbCloud, "config", "calendarioGlobal"))
+                getDoc(doc(dbCloud, "config", "calendarioGlobal")),
+                window.cloudLoadAllRelatoriosTxt(userUpper)
             ]);
             let userData = userDocSnap.exists() ? userDocSnap.data() : {};
             if (calGlobalSnap.exists()) {
                 const globalData = calGlobalSnap.data();
                 const extraido = globalData.calendario || globalData;
                 if (extraido && Object.keys(extraido).length > 0) userData.calendario = extraido;
+            }
+            if (relatoriosTxtMap && Object.keys(relatoriosTxtMap).length > 0) {
+                userData.relatorios = relatoriosTxtMap;
             }
             return userData;
         } catch (e) {
@@ -838,7 +869,6 @@
                 ativo: isAdminUser ? true : false,
                 dados: [],
                 calendario: {},
-                relatorios: {},
                 ultimaAtualizacao: new Date()
             });
             return true;
@@ -1344,15 +1374,17 @@
             relatorioRazoesDb = {};
         }
 
-        // Substituição segura e limpa da razão selecionada
-        relatorioRazoesDb[razaoSelecionada] = {
+        const dadosNovoRelatorio = {
             resumoOC: contagemOC,
             medidores: listaMedidores
         };
 
-        // Salva na nuvem em segundo plano preservando as demais informações
-        if (currentUser && window.cloudSaveRelatorios) {
-            window.cloudSaveRelatorios(currentUser, relatorioRazoesDb);
+        // Atualiza localmente
+        relatorioRazoesDb[razaoSelecionada] = dadosNovoRelatorio;
+
+        // Salva separadamente no Firestore (documento dedicado para esta razão)
+        if (currentUser && window.cloudSaveRelatorioRazao) {
+            window.cloudSaveRelatorioRazao(currentUser, razaoSelecionada, dadosNovoRelatorio);
         }
 
         renderizarTabelaRelatorioAtual();
@@ -1938,16 +1970,20 @@
                     } else if (importedData && typeof importedData === 'object') {
                         db = Array.isArray(importedData.registros) ? importedData.registros : [];
                         if (importedData.calendario) calendarioDb = importedData.calendario;
-                        if (importedData.relatorios) relatorioRazoesDb = importedData.relatorios;
+                        if (importedData.relatorios) {
+                            relatorioRazoesDb = importedData.relatorios;
+                            for (const [raz, conteudoRaz] of Object.entries(relatorioRazoesDb)) {
+                                if (currentUser && window.cloudSaveRelatorioRazao) {
+                                    window.cloudSaveRelatorioRazao(currentUser, raz, conteudoRaz);
+                                }
+                            }
+                        }
                     } else {
                         return alert("Arquivo de backup inválido.");
                     }
 
                     if (currentUser && window.cloudSaveRegistros) {
                         window.cloudSaveRegistros(currentUser, db);
-                    }
-                    if (currentUser && window.cloudSaveRelatorios) {
-                        window.cloudSaveRelatorios(currentUser, relatorioRazoesDb);
                     }
                     
                     atualizarTabela();
