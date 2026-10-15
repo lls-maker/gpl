@@ -790,7 +790,8 @@
         const docRef = doc(dbCloud, "usuarios", userUpper);
         
         const relatoriosLimpos = JSON.parse(JSON.stringify(relatorios || {}));
-        setDoc(docRef, { relatorios: relatoriosLimpos }, { merge: false }).catch(e => {
+        // SEGURANÇA TOTAL: Usamos merge: true para nunca apagar dados de outras abas (como dados e calendário)
+        setDoc(docRef, { relatorios: relatoriosLimpos }, { merge: true }).catch(e => {
             console.error("Erro ao salvar relatórios em segundo plano:", e);
         });
     };
@@ -1343,17 +1344,13 @@
             relatorioRazoesDb = {};
         }
 
-        // Limpeza completa da chave antiga para evitar conflito na substituição
-        relatorioRazoesDb[razaoSelecionada] = null;
-        delete relatorioRazoesDb[razaoSelecionada];
-
-        // Atribui o novo relatório
+        // Substituição segura e limpa da razão selecionada
         relatorioRazoesDb[razaoSelecionada] = {
             resumoOC: contagemOC,
             medidores: listaMedidores
         };
 
-        // Salva na nuvem em segundo plano
+        // Salva na nuvem em segundo plano preservando as demais informações
         if (currentUser && window.cloudSaveRelatorios) {
             window.cloudSaveRelatorios(currentUser, relatorioRazoesDb);
         }
