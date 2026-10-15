@@ -1255,7 +1255,6 @@
             mapValidosNL[String(item.numero).trim()] = true;
         });
 
-        // Mapeia estritamente o último estado do medidor ao longo da sequência do arquivo
         let mapUltimoPorMedidor = {};
 
         linhas.forEach(linha => {
@@ -1282,11 +1281,11 @@
 
                 let linhaUpper = linhaLimpa.toUpperCase();
                 
-                let matchesRg = linhaUpper.match(/RG\s*\d+|RG\s*[A-Z0-9]+|Z3/g);
+                // Regex ajustada para capturar RG seguido de número/texto (ex: RG 03, RG03) e/ou Z3 preservando ambos
+                let matchesRg = linhaUpper.match(/RG\s*\d+|RG\d+|Z3/g);
                 if (matchesRg) {
-                    tipoRgZ3 = matchesRg.join(" / ");
-                } else if (linhaUpper.includes("Z3")) {
-                    tipoRgZ3 = "Z3";
+                    // Remove duplicatas caso encontre correspondências repetidas na mesma linha
+                    tipoRgZ3 = [...new Set(matchesRg)].join(" / ");
                 }
 
                 if (idxMedidor !== -1 && tokens.length > idxMedidor) {
@@ -1319,7 +1318,6 @@
                     let medKey = medidorEncontrado.toUpperCase();
                     let regAnt = mapUltimoPorMedidor[medKey];
 
-                    // Mantém SEMPRE o último estado da sequência do arquivo para o medidor
                     mapUltimoPorMedidor[medKey] = {
                         medidor: medKey,
                         oc: ocEncontrada || (regAnt ? regAnt.oc : "N/A"),
@@ -1332,7 +1330,6 @@
 
         let listaMedidores = Object.values(mapUltimoPorMedidor);
 
-        // Recalcula o resumo de Ocorrências (OC/NL) usando exclusivamente o último estado de cada medidor
         let contagemOC = {};
         listaMedidores.forEach(item => {
             if (mapValidosNL[item.oc]) {
@@ -1388,7 +1385,6 @@
             return;
         }
 
-        // Se houver termo de busca, filtra no array de medidores consolidados (que já contém estritamente o último estado único de cada medidor)
         if (termoBusca) {
             const medidoresLista = dadosRegistro.medidores || [];
             const encontrados = medidoresLista.filter(item => item.medidor.includes(termoBusca));
@@ -1401,7 +1397,6 @@
                 return;
             }
 
-            // Exibe estritamente em um card único por medidor com o seu último estado corrigido
             corpo.innerHTML = encontrados.map(reg => {
                 const infoNL = notasDeLeitura.find(n => n.numero === reg.oc) || { status: 'Ocorrência', detalhe: reg.oc };
                 const isComLeitura = infoNL.status.toLowerCase().includes('com');
