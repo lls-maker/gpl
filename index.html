@@ -1243,7 +1243,6 @@
 
     function processarConteudoTxtTerceiros(conteudo) {
         const razaoSelecionada = document.getElementById('selectRazaoRelatorio').value;
-        const chaveUnicaAtual = "UNICO";
         const linhas = conteudo.split(/\r?\n/);
         
         let idxMedidor = -1;
@@ -1277,7 +1276,7 @@
                 let medidorEncontrado = "";
                 let ocEncontrada = "";
                 let leitEncontrada = "";
-                let tagRgDetectada = "03"; // Todo medidor tem 03 por padrão
+                let tagRgDetectada = "03";
 
                 let linhaUpper = linhaLimpa.toUpperCase();
                 
@@ -1338,11 +1337,10 @@
 
         if (!relatorioRazoesDb || typeof relatorioRazoesDb !== 'object') relatorioRazoesDb = {};
         
+        // Substitui completamente o conteúdo anterior da razão pelo novo arquivo importado
         relatorioRazoesDb[razaoSelecionada] = {
-            [chaveUnicaAtual]: {
-                resumoOC: contagemOC,
-                medidores: listaMedidores
-            }
+            resumoOC: contagemOC,
+            medidores: listaMedidores
         };
 
         if (currentUser && window.cloudSaveRelatorios) {
@@ -1350,7 +1348,7 @@
         }
 
         renderizarTabelaRelatorioAtual();
-        alert(`Relatório da ${razaoSelecionada} importado e atualizado com sucesso!`);
+        alert(`Relatório da ${razaoSelecionada} importado e substituído com sucesso!`);
     }
 
     function buscarMedidorNoRelatorio() {
@@ -1363,9 +1361,9 @@
         const termoBusca = (document.getElementById('searchMedidorRelatorio')?.value || '').trim().toUpperCase();
         if (!corpo) return;
 
-        const dadosRazao = (relatorioRazoesDb && relatorioRazoesDb[razaoSelecionada] && typeof relatorioRazoesDb[razaoSelecionada] === 'object') ? relatorioRazoesDb[razaoSelecionada] : null;
+        const dadosRegistro = (relatorioRazoesDb && relatorioRazoesDb[razaoSelecionada]) ? relatorioRazoesDb[razaoSelecionada] : null;
 
-        if (!dadosRazao || Object.keys(dadosRazao).length === 0) {
+        if (!dadosRegistro || !dadosRegistro.medidores) {
             corpo.innerHTML = `
                 <div style="grid-column: 1 / -1; text-align: center; color: var(--text-p); padding: 30px; font-weight: 700; font-size: 12px;">
                     Nenhum arquivo TXT carregado para esta razão. Clique em "Importar".
@@ -1373,21 +1371,9 @@
             return;
         }
 
-        const chaveUnicaAtual = Object.keys(dadosRazao)[0];
-        const dadosRegistro = dadosRazao[chaveUnicaAtual];
-
-        if (!dadosRegistro || !dadosRegistro.medidores) {
-            corpo.innerHTML = `
-                <div style="grid-column: 1 / -1; text-align: center; color: var(--text-p); padding: 30px; font-weight: 700; font-size: 12px;">
-                    Nenhum dado importado para esta razão.
-                </div>`;
-            return;
-        }
-
         if (termoBusca) {
             const medidoresLista = dadosRegistro.medidores || [];
             
-            // Agrupa todas as passagens do mesmo medidor
             const mapaPassagens = {};
             medidoresLista.forEach(item => {
                 if (item.medidor.includes(termoBusca)) {
@@ -1411,7 +1397,6 @@
             corpo.innerHTML = chavesMedidores.map(medKey => {
                 const passagens = mapaPassagens[medKey];
 
-                // Pega o último NL válido se houver correções (último item ou último NL não nulo)
                 let ultimoNL = "N/A";
                 for (let i = passagens.length - 1; i >= 0; i--) {
                     if (passagens[i].oc && passagens[i].oc !== "N/A") {
@@ -1420,14 +1405,12 @@
                     }
                 }
 
-                // Consolida as leituras por RG (03 e Z3)
                 let leiturasPorRg = {};
                 passagens.forEach(p => {
                     let rg = p.tipoRgZ3 || "03";
-                    leiturasPorRg[rg] = p.leit; // Atualiza com a última leitura informada para aquele RG
+                    leiturasPorRg[rg] = p.leit;
                 });
 
-                // Se não tiver o 03 explicitamente mas tiver leituras, garante o 03 padrão
                 if (!leiturasPorRg["03"] && passagens.length > 0) {
                     leiturasPorRg["03"] = passagens[0].leit;
                 }
