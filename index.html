@@ -1323,7 +1323,6 @@
             }
         });
 
-        // Agrupa por medidor mantendo um mapa para a contagem única no resumo estatístico
         let mapUltimoPorMedidor = {};
         listaMedidores.forEach(item => {
             mapUltimoPorMedidor[item.medidor] = item;
@@ -1387,22 +1386,19 @@
         if (termoBusca) {
             const medidoresLista = dadosRegistro.medidores || [];
             
-            // Consolida em um único objeto por medidor recolhendo o ÚLTIMO estado, e fundindo as tags RG/Z3 acumuladas
             const mapaConsolidado = {};
             medidoresLista.forEach(item => {
                 if (item.medidor.includes(termoBusca)) {
                     if (!mapaConsolidado[item.medidor]) {
                         mapaConsolidado[item.medidor] = { ...item };
                     } else {
-                        // Atualiza com os valores mais recentes da última passada
                         mapaConsolidado[item.medidor].oc = item.oc !== "N/A" ? item.oc : mapaConsolidado[item.medidor].oc;
                         mapaConsolidado[item.medidor].leit = item.leit || mapaConsolidado[item.medidor].leit;
                         
-                        // Combina as tags de RG/Z3 sem duplicar
                         if (item.tipoRgZ3) {
                             let tagsExistentes = mapaConsolidado[item.medidor].tipoRgZ3 ? mapaConsolidado[item.medidor].tipoRgZ3.split(' / ') : [];
                             let novasTags = item.tipoRgZ3.split(' / ');
-                            let combinadas = [...new Set([...tagsExistentes, ...novasTags})];
+                            let combinadas = [...new Set([...tagsExistentes, ...novasTags])];
                             mapaConsolidado[item.medidor].tipoRgZ3 = combinadas.join(' / ');
                         }
                     }
@@ -1596,7 +1592,7 @@
         }, 20); 
     } 
 
-    async function handleLogin() {
+    window.handleLogin = async function() {
         const u = document.getElementById('loginUser').value.trim();
         const p = document.getElementById('loginPass').value;
 
@@ -1624,7 +1620,7 @@
         initSystem();
     }
 
-    async function handleCreateAccount() {
+    window.handleCreateAccount = async function() {
         const u = document.getElementById('regUser').value.trim();
         const p = document.getElementById('regPass').value;
         const pConf = document.getElementById('regPassConfirm').value;
@@ -1650,7 +1646,7 @@
         switchLoginPane('loginPane');
     }
 
-    function recoverPass() { 
+    window.recoverPass = function() { 
         const u = document.getElementById('loginUser').value.trim(); 
         if(!u) return alert("Digite o seu nome de utilizador no campo 'Utilizador' para recuperar a senha.");
         
@@ -1722,12 +1718,12 @@
         document.getElementById('monthGrid').innerHTML = ms.map((m, i) => `<div class="month-item" onclick="selectMonth(${i})">${m}</div>`).join(''); 
     } 
 
-    function toggleMonthGrid(event) { 
+    window.toggleMonthGrid = function(event) { 
         if (event) event.stopPropagation();
         document.getElementById('monthGrid').classList.toggle('active'); 
     } 
      
-    function selectMonth(m) { 
+    window.selectMonth = function(m) { 
         viewDate.setMonth(m); 
         let nomeMes = msNomesCompletos[m];
         document.getElementById('currentMonthDisplay').innerText = nomeMes; 
@@ -1831,7 +1827,7 @@
         switchMobileTab('tabTabela', document.getElementById('btnTabTabela'));
     }; 
 
-    function editar(id) {
+    window.editar = function(id) {
         if (!confirm("Deseja realmente editar este registro?")) return;
         const item = db.find(i => i.id === id);
         if (!item) return;
@@ -1850,14 +1846,14 @@
         switchMobileTab('tabFormulario', document.getElementById('btnTabFormulario'));
     }
 
-    function limparFormulario() {
+    window.limparFormulario = function() {
         document.getElementById('gplForm').reset();
         document.getElementById('editId').value = "";
         document.getElementById('btnSalvarRegistro').innerText = "Salvar Registro";
         document.getElementById('btnCancelarEdicao').style.display = "none";
     }
 
-    function limparTudo() { 
+    window.limparTudo = function() { 
         if(confirm("Deseja limpar todos os registros deste mês?")) { 
             const mesF = "2026-" + String(viewDate.getMonth() + 1).padStart(2, '0'); 
             db = db.filter(i => !i.data.startsWith(mesF)); 
@@ -1866,7 +1862,7 @@
         } 
     } 
      
-    function limparAno() { 
+    window.limparAno = function() { 
         if(confirm("ATENÇÃO: Você está prestes a apagar TODOS os registros de 2026!")) { 
             if(confirm("Tem certeza absoluta?")) { 
                 db = []; 
@@ -1877,7 +1873,7 @@
         } 
     } 
 
-    function exportarBackup() {
+    window.exportarBackup = function() {
         if ((!db || db.length === 0) && Object.keys(calendarioDb).length === 0 && Object.keys(relatorioRazoesDb).length === 0) {
             return alert("Sem dados para exportar.");
         }
@@ -1903,13 +1899,13 @@
         alert("💾 Backup salvo com sucesso no seu dispositivo!");
     }
 
-    function dispararImportacao() { 
+    window.dispararImportacao = function() { 
         const fileInput = document.getElementById('importFile');
         fileInput.value = '';
         fileInput.click(); 
     }
 
-    function importarBackup(event) {
+    window.importarBackup = function(event) {
         const file = event.target.files[0];
         if (!file) return;
         
