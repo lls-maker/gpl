@@ -1335,25 +1335,26 @@
             }
         });
 
-        if (!relatorioRazoesDb || typeof relatorioRazoesDb !== 'object') relatorioRazoesDb = {};
-        
-        // Substitui completamente o conteúdo anterior da razão pelo novo arquivo importado
+        if (!relatorioRazoesDb || typeof relatorioRazoesDb !== 'object') {
+            relatorioRazoesDb = {};
+        }
+
+        // 1. EXCLUI O ARQUIVO VELHO DAQUELA RAZÃO ESPECIFICAMENTE
+        delete relatorioRazoesDb[razaoSelecionada];
+
+        // 2. SALVA O NOVO ARQUIVO NO LUGAR
         relatorioRazoesDb[razaoSelecionada] = {
             resumoOC: contagemOC,
             medidores: listaMedidores
         };
 
-        // SALVA O NOVO RELATÓRIO SUBSTITUÍDO NA NUVEM
+        // 3. GRAVA IMEDIATAMENTE NA NUVEM
         if (currentUser && window.cloudSaveRelatorios) {
             window.cloudSaveRelatorios(currentUser, relatorioRazoesDb);
         }
 
         renderizarTabelaRelatorioAtual();
-        alert(`Relatório da ${razaoSelecionada} importado e substituído com sucesso!`);
-    }
-
-    function buscarMedidorNoRelatorio() {
-        renderizarTabelaRelatorioAtual();
+        alert(`Arquivo anterior excluído e novo relatório da ${razaoSelecionada} salvo com sucesso!`);
     }
 
     function renderizarTabelaRelatorioAtual() {
