@@ -1255,7 +1255,8 @@
             mapValidosNL[String(item.numero).trim()] = true;
         });
 
-        let mapUltimoPorMedidor = {};
+        // Acumula todas as ocorrências encontradas por medidor para garantir que múltiplos RGs/Z3 sejam exibidos
+        let mapListaPorMedidor = {};
 
         linhas.forEach(linha => {
             let linhaLimpa = linha.trim();
@@ -1281,10 +1282,8 @@
 
                 let linhaUpper = linhaLimpa.toUpperCase();
                 
-                // Regex ajustada para capturar RG seguido de número/texto (ex: RG 03, RG03) e/ou Z3 preservando ambos
                 let matchesRg = linhaUpper.match(/RG\s*\d+|RG\d+|Z3/g);
                 if (matchesRg) {
-                    // Remove duplicatas caso encontre correspondências repetidas na mesma linha
                     tipoRgZ3 = [...new Set(matchesRg)].join(" / ");
                 }
 
@@ -1316,22 +1315,40 @@
 
                 if (medidorEncontrado) {
                     let medKey = medidorEncontrado.toUpperCase();
-                    let regAnt = mapUltimoPorMedidor[medKey];
+                    if (!mapListaPorMedidor[medKey]) {
+                        mapListaPorMedidor[medKey] = [];
+                    }
 
-                    mapUltimoPorMedidor[medKey] = {
-                        medidor: medKey,
-                        oc: ocEncontrada || (regAnt ? regAnt.oc : "N/A"),
-                        leit: Number(leitEncontrada) || (regAnt ? regAnt.leit : 0),
-                        tipoRgZ3: tipoRgZ3 || (regAnt ? regAnt.tipoRgZ3 : "")
-                    };
+                    // Se encontrou uma NL ou uma marcação RG/Z3 válida, adiciona o registo à lista do medidor
+                    if (ocEncontrada || tipoRgZ3) {
+                        mapListaPorMedidor[medKey].push({
+                            medidor: medKey,
+                            oc: ocEncontrada || "N/A",
+                            leit: Number(leitEncontrada) || 0,
+                            tipoRgZ3: tipoRgZ3
+                        });
+                    }
                 }
             }
         });
 
-        let listaMedidores = Object.values(mapUltimoPorMedidor);
+        // Achata a lista de medidores para guardar todos os registos detalhados
+        let listaMedidores = [];
+        for (const [medKey, registros] of Object.entries(mapListaPorMedidor)) {
+            if (registros.length > 0) {
+                registros.forEach(r => listaMedidores.push(r));
+            } else {
+                listaMedidores.push({ medidor: medKey, oc: "N/A", leit: 0, tipoRgZ3: "" });
+            }
+        }
 
-        let contagemOC = {};
+        // Para a contagem geral de Ocorrências (NL), preserva o último estado único de cada medidor para manter a exatidão estatística
+        let mapUltimoPorMedidor = {};
         listaMedidores.forEach(item => {
+            mapUltimoPorMedidor[item.medidor] = item;
+        });
+        let contagemOC = {};
+        Object.values(mapUltimoPorMedidor).forEach(item => {
             if (mapValidosNL[item.oc]) {
                 contagemOC[item.oc] = (contagemOC[item.oc] || 0) + 1;
             }
