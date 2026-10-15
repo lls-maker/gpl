@@ -1255,8 +1255,7 @@
             mapValidosNL[String(item.numero).trim()] = true;
         });
 
-        // Acumula todas as ocorrências encontradas por medidor para garantir que múltiplos RGs/Z3 sejam exibidos
-        let mapListaPorMedidor = {};
+        let listaMedidores = [];
 
         linhas.forEach(linha => {
             let linhaLimpa = linha.trim();
@@ -1314,39 +1313,22 @@
                 }
 
                 if (medidorEncontrado) {
-                    let medKey = medidorEncontrado.toUpperCase();
-                    if (!mapListaPorMedidor[medKey]) {
-                        mapListaPorMedidor[medKey] = [];
-                    }
-
-                    // Se encontrou uma NL ou uma marcação RG/Z3 válida, adiciona o registo à lista do medidor
-                    if (ocEncontrada || tipoRgZ3) {
-                        mapListaPorMedidor[medKey].push({
-                            medidor: medKey,
-                            oc: ocEncontrada || "N/A",
-                            leit: Number(leitEncontrada) || 0,
-                            tipoRgZ3: tipoRgZ3
-                        });
-                    }
+                    listaMedidores.push({
+                        medidor: medidorEncontrado.toUpperCase(),
+                        oc: ocEncontrada || "N/A",
+                        leit: Number(leitEncontrada) || 0,
+                        tipoRgZ3: tipoRgZ3
+                    });
                 }
             }
         });
 
-        // Achata a lista de medidores para guardar todos os registos detalhados
-        let listaMedidores = [];
-        for (const [medKey, registros] of Object.entries(mapListaPorMedidor)) {
-            if (registros.length > 0) {
-                registros.forEach(r => listaMedidores.push(r));
-            } else {
-                listaMedidores.push({ medidor: medKey, oc: "N/A", leit: 0, tipoRgZ3: "" });
-            }
-        }
-
-        // Para a contagem geral de Ocorrências (NL), preserva o último estado único de cada medidor para manter a exatidão estatística
+        // Agrupa por medidor mantendo um mapa para a contagem única no resumo estatístico
         let mapUltimoPorMedidor = {};
         listaMedidores.forEach(item => {
             mapUltimoPorMedidor[item.medidor] = item;
         });
+
         let contagemOC = {};
         Object.values(mapUltimoPorMedidor).forEach(item => {
             if (mapValidosNL[item.oc]) {
@@ -1394,7 +1376,7 @@
         const chaveUnicaAtual = Object.keys(dadosRazao)[0];
         const dadosRegistro = dadosRazao[chaveUnicaAtual];
 
-        if (!dadosRegistro) {
+        if (!dadosRegistro || !dadosRegistro.medidores) {
             corpo.innerHTML = `
                 <div style="grid-column: 1 / -1; text-align: center; color: var(--text-p); padding: 30px; font-weight: 700; font-size: 12px;">
                     Nenhum dado importado para esta razão.
@@ -1404,7 +1386,30 @@
 
         if (termoBusca) {
             const medidoresLista = dadosRegistro.medidores || [];
-            const encontrados = medidoresLista.filter(item => item.medidor.includes(termoBusca));
+            
+            // Consolida em um único objeto por medidor recolhendo o ÚLTIMO estado, e fundindo as tags RG/Z3 acumuladas
+            const mapaConsolidado = {};
+            medidoresLista.forEach(item => {
+                if (item.medidor.includes(termoBusca)) {
+                    if (!mapaConsolidado[item.medidor]) {
+                        mapaConsolidado[item.medidor] = { ...item };
+                    } else {
+                        // Atualiza com os valores mais recentes da última passada
+                        mapaConsolidado[item.medidor].oc = item.oc !== "N/A" ? item.oc : mapaConsolidado[item.medidor].oc;
+                        mapaConsolidado[item.medidor].leit = item.leit || mapaConsolidado[item.medidor].leit;
+                        
+                        // Combina as tags de RG/Z3 sem duplicar
+                        if (item.tipoRgZ3) {
+                            let tagsExistentes = mapaConsolidado[item.medidor].tipoRgZ3 ? mapaConsolidado[item.medidor].tipoRgZ3.split(' / ') : [];
+                            let novasTags = item.tipoRgZ3.split(' / ');
+                            let combinadas = [...new Set([...tagsExistentes, ...novasTags})];
+                            mapaConsolidado[item.medidor].tipoRgZ3 = combinadas.join(' / ');
+                        }
+                    }
+                }
+            });
+
+            const encontrados = Object.values(mapaConsolidado);
 
             if (encontrados.length === 0) {
                 corpo.innerHTML = `
