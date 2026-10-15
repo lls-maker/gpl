@@ -1277,24 +1277,14 @@
                 let medidorEncontrado = "";
                 let ocEncontrada = "";
                 let leitEncontrada = "";
-                let tagsDetectadas = ["03"]; // Todo medidor tem o RG 03 por padrão
+                let tagRgDetectada = "03"; // Todo medidor tem 03 por padrão
 
                 let linhaUpper = linhaLimpa.toUpperCase();
                 
-                // Detecta Z3, Z5, ou outros códigos RG específicos se existirem na linha
-                let matchesRg = linhaUpper.match(/RG\s*0?3|RG\s*\d+|RG\d+|Z3/g);
-                if (matchesRg) {
-                    matchesRg.forEach(m => {
-                        let limpoTag = m.replace(/RG\s*/g, '').trim();
-                        if (limpoTag === '3') limpoTag = '03';
-                        if (!tagsDetectadas.includes(limpoTag)) {
-                            tagsDetectadas.push(limpoTag);
-                        }
-                    });
-                }
-                // Garante detecção explícita se contiver Z3 isolado
-                if (linhaUpper.includes("Z3") && !tagsDetectadas.includes("Z3")) {
-                    tagsDetectadas.push("Z3");
+                if (linhaUpper.includes("Z3")) {
+                    tagRgDetectada = "Z3";
+                } else if (linhaUpper.includes("RG 03") || linhaUpper.includes("RG03") || linhaUpper.includes(" 03 ")) {
+                    tagRgDetectada = "03";
                 }
 
                 if (idxMedidor !== -1 && tokens.length > idxMedidor) {
@@ -1328,7 +1318,7 @@
                         medidor: medidorEncontrado.toUpperCase(),
                         oc: ocEncontrada || "N/A",
                         leit: Number(leitEncontrada) || 0,
-                        tipoRgZ3: tagsDetectadas.join(" / ")
+                        tipoRgZ3: tagRgDetectada
                     });
                 }
             }
@@ -1397,28 +1387,20 @@
         if (termoBusca) {
             const medidoresLista = dadosRegistro.medidores || [];
             
-            const mapaConsolidado = {};
+            // Agrupa todas as passagens/leituras do mesmo medidor
+            const mapaPassagens = {};
             medidoresLista.forEach(item => {
                 if (item.medidor.includes(termoBusca)) {
-                    if (!mapaConsolidado[item.medidor]) {
-                        mapaConsolidado[item.medidor] = { ...item };
-                    } else {
-                        mapaConsolidado[item.medidor].oc = item.oc !== "N/A" ? item.oc : mapaConsolidado[item.medidor].oc;
-                        mapaConsolidado[item.medidor].leit = item.leit || mapaConsolidado[item.medidor].leit;
-                        
-                        if (item.tipoRgZ3) {
-                            let tagsExistentes = mapaConsolidado[item.medidor].tipoRgZ3 ? mapaConsolidado[item.medidor].tipoRgZ3.split(' / ') : ["03"];
-                            let novasTags = item.tipoRgZ3.split(' / ');
-                            let combinadas = [...new Set([...tagsExistentes, ...novasTags])];
-                            mapaConsolidado[item.medidor].tipoRgZ3 = combinadas.join(' / ');
-                        }
+                    if (!mapaPassagens[item.medidor]) {
+                        mapaPassagens[item.medidor] = [];
                     }
+                    mapaPassagens[item.medidor].push(item);
                 }
             });
 
-            const encontrados = Object.values(mapaConsolidado);
+            const chavesMedidores = Object.keys(mapaPassagens);
 
-            if (encontrados.length === 0) {
+            if (chavesMedidores.length === 0) {
                 corpo.innerHTML = `
                     <div style="grid-column: 1 / -1; text-align: center; color: var(--text-p); padding: 30px; font-weight: 700; font-size: 12px;">
                         Nenhum medidor encontrado com o número "${termoBusca}" nesta razão.
@@ -1426,24 +1408,19 @@
                 return;
             }
 
-            corpo.innerHTML = encontrados.map(reg => {
-                const infoNL = notasDeLeitura.find(n => n.numero === reg.oc) || { status: 'Ocorrência', detalhe: reg.oc };
-                const isComLeitura = infoNL.status.toLowerCase().includes('com');
-                
-                const tagsExibicao = reg.tipoRgZ3 || "03";
-                const tagRgZ3 = `<span style="background: rgba(156, 39, 176, 0.25); color: #e1bee7; border: 1px solid var(--purple); padding: 2px 6px; border-radius: 6px; font-size: 9.5px; font-weight: 900; margin-left: 6px;">${tagsExibicao}</span>`;
+            corpo.innerHTML = chavesMedidores.map(medKey => {
+                const passagens = mapaPassagens[medKey];
 
-                return `
-                    <div class="medidor-card" style="max-width: 100%;">
-                        <div class="oc-card-header" style="border-bottom: 1px solid var(--border); padding-bottom: 4px; margin-bottom: 2px;">
-                            <span class="oc-code" style="font-size: 1rem; color: var(--success);">Medidor: ${reg.medidor}</span>
-                            <span style="font-size: 9.5px; font-weight: bold; color: var(--text-p);">Razão: ${razaoSelecionada}</span>
-                        </div>
-                        <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border); border-radius: 8px; padding: 8px; margin-top: 6px;">
+                const linhasPassagensHtml = passagens.map(reg => {
+                    const infoNL = notasDeLeitura.find(n => n.numero === reg.oc) || { status: 'Ocorrência', detalhe: reg.oc };
+                    const isComLeitura = infoNL.status.toLowerCase().includes('com');
+                    
+                    return `
+                        <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border); border-radius: 8px; padding: 8px; margin-bottom: 6px;">
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; flex-wrap: wrap; gap: 4px;">
-                                <div style="display: flex; align-items: center; flex-wrap: wrap;">
+                                <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 6px;">
                                     <span style="font-weight: 900; color: var(--warning); font-size: 11px;">NL: ${reg.oc}</span>
-                                    ${tagRgZ3}
+                                    <span style="background: rgba(156, 39, 176, 0.25); color: #e1bee7; border: 1px solid var(--purple); padding: 2px 6px; border-radius: 6px; font-size: 9.5px; font-weight: 900;">${reg.tipoRgZ3}</span>
                                 </div>
                                 <span style="font-weight: 900; color: var(--success); font-size: 11px;">Leitura: ${reg.leit.toLocaleString()}</span>
                             </div>
@@ -1453,6 +1430,18 @@
                             <span class="oc-status" style="background: ${isComLeitura ? 'rgba(0,255,136,0.1)' : 'rgba(255,204,0,0.1)'}; color: ${isComLeitura ? 'var(--success)' : 'var(--warning)'}; border: 1px solid ${isComLeitura ? 'var(--success)' : 'var(--warning)'};">
                                 ${infoNL.status}
                             </span>
+                        </div>
+                    `;
+                }).join('');
+
+                return `
+                    <div class="medidor-card" style="max-width: 100%;">
+                        <div class="oc-card-header" style="border-bottom: 1px solid var(--border); padding-bottom: 4px; margin-bottom: 2px;">
+                            <span class="oc-code" style="font-size: 1rem; color: var(--success);">Medidor: ${medKey}</span>
+                            <span style="font-size: 9.5px; font-weight: bold; color: var(--text-p);">Razão: ${razaoSelecionada}</span>
+                        </div>
+                        <div style="margin-top: 4px;">
+                            ${linhasPassagensHtml}
                         </div>
                     </div>
                 `;
@@ -1486,7 +1475,7 @@
                     <div class="oc-desc">${infoNL.detalhe}</div>
                     <div>
                         <span class="oc-status" style="background: ${isComLeitura ? 'rgba(0,255,136,0.1)' : 'rgba(255,204,0,0.1)'}; color: ${isComLeitura ? 'var(--success)' : 'var(--warning)'}; border: 1px solid ${isComLeitura ? 'var(--success)' : 'var(--warning)'};">
-                            ${infoNL.status}
+                            ${isComLeitura ? 'Com leitura' : 'Sem Leitura'}
                         </span>
                     </div>
                 </div>
