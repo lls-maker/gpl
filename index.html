@@ -9,6 +9,9 @@
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#030508">
 
+    <!-- Biblioteca Chart.js para o Gráfico da Dashboard -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <style> 
         :root { 
             --bg: #030508; 
@@ -240,6 +243,27 @@
         .neon-descontos { border-top-color: var(--danger); } 
         .neon-receber { border-top-color: var(--success); } 
         .neon-acumulado { border-top-color: var(--purple); } 
+
+        /* Estilo do Container do Gráfico na Dashboard */
+        .chart-container-box {
+            background: var(--surface);
+            border: 1.5px solid var(--grey-border);
+            border-radius: 12px;
+            padding: 10px 12px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            margin-top: 2px;
+        }
+        .chart-header-title {
+            font-size: 10px;
+            font-weight: 900;
+            color: var(--text-h);
+            text-transform: uppercase;
+            margin-bottom: 6px;
+            letter-spacing: 0.5px;
+        }
 
         .content-wrap { 
             display: block; 
@@ -567,6 +591,14 @@
                 <div class="summary-card neon-receber"><p>Receber Mês</p><h2 id="totNet">R$ 0,00</h2></div> 
                 <div class="summary-card neon-acumulado"><p>Acumulado Ano</p><h2 id="totAcumulado">R$ 0,00</h2></div> 
             </div>
+
+            <!-- Gráfico Moderno de Desempenho Integrado -->
+            <div class="chart-container-box">
+                <div class="chart-header-title">📊 Desempenho de Leituras e Impedimentos por Razão</div>
+                <div style="position: relative; height: 135px; width: 100%;">
+                    <canvas id="gplChart"></canvas>
+                </div>
+            </div>
         </div>
 
         <aside class="no-print mobile-tab-content" id="tabFormulario"> 
@@ -758,7 +790,6 @@
 
             return { sucesso: true, dados: dadosUsuario };
         } catch (e) {
-            console.error("Erro no login:", e);
             return { sucesso: false, erro: "Erro de conexão com a nuvem." };
         }
     };
@@ -768,7 +799,7 @@
         const userTrim = user.trim();
         const userUpper = userTrim.toUpperCase();
         const docRef = doc(dbCloud, "usuarios", userUpper);
-        setDoc(docRef, { dados: dataRegistros }, { merge: true }).catch(e => console.error("Erro ao salvar registros:", e));
+        setDoc(docRef, { dados: dataRegistros }, { merge: true }).catch(() => {});
     };
 
     window.cloudSaveCalendario = function(user, calendario) {
@@ -776,19 +807,17 @@
         const userTrim = user.trim();
         const userUpper = userTrim.toUpperCase();
         const docRef = doc(dbCloud, "usuarios", userUpper);
-        setDoc(docRef, { calendario: calendario }, { merge: true }).catch(e => console.error("Erro ao salvar calendário:", e));
+        setDoc(docRef, { calendario: calendario }, { merge: true }).catch(() => {});
 
         if (userUpper === "ADMIN") {
             setDoc(doc(dbCloud, "config", "calendarioGlobal"), { calendario: calendario }, { merge: true }).catch(() => {});
         }
     };
 
-    // SALVAMENTO SEPARADO DOS TXT: Cada razão salva em um documento próprio na coleção relatorios_txt
     window.cloudSaveRelatorioRazao = async function(user, razao, dadosRelatorio) {
         if (!user) return;
         const userUpper = user.trim().toUpperCase();
         const razaoId = razao.trim().replace(/\s+/g, '_').toUpperCase();
-        // ID único para o documento: USER_RAZAO_01
         const docId = `${userUpper}_${razaoId}`;
         
         try {
@@ -798,12 +827,9 @@
                 conteudo: JSON.parse(JSON.stringify(dadosRelatorio)),
                 atualizadoEm: new Date()
             });
-        } catch (e) {
-            console.error("Erro ao salvar relatório separado:", e);
-        }
+        } catch (e) {}
     };
 
-    // CARREGAMENTO SEPARADO DOS TXT: Busca todos os relatórios salvos independentemente
     window.cloudLoadAllRelatoriosTxt = async function(user) {
         try {
             const userUpper = user.trim().toUpperCase();
@@ -818,7 +844,6 @@
             });
             return relatoriosMap;
         } catch (e) {
-            console.error("Erro ao carregar relatórios separados:", e);
             return {};
         }
     };
@@ -845,9 +870,7 @@
                 userData.relatorios = relatoriosTxtMap;
             }
             return userData;
-        } catch (e) {
-            console.error("Erro ao carregar tudo:", e);
-        }
+        } catch (e) {}
         return null;
     };
 
@@ -873,7 +896,6 @@
             });
             return true;
         } catch (e) {
-            console.error("Erro ao salvar credenciais:", e);
             return false;
         }
     };
@@ -887,7 +909,6 @@
             });
             return lista;
         } catch (e) {
-            console.error("Erro ao listar utilizadores:", e);
             return [];
         }
     };
@@ -902,7 +923,6 @@
             await setDoc(docRef, { ativo: statusAtivo }, { merge: true });
             return true;
         } catch (e) {
-            console.error("Erro ao atualizar status do utilizador:", e);
             return false;
         }
     };
@@ -1134,7 +1154,6 @@
                 return false;
             }
         } catch (error) {
-            console.error("Erro ao atualizar:", error);
             alert("Erro de conexão com a nuvem. Verifique a conexão.");
             return false;
         } finally {
@@ -1379,10 +1398,8 @@
             medidores: listaMedidores
         };
 
-        // Atualiza localmente
         relatorioRazoesDb[razaoSelecionada] = dadosNovoRelatorio;
 
-        // Salva separadamente no Firestore (documento dedicado para esta razão)
         if (currentUser && window.cloudSaveRelatorioRazao) {
             window.cloudSaveRelatorioRazao(currentUser, razaoSelecionada, dadosNovoRelatorio);
         }
@@ -1793,6 +1810,51 @@
         }
     });
 
+    let meuGraficoGPL = null;
+    function renderizarGraficoDashboard() {
+        const ctx = document.getElementById('gplChart');
+        if (!ctx) return;
+        const mesF = "2026-" + String(viewDate.getMonth() + 1).padStart(2, '0');
+        const regsMes = db.filter(i => i.data.startsWith(mesF));
+
+        let dadosPorRazao = {};
+        for (let i = 1; i <= 18; i++) {
+            dadosPorRazao[`RAZÃO ${String(i).padStart(2, '0')}`] = { leituras: 0, imped: 0 };
+        }
+
+        regsMes.forEach(item => {
+            let raz = String(item.razao || "").trim().toUpperCase();
+            let num = raz.replace(/\D/g, '');
+            let norm = num ? `RAZÃO ${String(parseInt(num, 10)).padStart(2, '0')}` : (raz.startsWith('RAZÃO') ? raz : '');
+            if (norm && dadosPorRazao[norm]) {
+                dadosPorRazao[norm].leituras += Number(item.leituras) || 0;
+                dadosPorRazao[norm].imped += Number(item.imped) || 0;
+            }
+        });
+
+        const rotulos = Object.keys(dadosPorRazao);
+        if (meuGraficoGPL) meuGraficoGPL.destroy();
+
+        meuGraficoGPL = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: rotulos.map(r => r.replace('RAZÃO ', 'Rz')),
+                datasets: [
+                    { label: 'Leit.', data: rotulos.map(r => dadosPorRazao[r].leituras), backgroundColor: '#0070f3', borderRadius: 3 },
+                    { label: 'Imp.', data: rotulos.map(r => dadosPorRazao[r].imped), backgroundColor: '#ff4d4d', borderRadius: 3 }
+                ]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { labels: { color: '#8899a6', font: { size: 8 } } } },
+                scales: {
+                    x: { ticks: { color: '#8899a6', font: { size: 7 } }, grid: { color: 'rgba(255,255,255,0.03)' } },
+                    y: { beginAtZero: true, ticks: { color: '#8899a6', font: { size: 7 } }, grid: { color: 'rgba(255,255,255,0.03)' } }
+                }
+            }
+        });
+    }
+
     function atualizarTabela() { 
         const mesF = "2026-" + String(viewDate.getMonth() + 1).padStart(2, '0'); 
         const busca = document.getElementById('searchRazao').value.toUpperCase(); 
@@ -1845,6 +1907,7 @@
             if(liquidoMes > 0) acum += liquidoMes;
         } 
         animarContagem('totAcumulado', acum, true); 
+        renderizarGraficoDashboard();
     } 
 
     document.getElementById('gplForm').onsubmit = (e) => { 
