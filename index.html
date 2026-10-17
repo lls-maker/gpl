@@ -244,7 +244,6 @@
         .neon-receber { border-top-color: var(--success); } 
         .neon-acumulado { border-top-color: var(--purple); } 
 
-        /* Estilo do Container do Gráfico na Dashboard */
         .chart-container-box {
             background: var(--surface);
             border: 1.5px solid var(--grey-border);
@@ -346,6 +345,7 @@
             justify-content: space-between;
             box-shadow: 0 4px 12px rgba(0,0,0,0.4);
             height: 95px;
+            cursor: pointer;
         }
         .medidor-card {
             background: linear-gradient(145deg, #0d121a, var(--surface));
@@ -592,7 +592,7 @@
                 <div class="summary-card neon-acumulado"><p>Acumulado Ano</p><h2 id="totAcumulado">R$ 0,00</h2></div> 
             </div>
 
-            <!-- Gráfico Moderno de Desempenho Integrado -->
+            <!-- Gráfico Interativo com Leituras e Impedimentos -->
             <div class="chart-container-box">
                 <div class="chart-header-title">📊 Desempenho de Leituras e Impedimentos por Razão</div>
                 <div style="position: relative; height: 135px; width: 100%;">
@@ -1411,6 +1411,73 @@
         renderizarTabelaRelatorioAtual();
     }
 
+    window.filtrarRelatorioPorNL = function(numeroNL) {
+        const razaoSelecionada = document.getElementById('selectRazaoRelatorio').value;
+        const dadosRegistro = (relatorioRazoesDb && relatorioRazoesDb[razaoSelecionada]) ? relatorioRazoesDb[razaoSelecionada] : null;
+        if (!dadosRegistro || !dadosRegistro.medidores) return;
+        
+        const corpo = document.getElementById('relatorioCardsCorpo');
+        const medidoresFiltrados = dadosRegistro.medidores.filter(item => String(item.oc).trim() === String(numeroNL).trim());
+
+        let mapaUnificado = {};
+        medidoresFiltrados.forEach(item => {
+            let med = String(item.medidor || "").trim().toUpperCase();
+            if (!med) return;
+            if (!mapaUnificado[med]) mapaUnificado[med] = { medidor: med, oc: item.oc || "N/A", listaRgs: [] };
+            if (item.oc && item.oc !== "N/A") mapaUnificado[med].oc = item.oc;
+            let rg = String(item.tipoRgZ3 || "03").trim().toUpperCase();
+            let leit = Number(item.leit) || 0;
+            let rgEx = mapaUnificado[med].listaRgs.find(r => r.rg === rg);
+            if (rgEx) { if (leit > 0) rgEx.leit = leit; } 
+            else mapaUnificado[med].listaRgs.push({ rg: rg, leit: leit });
+        });
+
+        const chaves = Object.keys(mapaUnificado);
+        if (chaves.length === 0) {
+            corpo.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; color: var(--text-p); padding: 30px;">Nenhum medidor para a NL ${numeroNL}.</div>`;
+            return;
+        }
+
+        let htmlCards = `
+            <div style="grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; background: rgba(0,112,243,0.15); padding: 8px 12px; border-radius: 10px; border: 1px solid var(--accent); margin-bottom: 6px;">
+                <span style="font-weight: 900; font-size: 11px; color: #fff;">Filtrado pela NL ${numeroNL} (${chaves.length} medidores)</span>
+                <button type="button" onclick="renderizarTabelaRelatorioAtual()" class="header-btn" style="background: var(--accent); padding: 4px 10px; font-size: 10px;">⬅ Voltar</button>
+            </div>
+        `;
+
+        htmlCards += chaves.map(medKey => {
+            let dados = mapaUnificado[medKey];
+            let infoNL = notasDeLeitura.find(n => n.numero === dados.oc) || { status: 'Ocorrência', detalhe: dados.oc };
+            let isComLeitura = infoNL.status.toLowerCase().includes('com');
+            
+            let rgsHtml = dados.listaRgs.map(r => `
+                <div style="display: flex; justify-content: space-between; background: rgba(255,255,255,0.03); padding: 5px 8px; border-radius: 6px; margin-top: 3px; font-size: 10px;">
+                    <span style="color: #e1bee7; font-weight: bold;">RG ${r.rg}</span>
+                    <span style="color: var(--success); font-weight: bold;">Leitura: ${r.leit.toLocaleString()}</span>
+                </div>
+            `).join('');
+
+            return `
+                <div class="medidor-card" style="max-width: 100%;">
+                    <div class="oc-card-header" style="border-bottom: 1px solid var(--border); padding-bottom: 4px; margin-bottom: 6px;">
+                        <span class="oc-code" style="font-size: 0.95rem; color: var(--success);">Medidor: ${dados.medidor}</span>
+                        <span style="font-size: 9.5px; font-weight: bold; color: var(--text-p);">${razaoSelecionada}</span>
+                    </div>
+                    <div style="background: rgba(0, 112, 243, 0.08); border: 1px solid var(--accent); border-radius: 8px; padding: 8px; margin-bottom: 6px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px;">
+                            <span style="font-weight: 900; color: var(--warning); font-size: 11px;">NL: ${dados.oc}</span>
+                            <span class="oc-status" style="background: ${isComLeitura ? 'rgba(0,255,136,0.1)' : 'rgba(255,204,0,0.1)'}; color: ${isComLeitura ? 'var(--success)' : 'var(--warning)'}; border: 1px solid ${isComLeitura ? 'var(--success)' : 'var(--warning)'};">${infoNL.status}</span>
+                        </div>
+                        <div style="font-size: 10px; color: var(--text-h); font-weight: 600;">${infoNL.detalhe}</div>
+                    </div>
+                    <div>${rgsHtml}</div>
+                </div>
+            `;
+        }).join('');
+
+        corpo.innerHTML = htmlCards;
+    }
+
     function renderizarTabelaRelatorioAtual() {
         const razaoSelecionada = document.getElementById('selectRazaoRelatorio').value;
         const corpo = document.getElementById('relatorioCardsCorpo');
@@ -1534,7 +1601,7 @@
             const isComLeitura = infoNL.status.toLowerCase().includes('com');
 
             return `
-                <div class="oc-card">
+                <div class="oc-card" onclick="filtrarRelatorioPorNL('${oc}')">
                     <div class="oc-card-header">
                         <span class="oc-code">NL ${oc}</span>
                         <span class="oc-count">${typeof qtd === 'number' ? qtd.toLocaleString() : qtd}</span>
@@ -1560,23 +1627,30 @@
             .map(razao => {
                 const dataSalva = calendarioDb[razao] || '';
                 let dataFormatadaExibicao = "Não definida";
+                let badgeStatus = `<span style="color: var(--text-p); font-size: 10px;">-</span>`;
+
                 if (dataSalva) {
                     const [ano, mes, dia] = dataSalva.split('-');
+                    const dataObj = new Date(ano, mes - 1, dia);
                     dataFormatadaExibicao = `${dia}/${mes}/${ano}`;
+                    if (dataObj.getDay() === 6) {
+                        badgeStatus = `<span style="background: rgba(255,204,0,0.15); color: var(--warning); padding: 2px 6px; border-radius: 4px; font-size: 9.5px; font-weight: bold;">⚠️ Sábado</span>`;
+                    } else {
+                        badgeStatus = `<span style="background: rgba(0,255,136,0.15); color: var(--success); padding: 2px 6px; border-radius: 4px; font-size: 9.5px; font-weight: bold;">Definida</span>`;
+                    }
                 }
 
                 return `
                     <tr>
-                        <td style="font-weight: bold; color: var(--accent);">${razao}</td>
-                        <td>
+                        <td style="font-weight: bold; color: var(--accent); text-align: left; padding-left: 10px;">${razao}</td>
+                        <td style="text-align: left;">
                             ${currentIsAdmin ? `
-                                <input type="date" value="${dataSalva}" onchange="salvarDataCalendario('${razao}', this.value)" style="margin-bottom:0; font-size:11px;">
+                                <input type="date" value="${dataSalva}" onchange="salvarDataCalendario('${razao}', this.value)" style="margin-bottom:0; font-size:10px; padding:4px;">
                             ` : `
-                                <div style="font-weight: bold; color: ${dataSalva ? 'var(--text-h)' : 'var(--text-p)'}; font-size: 12px; padding: 6px;">
-                                    ${dataFormatadaExibicao}
-                                </div>
+                                <span style="font-weight: bold; font-size: 11px;">📅 ${dataFormatadaExibicao}</span>
                             `}
                         </td>
+                        <td style="text-align: center;">${badgeStatus}</td>
                     </tr>
                 `;
             }).join('');
@@ -1591,6 +1665,7 @@
             window.cloudSaveCalendario(currentUser, calendarioDb);
         }
         verificarSabadosAlertas();
+        renderizarCalendario(document.getElementById('searchCal')?.value || '');
     }
 
     function verificarSabadosAlertas() {
@@ -1846,7 +1921,21 @@
             },
             options: {
                 responsive: true, maintainAspectRatio: false,
-                plugins: { legend: { labels: { color: '#8899a6', font: { size: 8 } } } },
+                plugins: { 
+                    legend: { labels: { color: '#8899a6', font: { size: 8 } } },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) { label += ': '; }
+                                if (context.parsed.y !== null) {
+                                    label += context.parsed.y.toLocaleString();
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                },
                 scales: {
                     x: { ticks: { color: '#8899a6', font: { size: 7 } }, grid: { color: 'rgba(255,255,255,0.03)' } },
                     y: { beginAtZero: true, ticks: { color: '#8899a6', font: { size: 7 } }, grid: { color: 'rgba(255,255,255,0.03)' } }
