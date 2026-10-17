@@ -336,9 +336,9 @@
         #tabNL th:nth-child(2), #tabNL td:nth-child(2) { width: 20%; text-align: center; } 
         #tabNL th:nth-child(3), #tabNL td:nth-child(3) { width: 65%; text-align: left; padding-left: 8px; } 
 
-        /* Ajuste isolado apenas na coluna da data da próxima leitura (segunda coluna) */
-        #tabCal th:nth-child(1), #tabCal td:nth-child(1) { width: 25%; text-align: center; } 
-        #tabCal th:nth-child(2), #tabCal td:nth-child(2) { width: 55%; text-align: left; padding-left: 12px; } 
+        /* Código original do seu layout de colunas do Calendário */
+        #tabCal th:nth-child(1), #tabCal td:nth-child(1) { width: 35%; text-align: left; padding-left: 12px; } 
+        #tabCal th:nth-child(2), #tabCal td:nth-child(2) { width: 45%; text-align: left; padding-left: 20px; } 
         #tabCal th:nth-child(3), #tabCal td:nth-child(3) { width: 20%; text-align: center; } 
 
         .cards-container {
@@ -706,7 +706,7 @@
                 <div class="table-container">
                     <table>
                         <thead>
-                            <tr><th>Razão</th><th>Data da Próxima Leitura</th><th>Status</th></tr>
+                            <tr><th>RAZÃO</th><th>DATA DA PRÓXIMA LEITURA</th><th>STATUS</th></tr>
                         </thead>
                         <tbody id="calCorpo"></tbody>
                     </table>
@@ -1680,7 +1680,8 @@
                             ${currentIsAdmin ? `
                                 <input type="date" value="${dataSalva}" onchange="salvarDataCalendario('${razao}', this.value)" style="margin-bottom:0; font-size:10px; padding:4px;">
                             ` : `
-                                <span style="font-weight: bold; font-size: 11px; display: inline-block;">📅 ${dataFormatadaExibicao}</span>
+                                <!-- Alteração aplicada aqui: deslocando o texto/data do usuário levemente para a esquerda com padding-left menor ou ajuste de alinhamento inline -->
+                                <span style="font-weight: bold; font-size: 11px; display: inline-block; padding-left: 4px;">📅 ${dataFormatadaExibicao}</span>
                             `}
                         </td>
                         <td style="text-align: center;">${badgeStatus}</td>
