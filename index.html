@@ -665,16 +665,16 @@
             <div class="mobile-search-area no-print">
                 <input type="text" id="searchRazao" placeholder="Pesquisar razão nos registros..." oninput="atualizarTabela()" style="border-color: var(--success); margin-bottom: 0;">
             </div>
-            <div class="main-view">
-    <div class="table-container">
-        <table>
-            <thead>
-                <tr><th style="text-align: left; padding-left: 10px;">Razão</th><th>Data da Próxima Leitura</th><th>Status</th></tr>
-            </thead>
-            <tbody id="calCorpo"></tbody>
-        </table>
-    </div>
-</div>
+            <div class="main-view"> 
+                <div class="table-container"> 
+                    <table> 
+                        <thead> 
+                            <tr><th>Data</th><th>Local</th><th>Razão</th><th>Rotas</th><th>Leit.</th><th>Imp.</th><th>%</th><th class="no-print">Ação</th></tr> 
+                        </thead> 
+                        <tbody id="tabelaCorpo"></tbody> 
+                    </table> 
+                </div> 
+            </div> 
         </main> 
 
         <div class="mobile-tab-content" id="tabNL" style="flex-direction: column;">
@@ -701,7 +701,7 @@
                 <div class="table-container">
                     <table>
                         <thead>
-                            <tr><th>Razão</th><th>Data da Próxima Leitura</th><th>Status</th></tr>
+                            <tr><th style="text-align: left; padding-left: 10px;">Razão</th><th>Data da Próxima Leitura</th><th>Status</th></tr>
                         </thead>
                         <tbody id="calCorpo"></tbody>
                     </table>
@@ -1967,7 +1967,6 @@
                         mode: 'index',
                         intersect: false,
                         filter: function(tooltipItem) {
-                            // Oculta do balão/tooltip se o valor for zero
                             return tooltipItem.parsed.y > 0;
                         },
                         callbacks: {
