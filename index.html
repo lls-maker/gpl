@@ -112,7 +112,7 @@
             background: rgba(11, 15, 21, 0.95); padding: 30px; border-radius: 24px; 
             border: 1px solid var(--border); border-top: 4px solid var(--success); 
             width: 360px; text-align: center; backdrop-filter: blur(10px); 
-            box-shadow: 0 20px 50px rgba(0,0,0,0.8); 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8), 0 0 15px rgba(0,255,136,0.1); 
             max-height: 95vh; overflow-y: auto;
         } 
 
@@ -155,6 +155,7 @@
             background: var(--success); color: black; width: 100%; padding: 12px; 
             border-radius: 12px; font-weight: 900; cursor: pointer; border: none; 
             text-transform: uppercase; margin-top: 10px; transition: 0.3s; 
+            box-shadow: 0 0 12px rgba(0,255,136,0.25);
         } 
         .auth-link { 
             color: var(--accent); font-size: 11px; cursor: pointer; 
@@ -173,7 +174,7 @@
             background: var(--bg);
             border-radius: 24px;
             border: 1px solid var(--grey-border);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6), 0 0 25px rgba(0, 112, 243, 0.15);
             padding: 8px;
         } 
 
@@ -194,9 +195,10 @@
             border: 1.8px solid #ffffff; display: flex; flex-direction: column; 
             justify-content: center; gap: 6px; flex-shrink: 0;
             white-space: nowrap; overflow-x: auto;
+            box-shadow: 0 0 12px rgba(255,255,255,0.08);
         } 
         .obs-item { font-size: 12px; color: #ffffff; display: flex; align-items: center; gap: 8px; font-weight: 700; } 
-        .dot { height: 8px; width: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; } 
+        .dot { height: 8px; width: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; box-shadow: 0 0 6px currentColor; } 
 
         .alert-saturday-box {
             background: rgba(255, 204, 0, 0.15);
@@ -209,12 +211,16 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            animation: pulseAlert 2s infinite;
+            box-shadow: 0 0 12px rgba(255,204,0,0.3);
+            flex-shrink: 0;
         }
-        @keyframes pulseAlert {
-            0% { opacity: 0.8; }
-            50% { opacity: 1; border-color: #fff; }
-            100% { opacity: 0.8; }
+        .saturday-scroll-container {
+            max-height: 110px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            padding-right: 2px;
         }
 
         .summary-grid { 
@@ -227,7 +233,11 @@
             background: var(--surface); padding: 10px 6px; border-radius: 12px; 
             border: 1.5px solid var(--grey-border); border-top: 5px solid; 
             display: flex; flex-direction: column; justify-content: center; text-align: center; height: 75px; 
+            transition: 0.3s;
         } 
+        .summary-card:hover {
+            transform: translateY(-2px);
+        }
         .summary-card p { font-size: 10px; font-weight: 800; text-transform: uppercase; margin: 0; } 
         .summary-card h2 { margin: 4px 0 0; font-size: 1.1rem; color: var(--text-h); font-weight: 900; } 
 
@@ -236,13 +246,13 @@
             height: 70px;
         }
 
-        .neon-leituras { border-top-color: var(--white-neon); } 
-        .neon-impedimentos { border-top-color: var(--orange-neon); } 
-        .neon-meta { border-top-color: var(--warning); } 
-        .neon-bonus { border-top-color: var(--accent); } 
-        .neon-descontos { border-top-color: var(--danger); } 
-        .neon-receber { border-top-color: var(--success); } 
-        .neon-acumulado { border-top-color: var(--purple); } 
+        .neon-leituras { border-top-color: var(--white-neon); box-shadow: 0 0 18px rgba(248,249,250,0.2), inset 0 0 10px rgba(248,249,250,0.05); } 
+        .neon-impedimentos { border-top-color: var(--orange-neon); box-shadow: 0 0 18px rgba(255,140,0,0.25), inset 0 0 10px rgba(255,140,0,0.05); } 
+        .neon-meta { border-top-color: var(--warning); box-shadow: 0 0 18px rgba(255,204,0,0.25), inset 0 0 10px rgba(255,204,0,0.05); } 
+        .neon-bonus { border-top-color: var(--accent); box-shadow: 0 0 18px rgba(0,112,243,0.3), inset 0 0 10px rgba(0,112,243,0.08); } 
+        .neon-descontos { border-top-color: var(--danger); box-shadow: 0 0 18px rgba(255,77,77,0.3), inset 0 0 10px rgba(255,77,77,0.08); } 
+        .neon-receber { border-top-color: var(--success); box-shadow: 0 0 20px rgba(0,255,136,0.35), inset 0 0 12px rgba(0,255,136,0.1); } 
+        .neon-acumulado { border-top-color: var(--purple); box-shadow: 0 0 20px rgba(156,39,176,0.35), inset 0 0 12px rgba(156,39,176,0.1); } 
 
         .chart-container-box {
             background: var(--surface);
@@ -254,6 +264,7 @@
             flex-direction: column;
             justify-content: center;
             margin-top: 2px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
         }
         .chart-header-title {
             font-size: 10px;
@@ -287,28 +298,30 @@
             background: linear-gradient(180deg, rgba(0, 112, 243, 0.08) 0%, var(--surface) 100%);
             border-radius: 16px;
             border: 1.5px solid var(--accent);
+            box-shadow: inset 0 0 15px rgba(0,112,243,0.1);
         } 
         .form-content-area { overflow-y: auto; flex-grow: 1; min-height: 0; padding-right: 2px; }
         .form-group { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
-        .form-group label { width: 80px; flex-shrink: 0; font-size: 10.5px; font-weight: 800; color: var(--accent); text-transform: uppercase; }
+        .form-group label { width: 80px; flex-shrink: 0; font-size: 10.5px; font-weight: 800; color: var(--accent); text-transform: uppercase; text-shadow: 0 0 8px rgba(0,112,243,0.3); }
         
         .actions-footer { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; flex-shrink: 0; } 
-        .btn-add { background: var(--accent); color: #fff; width: 100%; padding: 12px; border-radius: 12px; font-weight: 900; cursor: pointer; border: none; text-transform: uppercase; font-size: 11.5px; } 
-        .btn-clear { background: transparent; color: var(--danger); width: 100%; padding: 8px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--danger); text-transform: uppercase; font-size: 10px; } 
-        .btn-clear-year { background: transparent; color: var(--purple); width: 100%; padding: 8px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--purple); text-transform: uppercase; font-size: 10px; } 
+        .btn-add { background: var(--accent); color: #fff; width: 100%; padding: 12px; border-radius: 12px; font-weight: 900; cursor: pointer; border: none; text-transform: uppercase; font-size: 11.5px; box-shadow: 0 0 15px rgba(0,112,243,0.4); } 
+        .btn-clear { background: transparent; color: var(--danger); width: 100%; padding: 8px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--danger); text-transform: uppercase; font-size: 10px; box-shadow: 0 0 8px rgba(255,77,77,0.15); } 
+        .btn-clear-year { background: transparent; color: var(--purple); width: 100%; padding: 8px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--purple); text-transform: uppercase; font-size: 10px; box-shadow: 0 0 8px rgba(156,39,176,0.15); } 
         .backup-row { display: flex; gap: 6px; width: 100%; }
-        .btn-backup { background: transparent; color: var(--success); width: 50%; padding: 8px 4px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--success); text-transform: uppercase; font-size: 10px; text-align: center; } 
-        .btn-import { background: transparent; color: var(--warning); width: 50%; padding: 8px 4px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--warning); text-transform: uppercase; font-size: 10px; text-align: center; } 
+        .btn-backup { background: transparent; color: var(--success); width: 50%; padding: 8px 4px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--success); text-transform: uppercase; font-size: 10px; text-align: center; box-shadow: 0 0 8px rgba(0,255,136,0.15); } 
+        .btn-import { background: transparent; color: var(--warning); width: 50%; padding: 8px 4px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--warning); text-transform: uppercase; font-size: 10px; text-align: center; box-shadow: 0 0 8px rgba(255,204,0,0.15); } 
 
         .main-view { 
             background: var(--surface); border-radius: 16px; border: 1.5px solid var(--brown-border); 
             display: flex; flex-direction: column; flex-grow: 1; min-height: 0; overflow: hidden; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
         } 
         .table-container { flex-grow: 1; min-height: 0; overflow-y: auto; overflow-x: auto; overscroll-behavior-y: contain; } 
 
         table { width: 100%; border-collapse: collapse; table-layout: fixed; } 
         th, td { padding: 6px 3px; text-align: center; border-bottom: 1px solid var(--border); font-size: 10.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } 
-        th { background: #0d1117; color: var(--accent); font-size: 9px; text-transform: uppercase; position: sticky; top: 0; z-index: 5; } 
+        th { background: #0d1117; color: var(--accent); font-size: 9px; text-transform: uppercase; position: sticky; top: 0; z-index: 5; text-shadow: 0 0 6px rgba(0,112,243,0.4); } 
 
         #tabTabela th:nth-child(1), #tabTabela td:nth-child(1) { width: 12%; } 
         #tabTabela th:nth-child(2), #tabTabela td:nth-child(2) { width: 15%; } 
@@ -346,6 +359,11 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.4);
             height: 95px;
             cursor: pointer;
+            transition: 0.2s;
+        }
+        .oc-card:hover {
+            border-color: var(--accent);
+            box-shadow: 0 0 15px rgba(0,112,243,0.3);
         }
         .medidor-card {
             background: linear-gradient(145deg, #0d121a, var(--surface));
@@ -371,6 +389,7 @@
             font-size: 1rem;
             font-weight: 900;
             color: var(--text-h);
+            text-shadow: 0 0 8px rgba(255,255,255,0.4);
         }
         .oc-count {
             background: rgba(0, 255, 136, 0.12);
@@ -380,6 +399,7 @@
             border-radius: 8px;
             font-size: 0.85rem;
             font-weight: 900;
+            box-shadow: 0 0 8px rgba(0,255,136,0.2);
         }
         .oc-desc {
             font-size: 10.5px;
@@ -402,13 +422,19 @@
             width: fit-content;
         }
 
-        .month-grid { display: none; position: absolute; top: 50px; right: 15px; background: #0d1117; border: 1px solid var(--accent); padding: 12px; border-radius: 12px; grid-template-columns: repeat(3, 1fr); gap: 6px; z-index: 1000; } 
+        .month-grid { display: none; position: absolute; top: 50px; right: 15px; background: #0d1117; border: 1px solid var(--accent); padding: 12px; border-radius: 12px; grid-template-columns: repeat(3, 1fr); gap: 6px; z-index: 1000; box-shadow: 0 10px 25px rgba(0,0,0,0.8), 0 0 15px rgba(0,112,243,0.3); } 
         .month-grid.active { display: grid; } 
-        .month-item { background: #000; color: white; border: 1px solid var(--border); padding: 8px; border-radius: 6px; cursor: pointer; font-size: 10px; font-weight: bold; text-align: center; }
+        .month-item { background: #000; color: white; border: 1px solid var(--border); padding: 8px; border-radius: 6px; cursor: pointer; font-size: 10px; font-weight: bold; text-align: center; transition: 0.2s; }
+        .month-item:hover { border-color: var(--accent); color: var(--accent); box-shadow: 0 0 10px rgba(0,112,243,0.4); }
         
         .header-btn {
             background: #1e2633; border: 1px solid var(--border); color: white;
             padding: 8px 12px; border-radius: 9px; cursor: pointer; font-weight: 800; font-size: 11px; text-transform: uppercase;
+            transition: 0.2s;
+        }
+        .header-btn:hover {
+            border-color: var(--accent);
+            box-shadow: 0 0 10px rgba(0,112,243,0.4);
         }
 
         .desktop-sync-btn {
@@ -425,6 +451,7 @@
             display: flex; width: 100%; background: var(--surface); border: 1px solid var(--border);
             border-radius: 10px; z-index: 9; justify-content: space-between; padding: 4px;
             gap: 3px; flex-shrink: 0;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
         }
         .mob-tab-btn {
             background: rgba(255, 255, 255, 0.03); 
@@ -445,7 +472,7 @@
             background: var(--accent); 
             border-color: #fff; 
             color: #fff; 
-            box-shadow: 0 0 10px rgba(0, 112, 243, 0.5);
+            box-shadow: 0 0 12px rgba(0, 112, 243, 0.6);
         }
 
         .admin-badge {
@@ -459,6 +486,7 @@
             padding: 2px 4px;
             border-radius: 50%;
             display: none;
+            box-shadow: 0 0 8px rgba(255,77,77,0.6);
         }
 
         .mobile-search-area { display: block; margin-bottom: 4px; flex-shrink: 0; }
@@ -510,7 +538,7 @@
 
 <div id="loginScreen"> 
     <div class="login-box"> 
-        <div style="background:var(--success); color:black; padding:10px; border-radius:12px; font-weight:900; margin-bottom:15px;">GPL</div> 
+        <div style="background:var(--success); color:black; padding:10px; border-radius:12px; font-weight:900; margin-bottom:15px; box-shadow: 0 0 15px rgba(0,255,136,0.4);">GPL</div> 
         
         <div class="login-tabs-header">
             <button class="login-tab-btn active" id="btnPaneLogin" onclick="switchLoginPane('loginPane')">Acessar</button>
@@ -532,7 +560,7 @@
             <input type="password" id="regPass" placeholder="Senha"> 
             <input type="password" id="regPassConfirm" placeholder="Confirmar Senha"> 
             <input type="text" id="regRecovery" placeholder="Palavra/Dica de recuperar senha"> 
-            <button onclick="handleCreateAccount()" class="auth-btn" style="background: var(--accent); color: white;">REGISTRAR</button> 
+            <button onclick="handleCreateAccount()" class="auth-btn" style="background: var(--accent); color: white; box-shadow: 0 0 15px rgba(0,112,243,0.4);">REGISTRAR</button> 
         </div>
     </div> 
 </div>
@@ -540,25 +568,25 @@
 <div class="container"> 
     <header> 
         <div style="display: flex; align-items: center; gap: 12px;">
-            <div style="background:var(--success); color:black; padding:8px 14px; border-radius:10px; font-weight:900; font-size:13px;">GPL</div> 
-            <span style="font-size: 13px; font-weight: 800; color: var(--success); text-transform: uppercase;" id="headerUserDisplay"></span>
+            <div style="background:var(--success); color:black; padding:8px 14px; border-radius:10px; font-weight:900; font-size:13px; box-shadow: 0 0 12px rgba(0,255,136,0.4);">GPL</div> 
+            <span style="font-size: 13px; font-weight: 800; color: var(--success); text-shadow: 0 0 8px rgba(0,255,136,0.3); text-transform: uppercase;" id="headerUserDisplay"></span>
         </div>
         <div style="display: flex; gap: 8px; align-items: center; position: relative;"> 
-            <button class="header-btn" onclick="toggleMonthGrid(event)" id="currentMonthDisplay" style="background: var(--accent); border-color: var(--accent);">MÊS</button> 
+            <button class="header-btn" onclick="toggleMonthGrid(event)" id="currentMonthDisplay" style="background: var(--accent); border-color: var(--accent); box-shadow: 0 0 10px rgba(0,112,243,0.4);">MÊS</button> 
             <div id="monthGrid" class="month-grid"></div> 
             
             <button class="header-btn" onclick="window.print()">IMPRIMIR</button> 
-            <button class="header-btn desktop-sync-btn" onclick="atualizarDadosManualmente(this)" title="Atualizar dados da nuvem" style="background: var(--success); color: black;">🔄</button>
+            <button class="header-btn desktop-sync-btn" onclick="atualizarDadosManualmente(this)" title="Atualizar dados da nuvem" style="background: var(--success); color: black; box-shadow: 0 0 10px rgba(0,255,136,0.3);">🔄</button>
         </div> 
     </header> 
 
     <div id="progArea" class="prog-area"> 
-        <div style="width:100%; background:#1e2633; height:8px; border-radius:10px; overflow:hidden; border:1px solid var(--border); margin-bottom:3px;"> 
-            <div id="barFill" style="height:100%; width:0%; background:linear-gradient(90deg, var(--accent), var(--success)); transition:0.8s;"></div> 
+        <div style="width:100%; background:#1e2633; height:8px; border-radius:10px; overflow:hidden; border:1px solid var(--border); margin-bottom:3px; box-shadow: inset 0 0 6px rgba(0,0,0,0.5);"> 
+            <div id="barFill" style="height:100%; width:0%; background:linear-gradient(90deg, var(--accent), var(--success)); transition:0.8s; box-shadow: 0 0 10px var(--success);"></div> 
         </div> 
         <div style="display:flex; justify-content:space-between; font-size:10px; font-weight:bold; color:var(--text-p); text-transform: uppercase;"> 
             <span id="barTxt">Progresso Meta: 0 / 8.000</span> 
-            <span id="barPerc" style="color:var(--success)">0%</span> 
+            <span id="barPerc" style="color:var(--success); text-shadow: 0 0 8px rgba(0,255,136,0.4)">0%</span> 
         </div> 
     </div> 
 
@@ -575,9 +603,9 @@
     <div class="content-wrap" id="mainContentWrap"> 
         <div class="top-dashboard mobile-tab-content active-tab" id="tabDashboard">
             <div class="observations no-print"> 
-                <div class="obs-item"><span class="dot" style="background:var(--success)"></span> Bônus de R$ 0,20 por cada leitura excedente a 8000 leituras</div> 
-                <div class="obs-item"><span class="dot" style="background:var(--danger)"></span> Desconto: R$ 1,50 p/ impedimento</div> 
-                <div class="obs-item"><span class="dot" style="background:var(--warning)"></span> Qualidade: Meta ≤ 0,50%</div> 
+                <div class="obs-item"><span class="dot" style="background:var(--success); color:var(--success);"></span> Bônus de R$ 0,20 por cada leitura excedente a 8000 leituras</div> 
+                <div class="obs-item"><span class="dot" style="background:var(--danger); color:var(--danger);"></span> Desconto: R$ 1,50 p/ impedimento</div> 
+                <div class="obs-item"><span class="dot" style="background:var(--warning); color:var(--warning);"></span> Qualidade: Meta ≤ 0,50%</div> 
             </div> 
 
             <div id="saturdayAlertContainer" style="display:none;" class="no-print"></div>
@@ -666,11 +694,10 @@
         </div>
 
         <div class="mobile-tab-content" id="tabCal" style="flex-direction: column;">
-            <div class="mobile-search-area" style="display: flex; gap: 8px; align-items: center;">
+            <div class="mobile-search-area" style="display: flex; gap: 6px; align-items: center; margin-bottom: 4px;">
                 <input type="text" id="searchCal" placeholder="Pesquisar razão..." oninput="renderizarCalendario(this.value)" style="border-color: var(--success); margin-bottom: 0; flex: 1;">
-                <button type="button" id="btnLimparCalendario" onclick="apagarCalendarioMes()" class="header-btn" style="background: var(--danger); display: none; white-space: nowrap; padding: 8px 12px; font-size: 10px;">🗑️ Apagar Calendário</button>
             </div>
-            <div class="main-view" style="margin-top: 4px;">
+            <div class="main-view">
                 <div class="table-container">
                     <table>
                         <thead>
@@ -692,7 +719,7 @@
                 <div>
                     <span style="font-weight: 800; color: transparent; font-size: 10.5px; display: block; margin-bottom: 4px;">AÇÃO</span>
                     <input type="file" id="inputTxtOcorrencia" accept=".txt,.csv" style="display:none" onchange="processarArquivoTxtSelecionado(this)">
-                    <button type="button" onclick="document.getElementById('inputTxtOcorrencia').click()" class="auth-btn" style="width: auto; margin-top: 0; padding: 8px 14px; font-size: 11px; background: var(--purple); color: #fff;">
+                    <button type="button" onclick="document.getElementById('inputTxtOcorrencia').click()" class="auth-btn" style="width: auto; margin-top: 0; padding: 8px 14px; font-size: 11px; background: var(--purple); color: #fff; box-shadow: 0 0 12px rgba(156,39,176,0.4);">
                         📂 Importar
                     </button>
                 </div>
@@ -1621,14 +1648,7 @@
     function renderizarCalendario(filtro = '') {
         const termo = filtro.toUpperCase();
         const corpo = document.getElementById('calCorpo');
-        const btnApagarCal = document.getElementById('btnLimparCalendario');
         if(!corpo) return;
-
-        if (currentIsAdmin) {
-            btnApagarCal.style.display = 'block';
-        } else {
-            btnApagarCal.style.display = 'none';
-        }
 
         const html = lista18Razoes
             .filter(razao => razao.includes(termo))
@@ -1666,19 +1686,6 @@
         corpo.innerHTML = html;
     }
 
-    window.apagarCalendarioMes = function() {
-        if (!currentIsAdmin) return;
-        if (confirm("Deseja realmente apagar todas as datas do calendário para iniciar um novo mês?")) {
-            calendarioDb = {};
-            if (currentUser && window.cloudSaveCalendario) {
-                window.cloudSaveCalendario(currentUser, calendarioDb);
-            }
-            renderizarCalendario(document.getElementById('searchCal')?.value || '');
-            verificarSabadosAlertas();
-            alert("📅 Calendário apagado com sucesso!");
-        }
-    }
-
     function salvarDataCalendario(razao, data) {
         if (!currentIsAdmin) return;
         calendarioDb[razao] = data;
@@ -1693,12 +1700,21 @@
         const alertaContainer = document.getElementById('saturdayAlertContainer');
         if(!alertaContainer) return;
 
+        const hoje = new Date();
+        hoje.setHours(0, 0, 0, 0);
+
         let alertas = [];
         for (const [razao, dataStr] of Object.entries(calendarioDb)) {
             if (dataStr) {
                 const [ano, mes, dia] = dataStr.split('-');
                 const dataObj = new Date(ano, mes - 1, dia);
+                dataObj.setHours(0, 0, 0, 0);
                 
+                // Se a data já passou (é anterior a hoje), ignoramos/apagamos o aviso automaticamente
+                if (dataObj < hoje) {
+                    continue;
+                }
+
                 if (dataObj.getDay() === 6) {
                     const dataFormatada = `${dia}/${mes}/${ano}`;
                     alertas.push(`⚠️ Alerta: ${razao} está marcada para Sábado, dia ${dataFormatada}!`);
@@ -1707,10 +1723,14 @@
         }
 
         if (alertas.length > 0) {
-            alertaContainer.style.display = 'flex';
-            alertaContainer.innerHTML = `<div style="display:flex; flex-direction:column; gap:4px; width:100%;">` + 
-                alertas.map(a => `<div class="alert-saturday-box"><span>${a}</span></div>`).join('') + 
-                `</div>`;
+            alertaContainer.style.display = 'block';
+            let conteudoInterno = alertas.map(a => `<div class="alert-saturday-box"><span>${a}</span></div>`).join('');
+            
+            if (alertas.length > 2) {
+                alertaContainer.innerHTML = `<div class="saturday-scroll-container">${conteudoInterno}</div>`;
+            } else {
+                alertaContainer.innerHTML = `<div style="display:flex; flex-direction:column; gap:4px; width:100%;">${conteudoInterno}</div>`;
+            }
         } else {
             alertaContainer.style.display = 'none';
             alertaContainer.innerHTML = '';
