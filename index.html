@@ -1,1 +1,2047 @@
-<!DOCTYPE html> <html lang="pt-br"> <head>     <meta charset="UTF-8">     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">     <title>Gestão de Produtividade de Leituras</title>     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzMiAzMicgd2lkdGg9JzMyJyBoZWlnaHQ9JzMyJz48cmVjdCB3aWR0aD0nMzInIGhlaWdodD0nMzInIHJ4PSc2JyBmaWxsPSdjMGIwZjE1Jz48L3JlY3Q+PHRleHQgeD0nNTAlJyB5PSc1NSUnIGRvbWluYW50LWJhc2VsaW5lPSdtaWRkbGUnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJyBmb250LXdlaWdodD0nOTAwJyBmb250LXdlaWdodD0nMTAwMCcgZm9udC1zaXplPScxMCcgZmlsbD0nIzAwZmY4OCcgbGV0dGVyLXNwYWNpbmdzPScwLjUnPkdQTDwvdGV4dD48L3N2Zz4=">    <link rel="manifest" href="./manifest.json">    <meta name="theme-color" content="#030508">    <style>         :root {             --bg: #030508;             --surface: #0b0f15;            --accent: #0070f3;            --success: #00ff88;             --danger: #ff4d4d;            --warning: #ffcc00;             --border: #1e2633;             --text-p: #8899a6;             --text-h: #ffffff;             --grey-border: #333c4d;             --brown-border: #5d4037;             --purple: #9c27b0;             --orange-neon: #ff8c00;             --white-neon: #f8f9fa;         }         * { box-sizing: border-box; }         html, body {            width: 100%;            height: 100vh;            font-family: 'Inter', system-ui, sans-serif;             background-color: var(--bg);             color: var(--text-p);             margin: 0;             padding: 0;             display: flex;            justify-content: center;            align-items: center;            overflow: hidden;            overscroll-behavior-y: contain;        }         body::before {            content: '';            position: fixed;            top: 0; left: 0; width: 100%; height: 100%;            background: radial-gradient(circle at center, #111a2c 0%, #030508 100%);            z-index: -1;        }        #pullToRefreshIndicator {            position: fixed;            top: -50px;            left: 0;            width: 100%;            height: 50px;            display: flex;            align-items: center;            justify-content: center;            background: rgba(11, 15, 21, 0.95);            color: var(--success);            font-weight: 900;            font-size: 11px;            border-bottom: 1px solid var(--border);            z-index: 99999;            transition: transform 0.2s ease;        }        input, select {             background: #000;             color: white;             border: 1px solid var(--border);             padding: 8px 10px;             border-radius: 9px;             outline: none;             width: 100%;             font-size: 12px;             margin-bottom: 5px;             transition: 0.3s;         }         input:focus, select:focus {             border-color: var(--accent) !important;             box-shadow: 0 0 15px rgba(0, 112, 243, 0.4);         }         input[type="date"]::-webkit-calendar-picker-indicator {             filter: invert(1);             cursor: pointer;             opacity: 1;             display: block;         }         input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {             -webkit-appearance: none;             margin: 0;         }         input[type=number] {             appearance: textfield;            -moz-appearance: textfield;         }         #loginScreen {             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;             background: radial-gradient(circle at center, #0b0f15 0%, #030508 100%);             z-index: 99999; display: flex; align-items: center; justify-content: center;         }         .login-box {             background: rgba(11, 15, 21, 0.95); padding: 30px; border-radius: 24px;             border: 1px solid var(--border); border-top: 4px solid var(--success);             width: 360px; text-align: center; backdrop-filter: blur(10px);             box-shadow: 0 20px 50px rgba(0,0,0,0.8);             max-height: 95vh; overflow-y: auto;        }         .login-tabs-header {            display: flex;            background: #000;            border: 1px solid var(--border);            border-radius: 10px;            margin-bottom: 15px;            padding: 3px;            gap: 3px;        }        .login-tab-btn {            background: transparent;            border: none;            color: var(--text-p);            font-size: 10px;            font-weight: 900;            text-transform: uppercase;            cursor: pointer;            flex: 1;            padding: 8px;            border-radius: 8px;            transition: 0.3s;        }        .login-tab-btn.active {            background: var(--accent);            color: #fff;            box-shadow: 0 0 10px rgba(0, 112, 243, 0.4);        }        .login-form-pane {            display: none;            text-align: left;        }        .login-form-pane.active {            display: block;        }        .auth-btn {             background: var(--success); color: black; width: 100%; padding: 12px;             border-radius: 12px; font-weight: 900; cursor: pointer; border: none;             text-transform: uppercase; margin-top: 10px; transition: 0.3s;         }         .auth-link {             color: var(--accent); font-size: 11px; cursor: pointer;             font-weight: 700; margin-top: 12px; display: inline-block; text-transform: uppercase; text-align: center; width: 100%;        }         .container {             max-width: 480px;             width: 100%;             height: 100vh;            max-height: 920px;            display: flex;             flex-direction: column;             gap: 6px;             overflow: hidden;            background: var(--bg);            border-radius: 24px;            border: 1px solid var(--grey-border);            box-shadow: 0 20px 40px rgba(0,0,0,0.6);            padding: 8px;        }         header {             background: var(--surface); padding: 8px 12px; border-radius: 16px;             border: 1px solid var(--border); display: flex; justify-content: space-between;             align-items: center; flex-shrink: 0; position: relative;         }         .prog-area { width: 100%; flex-shrink: 0; padding: 0 2px; }         .top-dashboard {            display: flex; flex-direction: column; gap: 6px; flex-shrink: 0;            overflow-y: auto; max-height: calc(100vh - 120px); padding-bottom: 4px;        }        .observations {             background: var(--surface); padding: 14px 18px; border-radius: 14px;             border: 1.8px solid #ffffff; display: flex; flex-direction: column;             justify-content: center; gap: 6px; flex-shrink: 0;            white-space: nowrap; overflow-x: auto;        }         .obs-item { font-size: 12px; color: #ffffff; display: flex; align-items: center; gap: 8px; font-weight: 700; }         .dot { height: 8px; width: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; }         .alert-saturday-box {            background: rgba(255, 204, 0, 0.15);            border: 1.5px solid var(--warning);            padding: 10px 14px;            border-radius: 12px;            color: var(--warning);            font-size: 11.5px;            font-weight: 800;            display: flex;            align-items: center;            gap: 8px;            animation: pulseAlert 2s infinite;        }        @keyframes pulseAlert {            0% { opacity: 0.8; }            50% { opacity: 1; border-color: #fff; }            100% { opacity: 0.8; }        }        .summary-grid {             display: grid;             grid-template-columns: repeat(2, 1fr);             gap: 6px;             height: auto;         }         .summary-card {             background: var(--surface); padding: 10px 6px; border-radius: 12px;             border: 1.5px solid var(--grey-border); border-top: 5px solid;             display: flex; flex-direction: column; justify-content: center; text-align: center; height: 75px;         }         .summary-card p { font-size: 10px; font-weight: 800; text-transform: uppercase; margin: 0; }         .summary-card h2 { margin: 4px 0 0; font-size: 1.1rem; color: var(--text-h); font-weight: 900; }         .neon-acumulado {            grid-column: span 2;            height: 70px;        }        .neon-leituras { border-top-color: var(--white-neon); }         .neon-impedimentos { border-top-color: var(--orange-neon); }         .neon-meta { border-top-color: var(--warning); }         .neon-bonus { border-top-color: var(--accent); }         .neon-descontos { border-top-color: var(--danger); }         .neon-receber { border-top-color: var(--success); }         .neon-acumulado { border-top-color: var(--purple); }         .content-wrap {             display: block;             flex-grow: 1;             min-height: 0;             overflow: hidden;         }         .mobile-tab-content { display: none; height: 100%; min-height: 0; overflow: hidden; }        .mobile-tab-content.active-tab {            display: flex; flex-direction: column; flex-grow: 1; min-height: 0; overflow: hidden;        }        aside.mobile-tab-content .sidebar {             height: 100%;             max-height: 100%;             display: flex;            flex-direction: column;            justify-content: space-between;            overflow: hidden;             padding: 10px;            background: linear-gradient(180deg, rgba(0, 112, 243, 0.08) 0%, var(--surface) 100%);            border-radius: 16px;            border: 1.5px solid var(--accent);        }         .form-content-area { overflow-y: auto; flex-grow: 1; min-height: 0; padding-right: 2px; }        .form-group { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }        .form-group label { width: 80px; flex-shrink: 0; font-size: 10.5px; font-weight: 800; color: var(--accent); text-transform: uppercase; }        .actions-footer { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; flex-shrink: 0; }         .btn-add { background: var(--accent); color: #fff; width: 100%; padding: 12px; border-radius: 12px; font-weight: 900; cursor: pointer; border: none; text-transform: uppercase; font-size: 11.5px; }         .btn-clear { background: transparent; color: var(--danger); width: 100%; padding: 8px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--danger); text-transform: uppercase; font-size: 10px; }         .btn-clear-year { background: transparent; color: var(--purple); width: 100%; padding: 8px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--purple); text-transform: uppercase; font-size: 10px; }         .backup-row { display: flex; gap: 6px; width: 100%; }        .btn-backup { background: transparent; color: var(--success); width: 50%; padding: 8px 4px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--success); text-transform: uppercase; font-size: 10px; text-align: center; }         .btn-import { background: transparent; color: var(--warning); width: 50%; padding: 8px 4px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--warning); text-transform: uppercase; font-size: 10px; text-align: center; }         .main-view {             background: var(--surface); border-radius: 16px; border: 1.5px solid var(--brown-border);             display: flex; flex-direction: column; flex-grow: 1; min-height: 0; overflow: hidden;         }         .table-container { flex-grow: 1; min-height: 0; overflow-y: auto; overflow-x: auto; overscroll-behavior-y: contain; }         table { width: 100%; border-collapse: collapse; table-layout: fixed; }         th, td { padding: 6px 3px; text-align: center; border-bottom: 1px solid var(--border); font-size: 10.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }         th { background: #0d1117; color: var(--accent); font-size: 9px; text-transform: uppercase; position: sticky; top: 0; z-index: 5; }         #tabTabela th:nth-child(1), #tabTabela td:nth-child(1) { width: 12%; }         #tabTabela th:nth-child(2), #tabTabela td:nth-child(2) { width: 15%; }         #tabTabela th:nth-child(3), #tabTabela td:nth-child(3) { width: 14%; }         #tabTabela th:nth-child(4), #tabTabela td:nth-child(4) { width: 22%; }         #tabTabela th:nth-child(5), #tabTabela td:nth-child(5) { width: 13%; }         #tabTabela th:nth-child(6), #tabTabela td:nth-child(6) { width: 9% !important; }         #tabTabela th:nth-child(7), #tabTabela td:nth-child(7) { width: 9%; }         #tabTabela th:nth-child(8), #tabTabela td:nth-child(8) { width: 6%; }         #tabNL th:nth-child(1), #tabNL td:nth-child(1) { width: 15%; text-align: center; }         #tabNL th:nth-child(2), #tabNL td:nth-child(2) { width: 20%; text-align: center; }         #tabNL th:nth-child(3), #tabNL td:nth-child(3) { width: 65%; text-align: left; padding-left: 8px; }         .cards-container {            display: grid;            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));            gap: 8px;            padding: 10px;            overflow-y: auto;            flex-grow: 1;            height: 100%;            align-content: start;            overscroll-behavior-y: contain;        }        .oc-card {            background: linear-gradient(145deg, #0d121a, var(--surface));            border: 1px solid var(--border);            border-left: 4px solid var(--accent);            border-radius: 12px;            padding: 10px;            display: flex;            flex-direction: column;            justify-content: space-between;            box-shadow: 0 4px 12px rgba(0,0,0,0.4);            height: 95px;        }        .medidor-card {            background: linear-gradient(145deg, #0d121a, var(--surface));            border: 1px solid var(--success);            border-left: 5px solid var(--success);            border-radius: 12px;            padding: 12px;            display: flex;            flex-direction: column;            gap: 8px;            box-shadow: 0 4px 15px rgba(0,255,136,0.15);            max-width: 420px;            margin: 6px auto;            width: 100%;        }        .oc-card-header {            display: flex;            justify-content: space-between;            align-items: center;            margin-bottom: 4px;        }        .oc-code {            font-size: 1rem;            font-weight: 900;            color: var(--text-h);        }        .oc-count {            background: rgba(0, 255, 136, 0.12);            color: var(--success);            border: 1px solid var(--success);            padding: 3px 8px;            border-radius: 8px;            font-size: 0.85rem;            font-weight: 900;        }        .oc-desc {            font-size: 10.5px;            color: var(--text-p);            margin-bottom: 4px;            line-height: 1.25;            font-weight: 600;            display: -webkit-box;            -webkit-line-clamp: 2;            -webkit-box-orient: vertical;            overflow: hidden;        }        .oc-status {            font-size: 9.5px;            font-weight: 800;            text-transform: uppercase;            padding: 2px 6px;            border-radius: 4px;            display: inline-block;            width: fit-content;        }        .month-grid { display: none; position: absolute; top: 50px; right: 15px; background: #0d1117; border: 1px solid var(--accent); padding: 12px; border-radius: 12px; grid-template-columns: repeat(3, 1fr); gap: 6px; z-index: 1000; }         .month-grid.active { display: grid; }         .month-item { background: #000; color: white; border: 1px solid var(--border); padding: 8px; border-radius: 6px; cursor: pointer; font-size: 10px; font-weight: bold; text-align: center; }        .header-btn {            background: #1e2633; border: 1px solid var(--border); color: white;            padding: 8px 12px; border-radius: 9px; cursor: pointer; font-weight: 800; font-size: 11px; text-transform: uppercase;        }        .desktop-sync-btn {            display: none;        }        @media (min-width: 768px) {            .desktop-sync-btn {                display: inline-block;            }        }        .mobile-nav-tabs {            display: flex; width: 100%; background: var(--surface); border: 1px solid var(--border);            border-radius: 10px; z-index: 9; justify-content: space-between; padding: 4px;            gap: 3px; flex-shrink: 0;        }        .mob-tab-btn {            background: rgba(255, 255, 255, 0.03);             border: 1.5px solid var(--grey-border);             color: var(--text-p);             font-size: 7.5px;            font-weight: 900;             text-transform: uppercase;             cursor: pointer;             flex: 1;             padding: 8px 1px;            border-radius: 8px;             text-align: center;             transition: 0.3s;            position: relative;        }        .mob-tab-btn.active {             background: var(--accent);             border-color: #fff;             color: #fff;             box-shadow: 0 0 10px rgba(0, 112, 243, 0.5);        }        .admin-badge {            position: absolute;            top: -4px;            right: -4px;            background: var(--danger);            color: #fff;            font-size: 7px;            font-weight: 900;            padding: 2px 4px;            border-radius: 50%;            display: none;        }        .mobile-search-area { display: block; margin-bottom: 4px; flex-shrink: 0; }        .print-header { display: none; }        @media print {            @page { margin: 10mm; size: auto; }            html, body {                background: white !important; color: black !important;                display: block !important; overflow: visible !important;                height: auto !important; position: static !important;                margin: 0 !important; padding: 0 !important;            }            body::before { display: none; }            .container {                max-width: 90% !important; width: 90% !important;                height: auto !important; max-height: none !important;                border: none !important; box-shadow: none !important;                background: white !important; padding: 0 !important;                margin: 0 auto !important; display: block !important;                overflow: visible !important;            }            header, .prog-area, .mobile-nav-tabs, .no-print, .mobile-search-area {                display: none !important;            }            .mobile-tab-content { display: none !important; }            .mobile-tab-content#tabTabela {                display: block !important; height: auto !important;                overflow: visible !important; margin: 0 !important; padding: 5px !important;            }            .print-header {                display: block !important; text-align: center;                margin-top: 0 !important; margin-bottom: 10px;                border-bottom: 2px solid #000; padding-bottom: 6px;            }            .print-header h1 { font-size: 15px; text-transform: uppercase; margin: 0 0 4px 0; color: #000; }            .print-header p { font-size: 11px; margin: 0; color: #333; font-weight: bold; text-transform: uppercase; }            .main-view { background: white !important; border: none !important; overflow: visible !important; height: auto !important; margin: 0 !important; }            .table-container { overflow: visible !important; height: auto !important; }            table { width: 100% !important; border-collapse: collapse !important; }            th, td { border: 1px solid #999 !important; color: black !important; padding: 5px !important; font-size: 10px !important; }            th { background: #eee !important; color: black !important; }        }    </style> </head> <body><div id="pullToRefreshIndicator">🔄 Puxe mais para atualizar...</div><div id="loginScreen">     <div class="login-box">         <div style="background:var(--success); color:black; padding:10px; border-radius:12px; font-weight:900; margin-bottom:15px;">GPL</div>         <div class="login-tabs-header">            <button class="login-tab-btn active" id="btnPaneLogin" onclick="switchLoginPane('loginPane')">Acessar</button>            <button class="login-tab-btn" id="btnPaneCreate" onclick="switchLoginPane('createPane')">Criar Conta</button>        </div>        <div class="login-form-pane active" id="loginPane">            <input type="text" id="loginUser" placeholder="Utilizador">             <input type="password" id="loginPass" placeholder="Senha">             <button onclick="handleLogin()" class="auth-btn">ENTRAR</button>             <span class="auth-link" style="color:var(--warning)" onclick="recoverPass()">Recuperar Senha</span>         </div>        <div class="login-form-pane" id="createPane">            <div style="background: rgba(0, 255, 136, 0.1); border: 1px solid var(--success); padding: 8px; border-radius: 8px; margin-bottom: 8px; font-size: 10px; color: var(--success); font-weight: bold;">                💡 Depósito/PIX de R$ 10,00 necessário para liberação após criar a conta.            </div>            <input type="text" id="regUser" placeholder="Utilizador">             <input type="password" id="regPass" placeholder="Senha">             <input type="password" id="regPassConfirm" placeholder="Confirmar Senha">             <input type="text" id="regRecovery" placeholder="Palavra/Dica de recuperar senha">             <button onclick="handleCreateAccount()" class="auth-btn" style="background: var(--accent); color: white;">REGISTRAR</button>         </div>    </div> </div><div class="container">     <header>         <div style="display: flex; align-items: center; gap: 12px;">            <div style="background:var(--success); color:black; padding:8px 14px; border-radius:10px; font-weight:900; font-size:13px;">GPL</div>             <span style="font-size: 13px; font-weight: 800; color: var(--success); text-transform: uppercase;" id="headerUserDisplay"></span>        </div>        <div style="display: flex; gap: 8px; align-items: center; position: relative;">             <button class="header-btn" onclick="toggleMonthGrid(event)" id="currentMonthDisplay" style="background: var(--accent); border-color: var(--accent);">MÊS</button>             <div id="monthGrid" class="month-grid"></div>             <button class="header-btn" onclick="window.print()">IMPRIMIR</button>             <button class="header-btn desktop-sync-btn" onclick="atualizarDadosManualmente(this)" title="Atualizar dados da nuvem" style="background: var(--success); color: black;">🔄</button>        </div>     </header>     <div id="progArea" class="prog-area">         <div style="width:100%; background:#1e2633; height:8px; border-radius:10px; overflow:hidden; border:1px solid var(--border); margin-bottom:3px;">             <div id="barFill" style="height:100%; width:0%; background:linear-gradient(90deg, var(--accent), var(--success)); transition:0.8s;"></div>         </div>         <div style="display:flex; justify-content:space-between; font-size:10px; font-weight:bold; color:var(--text-p); text-transform: uppercase;">             <span id="barTxt">Progresso Meta: 0 / 8.000</span>             <span id="barPerc" style="color:var(--success)">0%</span>         </div>     </div>     <nav class="mobile-nav-tabs no-print" id="mainNavTabs">        <button class="mob-tab-btn active" id="btnTabDashboard" onclick="switchMobileTab('tabDashboard', this)">📊 Dash</button>        <button class="mob-tab-btn" id="btnTabFormulario" onclick="switchMobileTab('tabFormulario', this)">➕ Novo</button>        <button class="mob-tab-btn" id="btnTabTabela" onclick="switchMobileTab('tabTabela', this)">📋 Reg</button>        <button class="mob-tab-btn" id="btnTabNL" onclick="switchMobileTab('tabNL', this)">🔍 NL</button>        <button class="mob-tab-btn" id="btnTabCal" onclick="switchMobileTab('tabCal', this)">📅 Cal</button>        <button class="mob-tab-btn" id="btnTabRelatorio" onclick="switchMobileTab('tabRelatorio', this)">📑 Relat.</button>        <button class="mob-tab-btn" id="btnTabAdmin" onclick="switchMobileTab('tabAdmin', this)" style="display:none;">👑 Adm<span id="adminNotificationBadge" class="admin-badge">0</span></button>    </nav>    <div class="content-wrap" id="mainContentWrap">         <div class="top-dashboard mobile-tab-content active-tab" id="tabDashboard">            <div class="observations no-print">                 <div class="obs-item"><span class="dot" style="background:var(--success)"></span> Bônus de R$ 0,20 por cada leitura excedente a 8000 leituras</div>                 <div class="obs-item"><span class="dot" style="background:var(--danger)"></span> Desconto: R$ 1,50 p/ impedimento</div>                 <div class="obs-item"><span class="dot" style="background:var(--warning)"></span> Qualidade: Meta ≤ 0,50%</div>             </div>             <div id="saturdayAlertContainer" style="display:none;" class="no-print"></div>            <div class="summary-grid">                 <div class="summary-card neon-leituras"><p>Leituras</p><h2 id="totL">0</h2></div>                 <div class="summary-card neon-impedimentos"><p>Impedimentos</p><h2 id="totI">0</h2></div>                 <div class="summary-card neon-meta"><p>Qualidade</p><h2 id="totMeta">0,00%</h2></div>                 <div class="summary-card neon-bonus"><p>Bônus</p><h2 id="totB">R$ 0,00</h2></div>                 <div class="summary-card neon-descontos"><p>Descontos</p><h2 id="totD">R$ 0,00</h2></div>                 <div class="summary-card neon-receber"><p>Receber Mês</p><h2 id="totNet">R$ 0,00</h2></div>                 <div class="summary-card neon-acumulado"><p>Acumulado Ano</p><h2 id="totAcumulado">R$ 0,00</h2></div>             </div>        </div>        <aside class="no-print mobile-tab-content" id="tabFormulario">             <div class="sidebar">                 <div class="form-content-area" style="padding-top: 5px;">                    <form id="gplForm">                         <input type="hidden" id="editId">                        <div class="form-group"><label>Data</label><input type="date" id="data" required></div>                         <div class="form-group"><label>Localidade</label><input type="text" id="localidade" required></div>                         <div class="form-group"><label>Razão</label><input type="text" id="razao" required></div>                         <div class="form-group"><label>Rotas</label><input type="text" id="rotas" required></div>                         <div class="form-group"><label>Leituras</label><input type="number" id="leituras" required></div>                         <div class="form-group"><label>Imped.</label><input type="number" id="imped" required></div>                     </form>                </div>                <div class="actions-footer">                     <button type="button" onclick="document.getElementById('gplForm').requestSubmit()" class="btn-add" id="btnSalvarRegistro">Salvar Registro</button>                     <button type="button" onclick="limparFormulario()" class="btn-clear" style="color: var(--warning); border-color: var(--warning); display: none;" id="btnCancelarEdicao">Cancelar Edição</button>                    <button type="button" onclick="limparTudo()" class="btn-clear">Limpar Mês</button>                     <button type="button" onclick="limparAno()" class="btn-clear-year">Limpar todos os dados</button>                     <div class="backup-row">                        <button type="button" onclick="exportarBackup()" class="btn-backup">Backup</button>                        <button type="button" onclick="dispararImportacao()" class="btn-import">Restaurar</button>                        <input type="file" id="importFile" accept="application/json,.json,.txt" style="display:none;" onchange="importarBackup(event)">                    </div>                </div>             </div>         </aside>         <main class="mobile-tab-content" id="tabTabela">             <div class="print-header">                <h1>Gestão de Produtividade de Leituras</h1>                <p id="printSubHeader">Utilizador: - | Período: -</p>            </div>            <div class="mobile-search-area no-print">                <input type="text" id="searchRazao" placeholder="Pesquisar razão nos registros..." oninput="atualizarTabela()" style="border-color: var(--success); margin-bottom: 0;">            </div>            <div class="main-view">                 <div class="table-container">                     <table>                         <thead>                             <tr><th>Data</th><th>Local</th><th>Razão</th><th>Rotas</th><th>Leit.</th><th>Imp.</th><th>%</th><th class="no-print">Ação</th></tr>                         </thead>                         <tbody id="tabelaCorpo"></tbody>                     </table>                 </div>             </div>         </main>         <div class="mobile-tab-content" id="tabNL" style="flex-direction: column;">            <div class="mobile-search-area">                <input type="text" id="searchNL" placeholder="Pesquisar por número ou descrição da nota..." oninput="filtrarNL(this.value)" style="border-color: var(--success);">            </div>            <div class="main-view">                <div class="table-container">                    <table>                        <thead>                            <tr><th>Número</th><th>Status</th><th style="text-align: left; padding-left: 8px;">Detalhe / Descrição</th></tr>                        </thead>                        <tbody id="nlCorpo"></tbody>                    </table>                </div>            </div>        </div>        <div class="mobile-tab-content" id="tabCal" style="flex-direction: column;">            <div class="mobile-search-area">                <input type="text" id="searchCal" placeholder="Pesquisar razão..." oninput="renderizarCalendario(this.value)" style="border-color: var(--success); margin-bottom: 0;">            </div>            <div class="main-view">                <div class="table-container">                    <table>                        <thead>                            <tr><th>Razão</th><th>Data da Próxima Leitura</th></tr>                        </thead>                        <tbody id="calCorpo"></tbody>                    </table>                </div>            </div>        </div>        <div class="mobile-tab-content" id="tabRelatorio" style="flex-direction: column;">            <div class="mobile-search-area" style="display: flex; gap: 8px; align-items: center; background: var(--surface); padding: 10px; border-radius: 12px; border: 1px solid var(--border);">                <div style="flex: 1;">                    <span style="font-weight: 800; color: #fff; font-size: 10.5px; display: block; margin-bottom: 4px;">RAZÃO</span>                    <select id="selectRazaoRelatorio" onchange="mudarRazaoRelatorio()" style="margin-bottom: 0; font-weight: bold; color: var(--accent); font-size: 11px;">                    </select>                </div>                <div>                    <span style="font-weight: 800; color: transparent; font-size: 10.5px; display: block; margin-bottom: 4px;">AÇÃO</span>                    <input type="file" id="inputTxtOcorrencia" accept=".txt,.csv" style="display:none" onchange="processarArquivoTxtSelecionado(this)">                    <button type="button" onclick="document.getElementById('inputTxtOcorrencia').click()" class="auth-btn" style="width: auto; margin-top: 0; padding: 8px 14px; font-size: 11px; background: var(--purple); color: #fff;">                        📂 Importar                    </button>                </div>            </div>            <div class="mobile-search-area" style="margin-top: 4px;">                <input type="text" id="searchMedidorRelatorio" placeholder="Pesquisar por número do medidor..." oninput="buscarMedidorNoRelatorio()" style="border-color: var(--success); margin-bottom: 0;">            </div>            <div class="main-view" style="margin-top: 6px;">                <div id="relatorioCardsCorpo" class="cards-container">                    <div style="grid-column: 1 / -1; text-align: center; color: var(--text-p); padding: 30px; font-weight: 700; font-size: 12px;">                        Carregue um arquivo TXT ou digite o número do medidor para visualizar as leituras e correções.                    </div>                </div>            </div>        </div>        <div class="mobile-tab-content" id="tabAdmin" style="flex-direction: column;">            <div class="mobile-search-area">                <input type="text" id="searchAdminUsers" placeholder="Pesquisar utilizador..." oninput="carregarListaUtilizadoresPendentes(this.value)" style="border-color: var(--success); margin-bottom: 0;">            </div>            <div class="main-view">                <div class="table-container">                    <table>                        <thead>                            <tr><th>Utilizador</th><th>Status</th><th class="no-print">Ação</th></tr>                        </thead>                        <tbody id="adminUsersCorpo"></tbody>                    </table>                </div>            </div>        </div>    </div> </div> <script type="module">    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";    import { getFirestore, doc, setDoc, getDoc, getDocs, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";    const firebaseConfig = {        apiKey: "AIzaSyBCyO4flW7U20t2Lh4HQRy5hGBIzxahjp4",        authDomain: "gestaoprodutividadeleituras.firebaseapp.com",        projectId: "gestaoprodutividadeleituras",        storageBucket: "gestaoprodutividadeleituras.firebasestorage.app",        messagingSenderId: "1053226233050",        appId: "1:1053226233050:web:964e6c40891fe4973a89e3"    };    const app = initializeApp(firebaseConfig);    const dbCloud = getFirestore(app);    async function hashSenha(senha) {        const encoder = new TextEncoder();        const data = encoder.encode(senha);        const hashBuffer = await crypto.subtle.digest('SHA-256', data);        const hashArray = Array.from(new Uint8Array(hashBuffer));        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');    }    window.cloudVerificarLogin = async function(user, senhaDigitada) {        try {            const userTrim = user.trim();            const userUpper = userTrim.toUpperCase();            let docRef = doc(dbCloud, "usuarios", userUpper);            let docSnap = await getDoc(docRef);            if (!docSnap.exists()) {                docRef = doc(dbCloud, "usuarios", userTrim);                docSnap = await getDoc(docRef);            }            if (!docSnap.exists()) return { sucesso: false, erro: "Utilizador não encontrado. Crie uma conta." };            const dadosUsuario = docSnap.data();            const senhaArmazenada = dadosUsuario.senha;            const senhaHashDigitada = await hashSenha(senhaDigitada);            let senhaValida = false;            let precisaAtualizarHash = false;            if (senhaArmazenada === senhaHashDigitada) {                senhaValida = true;            } else if (senhaArmazenada === senhaDigitada) {                senhaValida = true;                precisaAtualizarHash = true;            }            if (!senhaValida) {                return { sucesso: false, erro: "Senha incorreta!" };            }            if (precisaAtualizarHash) {                setDoc(docRef, { senha: senhaHashDigitada }, { merge: true }).catch(() => {});            }            return { sucesso: true, dados: dadosUsuario };        } catch (e) {            console.error("Erro no login:", e);            return { sucesso: false, erro: "Erro de conexão com a nuvem." };        }    };    window.cloudSaveRegistros = function(user, dataRegistros) {        if (!user) return;        const userTrim = user.trim();        const userUpper = userTrim.toUpperCase();        const docRef = doc(dbCloud, "usuarios", userUpper);        setDoc(docRef, { dados: dataRegistros }, { merge: true }).catch(e => console.error("Erro ao salvar registros:", e));    };    window.cloudSaveCalendario = function(user, calendario) {        if (!user) return;        const userTrim = user.trim();        const userUpper = userTrim.toUpperCase();        const docRef = doc(dbCloud, "usuarios", userUpper);        setDoc(docRef, { calendario: calendario }, { merge: true }).catch(e => console.error("Erro ao salvar calendário:", e));        if (userUpper === "ADMIN") {            setDoc(doc(dbCloud, "config", "calendarioGlobal"), { calendario: calendario }, { merge: true }).catch(() => {});        }    };    window.cloudSaveRelatorios = function(user, relatorios) {    // SALVAMENTO SEPARADO DOS TXT: Cada razão salva em um documento próprio na coleção relatorios_txt    window.cloudSaveRelatorioRazao = async function(user, razao, dadosRelatorio) {        if (!user) return;        const userTrim = user.trim();        const userUpper = userTrim.toUpperCase();        const docRef = doc(dbCloud, "usuarios", userUpper);        const userUpper = user.trim().toUpperCase();        const razaoId = razao.trim().replace(/\s+/g, '_').toUpperCase();        // ID único para o documento: USER_RAZAO_01        const docId = `${userUpper}_${razaoId}`;        const relatoriosLimpos = JSON.parse(JSON.stringify(relatorios || {}));        // SEGURANÇA TOTAL: Usamos merge: true para nunca apagar dados de outras abas (como dados e calendário)        setDoc(docRef, { relatorios: relatoriosLimpos }, { merge: true }).catch(e => {            console.error("Erro ao salvar relatórios em segundo plano:", e);        });        try {            await setDoc(doc(dbCloud, "relatorios_txt", docId), {                usuario: userUpper,                razao: razao,                conteudo: JSON.parse(JSON.stringify(dadosRelatorio)),                atualizadoEm: new Date()            });        } catch (e) {            console.error("Erro ao salvar relatório separado:", e);        }    };    // CARREGAMENTO SEPARADO DOS TXT: Busca todos os relatórios salvos independentemente    window.cloudLoadAllRelatoriosTxt = async function(user) {        try {            const userUpper = user.trim().toUpperCase();            const querySnapshot = await getDocs(collection(dbCloud, "relatorios_txt"));            let relatoriosMap = {};                        querySnapshot.forEach((docSnap) => {                const data = docSnap.data();                if (data.usuario === userUpper && data.razao && data.conteudo) {                    relatoriosMap[data.razao] = data.conteudo;                }            });            return relatoriosMap;        } catch (e) {            console.error("Erro ao carregar relatórios separados:", e);            return {};        }    };    window.cloudLoadAll = async function(user) {        try {            const userTrim = user.trim();            const userUpper = userTrim.toUpperCase();            const [userDocSnap, calGlobalSnap] = await Promise.all([            const [userDocSnap, calGlobalSnap, relatoriosTxtMap] = await Promise.all([                getDoc(doc(dbCloud, "usuarios", userUpper)).then(async (snap) => {                    if (!snap.exists()) return await getDoc(doc(dbCloud, "usuarios", userTrim));                    return snap;                }),                getDoc(doc(dbCloud, "config", "calendarioGlobal"))                getDoc(doc(dbCloud, "config", "calendarioGlobal")),                window.cloudLoadAllRelatoriosTxt(userUpper)            ]);            let userData = userDocSnap.exists() ? userDocSnap.data() : {};            if (calGlobalSnap.exists()) {                const globalData = calGlobalSnap.data();                const extraido = globalData.calendario || globalData;                if (extraido && Object.keys(extraido).length > 0) userData.calendario = extraido;            }            if (relatoriosTxtMap && Object.keys(relatoriosTxtMap).length > 0) {                userData.relatorios = relatoriosTxtMap;            }            return userData;        } catch (e) {            console.error("Erro ao carregar tudo:", e);        }        return null;    };    window.cloudSaveNewUserAuth = async function(user, senha, dica) {        try {            const userTrim = user.trim();            const userUpper = userTrim.toUpperCase();            const docRef = doc(dbCloud, "usuarios", userUpper);            const docSnap = await getDoc(docRef);            if (docSnap.exists() && docSnap.data().senha) return false;             const senhaSegura = await hashSenha(senha);            const isAdminUser = (userUpper === "ADMIN");            await setDoc(docRef, {                senha: senhaSegura,                dica: dica || "",                isAdmin: isAdminUser,                ativo: isAdminUser ? true : false,                dados: [],                calendario: {},                relatorios: {},                ultimaAtualizacao: new Date()            });            return true;        } catch (e) {            console.error("Erro ao salvar credenciais:", e);            return false;        }    };    window.cloudListAllUsers = async function() {        try {            const querySnapshot = await getDocs(collection(dbCloud, "usuarios"));            let lista = [];            querySnapshot.forEach((docSnap) => {                lista.push({ nome: docSnap.id, ...docSnap.data() });            });            return lista;        } catch (e) {            console.error("Erro ao listar utilizadores:", e);            return [];        }    };    window.cloudSetUserActive = async function(user, statusAtivo) {        try {            const userTrim = user.trim();            const userUpper = userTrim.toUpperCase();            let docRef = doc(dbCloud, "usuarios", userUpper);            let docSnap = await getDoc(docRef);            if (!docSnap.exists()) docRef = doc(dbCloud, "usuarios", userTrim);            await setDoc(docRef, { ativo: statusAtivo }, { merge: true });            return true;        } catch (e) {            console.error("Erro ao atualizar status do utilizador:", e);            return false;        }    };    window.escutarNovosCadastrosAdmin = function(callbackNotificacao) {        onSnapshot(collection(dbCloud, "usuarios"), (snapshot) => {            let pendentes = 0;            snapshot.forEach((docSnap) => {                const dados = docSnap.data();                if (dados.ativo === false && !dados.isAdmin && docSnap.id !== 'ADMIN') pendentes++;            });            callbackNotificacao(pendentes);        });    };</script><script>     let db = [];     let calendarioDb = {};     let relatorioRazoesDb = {};    let currentUser = sessionStorage.getItem('gpl_user') || "";     let currentIsAdmin = sessionStorage.getItem('gpl_is_admin') === 'true';    let dataAtualDoSistema = new Date();    let viewDate = new Date(dataAtualDoSistema.getFullYear(), dataAtualDoSistema.getMonth(), 1);     const lista18Razoes = Array.from({length: 18}, (_, i) => `RAZÃO ${String(i + 1).padStart(2, '0')}`);    const notasDeLeitura = [      { numero: '1100', status: 'Com leitura', detalhe: 'INSTALAÇÃO COM ENTREGA DE FLYER' },      { numero: '1101', status: 'Com leitura', detalhe: 'LEITURA DIFICULTADA POR CÃES/ANIMAIS' },      { numero: '1102', status: 'Com leitura', detalhe: 'MEDIDOR OBSTRUÍDO COM POSSIBILIDADE DE LEITURA' },      { numero: '1103', status: 'Com leitura', detalhe: 'FALTA PLACA/IDENTIF. MEDIDOR/QUADRO/APTO. /PRÉDIO' },      { numero: '1104', status: 'Com leitura', detalhe: 'MEDIÇÃO/QUADRO EM MAL ESTADO' },      { numero: '1107', status: 'Com leitura', detalhe: 'MED LOCAL IMPRÓPRIO PERIGOSO/CX MED ALTURA ANORMAL' },      { numero: '1110', status: 'Com leitura', detalhe: 'TAMPA ACRÍLICA EMBAÇADA' },      { numero: '1120', status: 'Com leitura', detalhe: 'SUSPEITA DE CRIADOURO DE DENGUE' },      { numero: '1201', status: 'Com leitura', detalhe: 'MUDANÇA NOME LOGRADOURO' },      { numero: '1202', status: 'Com leitura', detalhe: 'MUDANÇA NUMERAÇÃO INTERNA, APTO OU VILA DE CASAS' },      { numero: '1203', status: 'Com leitura', detalhe: 'INSTALAÇÃO FORA DE SEQUÊNCIA' },      { numero: '1204', status: 'Com leitura', detalhe: 'Nº MEDIDOR/CONSTANTE DIFERENTE SEM SUBSTITUIÇÃO' },      { numero: '1205', status: 'Com leitura', detalhe: 'MEDIDOR SUBSTITUÍDO' },      { numero: '1206', status: 'Com leitura', detalhe: 'CÓDIGO DE CLASSE/RAMO DE NEGÓCIO INADEQUADO' },      { numero: '1207', status: 'Com leitura', detalhe: 'CLIENTE NÃO CADASTRADO/NOVA LIGAÇÃO' },      { numero: '1208', status: 'Com leitura', detalhe: 'SEQUÊNCIAMENTO DE ROTAS' },      { numero: '1209', status: 'Com leitura', detalhe: 'ROTA FECHADA' },      { numero: '1231', status: 'Com leitura', detalhe: 'INVERSÃO DE MEDIDORES ENTRE INSTALAÇÕES' },      { numero: '1234', status: 'Com leitura', detalhe: 'ENDEREÇO URBANO PARA ENTREGA DA FATURA RURAL' },      { numero: '1250', status: 'Com leitura', detalhe: 'INCLUSÃO/ALTERAÇÃO LOCAL INSTALAÇÃO DO EQUIPAMENTO' },      { numero: '1300', status: 'Com leitura', detalhe: 'REGISTRADOR NÃO CONSTA NO SGL' },      { numero: '1302', status: 'Com leitura', detalhe: 'RAMAL AÉREO COM OBSTÁCULOS' },      { numero: '1303', status: 'Com leitura', detalhe: 'FORNECIMENTO A TERCEIROS/INTERLIGAÇÃO' },      { numero: '1304', status: 'Com leitura', detalhe: 'CONSUMO EM INSTALAÇÃO DESLIGADA' },      { numero: '1320', status: 'Com leitura', detalhe: 'SITUAÇÃO DE RISCO PARA TERCEIROS NA REDE' },      { numero: '1326', status: 'Com leitura', detalhe: 'VESPEIRO NA MEDIÇÃO' },      { numero: '1327', status: 'Com leitura', detalhe: 'VIDRO VISOR DA CAIXA QUEBRADO' },      { numero: '1329', status: 'Com leitura', detalhe: 'MEDIDOR EMBAÇADO/SUJO' },      { numero: '1343', status: 'Com leitura', detalhe: 'ILUMINAÇÃO PÚBLICA ACESA DURANTE O DIA' },      { numero: '1349', status: 'Com leitura', detalhe: 'INSTALAÇÃO COM LIGAÇÃO PROVISÓRIA' },      { numero: '1351', status: 'Com leitura', detalhe: 'SUSPEITA DE MEDIDOR COM PONTEIROS DESREGULADOS' },      { numero: '1364', status: 'Com leitura', detalhe: 'VIDRO VISOR DA CAIXA EMBAÇADO' },      { numero: '1373', status: 'Com leitura', detalhe: 'INSTALAÇÃO INCENDIADA/DEMOLIDA' },      { numero: '1390', status: 'Com leitura', detalhe: 'MED POSICIONADO INADEQUADAMENTE NA CAIXA' },      { numero: '1501', status: 'Com leitura', detalhe: 'CAIXA DE MEDIÇÃO SEM TAMPA' },      { numero: '1503', status: 'Com leitura', detalhe: 'SUSPEITA DE IRREGULARIDADE' },      { numero: '1504', status: 'Com leitura', detalhe: 'INSTALAÇÃO LIGADA DIRETA' },      { numero: '1505', status: 'Com leitura', detalhe: 'SUSPEITA MED DEFEITUOSO/AVARIADO/MANIPULADO/PARADO' },      { numero: '1506', status: 'Com leitura', detalhe: 'MEDIDOR COM DISCO GIRANDO AO CONTRÁRIO/DESMARCAÇÃO' },      { numero: '1544', status: 'Com leitura', detalhe: 'NÃO IDENTIFICADO MOTIVO DO CONSUMO ZERO' },      { numero: '1546', status: 'Com leitura', detalhe: 'CONSUMO INCOMPATÍVEL COM O IMÓVEL' },      { numero: '1560', status: 'Com leitura', detalhe: 'DENÚNCIA DE UMA LIGAÇÃO CLANDESTINA' },      { numero: '1562', status: 'Com leitura', detalhe: 'INSTALAÇÃO DESLIGADA SEM CONSUMO' },      { numero: '1570', status: 'Com leitura', detalhe: 'DENÚNCIA DE VÁRIAS LIGAÇÕES CLANDESTINAS' },      { numero: '1600', status: 'Com leitura', detalhe: 'MEDIDOR EM CURTO OU INCENDIADO' },      { numero: '1800', status: 'Com leitura', detalhe: 'LEITURA PREVISTA NO CALENDÁRIO REAL - LEITURA NORMAL' },      { numero: '1801', status: 'Com leitura', detalhe: 'INSTALAÇÃO DESABITADA/VAZIA COM ACESSO À LEITURA' },      { numero: '1802', status: 'Com leitura', detalhe: 'LEITURA ATUAL MENOR QUE ANTERIOR SEM VIRADA' },      { numero: '1806', status: 'Com leitura', detalhe: 'RETIRADO VESPEIRO NA MEDIÇÃO' },      { numero: '1807', status: 'Com leitura', detalhe: 'SUBSTITUIÇÃO VIDRO NO VISOR' },      { numero: '1808', status: 'Com leitura', detalhe: 'AJUSTE TAMPA ACRÍLICA CAIXA' },      { numero: '1809', status: 'Com leitura', detalhe: 'LIMPEZA MEDIDOR/TAMPA EMBAÇADA' },      { numero: '1811', status: 'Com leitura', detalhe: 'RET VEGETAÇÃO INTERNA/EXTERNA' },      { numero: '1818', status: 'Com leitura', detalhe: 'TELEMETRIA IMPRESSÃO E ENTREGA' },      { numero: '1819', status: 'Com leitura', detalhe: 'LEITURA DE TELEMETRIA' },      { numero: '1825', status: 'Com leitura', detalhe: 'LEITURA INFORMADA MAIS DE 5 VEZES' },      { numero: '1828', status: 'Com leitura', detalhe: 'LEITURA CONFERIDA E CONFIRMADA' },      { numero: '1834', status: 'Com leitura', detalhe: 'LEITURA INFORMADA PELO CLIENTE' },      { numero: '1835', status: 'Com leitura', detalhe: 'PONTALETE UTILIZADO PARA OUTROS FINS' },      { numero: '1837', status: 'Com leitura', detalhe: 'VIRADA DE MEDIDOR' },      { numero: '1838', status: 'Com leitura', detalhe: 'ETIQUETA DESCOLANDO/SEM ETIQUETA' },      { numero: '1847', status: 'Com leitura', detalhe: 'LEITURA INFORMADA PELO CLIENTE FORA DE CICLO' },      { numero: '1897', status: 'Com leitura', detalhe: 'LEITURA COLETADA VIA APP DE MENSAGEM' },      { numero: '1898', status: 'Com leitura', detalhe: 'LEITURA INFORMADA PELO CLIENTE NO CICLO' },      { numero: '1901', status: 'Com leitura', detalhe: 'POSTE: CAIXA MEDIÇÃO: LENTE EMBAÇADA, CAIXA QUEBRADA' },      { numero: '1902', status: 'Com leitura', detalhe: 'POSTE: DEFEITO NO MEDIDOR: MAL POSICIONADO, EMBAÇADO' },      { numero: '1978', status: 'Com leitura', detalhe: 'MEDIDOR NO POSTE/CPREDE' },      { numero: '2000', status: 'Com leitura', detalhe: 'SUSPENSÃO DE MEDIDOR DEFEITUOSO DEVIDO A CHUVAS/ENCHENTES' },      { numero: '3201', status: 'Sem Leitura', detalhe: 'MEDIDOR RETIRADO' },      { numero: '3205', status: 'Sem Leitura', detalhe: 'ENDEREÇO INSTALAÇÃO NÃO LOCALIZADO' },      { numero: '3300', status: 'Sem leitura', detalhe: 'MEDIDOR TROCADO/DISPLAY APAGADO' },      { numero: '3311', status: 'Sem Leitura', detalhe: 'MEDIDOR ELETRÔNICO APAGADO/CHAVE DISJUNTOR DESLIGADA' },      { numero: '3312', status: 'Com leitura', detalhe: 'MEDIDOR DISCO GIRANDO AO CONTRÁRIO' },      { numero: '3313', status: 'Sem Leitura', detalhe: 'INSETOS DENTRO DA CAIXA OU ENVOLVENDO O MEDIDOR' },      { numero: '3369', status: 'Sem Leitura', detalhe: 'MEDIDOR EMBAÇADO' },      { numero: '3370', status: 'Sem Leitura', detalhe: 'TAMPA ACRÍLICA EMBAÇADA' },      { numero: '3374', status: 'Sem Leitura', detalhe: 'VIDRO VISOR DA CAIXA EMBAÇADO' },      { numero: '3376', status: 'Sem Leitura', detalhe: 'MEDIDOR ELETRÔNICO DESPROGRAMADO' },      { numero: '3379', status: 'Sem Leitura', detalhe: 'MEDIDOR POSICIONADO INADEQUADAMENTE NA CAIXA' },      { numero: '3380', status: 'Sem leitura', detalhe: 'FALHA TERMINAL DE LEITURA' },      { numero: '3511', status: 'Sem Leitura', detalhe: 'SUSPEITA MED DEFEITUOSO/ AVARIADO/ MANIPULADO/PARADO' },      { numero: '3700', status: 'Sem Leitura', detalhe: 'MEDIDOR EM CURTO OU INCENDIADO' },      { numero: '3804', status: 'Sem Leitura', detalhe: 'MEDIDOR ELETRÔNICO APAGADO/FALTA ENERGIA NA REDE' },      { numero: '3868', status: 'Sem Leitura', detalhe: 'PROBLEMA OPERACIONAL CAUSA PARCEIRA VEÍCULO MCD FALTA TRANSMISSÃO' },      { numero: '3871', status: 'Sem Leitura', detalhe: 'PROBLEMA ADMINISTRATIVO (FALTOU LEITURISTA)' },      { numero: '3878', status: 'Sem Leitura', detalhe: 'INSTALAÇÕES SEM LEITURA PLANEJADA PARA O MÊS' },      { numero: '3901', status: 'Sem Leitura', detalhe: 'POSTE: CAIXA DE MEDIÇÃO: LENTE EMBAÇADA, CAIXA QUEBRADA' },      { numero: '3902', status: 'Sem Leitura', detalhe: 'POSTE: DEFEITO NO MEDIDOR: MAL POSICIONADO, EMBAÇADO' },      { numero: '3903', status: 'Sem Leitura', detalhe: 'POSTE: RISCO OU OBSTACULO NA REALIZAÇÃO DA LEITURA' },      { numero: '3904', status: 'Sem Leitura', detalhe: 'POSTE: CAIXA SEM TAMPA POSTE' },      { numero: '3905', status: 'Sem Leitura', detalhe: 'POSTE: NECESSIDADE SUBSTITUIÇÃO DE CAIXA DE POSTE' },      { numero: '3906', status: 'Sem Leitura', detalhe: 'POSTE: LENTE SUJA CAIXA MEDIDOR NO POSTE' },      { numero: '3907', status: 'Sem Leitura', detalhe: 'POSTE: EMBAÇADO DEVIDO A CHUVA POSTE' },      { numero: '3908', status: 'Sem Leitura', detalhe: 'OBSTÁCULO/IMPEDIMENTO DE LEITURA NO POSTE' },      { numero: '5101', status: 'Sem Leitura', detalhe: 'MEDIÇÃO/QUADRO SEM A POSSIBILIDADE DE ABRIR' },      { numero: '5102', status: 'Sem Leitura', detalhe: 'MEDIDOR OBSTRUÍDO SEM A POSSIBILIDADE LEITURA' },      { numero: '5103', status: 'Sem Leitura', detalhe: 'INSETOS NA CAIXA DO MEDIDOR EXTERNAMENTE' },      { numero: '5104', status: 'Sem Leitura', detalhe: 'CASA FECHADA/PORTÃO FECHADO/FALTA ACESSO A MEDIÇÃO' },      { numero: '5105', status: 'Sem Leitura', detalhe: 'CLIENTE NÃO PERMITIU ACESSO DO LEITURISTA AO MEDIDOR' },      { numero: '5106', status: 'Sem Leitura', detalhe: 'MED LOCAL IMPRÓPRIO PERIGOSO/CX MED ALTURA ANORMAL' },      { numero: '5108', status: 'Sem Leitura', detalhe: 'LEITURA IMPEDIDA POR CÃES/ANIMAIS' },      { numero: '5109', status: 'Sem Leitura', detalhe: 'INSTALAÇÃO DESABITADA/VAZIA SEM ACESSO À LEITURA' },      { numero: '5558', status: 'Sem Leitura', detalhe: 'SUSPEITA DE IRREGULARIDADE' },      { numero: '5800', status: 'Sem Leitura', detalhe: 'PADRÃO MEDIÇÃO INCENDIADO/DEMOLIDO' },      { numero: '5802', status: 'Sem Leitura', detalhe: 'INSTALAÇÃO INTERDITADA' },      { numero: '6801', status: 'Sem Leitura', detalhe: 'LEITURA IMPEDIDA POR CONDIÇÃO INSEGURA/ÁREA RISCO' },      { numero: '6820', status: 'Sem Leitura', detalhe: 'SITUAÇÃO DE EMERGÊNCIA/CALAMIDADE PÚBLICA' },      { numero: '6862', status: 'Sem Leitura', detalhe: 'GREVE NO SERVIÇO PÚBLICO' },      { numero: '6872', status: 'Sem Leitura', detalhe: 'CALAMIDADE DECRETADA ENCHENTE ALAGAM TERREMOTO VENDAVAL' },      { numero: '7000', status: 'Sem Leitura', detalhe: 'SUSPENSÃO DE MEDIDOR DEFEITUOSO DEVIDO A CHUVAS/ENCHENTES' }    ];    const msNomesCompletos = ["JANEIRO", "FEVEREIRO", "MARÇO", "ABRIL", "MAIO", "JUNHO", "JULHO", "AGOSTO", "SETEMBRO", "OUTUBRO", "NOVEMBRO", "DEZEMBRO"];     const fM = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });     function dispararSalvamentoRegistros() {        if (currentUser && window.cloudSaveRegistros) {            window.cloudSaveRegistros(currentUser, db);        }    }    window.addEventListener('beforeunload', () => {        if (currentUser && window.cloudSaveRegistros) {            window.cloudSaveRegistros(currentUser, db);        }    });    function switchLoginPane(paneId) {        document.querySelectorAll('.login-form-pane').forEach(el => el.classList.remove('active'));        document.querySelectorAll('.login-tab-btn').forEach(el => el.classList.remove('active'));        document.getElementById(paneId).classList.add('active');        if (paneId === 'loginPane') {            document.getElementById('btnPaneLogin').classList.add('active');        } else {            document.getElementById('btnPaneCreate').classList.add('active');        }    }    function switchMobileTab(tabId, btnElement) {        const abaAntigaAtiva = document.querySelector('.mobile-tab-content.active-tab');        if (abaAntigaAtiva && abaAntigaAtiva.id === 'tabRelatorio' && tabId !== 'tabRelatorio') {            const inputBuscaMedidor = document.getElementById('searchMedidorRelatorio');            if (inputBuscaMedidor) {                inputBuscaMedidor.value = '';                renderizarTabelaRelatorioAtual();            }        }        document.querySelectorAll('.mobile-tab-content').forEach(el => el.classList.remove('active-tab'));        const target = document.getElementById(tabId);        if(target) target.classList.add('active-tab');        document.querySelectorAll('.mob-tab-btn').forEach(btn => btn.classList.remove('active'));        if(btnElement) btnElement.classList.add('active');        if (currentUser) {            if (tabId === 'tabDashboard' || tabId === 'tabTabela') {                atualizarTabela();            } else if (tabId === 'tabCal') {                renderizarCalendario();                verificarSabadosAlertas();            } else if (tabId === 'tabRelatorio') {                popularSelectRazoesRelatorio();                renderizarTabelaRelatorioAtual();            } else if (tabId === 'tabAdmin' && currentIsAdmin) {                carregarListaUtilizadoresPendentes();            }        }    }    async function atualizarDadosManualmente(btnElement = null) {        if (!currentUser) return alert("Nenhum utilizador logado.");        let iconeOriginal = "";        if (btnElement) {            iconeOriginal = btnElement.innerText;            btnElement.innerText = "⏳";            btnElement.disabled = true;        }        try {            const cloudData = await window.cloudLoadAll(currentUser);            if (cloudData) {                db = cloudData.dados || [];                calendarioDb = cloudData.calendario || {};                relatorioRazoesDb = cloudData.relatorios || {};                atualizarTabela();                renderizarCalendario();                renderizarTabelaRelatorioAtual();                verificarSabadosAlertas();                if(currentIsAdmin) carregarListaUtilizadoresPendentes();                return true;            } else {                alert("Nenhum dado encontrado na nuvem para este utilizador.");                return false;            }        } catch (error) {            console.error("Erro ao atualizar:", error);            alert("Erro de conexão com a nuvem. Verifique a conexão.");            return false;        } finally {            if (btnElement) {                btnElement.innerText = iconeOriginal;                btnElement.disabled = false;            }        }    }    let startY = 0;    let isPulling = false;    const pullThreshold = 80;    window.addEventListener('touchstart', (e) => {        const activeTabEl = document.querySelector('.mobile-tab-content.active-tab');        const scrollableChild = activeTabEl ? activeTabEl.querySelector('.table-container, .form-content-area, .top-dashboard, .cards-container') : null;        const isAtTop = scrollableChild ? scrollableChild.scrollTop <= 0 : (window.scrollY <= 0);        if (isAtTop) {            startY = e.touches[0].clientY;            isPulling = true;        } else {            isPulling = false;        }    }, { passive: true });    window.addEventListener('touchmove', (e) => {        if (!isPulling) return;        const currentY = e.touches[0].clientY;        const diff = currentY - startY;        const indicator = document.getElementById('pullToRefreshIndicator');        if (diff > 0 && diff < 150) {            indicator.style.transform = `translateY(${diff}px)`;            if (diff >= pullThreshold) {                indicator.innerText = "Solte para atualizar os dados 🔄";            } else {                indicator.innerText = "Puxe mais para atualizar...";            }        }    }, { passive: true });    window.addEventListener('touchend', async (e) => {        if (!isPulling) return;        isPulling = false;        const indicator = document.getElementById('pullToRefreshIndicator');        const endY = e.changedTouches[0].clientY;        const diff = endY - startY;        if (diff >= pullThreshold && currentUser) {            indicator.innerText = "Atualizando dados da nuvem...";            indicator.style.transform = `translateY(50px)`;            await atualizarDadosManualmente();            setTimeout(() => {                indicator.innerText = "Atualizado com sucesso! ✨";                setTimeout(() => {                    indicator.style.transform = `translateY(0px)`;                }, 600);            }, 400);        } else {            indicator.style.transform = `translateY(0px)`;        }    });    async function carregarListaUtilizadoresPendentes(filtro = '') {        if (!currentIsAdmin) return;        const corpo = document.getElementById('adminUsersCorpo');        if (!corpo) return;        const termo = filtro.toUpperCase();        const todosUsuarios = await window.cloudListAllUsers();        const filtrados = todosUsuarios.filter(u => u.nome.toUpperCase().includes(termo));        if (filtrados.length === 0) {            corpo.innerHTML = `<tr><td colspan="3" style="text-align: center; padding: 20px; color: var(--text-p);">Nenhum utilizador encontrado.</td></tr>`;            return;        }        corpo.innerHTML = filtrados.map(u => {            const isAtivo = u.ativo === true;            const isAdmUser = u.isAdmin === true || u.nome === 'ADMIN';            return `                <tr>                    <td style="font-weight: bold; color: var(--accent);">${u.nome}</td>                    <td>                        <span style="color: ${isAtivo ? 'var(--success)' : 'var(--warning)'}; font-weight: bold;">                            ${isAtivo ? 'Ativo' : 'Aguardando PIX'}                        </span>                    </td>                    <td class="no-print">                        ${isAdmUser ? '<span style="color:var(--purple); font-weight:bold; font-size:10px;">ADMIN</span>' : `                            <button type="button" onclick="alternarAtivacaoUsuario('${u.nome}',${!isAtivo})" class="header-btn" style="background: ${isAtivo ? 'var(--danger)' : 'var(--success)'}; color: ${isAtivo ? '#fff' : '#000'}; padding: 4px 8px; font-size: 10px;">                                ${isAtivo ? 'Bloquear' : 'Aprovar'}                            </button>                        `}                    </td>                </tr>            `;        }).join('');    }    async function alternarAtivacaoUsuario(nomeUsuario, novoStatus) {        if (!confirm(`Deseja realmente ${novoStatus ? 'APROVAR' : 'BLOQUEAR'} o acesso do utilizador ${nomeUsuario}?`)) return;        let sucesso = await window.cloudSetUserActive(nomeUsuario, novoStatus);        if (sucesso) {            alert(`Utilizador ${nomeUsuario} atualizado com sucesso!`);            carregarListaUtilizadoresPendentes(document.getElementById('searchAdminUsers').value);        } else {            alert("Erro ao atualizar status do utilizador.");        }    }    function popularSelectRazoesRelatorio() {        const sel = document.getElementById('selectRazaoRelatorio');        if(!sel) return;        sel.innerHTML = lista18Razoes.map(r => `<option value="${r}">${r}</option>`).join('');    }    function mudarRazaoRelatorio() {        document.getElementById('searchMedidorRelatorio').value = '';        renderizarTabelaRelatorioAtual();    }    function processarArquivoTxtSelecionado(input) {        const file = input.files[0];        if (!file) return;        const reader = new FileReader();        reader.onload = function(e) {            let conteudo = e.target.result;            processarConteudoTxtTerceiros(conteudo);        };        reader.readAsText(file, "UTF-8");    }    function processarConteudoTxtTerceiros(conteudo) {        const razaoSelecionada = document.getElementById('selectRazaoRelatorio').value;        const linhas = conteudo.split(/\r?\n/);        let idxMedidor = -1;        let idxOC = -1;        let idxLeit = -1;        const mapValidosNL = {};        notasDeLeitura.forEach(item => {            mapValidosNL[String(item.numero).trim()] = true;        });        let listaMedidores = [];        linhas.forEach(linha => {            let linhaLimpa = linha.trim();            if (!linhaLimpa) return;            if (linhaLimpa.includes("MEDIDOR") || linhaLimpa.includes("OC") || linhaLimpa.includes("LEIT.") || linhaLimpa.includes("RG")) {                let cabecalhos = linhaLimpa.split(/\s+/);                for (let i = 0; i < cabecalhos.length; i++) {                    let h = cabecalhos[i].toUpperCase();                    if (h.includes("MEDIDOR")) idxMedidor = i;                    if (h === "OC" || h === "NL") idxOC = i;                    if (h.includes("LEIT")) idxLeit = i;                }                return;            }            let tokens = linhaLimpa.split(/\s+/);            if (tokens.length >= 2) {                let medidorEncontrado = "";                let ocEncontrada = "";                let leitEncontrada = "";                let tagRgDetectada = "03";                let linhaUpper = linhaLimpa.toUpperCase();                if (linhaUpper.includes("Z3")) {                    tagRgDetectada = "Z3";                } else if (linhaUpper.includes("RG 03") || linhaUpper.includes("RG03") || linhaUpper.includes(" 03 ")) {                    tagRgDetectada = "03";                }                if (idxMedidor !== -1 && tokens.length > idxMedidor) {                    medidorEncontrado = tokens[idxMedidor].replace(/["']/g, '').trim();                } else {                    medidorEncontrado = tokens[0].replace(/["']/g, '').trim();                }                if (idxOC !== -1 && tokens.length > idxOC) {                    let val = tokens[idxOC].replace(/["']/g, '').trim();                    if (mapValidosNL[val]) ocEncontrada = val;                }                if (!ocEncontrada) {                    for (let t of tokens) {                        let limpo = t.replace(/["']/g, '').trim();                        if (mapValidosNL[limpo]) {                            ocEncontrada = limpo;                            break;                        }                    }                }                if (idxLeit !== -1 && tokens.length > idxLeit) {                    leitEncontrada = tokens[idxLeit].replace(/["']/g, '').trim();                } else if (tokens.length >= 3) {                    leitEncontrada = tokens[tokens.length - 1].replace(/["']/g, '').trim();                }                if (medidorEncontrado) {                    listaMedidores.push({                        medidor: medidorEncontrado.toUpperCase(),                        oc: ocEncontrada || "N/A",                        leit: Number(leitEncontrada) || 0,                        tipoRgZ3: tagRgDetectada                    });                }            }        });        let mapUltimoPorMedidor = {};        listaMedidores.forEach(item => {            mapUltimoPorMedidor[item.medidor] = item;        });        let contagemOC = {};        Object.values(mapUltimoPorMedidor).forEach(item => {            if (mapValidosNL[item.oc]) {                contagemOC[item.oc] = (contagemOC[item.oc] || 0) + 1;            }        });        if (!relatorioRazoesDb || typeof relatorioRazoesDb !== 'object') {            relatorioRazoesDb = {};        }        // Substituição segura e limpa da razão selecionada        relatorioRazoesDb[razaoSelecionada] = {        const dadosNovoRelatorio = {            resumoOC: contagemOC,            medidores: listaMedidores        };        // Salva na nuvem em segundo plano preservando as demais informações        if (currentUser && window.cloudSaveRelatorios) {            window.cloudSaveRelatorios(currentUser, relatorioRazoesDb);        // Atualiza localmente        relatorioRazoesDb[razaoSelecionada] = dadosNovoRelatorio;        // Salva separadamente no Firestore (documento dedicado para esta razão)        if (currentUser && window.cloudSaveRelatorioRazao) {            window.cloudSaveRelatorioRazao(currentUser, razaoSelecionada, dadosNovoRelatorio);        }        renderizarTabelaRelatorioAtual();    }    function buscarMedidorNoRelatorio() {        renderizarTabelaRelatorioAtual();    }    function renderizarTabelaRelatorioAtual() {        const razaoSelecionada = document.getElementById('selectRazaoRelatorio').value;        const corpo = document.getElementById('relatorioCardsCorpo');        const termoBusca = (document.getElementById('searchMedidorRelatorio')?.value || '').trim().toUpperCase();        if (!corpo) return;        const dadosRegistro = (relatorioRazoesDb && relatorioRazoesDb[razaoSelecionada]) ? relatorioRazoesDb[razaoSelecionada] : null;        if (!dadosRegistro || !dadosRegistro.medidores) {            corpo.innerHTML = `                <div style="grid-column: 1 / -1; text-align: center; color: var(--text-p); padding: 30px; font-weight: 700; font-size: 12px;">                    Nenhum arquivo TXT carregado para esta razão. Clique em "Importar".                </div>`;            return;        }        if (termoBusca) {            const medidoresLista = dadosRegistro.medidores || [];            const mapaPassagens = {};            medidoresLista.forEach(item => {                if (item.medidor.includes(termoBusca)) {                    if (!mapaPassagens[item.medidor]) {                        mapaPassagens[item.medidor] = [];                    }                    mapaPassagens[item.medidor].push(item);                }            });            const chavesMedidores = Object.keys(mapaPassagens);            if (chavesMedidores.length === 0) {                corpo.innerHTML = `                    <div style="grid-column: 1 / -1; text-align: center; color: var(--text-p); padding: 30px; font-weight: 700; font-size: 12px;">                        Nenhum medidor encontrado com o número "${termoBusca}" nesta razão.                    </div>`;                return;            }            corpo.innerHTML = chavesMedidores.map(medKey => {                const passagens = mapaPassagens[medKey];                let ultimoNL = "N/A";                for (let i = passagens.length - 1; i >= 0; i--) {                    if (passagens[i].oc && passagens[i].oc !== "N/A") {                        ultimoNL = passagens[i].oc;                        break;                    }                }                let leiturasPorRg = {};                passagens.forEach(p => {                    let rg = p.tipoRgZ3 || "03";                    leiturasPorRg[rg] = p.leit;                });                if (!leiturasPorRg["03"] && passagens.length > 0) {                    leiturasPorRg["03"] = passagens[0].leit;                }                const rgsKeys = Object.keys(leiturasPorRg);                const linhasRgsHtml = rgsKeys.map(rg => {                    let leitVal = leiturasPorRg[rg];                    return `                        <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border); border-radius: 8px; padding: 8px; margin-bottom: 6px;">                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; flex-wrap: wrap; gap: 4px;">                                <span style="background: rgba(156, 39, 176, 0.25); color: #e1bee7; border: 1px solid var(--purple); padding: 2px 8px; border-radius: 6px; font-size: 10px; font-weight: 900;">RG ${rg}</span>                                <span style="font-weight: 900; color: var(--success); font-size: 11px;">Leitura: ${leitVal.toLocaleString()}</span>                            </div>                        </div>                    `;                }).join('');                const infoNL = notasDeLeitura.find(n => n.numero === ultimoNL) || { status: 'Ocorrência', detalhe: ultimoNL };                const isComLeitura = infoNL.status.toLowerCase().includes('com');                return `                    <div class="medidor-card" style="max-width: 100%;">                        <div class="oc-card-header" style="border-bottom: 1px solid var(--border); padding-bottom: 4px; margin-bottom: 6px;">                            <span class="oc-code" style="font-size: 1rem; color: var(--success);">Medidor: ${medKey}</span>                            <span style="font-size: 9.5px; font-weight: bold; color: var(--text-p);">Razão: ${razaoSelecionada}</span>                        </div>                                                <div style="margin-bottom: 6px; background: rgba(0, 112, 243, 0.08); border: 1px solid var(--accent); border-radius: 8px; padding: 8px;">                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">                                <span style="font-weight: 900; color: var(--warning); font-size: 11.5px;">NL: ${ultimoNL}</span>                                <span class="oc-status" style="background: ${isComLeitura ? 'rgba(0,255,136,0.1)' : 'rgba(255,204,0,0.1)'}; color: ${isComLeitura ? 'var(--success)' : 'var(--warning)'}; border: 1px solid ${isComLeitura ? 'var(--success)' : 'var(--warning)'};">                                    ${infoNL.status}                                </span>                            </div>                            <div style="font-size: 10px; color: var(--text-h); font-weight: 600;">                                ${infoNL.detalhe}                            </div>                        </div>                        <div>                            ${linhasRgsHtml}                        </div>                    </div>                `;            }).join('');            return;        }        const resumoOC = dadosRegistro.resumoOC || {};        const chavesOC = Object.keys(resumoOC);        chavesOC.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));        if (chavesOC.length === 0) {            corpo.innerHTML = `                <div style="grid-column: 1 / -1; text-align: center; color: var(--text-p); padding: 30px; font-weight: 700; font-size: 12px;">                    Nenhuma ocorrência registrada nesta razão.                </div>`;            return;        }        corpo.innerHTML = chavesOC.map(oc => {            const qtd = resumoOC[oc];            const infoNL = notasDeLeitura.find(item => item.numero === oc) || { status: 'Desconhecido', detalhe: 'Nota de Leitura mapeada' };            const isComLeitura = infoNL.status.toLowerCase().includes('com');            return `                <div class="oc-card">                    <div class="oc-card-header">                        <span class="oc-code">NL ${oc}</span>                        <span class="oc-count">${typeof qtd === 'number' ? qtd.toLocaleString() : qtd}</span>                    </div>                    <div class="oc-desc">${infoNL.detalhe}</div>                    <div>                        <span class="oc-status" style="background: ${isComLeitura ? 'rgba(0,255,136,0.1)' : 'rgba(255,204,0,0.1)'}; color: ${isComLeitura ? 'var(--success)' : 'var(--warning)'}; border: 1px solid ${isComLeitura ? 'var(--success)' : 'var(--warning)'};">                            ${isComLeitura ? 'Com leitura' : 'Sem Leitura'}                        </span>                    </div>                </div>            `;        }).join('');    }    function renderizarCalendario(filtro = '') {        const termo = filtro.toUpperCase();        const corpo = document.getElementById('calCorpo');        if(!corpo) return;        const html = lista18Razoes            .filter(razao => razao.includes(termo))            .map(razao => {                const dataSalva = calendarioDb[razao] || '';                let dataFormatadaExibicao = "Não definida";                if (dataSalva) {                    const [ano, mes, dia] = dataSalva.split('-');                    dataFormatadaExibicao = `${dia}/${mes}/${ano}`;                }                return `                    <tr>                        <td style="font-weight: bold; color: var(--accent);">${razao}</td>                        <td>                            ${currentIsAdmin ? `                                <input type="date" value="${dataSalva}" onchange="salvarDataCalendario('${razao}', this.value)" style="margin-bottom:0; font-size:11px;">                            ` : `                                <div style="font-weight: bold; color: ${dataSalva ? 'var(--text-h)' : 'var(--text-p)'}; font-size: 12px; padding: 6px;">                                    ${dataFormatadaExibicao}                                </div>                            `}                        </td>                    </tr>                `;            }).join('');        corpo.innerHTML = html;    }    function salvarDataCalendario(razao, data) {        if (!currentIsAdmin) return;        calendarioDb[razao] = data;        if (currentUser && window.cloudSaveCalendario) {            window.cloudSaveCalendario(currentUser, calendarioDb);        }        verificarSabadosAlertas();    }    function verificarSabadosAlertas() {        const alertaContainer = document.getElementById('saturdayAlertContainer');        if(!alertaContainer) return;        let alertas = [];        for (const [razao, dataStr] of Object.entries(calendarioDb)) {            if (dataStr) {                const [ano, mes, dia] = dataStr.split('-');                const dataObj = new Date(ano, mes - 1, dia);                if (dataObj.getDay() === 6) {                    const dataFormatada = `${dia}/${mes}/${ano}`;                    alertas.push(`⚠️ Alerta: ${razao} está marcada para Sábado, dia ${dataFormatada}!`);                }            }        }        if (alertas.length > 0) {            alertaContainer.style.display = 'flex';            alertaContainer.innerHTML = `<div style="display:flex; flex-direction:column; gap:4px; width:100%;">` +                 alertas.map(a => `<div class="alert-saturday-box"><span>${a}</span></div>`).join('') +                 `</div>`;        } else {            alertaContainer.style.display = 'none';            alertaContainer.innerHTML = '';        }    }    function renderizarNL(lista = notasDeLeitura) {        const htmlContent = lista.map(item => `            <tr>                <td style="font-weight: bold; color: var(--accent); text-align: center;">${item.numero}</td>                <td style="text-align: center;"><span style="color: ${item.status === 'Com leitura' ? 'var(--success)' : 'var(--warning)'}; font-weight: bold;">${item.status}</span></td>                <td style="text-align: left; font-size: 11.5px; padding-left: 8px;">${item.detalhe}</td>            </tr>        `).join('');        const el = document.getElementById('nlCorpo');        if(el) el.innerHTML = htmlContent;    }    function filtrarNL(val) {        const termo = val.toUpperCase();        const filtrado = notasDeLeitura.filter(i => i.numero.includes(termo) || i.detalhe.includes(termo));        renderizarNL(filtrado);    }    function animarContagem(id, final, isMoeda = false) {         const el = document.getElementById(id);         if(!el) return;         let start = 0;         const timer = setInterval(() => {             start += final / 15;             if(start >= final) {                 if(id === 'totMeta') {                     el.innerText = final.toFixed(2) + "%";                     el.style.color = final <= 0.5 ? 'var(--success)' : 'var(--danger)';                 } else {                     el.innerText = isMoeda ? fM(final) : Math.floor(final).toLocaleString();                 }                 clearInterval(timer);             } else {                 el.innerText = isMoeda ? fM(start) : Math.floor(start).toLocaleString();             }         }, 20);     }     window.handleLogin = async function() {        const u = document.getElementById('loginUser').value.trim();        const p = document.getElementById('loginPass').value;        if(!u || !p) return alert("Preencha Utilizador e Senha.");        const resultadoLogin = await window.cloudVerificarLogin(u, p);        if (!resultadoLogin.sucesso) {            return alert(resultadoLogin.erro);        }        const cloudData = resultadoLogin.dados;        const isAdminUser = (u.toUpperCase() === "ADMIN" || cloudData.isAdmin === true);        if (!isAdminUser && cloudData.ativo !== true) {            return alert("⚠️ Acesso bloqueado por falta de pagamento. Efetue o pagamento para ter acesso à conta.");        }        currentUser = u.toUpperCase();        currentIsAdmin = isAdminUser;        sessionStorage.setItem('gpl_user', currentUser);        sessionStorage.setItem('gpl_is_admin', currentIsAdmin);        document.getElementById('loginScreen').style.display = 'none';        initSystem();    }    window.handleCreateAccount = async function() {        const u = document.getElementById('regUser').value.trim();        const p = document.getElementById('regPass').value;        const pConf = document.getElementById('regPassConfirm').value;        const r = document.getElementById('regRecovery').value.trim();        if(!u || !p || !pConf || !r) return alert("Preencha todos os campos do cadastro.");        if(p !== pConf) return alert("As senhas não coincidem! Verifique e tente novamente.");        let cloudData = window.cloudLoadAll ? await window.cloudLoadAll(u) : null;        if (cloudData && cloudData.senha) {            return alert("Este nome de utilizador já existe! Escolha outro nome.");        }        let criado = await window.cloudSaveNewUserAuth(u, p, r);        if (!criado) return alert("Erro ao criar utilizador.");        alert("Conta criada com sucesso! Efetue o PIX de R$ 10,00 e informe o comprovante ao Administrador para ativação.");        document.getElementById('regUser').value = "";        document.getElementById('regPass').value = "";        document.getElementById('regPassConfirm').value = "";        document.getElementById('regRecovery').value = "";        switchLoginPane('loginPane');    }    window.recoverPass = function() {         const u = document.getElementById('loginUser').value.trim();         if(!u) return alert("Digite o seu nome de utilizador no campo 'Utilizador' para recuperar a senha.");        window.cloudLoadAll(u).then(cloudData => {            if(cloudData && cloudData.dica) {                alert("Palavra/Dica de segurança cadastrada: " + cloudData.dica);            } else {                alert("Utilizador não encontrado na nuvem ou sem dica de recuperação cadastrada.");            }        });    }    async function initSystem() {         document.getElementById('loginScreen').style.display = 'none';         document.getElementById('headerUserDisplay').innerText = currentUser;        const btnAdmin = document.getElementById('btnTabAdmin');        if (currentIsAdmin) {            btnAdmin.style.display = 'flex';            window.escutarNovosCadastrosAdmin((qtdPendentes) => {                const badge = document.getElementById('adminNotificationBadge');                if (badge) {                    if (qtdPendentes > 0) {                        badge.innerText = qtdPendentes;                        badge.style.display = 'block';                    } else {                        badge.style.display = 'none';                    }                }            });        } else {            btnAdmin.style.display = 'none';        }        let nomeMes = msNomesCompletos[viewDate.getMonth()];        document.getElementById('currentMonthDisplay').innerText = nomeMes;         document.getElementById('printSubHeader').innerText = `Utilizador: ${currentUser}  |  Período: ${nomeMes}/2026`;        const cloudData = await window.cloudLoadAll(currentUser);        if (cloudData) {            db = cloudData.dados || [];            calendarioDb = cloudData.calendario || {};            relatorioRazoesDb = cloudData.relatorios || {};        }        renderMonths();         renderizarNL();        switchMobileTab('tabDashboard', document.getElementById('btnTabDashboard'));        atualizarTabela();         renderizarCalendario();        popularSelectRazoesRelatorio();        renderizarTabelaRelatorioAtual();        verificarSabadosAlertas();        if(currentIsAdmin) carregarListaUtilizadoresPendentes();    }    window.addEventListener('DOMContentLoaded', () => {        if (currentUser) {            handleLoginAuto();        }    });    async function handleLoginAuto() {        initSystem();    }    function renderMonths() {         const ms = ["JAN", "FEV", "MAR", "ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ"];         document.getElementById('monthGrid').innerHTML = ms.map((m, i) => `<div class="month-item" onclick="selectMonth(${i})">${m}</div>`).join('');     }     window.toggleMonthGrid = function(event) {         if (event) event.stopPropagation();        document.getElementById('monthGrid').classList.toggle('active');     }     window.selectMonth = function(m) {         viewDate.setMonth(m);         let nomeMes = msNomesCompletos[m];        document.getElementById('currentMonthDisplay').innerText = nomeMes;         document.getElementById('printSubHeader').innerText = `Utilizador: ${currentUser}  |  Período: ${nomeMes}/2026`;        document.getElementById('monthGrid').classList.remove('active');         atualizarTabela();    }     window.addEventListener('click', (e) => {        const monthGrid = document.getElementById('monthGrid');        const btnMes = document.getElementById('currentMonthDisplay');        if (monthGrid && monthGrid.classList.contains('active')) {            if (!monthGrid.contains(e.target) && !btnMes.contains(e.target)) {                monthGrid.classList.remove('active');            }        }    });    function atualizarTabela() {         const mesF = "2026-" + String(viewDate.getMonth() + 1).padStart(2, '0');         const busca = document.getElementById('searchRazao').value.toUpperCase();         const regs = db.filter(i => i.data.startsWith(mesF) && i.razao.includes(busca)).sort((a,b) => new Date(a.data) - new Date(b.data));         let sL=0, sI=0;         const htmlRegistros = regs.map(i => {             const calcPercentual = i.leituras > 0 ? (i.imped / i.leituras) * 100 : 0;             sL += i.leituras; sI += i.imped;             return `<tr>                <td>${i.data.split('-').reverse().slice(0,2).join('/')}</td>                <td>${i.localidade}</td>                <td>${i.razao}</td>                <td>${i.rotas}</td>                <td>${i.leituras.toLocaleString()}</td>                <td>${i.imped}</td>                <td><span style="color:${calcPercentual <= 0.5 ? 'var(--success)' : 'var(--danger)'}; font-weight:900;">${calcPercentual.toFixed(2)}%</span></td>                <td class="no-print">                    <button type="button" onclick="editar(${i.id})" title="Editar" style="background:none; border:none; color:var(--accent); cursor:pointer; font-size:13px; padding:2px;">✏️</button>                </td>            </tr>`;         }).join('');        document.getElementById('tabelaCorpo').innerHTML = htmlRegistros;         const sB = sL > 8000 ? (sL - 8000) * 0.20 : 0;         const sD = sI * 1.50;         const net = sB - sD;         animarContagem('totL', sL); animarContagem('totI', sI);         animarContagem('totMeta', sL > 0 ? (sI/sL*100) : 0);         animarContagem('totB', sB, true); animarContagem('totD', sD, true);         animarContagem('totNet', net < 0 ? 0 : net, true);         const perc = Math.min((sL/8000)*100, 100);         document.getElementById('barFill').style.width = perc + "%";         document.getElementById('barPerc').innerText = Math.floor(perc) + "%";         document.getElementById('barTxt').innerText = `Progresso Meta: ${sL.toLocaleString()} / 8.000`;         let acum = 0;         for(let m=0; m<12; m++) {             const f = "2026-" + String(m+1).padStart(2,'0');             const r = db.filter(x => x.data.startsWith(f));             const tl = r.reduce((a,c) => a+c.leituras, 0);             const ti = r.reduce((a,c) => a+c.imped, 0);             const bonusMes = tl > 8000 ? (tl - 8000) * 0.20 : 0;             const descMes = ti * 1.50;             const liquidoMes = bonusMes - descMes;             if(liquidoMes > 0) acum += liquidoMes;        }         animarContagem('totAcumulado', acum, true);     }     document.getElementById('gplForm').onsubmit = (e) => {         e.preventDefault();         const editId = document.getElementById('editId').value;        const dadosForm = {            data: document.getElementById('data').value,             localidade: document.getElementById('localidade').value.toUpperCase(),             razao: document.getElementById('razao').value.toUpperCase(),             rotas: document.getElementById('rotas').value.toUpperCase(),             leituras: Number(document.getElementById('leituras').value),             imped: Number(document.getElementById('imped').value)        };        if (editId) {            const index = db.findIndex(i => i.id == editId);            if (index !== -1) {                db[index] = { id: Number(editId), ...dadosForm };            }        } else {            db.push({                 id: Date.now(),                 ...dadosForm            });         }        dispararSalvamentoRegistros();        limparFormulario();        atualizarTabela();         switchMobileTab('tabTabela', document.getElementById('btnTabTabela'));    };     window.editar = function(id) {        if (!confirm("Deseja realmente editar este registro?")) return;        const item = db.find(i => i.id === id);        if (!item) return;        document.getElementById('editId').value = item.id;        document.getElementById('data').value = item.data;        document.getElementById('localidade').value = item.localidade;        document.getElementById('razao').value = item.razao;        document.getElementById('rotas').value = item.rotas;        document.getElementById('leituras').value = item.leituras;        document.getElementById('imped').value = item.imped;        document.getElementById('btnSalvarRegistro').innerText = "Atualizar Registro";        document.getElementById('btnCancelarEdicao').style.display = "block";        switchMobileTab('tabFormulario', document.getElementById('btnTabFormulario'));    }    window.limparFormulario = function() {        document.getElementById('gplForm').reset();        document.getElementById('editId').value = "";        document.getElementById('btnSalvarRegistro').innerText = "Salvar Registro";        document.getElementById('btnCancelarEdicao').style.display = "none";    }    window.limparTudo = function() {         if(confirm("Deseja limpar todos os registros deste mês?")) {             const mesF = "2026-" + String(viewDate.getMonth() + 1).padStart(2, '0');             db = db.filter(i => !i.data.startsWith(mesF));             dispararSalvamentoRegistros();            atualizarTabela();         }     }     window.limparAno = function() {         if(confirm("ATENÇÃO: Você está prestes a apagar TODOS os registros de 2026!")) {             if(confirm("Tem certeza absoluta?")) {                 db = [];                 dispararSalvamentoRegistros();                atualizarTabela();                 alert("Dados de 2026 removidos da nuvem.");             }         }     }     window.exportarBackup = function() {        if ((!db || db.length === 0) && Object.keys(calendarioDb).length === 0 && Object.keys(relatorioRazoesDb).length === 0) {            return alert("Sem dados para exportar.");        }        const dadosBackup = {            registros: db,            calendario: calendarioDb,            relatorios: relatorioRazoesDb        };        const dataStr = JSON.stringify(dadosBackup, null, 2);        const blob = new Blob([dataStr], { type: 'application/json;charset=utf-8;' });        const url = URL.createObjectURL(blob);        const dl = document.createElement('a');        dl.href = url;        dl.download = `backup_gpl_${currentUser.toLowerCase()}_2026.json`;        document.body.appendChild(dl);         dl.click();         dl.remove();        setTimeout(() => URL.revokeObjectURL(url), 1000);        alert("💾 Backup salvo com sucesso no seu dispositivo!");    }    window.dispararImportacao = function() {         const fileInput = document.getElementById('importFile');        fileInput.value = '';        fileInput.click();     }    window.importarBackup = function(event) {        const file = event.target.files[0];        if (!file) return;        const reader = new FileReader();        reader.onload = async function(e) {            try {                const importedData = JSON.parse(e.target.result);                if (confirm(`Substituir dados atuais pelo arquivo "${file.name}"?`)) {                    if (Array.isArray(importedData)) {                        db = importedData;                    } else if (importedData && typeof importedData === 'object') {                        db = Array.isArray(importedData.registros) ? importedData.registros : [];                        if (importedData.calendario) calendarioDb = importedData.calendario;                        if (importedData.relatorios) relatorioRazoesDb = importedData.relatorios;                        if (importedData.relatorios) {                            relatorioRazoesDb = importedData.relatorios;                            for (const [raz, conteudoRaz] of Object.entries(relatorioRazoesDb)) {                                if (currentUser && window.cloudSaveRelatorioRazao) {                                    window.cloudSaveRelatorioRazao(currentUser, raz, conteudoRaz);                                }                            }                        }                    } else {                        return alert("Arquivo de backup inválido.");                    }                    if (currentUser && window.cloudSaveRegistros) {                        window.cloudSaveRegistros(currentUser, db);                    }                    if (currentUser && window.cloudSaveRelatorios) {                        window.cloudSaveRelatorios(currentUser, relatorioRazoesDb);                    }                    atualizarTabela();                    renderizarCalendario();                    popularSelectRazoesRelatorio();                    renderizarTabelaRelatorioAtual();                    verificarSabadosAlertas();                    alert("Backup restaurado e sincronizado com a nuvem com sucesso! ✨");                }            } catch (err) {                 alert("Erro ao ler o arquivo JSON.");             }            event.target.value = "";        };        reader.readAsText(file);    }    window.onload = function() {        window.addEventListener("keydown", (e) => {            if (e.key === "F5") {                e.preventDefault();                if (currentUser) {                    atualizarDadosManualmente();                } else {                    location.reload();                }            }        });        const loginPassEl = document.getElementById('loginPass');        if(loginPassEl) {            loginPassEl.addEventListener("keydown", (e) => {                if (e.key === "Enter") {                    e.preventDefault();                    handleLogin();                }            });        }        const form = document.getElementById("gplForm");        if (form) {            const inputs = Array.from(form.querySelectorAll("input"));            inputs.forEach((input, index) => {                input.addEventListener("keydown", (e) => {                    if (e.key === "Enter") {                        e.preventDefault();                        const nextInput = inputs[index + 1];                        if (nextInput) {                            nextInput.focus();                        } else {                            form.requestSubmit();                        }                    }                });            });        }    };</script> </body> </html>
+<!DOCTYPE html> 
+<html lang="pt-br"> 
+<head> 
+    <meta charset="UTF-8"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes"> 
+    <title>Gestão de Produtividade de Leituras</title> 
+
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzMiAzMicgd2lkdGg9JzMyJyBoZWlnaHQ9JzMyJz48cmVjdCB3aWR0aD0nMzInIGhlaWdodD0nMzInIHJ4PSc2JyBmaWxsPSdjMGIwZjE1Jz48L3JlY3Q+PHRleHQgeD0nNTAlJyB5PSc1NSUnIGRvbWluYW50LWJhc2VsaW5lPSdtaWRkbGUnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJyBmb250LXdlaWdodD0nOTAwJyBmb250LXdlaWdodD0nMTAwMCcgZm9udC1zaXplPScxMCcgZmlsbD0nIzAwZmY4OCcgbGV0dGVyLXNwYWNpbmdzPScwLjUnPkdQTDwvdGV4dD48L3N2Zz4=">
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#030508">
+
+    <style> 
+        :root { 
+            --bg: #030508; 
+            --surface: #0b0f15;
+            --accent: #0070f3;
+            --success: #00ff88; 
+            --danger: #ff4d4d;
+            --warning: #ffcc00; 
+            --border: #1e2633; 
+            --text-p: #8899a6; 
+            --text-h: #ffffff; 
+            --grey-border: #333c4d; 
+            --brown-border: #5d4037; 
+            --purple: #9c27b0; 
+            --orange-neon: #ff8c00; 
+            --white-neon: #f8f9fa; 
+        } 
+        * { box-sizing: border-box; } 
+
+        html, body {
+            width: 100%;
+            height: 100vh;
+            font-family: 'Inter', system-ui, sans-serif; 
+            background-color: var(--bg); 
+            color: var(--text-p); 
+            margin: 0; 
+            padding: 0; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            overscroll-behavior-y: contain;
+        } 
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at center, #111a2c 0%, #030508 100%);
+            z-index: -1;
+        }
+
+        #pullToRefreshIndicator {
+            position: fixed;
+            top: -50px;
+            left: 0;
+            width: 100%;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(11, 15, 21, 0.95);
+            color: var(--success);
+            font-weight: 900;
+            font-size: 11px;
+            border-bottom: 1px solid var(--border);
+            z-index: 99999;
+            transition: transform 0.2s ease;
+        }
+
+        input, select { 
+            background: #000; 
+            color: white; 
+            border: 1px solid var(--border); 
+            padding: 8px 10px; 
+            border-radius: 9px; 
+            outline: none; 
+            width: 100%; 
+            font-size: 12px; 
+            margin-bottom: 5px; 
+            transition: 0.3s; 
+        } 
+        input:focus, select:focus { 
+            border-color: var(--accent) !important; 
+            box-shadow: 0 0 15px rgba(0, 112, 243, 0.4); 
+        } 
+        input[type="date"]::-webkit-calendar-picker-indicator { 
+            filter: invert(1); 
+            cursor: pointer; 
+            opacity: 1; 
+            display: block; 
+        } 
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { 
+            -webkit-appearance: none; 
+            margin: 0; 
+        } 
+        input[type=number] { 
+            appearance: textfield;
+            -moz-appearance: textfield; 
+        } 
+
+        #loginScreen { 
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; 
+            background: radial-gradient(circle at center, #0b0f15 0%, #030508 100%); 
+            z-index: 99999; display: flex; align-items: center; justify-content: center; 
+        } 
+        .login-box { 
+            background: rgba(11, 15, 21, 0.95); padding: 30px; border-radius: 24px; 
+            border: 1px solid var(--border); border-top: 4px solid var(--success); 
+            width: 360px; text-align: center; backdrop-filter: blur(10px); 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8); 
+            max-height: 95vh; overflow-y: auto;
+        } 
+
+        .login-tabs-header {
+            display: flex;
+            background: #000;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            margin-bottom: 15px;
+            padding: 3px;
+            gap: 3px;
+        }
+        .login-tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-p);
+            font-size: 10px;
+            font-weight: 900;
+            text-transform: uppercase;
+            cursor: pointer;
+            flex: 1;
+            padding: 8px;
+            border-radius: 8px;
+            transition: 0.3s;
+        }
+        .login-tab-btn.active {
+            background: var(--accent);
+            color: #fff;
+            box-shadow: 0 0 10px rgba(0, 112, 243, 0.4);
+        }
+        .login-form-pane {
+            display: none;
+            text-align: left;
+        }
+        .login-form-pane.active {
+            display: block;
+        }
+
+        .auth-btn { 
+            background: var(--success); color: black; width: 100%; padding: 12px; 
+            border-radius: 12px; font-weight: 900; cursor: pointer; border: none; 
+            text-transform: uppercase; margin-top: 10px; transition: 0.3s; 
+        } 
+        .auth-link { 
+            color: var(--accent); font-size: 11px; cursor: pointer; 
+            font-weight: 700; margin-top: 12px; display: inline-block; text-transform: uppercase; text-align: center; width: 100%;
+        } 
+
+        .container { 
+            max-width: 480px; 
+            width: 100%; 
+            height: 100vh;
+            max-height: 920px;
+            display: flex; 
+            flex-direction: column; 
+            gap: 6px; 
+            overflow: hidden;
+            background: var(--bg);
+            border-radius: 24px;
+            border: 1px solid var(--grey-border);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+            padding: 8px;
+        } 
+
+        header { 
+            background: var(--surface); padding: 8px 12px; border-radius: 16px; 
+            border: 1px solid var(--border); display: flex; justify-content: space-between; 
+            align-items: center; flex-shrink: 0; position: relative; 
+        } 
+        .prog-area { width: 100%; flex-shrink: 0; padding: 0 2px; } 
+        
+        .top-dashboard {
+            display: flex; flex-direction: column; gap: 6px; flex-shrink: 0;
+            overflow-y: auto; max-height: calc(100vh - 120px); padding-bottom: 4px;
+        }
+        
+        .observations { 
+            background: var(--surface); padding: 14px 18px; border-radius: 14px; 
+            border: 1.8px solid #ffffff; display: flex; flex-direction: column; 
+            justify-content: center; gap: 6px; flex-shrink: 0;
+            white-space: nowrap; overflow-x: auto;
+        } 
+        .obs-item { font-size: 12px; color: #ffffff; display: flex; align-items: center; gap: 8px; font-weight: 700; } 
+        .dot { height: 8px; width: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; } 
+
+        .alert-saturday-box {
+            background: rgba(255, 204, 0, 0.15);
+            border: 1.5px solid var(--warning);
+            padding: 10px 14px;
+            border-radius: 12px;
+            color: var(--warning);
+            font-size: 11.5px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            animation: pulseAlert 2s infinite;
+        }
+        @keyframes pulseAlert {
+            0% { opacity: 0.8; }
+            50% { opacity: 1; border-color: #fff; }
+            100% { opacity: 0.8; }
+        }
+
+        .summary-grid { 
+            display: grid; 
+            grid-template-columns: repeat(2, 1fr); 
+            gap: 6px; 
+            height: auto; 
+        } 
+        .summary-card { 
+            background: var(--surface); padding: 10px 6px; border-radius: 12px; 
+            border: 1.5px solid var(--grey-border); border-top: 5px solid; 
+            display: flex; flex-direction: column; justify-content: center; text-align: center; height: 75px; 
+        } 
+        .summary-card p { font-size: 10px; font-weight: 800; text-transform: uppercase; margin: 0; } 
+        .summary-card h2 { margin: 4px 0 0; font-size: 1.1rem; color: var(--text-h); font-weight: 900; } 
+
+        .neon-acumulado {
+            grid-column: span 2;
+            height: 70px;
+        }
+
+        .neon-leituras { border-top-color: var(--white-neon); } 
+        .neon-impedimentos { border-top-color: var(--orange-neon); } 
+        .neon-meta { border-top-color: var(--warning); } 
+        .neon-bonus { border-top-color: var(--accent); } 
+        .neon-descontos { border-top-color: var(--danger); } 
+        .neon-receber { border-top-color: var(--success); } 
+        .neon-acumulado { border-top-color: var(--purple); } 
+
+        .content-wrap { 
+            display: block; 
+            flex-grow: 1; 
+            min-height: 0; 
+            overflow: hidden; 
+        } 
+        
+        .mobile-tab-content { display: none; height: 100%; min-height: 0; overflow: hidden; }
+        .mobile-tab-content.active-tab {
+            display: flex; flex-direction: column; flex-grow: 1; min-height: 0; overflow: hidden;
+        }
+
+        aside.mobile-tab-content .sidebar { 
+            height: 100%; 
+            max-height: 100%; 
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow: hidden; 
+            padding: 10px;
+            background: linear-gradient(180deg, rgba(0, 112, 243, 0.08) 0%, var(--surface) 100%);
+            border-radius: 16px;
+            border: 1.5px solid var(--accent);
+        } 
+        .form-content-area { overflow-y: auto; flex-grow: 1; min-height: 0; padding-right: 2px; }
+        .form-group { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
+        .form-group label { width: 80px; flex-shrink: 0; font-size: 10.5px; font-weight: 800; color: var(--accent); text-transform: uppercase; }
+        
+        .actions-footer { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; flex-shrink: 0; } 
+        .btn-add { background: var(--accent); color: #fff; width: 100%; padding: 12px; border-radius: 12px; font-weight: 900; cursor: pointer; border: none; text-transform: uppercase; font-size: 11.5px; } 
+        .btn-clear { background: transparent; color: var(--danger); width: 100%; padding: 8px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--danger); text-transform: uppercase; font-size: 10px; } 
+        .btn-clear-year { background: transparent; color: var(--purple); width: 100%; padding: 8px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--purple); text-transform: uppercase; font-size: 10px; } 
+        .backup-row { display: flex; gap: 6px; width: 100%; }
+        .btn-backup { background: transparent; color: var(--success); width: 50%; padding: 8px 4px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--success); text-transform: uppercase; font-size: 10px; text-align: center; } 
+        .btn-import { background: transparent; color: var(--warning); width: 50%; padding: 8px 4px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--warning); text-transform: uppercase; font-size: 10px; text-align: center; } 
+
+        .main-view { 
+            background: var(--surface); border-radius: 16px; border: 1.5px solid var(--brown-border); 
+            display: flex; flex-direction: column; flex-grow: 1; min-height: 0; overflow: hidden; 
+        } 
+        .table-container { flex-grow: 1; min-height: 0; overflow-y: auto; overflow-x: auto; overscroll-behavior-y: contain; } 
+
+        table { width: 100%; border-collapse: collapse; table-layout: fixed; } 
+        th, td { padding: 6px 3px; text-align: center; border-bottom: 1px solid var(--border); font-size: 10.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } 
+        th { background: #0d1117; color: var(--accent); font-size: 9px; text-transform: uppercase; position: sticky; top: 0; z-index: 5; } 
+
+        #tabTabela th:nth-child(1), #tabTabela td:nth-child(1) { width: 12%; } 
+        #tabTabela th:nth-child(2), #tabTabela td:nth-child(2) { width: 15%; } 
+        #tabTabela th:nth-child(3), #tabTabela td:nth-child(3) { width: 14%; } 
+        #tabTabela th:nth-child(4), #tabTabela td:nth-child(4) { width: 22%; } 
+        #tabTabela th:nth-child(5), #tabTabela td:nth-child(5) { width: 13%; } 
+        #tabTabela th:nth-child(6), #tabTabela td:nth-child(6) { width: 9% !important; } 
+        #tabTabela th:nth-child(7), #tabTabela td:nth-child(7) { width: 9%; } 
+        #tabTabela th:nth-child(8), #tabTabela td:nth-child(8) { width: 6%; } 
+
+        #tabNL th:nth-child(1), #tabNL td:nth-child(1) { width: 15%; text-align: center; } 
+        #tabNL th:nth-child(2), #tabNL td:nth-child(2) { width: 20%; text-align: center; } 
+        #tabNL th:nth-child(3), #tabNL td:nth-child(3) { width: 65%; text-align: left; padding-left: 8px; } 
+
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 8px;
+            padding: 10px;
+            overflow-y: auto;
+            flex-grow: 1;
+            height: 100%;
+            align-content: start;
+            overscroll-behavior-y: contain;
+        }
+        .oc-card {
+            background: linear-gradient(145deg, #0d121a, var(--surface));
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--accent);
+            border-radius: 12px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            height: 95px;
+        }
+        .medidor-card {
+            background: linear-gradient(145deg, #0d121a, var(--surface));
+            border: 1px solid var(--success);
+            border-left: 5px solid var(--success);
+            border-radius: 12px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(0,255,136,0.15);
+            max-width: 420px;
+            margin: 6px auto;
+            width: 100%;
+        }
+        .oc-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+        .oc-code {
+            font-size: 1rem;
+            font-weight: 900;
+            color: var(--text-h);
+        }
+        .oc-count {
+            background: rgba(0, 255, 136, 0.12);
+            color: var(--success);
+            border: 1px solid var(--success);
+            padding: 3px 8px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 900;
+        }
+        .oc-desc {
+            font-size: 10.5px;
+            color: var(--text-p);
+            margin-bottom: 4px;
+            line-height: 1.25;
+            font-weight: 600;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .oc-status {
+            font-size: 9.5px;
+            font-weight: 800;
+            text-transform: uppercase;
+            padding: 2px 6px;
+            border-radius: 4px;
+            display: inline-block;
+            width: fit-content;
+        }
+
+        .month-grid { display: none; position: absolute; top: 50px; right: 15px; background: #0d1117; border: 1px solid var(--accent); padding: 12px; border-radius: 12px; grid-template-columns: repeat(3, 1fr); gap: 6px; z-index: 1000; } 
+        .month-grid.active { display: grid; } 
+        .month-item { background: #000; color: white; border: 1px solid var(--border); padding: 8px; border-radius: 6px; cursor: pointer; font-size: 10px; font-weight: bold; text-align: center; }
+        
+        .header-btn {
+            background: #1e2633; border: 1px solid var(--border); color: white;
+            padding: 8px 12px; border-radius: 9px; cursor: pointer; font-weight: 800; font-size: 11px; text-transform: uppercase;
+        }
+
+        .desktop-sync-btn {
+            display: none;
+        }
+
+        @media (min-width: 768px) {
+            .desktop-sync-btn {
+                display: inline-block;
+            }
+        }
+
+        .mobile-nav-tabs {
+            display: flex; width: 100%; background: var(--surface); border: 1px solid var(--border);
+            border-radius: 10px; z-index: 9; justify-content: space-between; padding: 4px;
+            gap: 3px; flex-shrink: 0;
+        }
+        .mob-tab-btn {
+            background: rgba(255, 255, 255, 0.03); 
+            border: 1.5px solid var(--grey-border); 
+            color: var(--text-p); 
+            font-size: 7.5px;
+            font-weight: 900; 
+            text-transform: uppercase; 
+            cursor: pointer; 
+            flex: 1; 
+            padding: 8px 1px;
+            border-radius: 8px; 
+            text-align: center; 
+            transition: 0.3s;
+            position: relative;
+        }
+        .mob-tab-btn.active { 
+            background: var(--accent); 
+            border-color: #fff; 
+            color: #fff; 
+            box-shadow: 0 0 10px rgba(0, 112, 243, 0.5);
+        }
+
+        .admin-badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background: var(--danger);
+            color: #fff;
+            font-size: 7px;
+            font-weight: 900;
+            padding: 2px 4px;
+            border-radius: 50%;
+            display: none;
+        }
+
+        .mobile-search-area { display: block; margin-bottom: 4px; flex-shrink: 0; }
+        .print-header { display: none; }
+
+        @media print {
+            @page { margin: 10mm; size: auto; }
+            html, body {
+                background: white !important; color: black !important;
+                display: block !important; overflow: visible !important;
+                height: auto !important; position: static !important;
+                margin: 0 !important; padding: 0 !important;
+            }
+            body::before { display: none; }
+            .container {
+                max-width: 90% !important; width: 90% !important;
+                height: auto !important; max-height: none !important;
+                border: none !important; box-shadow: none !important;
+                background: white !important; padding: 0 !important;
+                margin: 0 auto !important; display: block !important;
+                overflow: visible !important;
+            }
+            header, .prog-area, .mobile-nav-tabs, .no-print, .mobile-search-area {
+                display: none !important;
+            }
+            .mobile-tab-content { display: none !important; }
+            .mobile-tab-content#tabTabela {
+                display: block !important; height: auto !important;
+                overflow: visible !important; margin: 0 !important; padding: 5px !important;
+            }
+            .print-header {
+                display: block !important; text-align: center;
+                margin-top: 0 !important; margin-bottom: 10px;
+                border-bottom: 2px solid #000; padding-bottom: 6px;
+            }
+            .print-header h1 { font-size: 15px; text-transform: uppercase; margin: 0 0 4px 0; color: #000; }
+            .print-header p { font-size: 11px; margin: 0; color: #333; font-weight: bold; text-transform: uppercase; }
+            .main-view { background: white !important; border: none !important; overflow: visible !important; height: auto !important; margin: 0 !important; }
+            .table-container { overflow: visible !important; height: auto !important; }
+            table { width: 100% !important; border-collapse: collapse !important; }
+            th, td { border: 1px solid #999 !important; color: black !important; padding: 5px !important; font-size: 10px !important; }
+            th { background: #eee !important; color: black !important; }
+        }
+    </style> 
+</head> 
+<body>
+
+<div id="pullToRefreshIndicator">🔄 Puxe mais para atualizar...</div>
+
+<div id="loginScreen"> 
+    <div class="login-box"> 
+        <div style="background:var(--success); color:black; padding:10px; border-radius:12px; font-weight:900; margin-bottom:15px;">GPL</div> 
+        
+        <div class="login-tabs-header">
+            <button class="login-tab-btn active" id="btnPaneLogin" onclick="switchLoginPane('loginPane')">Acessar</button>
+            <button class="login-tab-btn" id="btnPaneCreate" onclick="switchLoginPane('createPane')">Criar Conta</button>
+        </div>
+
+        <div class="login-form-pane active" id="loginPane">
+            <input type="text" id="loginUser" placeholder="Utilizador"> 
+            <input type="password" id="loginPass" placeholder="Senha"> 
+            <button onclick="handleLogin()" class="auth-btn">ENTRAR</button> 
+            <span class="auth-link" style="color:var(--warning)" onclick="recoverPass()">Recuperar Senha</span> 
+        </div>
+
+        <div class="login-form-pane" id="createPane">
+            <div style="background: rgba(0, 255, 136, 0.1); border: 1px solid var(--success); padding: 8px; border-radius: 8px; margin-bottom: 8px; font-size: 10px; color: var(--success); font-weight: bold;">
+                💡 Depósito/PIX de R$ 10,00 necessário para liberação após criar a conta.
+            </div>
+            <input type="text" id="regUser" placeholder="Utilizador"> 
+            <input type="password" id="regPass" placeholder="Senha"> 
+            <input type="password" id="regPassConfirm" placeholder="Confirmar Senha"> 
+            <input type="text" id="regRecovery" placeholder="Palavra/Dica de recuperar senha"> 
+            <button onclick="handleCreateAccount()" class="auth-btn" style="background: var(--accent); color: white;">REGISTRAR</button> 
+        </div>
+    </div> 
+</div>
+
+<div class="container"> 
+    <header> 
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="background:var(--success); color:black; padding:8px 14px; border-radius:10px; font-weight:900; font-size:13px;">GPL</div> 
+            <span style="font-size: 13px; font-weight: 800; color: var(--success); text-transform: uppercase;" id="headerUserDisplay"></span>
+        </div>
+        <div style="display: flex; gap: 8px; align-items: center; position: relative;"> 
+            <button class="header-btn" onclick="toggleMonthGrid(event)" id="currentMonthDisplay" style="background: var(--accent); border-color: var(--accent);">MÊS</button> 
+            <div id="monthGrid" class="month-grid"></div> 
+            
+            <button class="header-btn" onclick="window.print()">IMPRIMIR</button> 
+            <button class="header-btn desktop-sync-btn" onclick="atualizarDadosManualmente(this)" title="Atualizar dados da nuvem" style="background: var(--success); color: black;">🔄</button>
+        </div> 
+    </header> 
+
+    <div id="progArea" class="prog-area"> 
+        <div style="width:100%; background:#1e2633; height:8px; border-radius:10px; overflow:hidden; border:1px solid var(--border); margin-bottom:3px;"> 
+            <div id="barFill" style="height:100%; width:0%; background:linear-gradient(90deg, var(--accent), var(--success)); transition:0.8s;"></div> 
+        </div> 
+        <div style="display:flex; justify-content:space-between; font-size:10px; font-weight:bold; color:var(--text-p); text-transform: uppercase;"> 
+            <span id="barTxt">Progresso Meta: 0 / 8.000</span> 
+            <span id="barPerc" style="color:var(--success)">0%</span> 
+        </div> 
+    </div> 
+
+    <nav class="mobile-nav-tabs no-print" id="mainNavTabs">
+        <button class="mob-tab-btn active" id="btnTabDashboard" onclick="switchMobileTab('tabDashboard', this)">📊 Dash</button>
+        <button class="mob-tab-btn" id="btnTabFormulario" onclick="switchMobileTab('tabFormulario', this)">➕ Novo</button>
+        <button class="mob-tab-btn" id="btnTabTabela" onclick="switchMobileTab('tabTabela', this)">📋 Reg</button>
+        <button class="mob-tab-btn" id="btnTabNL" onclick="switchMobileTab('tabNL', this)">🔍 NL</button>
+        <button class="mob-tab-btn" id="btnTabCal" onclick="switchMobileTab('tabCal', this)">📅 Cal</button>
+        <button class="mob-tab-btn" id="btnTabRelatorio" onclick="switchMobileTab('tabRelatorio', this)">📑 Relat.</button>
+        <button class="mob-tab-btn" id="btnTabAdmin" onclick="switchMobileTab('tabAdmin', this)" style="display:none;">👑 Adm<span id="adminNotificationBadge" class="admin-badge">0</span></button>
+    </nav>
+
+    <div class="content-wrap" id="mainContentWrap"> 
+        <div class="top-dashboard mobile-tab-content active-tab" id="tabDashboard">
+            <div class="observations no-print"> 
+                <div class="obs-item"><span class="dot" style="background:var(--success)"></span> Bônus de R$ 0,20 por cada leitura excedente a 8000 leituras</div> 
+                <div class="obs-item"><span class="dot" style="background:var(--danger)"></span> Desconto: R$ 1,50 p/ impedimento</div> 
+                <div class="obs-item"><span class="dot" style="background:var(--warning)"></span> Qualidade: Meta ≤ 0,50%</div> 
+            </div> 
+
+            <div id="saturdayAlertContainer" style="display:none;" class="no-print"></div>
+
+            <div class="summary-grid"> 
+                <div class="summary-card neon-leituras"><p>Leituras</p><h2 id="totL">0</h2></div> 
+                <div class="summary-card neon-impedimentos"><p>Impedimentos</p><h2 id="totI">0</h2></div> 
+                <div class="summary-card neon-meta"><p>Qualidade</p><h2 id="totMeta">0,00%</h2></div> 
+                <div class="summary-card neon-bonus"><p>Bônus</p><h2 id="totB">R$ 0,00</h2></div> 
+                <div class="summary-card neon-descontos"><p>Descontos</p><h2 id="totD">R$ 0,00</h2></div> 
+                <div class="summary-card neon-receber"><p>Receber Mês</p><h2 id="totNet">R$ 0,00</h2></div> 
+                <div class="summary-card neon-acumulado"><p>Acumulado Ano</p><h2 id="totAcumulado">R$ 0,00</h2></div> 
+            </div>
+        </div>
+
+        <aside class="no-print mobile-tab-content" id="tabFormulario"> 
+            <div class="sidebar"> 
+                <div class="form-content-area" style="padding-top: 5px;">
+                    <form id="gplForm"> 
+                        <input type="hidden" id="editId">
+                        <div class="form-group"><label>Data</label><input type="date" id="data" required></div> 
+                        <div class="form-group"><label>Localidade</label><input type="text" id="localidade" required></div> 
+                        <div class="form-group"><label>Razão</label><input type="text" id="razao" required></div> 
+                        <div class="form-group"><label>Rotas</label><input type="text" id="rotas" required></div> 
+                        <div class="form-group"><label>Leituras</label><input type="number" id="leituras" required></div> 
+                        <div class="form-group"><label>Imped.</label><input type="number" id="imped" required></div> 
+                    </form>
+                </div>
+                <div class="actions-footer"> 
+                    <button type="button" onclick="document.getElementById('gplForm').requestSubmit()" class="btn-add" id="btnSalvarRegistro">Salvar Registro</button> 
+                    <button type="button" onclick="limparFormulario()" class="btn-clear" style="color: var(--warning); border-color: var(--warning); display: none;" id="btnCancelarEdicao">Cancelar Edição</button>
+                    <button type="button" onclick="limparTudo()" class="btn-clear">Limpar Mês</button> 
+                    <button type="button" onclick="limparAno()" class="btn-clear-year">Limpar todos os dados</button> 
+                    <div class="backup-row">
+                        <button type="button" onclick="exportarBackup()" class="btn-backup">Backup</button>
+                        <button type="button" onclick="dispararImportacao()" class="btn-import">Restaurar</button>
+                        <input type="file" id="importFile" accept="application/json,.json,.txt" style="display:none;" onchange="importarBackup(event)">
+                    </div>
+                </div> 
+            </div> 
+        </aside> 
+
+        <main class="mobile-tab-content" id="tabTabela"> 
+            <div class="print-header">
+                <h1>Gestão de Produtividade de Leituras</h1>
+                <p id="printSubHeader">Utilizador: - | Período: -</p>
+            </div>
+
+            <div class="mobile-search-area no-print">
+                <input type="text" id="searchRazao" placeholder="Pesquisar razão nos registros..." oninput="atualizarTabela()" style="border-color: var(--success); margin-bottom: 0;">
+            </div>
+            <div class="main-view"> 
+                <div class="table-container"> 
+                    <table> 
+                        <thead> 
+                            <tr><th>Data</th><th>Local</th><th>Razão</th><th>Rotas</th><th>Leit.</th><th>Imp.</th><th>%</th><th class="no-print">Ação</th></tr> 
+                        </thead> 
+                        <tbody id="tabelaCorpo"></tbody> 
+                    </table> 
+                </div> 
+            </div> 
+        </main> 
+
+        <div class="mobile-tab-content" id="tabNL" style="flex-direction: column;">
+            <div class="mobile-search-area">
+                <input type="text" id="searchNL" placeholder="Pesquisar por número ou descrição da nota..." oninput="filtrarNL(this.value)" style="border-color: var(--success);">
+            </div>
+            <div class="main-view">
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr><th>Número</th><th>Status</th><th style="text-align: left; padding-left: 8px;">Detalhe / Descrição</th></tr>
+                        </thead>
+                        <tbody id="nlCorpo"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="mobile-tab-content" id="tabCal" style="flex-direction: column;">
+            <div class="mobile-search-area">
+                <input type="text" id="searchCal" placeholder="Pesquisar razão..." oninput="renderizarCalendario(this.value)" style="border-color: var(--success); margin-bottom: 0;">
+            </div>
+            <div class="main-view">
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr><th>Razão</th><th>Data da Próxima Leitura</th></tr>
+                        </thead>
+                        <tbody id="calCorpo"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="mobile-tab-content" id="tabRelatorio" style="flex-direction: column;">
+            <div class="mobile-search-area" style="display: flex; gap: 8px; align-items: center; background: var(--surface); padding: 10px; border-radius: 12px; border: 1px solid var(--border);">
+                <div style="flex: 1;">
+                    <span style="font-weight: 800; color: #fff; font-size: 10.5px; display: block; margin-bottom: 4px;">RAZÃO</span>
+                    <select id="selectRazaoRelatorio" onchange="mudarRazaoRelatorio()" style="margin-bottom: 0; font-weight: bold; color: var(--accent); font-size: 11px;">
+                    </select>
+                </div>
+                <div>
+                    <span style="font-weight: 800; color: transparent; font-size: 10.5px; display: block; margin-bottom: 4px;">AÇÃO</span>
+                    <input type="file" id="inputTxtOcorrencia" accept=".txt,.csv" style="display:none" onchange="processarArquivoTxtSelecionado(this)">
+                    <button type="button" onclick="document.getElementById('inputTxtOcorrencia').click()" class="auth-btn" style="width: auto; margin-top: 0; padding: 8px 14px; font-size: 11px; background: var(--purple); color: #fff;">
+                        📂 Importar
+                    </button>
+                </div>
+            </div>
+            <div class="mobile-search-area" style="margin-top: 4px;">
+                <input type="text" id="searchMedidorRelatorio" placeholder="Pesquisar por número do medidor..." oninput="buscarMedidorNoRelatorio()" style="border-color: var(--success); margin-bottom: 0;">
+            </div>
+            <div class="main-view" style="margin-top: 6px;">
+                <div id="relatorioCardsCorpo" class="cards-container">
+                    <div style="grid-column: 1 / -1; text-align: center; color: var(--text-p); padding: 30px; font-weight: 700; font-size: 12px;">
+                        Carregue um arquivo TXT ou digite o número do medidor para visualizar as leituras e correções.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mobile-tab-content" id="tabAdmin" style="flex-direction: column;">
+            <div class="mobile-search-area">
+                <input type="text" id="searchAdminUsers" placeholder="Pesquisar utilizador..." oninput="carregarListaUtilizadoresPendentes(this.value)" style="border-color: var(--success); margin-bottom: 0;">
+            </div>
+            <div class="main-view">
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr><th>Utilizador</th><th>Status</th><th class="no-print">Ação</th></tr>
+                        </thead>
+                        <tbody id="adminUsersCorpo"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div> 
+</div> 
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, doc, setDoc, getDoc, getDocs, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyBCyO4flW7U20t2Lh4HQRy5hGBIzxahjp4",
+        authDomain: "gestaoprodutividadeleituras.firebaseapp.com",
+        projectId: "gestaoprodutividadeleituras",
+        storageBucket: "gestaoprodutividadeleituras.firebasestorage.app",
+        messagingSenderId: "1053226233050",
+        appId: "1:1053226233050:web:964e6c40891fe4973a89e3"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const dbCloud = getFirestore(app);
+
+    async function hashSenha(senha) {
+        const encoder = new TextEncoder();
+        const data = encoder.encode(senha);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    window.cloudVerificarLogin = async function(user, senhaDigitada) {
+        try {
+            const userTrim = user.trim();
+            const userUpper = userTrim.toUpperCase();
+            
+            let docRef = doc(dbCloud, "usuarios", userUpper);
+            let docSnap = await getDoc(docRef);
+            
+            if (!docSnap.exists()) {
+                docRef = doc(dbCloud, "usuarios", userTrim);
+                docSnap = await getDoc(docRef);
+            }
+
+            if (!docSnap.exists()) return { sucesso: false, erro: "Utilizador não encontrado. Crie uma conta." };
+
+            const dadosUsuario = docSnap.data();
+            const senhaArmazenada = dadosUsuario.senha;
+
+            const senhaHashDigitada = await hashSenha(senhaDigitada);
+            
+            let senhaValida = false;
+            let precisaAtualizarHash = false;
+
+            if (senhaArmazenada === senhaHashDigitada) {
+                senhaValida = true;
+            } else if (senhaArmazenada === senhaDigitada) {
+                senhaValida = true;
+                precisaAtualizarHash = true;
+            }
+
+            if (!senhaValida) {
+                return { sucesso: false, erro: "Senha incorreta!" };
+            }
+
+            if (precisaAtualizarHash) {
+                setDoc(docRef, { senha: senhaHashDigitada }, { merge: true }).catch(() => {});
+            }
+
+            return { sucesso: true, dados: dadosUsuario };
+        } catch (e) {
+            console.error("Erro no login:", e);
+            return { sucesso: false, erro: "Erro de conexão com a nuvem." };
+        }
+    };
+
+    window.cloudSaveRegistros = function(user, dataRegistros) {
+        if (!user) return;
+        const userTrim = user.trim();
+        const userUpper = userTrim.toUpperCase();
+        const docRef = doc(dbCloud, "usuarios", userUpper);
+        setDoc(docRef, { dados: dataRegistros }, { merge: true }).catch(e => console.error("Erro ao salvar registros:", e));
+    };
+
+    window.cloudSaveCalendario = function(user, calendario) {
+        if (!user) return;
+        const userTrim = user.trim();
+        const userUpper = userTrim.toUpperCase();
+        const docRef = doc(dbCloud, "usuarios", userUpper);
+        setDoc(docRef, { calendario: calendario }, { merge: true }).catch(e => console.error("Erro ao salvar calendário:", e));
+
+        if (userUpper === "ADMIN") {
+            setDoc(doc(dbCloud, "config", "calendarioGlobal"), { calendario: calendario }, { merge: true }).catch(() => {});
+        }
+    };
+
+    // SALVAMENTO SEPARADO DOS TXT: Cada razão salva em um documento próprio na coleção relatorios_txt
+    window.cloudSaveRelatorioRazao = async function(user, razao, dadosRelatorio) {
+        if (!user) return;
+        const userUpper = user.trim().toUpperCase();
+        const razaoId = razao.trim().replace(/\s+/g, '_').toUpperCase();
+        // ID único para o documento: USER_RAZAO_01
+        const docId = `${userUpper}_${razaoId}`;
+        
+        try {
+            await setDoc(doc(dbCloud, "relatorios_txt", docId), {
+                usuario: userUpper,
+                razao: razao,
+                conteudo: JSON.parse(JSON.stringify(dadosRelatorio)),
+                atualizadoEm: new Date()
+            });
+        } catch (e) {
+            console.error("Erro ao salvar relatório separado:", e);
+        }
+    };
+
+    // CARREGAMENTO SEPARADO DOS TXT: Busca todos os relatórios salvos independentemente
+    window.cloudLoadAllRelatoriosTxt = async function(user) {
+        try {
+            const userUpper = user.trim().toUpperCase();
+            const querySnapshot = await getDocs(collection(dbCloud, "relatorios_txt"));
+            let relatoriosMap = {};
+            
+            querySnapshot.forEach((docSnap) => {
+                const data = docSnap.data();
+                if (data.usuario === userUpper && data.razao && data.conteudo) {
+                    relatoriosMap[data.razao] = data.conteudo;
+                }
+            });
+            return relatoriosMap;
+        } catch (e) {
+            console.error("Erro ao carregar relatórios separados:", e);
+            return {};
+        }
+    };
+
+    window.cloudLoadAll = async function(user) {
+        try {
+            const userTrim = user.trim();
+            const userUpper = userTrim.toUpperCase();
+            const [userDocSnap, calGlobalSnap, relatoriosTxtMap] = await Promise.all([
+                getDoc(doc(dbCloud, "usuarios", userUpper)).then(async (snap) => {
+                    if (!snap.exists()) return await getDoc(doc(dbCloud, "usuarios", userTrim));
+                    return snap;
+                }),
+                getDoc(doc(dbCloud, "config", "calendarioGlobal")),
+                window.cloudLoadAllRelatoriosTxt(userUpper)
+            ]);
+            let userData = userDocSnap.exists() ? userDocSnap.data() : {};
+            if (calGlobalSnap.exists()) {
+                const globalData = calGlobalSnap.data();
+                const extraido = globalData.calendario || globalData;
+                if (extraido && Object.keys(extraido).length > 0) userData.calendario = extraido;
+            }
+            if (relatoriosTxtMap && Object.keys(relatoriosTxtMap).length > 0) {
+                userData.relatorios = relatoriosTxtMap;
+            }
+            return userData;
+        } catch (e) {
+            console.error("Erro ao carregar tudo:", e);
+        }
+        return null;
+    };
+
+    window.cloudSaveNewUserAuth = async function(user, senha, dica) {
+        try {
+            const userTrim = user.trim();
+            const userUpper = userTrim.toUpperCase();
+            const docRef = doc(dbCloud, "usuarios", userUpper);
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists() && docSnap.data().senha) return false; 
+            
+            const senhaSegura = await hashSenha(senha);
+            const isAdminUser = (userUpper === "ADMIN");
+            
+            await setDoc(docRef, {
+                senha: senhaSegura,
+                dica: dica || "",
+                isAdmin: isAdminUser,
+                ativo: isAdminUser ? true : false,
+                dados: [],
+                calendario: {},
+                ultimaAtualizacao: new Date()
+            });
+            return true;
+        } catch (e) {
+            console.error("Erro ao salvar credenciais:", e);
+            return false;
+        }
+    };
+
+    window.cloudListAllUsers = async function() {
+        try {
+            const querySnapshot = await getDocs(collection(dbCloud, "usuarios"));
+            let lista = [];
+            querySnapshot.forEach((docSnap) => {
+                lista.push({ nome: docSnap.id, ...docSnap.data() });
+            });
+            return lista;
+        } catch (e) {
+            console.error("Erro ao listar utilizadores:", e);
+            return [];
+        }
+    };
+
+    window.cloudSetUserActive = async function(user, statusAtivo) {
+        try {
+            const userTrim = user.trim();
+            const userUpper = userTrim.toUpperCase();
+            let docRef = doc(dbCloud, "usuarios", userUpper);
+            let docSnap = await getDoc(docRef);
+            if (!docSnap.exists()) docRef = doc(dbCloud, "usuarios", userTrim);
+            await setDoc(docRef, { ativo: statusAtivo }, { merge: true });
+            return true;
+        } catch (e) {
+            console.error("Erro ao atualizar status do utilizador:", e);
+            return false;
+        }
+    };
+
+    window.escutarNovosCadastrosAdmin = function(callbackNotificacao) {
+        onSnapshot(collection(dbCloud, "usuarios"), (snapshot) => {
+            let pendentes = 0;
+            snapshot.forEach((docSnap) => {
+                const dados = docSnap.data();
+                if (dados.ativo === false && !dados.isAdmin && docSnap.id !== 'ADMIN') pendentes++;
+            });
+            callbackNotificacao(pendentes);
+        });
+    };
+</script>
+
+<script> 
+    let db = []; 
+    let calendarioDb = {}; 
+    let relatorioRazoesDb = {};
+    
+    let currentUser = sessionStorage.getItem('gpl_user') || ""; 
+    let currentIsAdmin = sessionStorage.getItem('gpl_is_admin') === 'true';
+
+    let dataAtualDoSistema = new Date();
+    let viewDate = new Date(dataAtualDoSistema.getFullYear(), dataAtualDoSistema.getMonth(), 1); 
+
+    const lista18Razoes = Array.from({length: 18}, (_, i) => `RAZÃO ${String(i + 1).padStart(2, '0')}`);
+    
+    const notasDeLeitura = [
+      { numero: '1100', status: 'Com leitura', detalhe: 'INSTALAÇÃO COM ENTREGA DE FLYER' },
+      { numero: '1101', status: 'Com leitura', detalhe: 'LEITURA DIFICULTADA POR CÃES/ANIMAIS' },
+      { numero: '1102', status: 'Com leitura', detalhe: 'MEDIDOR OBSTRUÍDO COM POSSIBILIDADE DE LEITURA' },
+      { numero: '1103', status: 'Com leitura', detalhe: 'FALTA PLACA/IDENTIF. MEDIDOR/QUADRO/APTO. /PRÉDIO' },
+      { numero: '1104', status: 'Com leitura', detalhe: 'MEDIÇÃO/QUADRO EM MAL ESTADO' },
+      { numero: '1107', status: 'Com leitura', detalhe: 'MED LOCAL IMPRÓPRIO PERIGOSO/CX MED ALTURA ANORMAL' },
+      { numero: '1110', status: 'Com leitura', detalhe: 'TAMPA ACRÍLICA EMBAÇADA' },
+      { numero: '1120', status: 'Com leitura', detalhe: 'SUSPEITA DE CRIADOURO DE DENGUE' },
+      { numero: '1201', status: 'Com leitura', detalhe: 'MUDANÇA NOME LOGRADOURO' },
+      { numero: '1202', status: 'Com leitura', detalhe: 'MUDANÇA NUMERAÇÃO INTERNA, APTO OU VILA DE CASAS' },
+      { numero: '1203', status: 'Com leitura', detalhe: 'INSTALAÇÃO FORA DE SEQUÊNCIA' },
+      { numero: '1204', status: 'Com leitura', detalhe: 'Nº MEDIDOR/CONSTANTE DIFERENTE SEM SUBSTITUIÇÃO' },
+      { numero: '1205', status: 'Com leitura', detalhe: 'MEDIDOR SUBSTITUÍDO' },
+      { numero: '1206', status: 'Com leitura', detalhe: 'CÓDIGO DE CLASSE/RAMO DE NEGÓCIO INADEQUADO' },
+      { numero: '1207', status: 'Com leitura', detalhe: 'CLIENTE NÃO CADASTRADO/NOVA LIGAÇÃO' },
+      { numero: '1208', status: 'Com leitura', detalhe: 'SEQUÊNCIAMENTO DE ROTAS' },
+      { numero: '1209', status: 'Com leitura', detalhe: 'ROTA FECHADA' },
+      { numero: '1231', status: 'Com leitura', detalhe: 'INVERSÃO DE MEDIDORES ENTRE INSTALAÇÕES' },
+      { numero: '1234', status: 'Com leitura', detalhe: 'ENDEREÇO URBANO PARA ENTREGA DA FATURA RURAL' },
+      { numero: '1250', status: 'Com leitura', detalhe: 'INCLUSÃO/ALTERAÇÃO LOCAL INSTALAÇÃO DO EQUIPAMENTO' },
+      { numero: '1300', status: 'Com leitura', detalhe: 'REGISTRADOR NÃO CONSTA NO SGL' },
+      { numero: '1302', status: 'Com leitura', detalhe: 'RAMAL AÉREO COM OBSTÁCULOS' },
+      { numero: '1303', status: 'Com leitura', detalhe: 'FORNECIMENTO A TERCEIROS/INTERLIGAÇÃO' },
+      { numero: '1304', status: 'Com leitura', detalhe: 'CONSUMO EM INSTALAÇÃO DESLIGADA' },
+      { numero: '1320', status: 'Com leitura', detalhe: 'SITUAÇÃO DE RISCO PARA TERCEIROS NA REDE' },
+      { numero: '1326', status: 'Com leitura', detalhe: 'VESPEIRO NA MEDIÇÃO' },
+      { numero: '1327', status: 'Com leitura', detalhe: 'VIDRO VISOR DA CAIXA QUEBRADO' },
+      { numero: '1329', status: 'Com leitura', detalhe: 'MEDIDOR EMBAÇADO/SUJO' },
+      { numero: '1343', status: 'Com leitura', detalhe: 'ILUMINAÇÃO PÚBLICA ACESA DURANTE O DIA' },
+      { numero: '1349', status: 'Com leitura', detalhe: 'INSTALAÇÃO COM LIGAÇÃO PROVISÓRIA' },
+      { numero: '1351', status: 'Com leitura', detalhe: 'SUSPEITA DE MEDIDOR COM PONTEIROS DESREGULADOS' },
+      { numero: '1364', status: 'Com leitura', detalhe: 'VIDRO VISOR DA CAIXA EMBAÇADO' },
+      { numero: '1373', status: 'Com leitura', detalhe: 'INSTALAÇÃO INCENDIADA/DEMOLIDA' },
+      { numero: '1390', status: 'Com leitura', detalhe: 'MED POSICIONADO INADEQUADAMENTE NA CAIXA' },
+      { numero: '1501', status: 'Com leitura', detalhe: 'CAIXA DE MEDIÇÃO SEM TAMPA' },
+      { numero: '1503', status: 'Com leitura', detalhe: 'SUSPEITA DE IRREGULARIDADE' },
+      { numero: '1504', status: 'Com leitura', detalhe: 'INSTALAÇÃO LIGADA DIRETA' },
+      { numero: '1505', status: 'Com leitura', detalhe: 'SUSPEITA MED DEFEITUOSO/AVARIADO/MANIPULADO/PARADO' },
+      { numero: '1506', status: 'Com leitura', detalhe: 'MEDIDOR COM DISCO GIRANDO AO CONTRÁRIO/DESMARCAÇÃO' },
+      { numero: '1544', status: 'Com leitura', detalhe: 'NÃO IDENTIFICADO MOTIVO DO CONSUMO ZERO' },
+      { numero: '1546', status: 'Com leitura', detalhe: 'CONSUMO INCOMPATÍVEL COM O IMÓVEL' },
+      { numero: '1560', status: 'Com leitura', detalhe: 'DENÚNCIA DE UMA LIGAÇÃO CLANDESTINA' },
+      { numero: '1562', status: 'Com leitura', detalhe: 'INSTALAÇÃO DESLIGADA SEM CONSUMO' },
+      { numero: '1570', status: 'Com leitura', detalhe: 'DENÚNCIA DE VÁRIAS LIGAÇÕES CLANDESTINAS' },
+      { numero: '1600', status: 'Com leitura', detalhe: 'MEDIDOR EM CURTO OU INCENDIADO' },
+      { numero: '1800', status: 'Com leitura', detalhe: 'LEITURA PREVISTA NO CALENDÁRIO REAL - LEITURA NORMAL' },
+      { numero: '1801', status: 'Com leitura', detalhe: 'INSTALAÇÃO DESABITADA/VAZIA COM ACESSO À LEITURA' },
+      { numero: '1802', status: 'Com leitura', detalhe: 'LEITURA ATUAL MENOR QUE ANTERIOR SEM VIRADA' },
+      { numero: '1806', status: 'Com leitura', detalhe: 'RETIRADO VESPEIRO NA MEDIÇÃO' },
+      { numero: '1807', status: 'Com leitura', detalhe: 'SUBSTITUIÇÃO VIDRO NO VISOR' },
+      { numero: '1808', status: 'Com leitura', detalhe: 'AJUSTE TAMPA ACRÍLICA CAIXA' },
+      { numero: '1809', status: 'Com leitura', detalhe: 'LIMPEZA MEDIDOR/TAMPA EMBAÇADA' },
+      { numero: '1811', status: 'Com leitura', detalhe: 'RET VEGETAÇÃO INTERNA/EXTERNA' },
+      { numero: '1818', status: 'Com leitura', detalhe: 'TELEMETRIA IMPRESSÃO E ENTREGA' },
+      { numero: '1819', status: 'Com leitura', detalhe: 'LEITURA DE TELEMETRIA' },
+      { numero: '1825', status: 'Com leitura', detalhe: 'LEITURA INFORMADA MAIS DE 5 VEZES' },
+      { numero: '1828', status: 'Com leitura', detalhe: 'LEITURA CONFERIDA E CONFIRMADA' },
+      { numero: '1834', status: 'Com leitura', detalhe: 'LEITURA INFORMADA PELO CLIENTE' },
+      { numero: '1835', status: 'Com leitura', detalhe: 'PONTALETE UTILIZADO PARA OUTROS FINS' },
+      { numero: '1837', status: 'Com leitura', detalhe: 'VIRADA DE MEDIDOR' },
+      { numero: '1838', status: 'Com leitura', detalhe: 'ETIQUETA DESCOLANDO/SEM ETIQUETA' },
+      { numero: '1847', status: 'Com leitura', detalhe: 'LEITURA INFORMADA PELO CLIENTE FORA DE CICLO' },
+      { numero: '1897', status: 'Com leitura', detalhe: 'LEITURA COLETADA VIA APP DE MENSAGEM' },
+      { numero: '1898', status: 'Com leitura', detalhe: 'LEITURA INFORMADA PELO CLIENTE NO CICLO' },
+      { numero: '1901', status: 'Com leitura', detalhe: 'POSTE: CAIXA MEDIÇÃO: LENTE EMBAÇADA, CAIXA QUEBRADA' },
+      { numero: '1902', status: 'Com leitura', detalhe: 'POSTE: DEFEITO NO MEDIDOR: MAL POSICIONADO, EMBAÇADO' },
+      { numero: '1978', status: 'Com leitura', detalhe: 'MEDIDOR NO POSTE/CPREDE' },
+      { numero: '2000', status: 'Com leitura', detalhe: 'SUSPENSÃO DE MEDIDOR DEFEITUOSO DEVIDO A CHUVAS/ENCHENTES' },
+      { numero: '3201', status: 'Sem Leitura', detalhe: 'MEDIDOR RETIRADO' },
+      { numero: '3205', status: 'Sem Leitura', detalhe: 'ENDEREÇO INSTALAÇÃO NÃO LOCALIZADO' },
+      { numero: '3300', status: 'Sem leitura', detalhe: 'MEDIDOR TROCADO/DISPLAY APAGADO' },
+      { numero: '3311', status: 'Sem Leitura', detalhe: 'MEDIDOR ELETRÔNICO APAGADO/CHAVE DISJUNTOR DESLIGADA' },
+      { numero: '3312', status: 'Com leitura', detalhe: 'MEDIDOR DISCO GIRANDO AO CONTRÁRIO' },
+      { numero: '3313', status: 'Sem Leitura', detalhe: 'INSETOS DENTRO DA CAIXA OU ENVOLVENDO O MEDIDOR' },
+      { numero: '3369', status: 'Sem Leitura', detalhe: 'MEDIDOR EMBAÇADO' },
+      { numero: '3370', status: 'Sem Leitura', detalhe: 'TAMPA ACRÍLICA EMBAÇADA' },
+      { numero: '3374', status: 'Sem Leitura', detalhe: 'VIDRO VISOR DA CAIXA EMBAÇADO' },
+      { numero: '3376', status: 'Sem Leitura', detalhe: 'MEDIDOR ELETRÔNICO DESPROGRAMADO' },
+      { numero: '3379', status: 'Sem Leitura', detalhe: 'MEDIDOR POSICIONADO INADEQUADAMENTE NA CAIXA' },
+      { numero: '3380', status: 'Sem leitura', detalhe: 'FALHA TERMINAL DE LEITURA' },
+      { numero: '3511', status: 'Sem Leitura', detalhe: 'SUSPEITA MED DEFEITUOSO/ AVARIADO/ MANIPULADO/PARADO' },
+      { numero: '3700', status: 'Sem Leitura', detalhe: 'MEDIDOR EM CURTO OU INCENDIADO' },
+      { numero: '3804', status: 'Sem Leitura', detalhe: 'MEDIDOR ELETRÔNICO APAGADO/FALTA ENERGIA NA REDE' },
+      { numero: '3868', status: 'Sem Leitura', detalhe: 'PROBLEMA OPERACIONAL CAUSA PARCEIRA VEÍCULO MCD FALTA TRANSMISSÃO' },
+      { numero: '3871', status: 'Sem Leitura', detalhe: 'PROBLEMA ADMINISTRATIVO (FALTOU LEITURISTA)' },
+      { numero: '3878', status: 'Sem Leitura', detalhe: 'INSTALAÇÕES SEM LEITURA PLANEJADA PARA O MÊS' },
+      { numero: '3901', status: 'Sem Leitura', detalhe: 'POSTE: CAIXA DE MEDIÇÃO: LENTE EMBAÇADA, CAIXA QUEBRADA' },
+      { numero: '3902', status: 'Sem Leitura', detalhe: 'POSTE: DEFEITO NO MEDIDOR: MAL POSICIONADO, EMBAÇADO' },
+      { numero: '3903', status: 'Sem Leitura', detalhe: 'POSTE: RISCO OU OBSTACULO NA REALIZAÇÃO DA LEITURA' },
+      { numero: '3904', status: 'Sem Leitura', detalhe: 'POSTE: CAIXA SEM TAMPA POSTE' },
+      { numero: '3905', status: 'Sem Leitura', detalhe: 'POSTE: NECESSIDADE SUBSTITUIÇÃO DE CAIXA DE POSTE' },
+      { numero: '3906', status: 'Sem Leitura', detalhe: 'POSTE: LENTE SUJA CAIXA MEDIDOR NO POSTE' },
+      { numero: '3907', status: 'Sem Leitura', detalhe: 'POSTE: EMBAÇADO DEVIDO A CHUVA POSTE' },
+      { numero: '3908', status: 'Sem Leitura', detalhe: 'OBSTÁCULO/IMPEDIMENTO DE LEITURA NO POSTE' },
+      { numero: '5101', status: 'Sem Leitura', detalhe: 'MEDIÇÃO/QUADRO SEM A POSSIBILIDADE DE ABRIR' },
+      { numero: '5102', status: 'Sem Leitura', detalhe: 'MEDIDOR OBSTRUÍDO SEM A POSSIBILIDADE LEITURA' },
+      { numero: '5103', status: 'Sem Leitura', detalhe: 'INSETOS NA CAIXA DO MEDIDOR EXTERNAMENTE' },
+      { numero: '5104', status: 'Sem Leitura', detalhe: 'CASA FECHADA/PORTÃO FECHADO/FALTA ACESSO A MEDIÇÃO' },
+      { numero: '5105', status: 'Sem Leitura', detalhe: 'CLIENTE NÃO PERMITIU ACESSO DO LEITURISTA AO MEDIDOR' },
+      { numero: '5106', status: 'Sem Leitura', detalhe: 'MED LOCAL IMPRÓPRIO PERIGOSO/CX MED ALTURA ANORMAL' },
+      { numero: '5108', status: 'Sem Leitura', detalhe: 'LEITURA IMPEDIDA POR CÃES/ANIMAIS' },
+      { numero: '5109', status: 'Sem Leitura', detalhe: 'INSTALAÇÃO DESABITADA/VAZIA SEM ACESSO À LEITURA' },
+      { numero: '5558', status: 'Sem Leitura', detalhe: 'SUSPEITA DE IRREGULARIDADE' },
+      { numero: '5800', status: 'Sem Leitura', detalhe: 'PADRÃO MEDIÇÃO INCENDIADO/DEMOLIDO' },
+      { numero: '5802', status: 'Sem Leitura', detalhe: 'INSTALAÇÃO INTERDITADA' },
+      { numero: '6801', status: 'Sem Leitura', detalhe: 'LEITURA IMPEDIDA POR CONDIÇÃO INSEGURA/ÁREA RISCO' },
+      { numero: '6820', status: 'Sem Leitura', detalhe: 'SITUAÇÃO DE EMERGÊNCIA/CALAMIDADE PÚBLICA' },
+      { numero: '6862', status: 'Sem Leitura', detalhe: 'GREVE NO SERVIÇO PÚBLICO' },
+      { numero: '6872', status: 'Sem Leitura', detalhe: 'CALAMIDADE DECRETADA ENCHENTE ALAGAM TERREMOTO VENDAVAL' },
+      { numero: '7000', status: 'Sem Leitura', detalhe: 'SUSPENSÃO DE MEDIDOR DEFEITUOSO DEVIDO A CHUVAS/ENCHENTES' }
+    ];
+
+    const msNomesCompletos = ["JANEIRO", "FEVEREIRO", "MARÇO", "ABRIL", "MAIO", "JUNHO", "JULHO", "AGOSTO", "SETEMBRO", "OUTUBRO", "NOVEMBRO", "DEZEMBRO"]; 
+    const fM = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); 
+
+    function dispararSalvamentoRegistros() {
+        if (currentUser && window.cloudSaveRegistros) {
+            window.cloudSaveRegistros(currentUser, db);
+        }
+    }
+
+    window.addEventListener('beforeunload', () => {
+        if (currentUser && window.cloudSaveRegistros) {
+            window.cloudSaveRegistros(currentUser, db);
+        }
+    });
+
+    function switchLoginPane(paneId) {
+        document.querySelectorAll('.login-form-pane').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.login-tab-btn').forEach(el => el.classList.remove('active'));
+        
+        document.getElementById(paneId).classList.add('active');
+        if (paneId === 'loginPane') {
+            document.getElementById('btnPaneLogin').classList.add('active');
+        } else {
+            document.getElementById('btnPaneCreate').classList.add('active');
+        }
+    }
+
+    function switchMobileTab(tabId, btnElement) {
+        const abaAntigaAtiva = document.querySelector('.mobile-tab-content.active-tab');
+        
+        if (abaAntigaAtiva && abaAntigaAtiva.id === 'tabRelatorio' && tabId !== 'tabRelatorio') {
+            const inputBuscaMedidor = document.getElementById('searchMedidorRelatorio');
+            if (inputBuscaMedidor) {
+                inputBuscaMedidor.value = '';
+                renderizarTabelaRelatorioAtual();
+            }
+        }
+
+        document.querySelectorAll('.mobile-tab-content').forEach(el => el.classList.remove('active-tab'));
+        const target = document.getElementById(tabId);
+        if(target) target.classList.add('active-tab');
+        
+        document.querySelectorAll('.mob-tab-btn').forEach(btn => btn.classList.remove('active'));
+        if(btnElement) btnElement.classList.add('active');
+        
+        if (currentUser) {
+            if (tabId === 'tabDashboard' || tabId === 'tabTabela') {
+                atualizarTabela();
+            } else if (tabId === 'tabCal') {
+                renderizarCalendario();
+                verificarSabadosAlertas();
+            } else if (tabId === 'tabRelatorio') {
+                popularSelectRazoesRelatorio();
+                renderizarTabelaRelatorioAtual();
+            } else if (tabId === 'tabAdmin' && currentIsAdmin) {
+                carregarListaUtilizadoresPendentes();
+            }
+        }
+    }
+
+    async function atualizarDadosManualmente(btnElement = null) {
+        if (!currentUser) return alert("Nenhum utilizador logado.");
+        
+        let iconeOriginal = "";
+        if (btnElement) {
+            iconeOriginal = btnElement.innerText;
+            btnElement.innerText = "⏳";
+            btnElement.disabled = true;
+        }
+
+        try {
+            const cloudData = await window.cloudLoadAll(currentUser);
+            if (cloudData) {
+                db = cloudData.dados || [];
+                calendarioDb = cloudData.calendario || {};
+                relatorioRazoesDb = cloudData.relatorios || {};
+
+                atualizarTabela();
+                renderizarCalendario();
+                renderizarTabelaRelatorioAtual();
+                verificarSabadosAlertas();
+                if(currentIsAdmin) carregarListaUtilizadoresPendentes();
+                
+                return true;
+            } else {
+                alert("Nenhum dado encontrado na nuvem para este utilizador.");
+                return false;
+            }
+        } catch (error) {
+            console.error("Erro ao atualizar:", error);
+            alert("Erro de conexão com a nuvem. Verifique a conexão.");
+            return false;
+        } finally {
+            if (btnElement) {
+                btnElement.innerText = iconeOriginal;
+                btnElement.disabled = false;
+            }
+        }
+    }
+
+    let startY = 0;
+    let isPulling = false;
+    const pullThreshold = 80;
+
+    window.addEventListener('touchstart', (e) => {
+        const activeTabEl = document.querySelector('.mobile-tab-content.active-tab');
+        const scrollableChild = activeTabEl ? activeTabEl.querySelector('.table-container, .form-content-area, .top-dashboard, .cards-container') : null;
+        const isAtTop = scrollableChild ? scrollableChild.scrollTop <= 0 : (window.scrollY <= 0);
+
+        if (isAtTop) {
+            startY = e.touches[0].clientY;
+            isPulling = true;
+        } else {
+            isPulling = false;
+        }
+    }, { passive: true });
+
+    window.addEventListener('touchmove', (e) => {
+        if (!isPulling) return;
+        const currentY = e.touches[0].clientY;
+        const diff = currentY - startY;
+
+        const indicator = document.getElementById('pullToRefreshIndicator');
+        if (diff > 0 && diff < 150) {
+            indicator.style.transform = `translateY(${diff}px)`;
+            if (diff >= pullThreshold) {
+                indicator.innerText = "Solte para atualizar os dados 🔄";
+            } else {
+                indicator.innerText = "Puxe mais para atualizar...";
+            }
+        }
+    }, { passive: true });
+
+    window.addEventListener('touchend', async (e) => {
+        if (!isPulling) return;
+        isPulling = false;
+        const indicator = document.getElementById('pullToRefreshIndicator');
+        const endY = e.changedTouches[0].clientY;
+        const diff = endY - startY;
+
+        if (diff >= pullThreshold && currentUser) {
+            indicator.innerText = "Atualizando dados da nuvem...";
+            indicator.style.transform = `translateY(50px)`;
+            
+            await atualizarDadosManualmente();
+            
+            setTimeout(() => {
+                indicator.innerText = "Atualizado com sucesso! ✨";
+                setTimeout(() => {
+                    indicator.style.transform = `translateY(0px)`;
+                }, 600);
+            }, 400);
+        } else {
+            indicator.style.transform = `translateY(0px)`;
+        }
+    });
+
+    async function carregarListaUtilizadoresPendentes(filtro = '') {
+        if (!currentIsAdmin) return;
+        const corpo = document.getElementById('adminUsersCorpo');
+        if (!corpo) return;
+
+        const termo = filtro.toUpperCase();
+        const todosUsuarios = await window.cloudListAllUsers();
+
+        const filtrados = todosUsuarios.filter(u => u.nome.toUpperCase().includes(termo));
+
+        if (filtrados.length === 0) {
+            corpo.innerHTML = `<tr><td colspan="3" style="text-align: center; padding: 20px; color: var(--text-p);">Nenhum utilizador encontrado.</td></tr>`;
+            return;
+        }
+
+        corpo.innerHTML = filtrados.map(u => {
+            const isAtivo = u.ativo === true;
+            const isAdmUser = u.isAdmin === true || u.nome === 'ADMIN';
+
+            return `
+                <tr>
+                    <td style="font-weight: bold; color: var(--accent);">${u.nome}</td>
+                    <td>
+                        <span style="color: ${isAtivo ? 'var(--success)' : 'var(--warning)'}; font-weight: bold;">
+                            ${isAtivo ? 'Ativo' : 'Aguardando PIX'}
+                        </span>
+                    </td>
+                    <td class="no-print">
+                        ${isAdmUser ? '<span style="color:var(--purple); font-weight:bold; font-size:10px;">ADMIN</span>' : `
+                            <button type="button" onclick="alternarAtivacaoUsuario('${u.nome}',${!isAtivo})" class="header-btn" style="background: ${isAtivo ? 'var(--danger)' : 'var(--success)'}; color: ${isAtivo ? '#fff' : '#000'}; padding: 4px 8px; font-size: 10px;">
+                                ${isAtivo ? 'Bloquear' : 'Aprovar'}
+                            </button>
+                        `}
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    async function alternarAtivacaoUsuario(nomeUsuario, novoStatus) {
+        if (!confirm(`Deseja realmente ${novoStatus ? 'APROVAR' : 'BLOQUEAR'} o acesso do utilizador ${nomeUsuario}?`)) return;
+
+        let sucesso = await window.cloudSetUserActive(nomeUsuario, novoStatus);
+        if (sucesso) {
+            alert(`Utilizador ${nomeUsuario} atualizado com sucesso!`);
+            carregarListaUtilizadoresPendentes(document.getElementById('searchAdminUsers').value);
+        } else {
+            alert("Erro ao atualizar status do utilizador.");
+        }
+    }
+
+    function popularSelectRazoesRelatorio() {
+        const sel = document.getElementById('selectRazaoRelatorio');
+        if(!sel) return;
+        sel.innerHTML = lista18Razoes.map(r => `<option value="${r}">${r}</option>`).join('');
+    }
+
+    function mudarRazaoRelatorio() {
+        document.getElementById('searchMedidorRelatorio').value = '';
+        renderizarTabelaRelatorioAtual();
+    }
+
+    function processarArquivoTxtSelecionado(input) {
+        const file = input.files[0];
+        if (!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            let conteudo = e.target.result;
+            processarConteudoTxtTerceiros(conteudo);
+        };
+        reader.readAsText(file, "UTF-8");
+    }
+
+    function processarConteudoTxtTerceiros(conteudo) {
+        const razaoSelecionada = document.getElementById('selectRazaoRelatorio').value;
+        const linhas = conteudo.split(/\r?\n/);
+        
+        let idxMedidor = -1;
+        let idxOC = -1;
+        let idxLeit = -1;
+
+        const mapValidosNL = {};
+        notasDeLeitura.forEach(item => {
+            mapValidosNL[String(item.numero).trim()] = true;
+        });
+
+        let listaMedidores = [];
+
+        linhas.forEach(linha => {
+            let linhaLimpa = linha.trim();
+            if (!linhaLimpa) return;
+
+            if (linhaLimpa.includes("MEDIDOR") || linhaLimpa.includes("OC") || linhaLimpa.includes("LEIT.") || linhaLimpa.includes("RG")) {
+                let cabecalhos = linhaLimpa.split(/\s+/);
+                for (let i = 0; i < cabecalhos.length; i++) {
+                    let h = cabecalhos[i].toUpperCase();
+                    if (h.includes("MEDIDOR")) idxMedidor = i;
+                    if (h === "OC" || h === "NL") idxOC = i;
+                    if (h.includes("LEIT")) idxLeit = i;
+                }
+                return;
+            }
+
+            let tokens = linhaLimpa.split(/\s+/);
+            if (tokens.length >= 2) {
+                let medidorEncontrado = "";
+                let ocEncontrada = "";
+                let leitEncontrada = "";
+                let tagRgDetectada = "03";
+
+                let linhaUpper = linhaLimpa.toUpperCase();
+                
+                if (linhaUpper.includes("Z3")) {
+                    tagRgDetectada = "Z3";
+                } else if (linhaUpper.includes("RG 03") || linhaUpper.includes("RG03") || linhaUpper.includes(" 03 ")) {
+                    tagRgDetectada = "03";
+                }
+
+                if (idxMedidor !== -1 && tokens.length > idxMedidor) {
+                    medidorEncontrado = tokens[idxMedidor].replace(/["']/g, '').trim();
+                } else {
+                    medidorEncontrado = tokens[0].replace(/["']/g, '').trim();
+                }
+
+                if (idxOC !== -1 && tokens.length > idxOC) {
+                    let val = tokens[idxOC].replace(/["']/g, '').trim();
+                    if (mapValidosNL[val]) ocEncontrada = val;
+                }
+                if (!ocEncontrada) {
+                    for (let t of tokens) {
+                        let limpo = t.replace(/["']/g, '').trim();
+                        if (mapValidosNL[limpo]) {
+                            ocEncontrada = limpo;
+                            break;
+                        }
+                    }
+                }
+
+                if (idxLeit !== -1 && tokens.length > idxLeit) {
+                    leitEncontrada = tokens[idxLeit].replace(/["']/g, '').trim();
+                } else if (tokens.length >= 3) {
+                    leitEncontrada = tokens[tokens.length - 1].replace(/["']/g, '').trim();
+                }
+
+                if (medidorEncontrado) {
+                    listaMedidores.push({
+                        medidor: medidorEncontrado.toUpperCase(),
+                        oc: ocEncontrada || "N/A",
+                        leit: Number(leitEncontrada) || 0,
+                        tipoRgZ3: tagRgDetectada
+                    });
+                }
+            }
+        });
+
+        let mapUltimoPorMedidor = {};
+        listaMedidores.forEach(item => {
+            mapUltimoPorMedidor[item.medidor] = item;
+        });
+
+        let contagemOC = {};
+        Object.values(mapUltimoPorMedidor).forEach(item => {
+            if (mapValidosNL[item.oc]) {
+                contagemOC[item.oc] = (contagemOC[item.oc] || 0) + 1;
+            }
+        });
+
+        if (!relatorioRazoesDb || typeof relatorioRazoesDb !== 'object') {
+            relatorioRazoesDb = {};
+        }
+
+        const dadosNovoRelatorio = {
+            resumoOC: contagemOC,
+            medidores: listaMedidores
+        };
+
+        // Atualiza localmente
+        relatorioRazoesDb[razaoSelecionada] = dadosNovoRelatorio;
+
+        // Salva separadamente no Firestore (documento dedicado para esta razão)
+        if (currentUser && window.cloudSaveRelatorioRazao) {
+            window.cloudSaveRelatorioRazao(currentUser, razaoSelecionada, dadosNovoRelatorio);
+        }
+
+        renderizarTabelaRelatorioAtual();
+    }
+
+    function buscarMedidorNoRelatorio() {
+        renderizarTabelaRelatorioAtual();
+    }
+
+    function renderizarTabelaRelatorioAtual() {
+        const razaoSelecionada = document.getElementById('selectRazaoRelatorio').value;
+        const corpo = document.getElementById('relatorioCardsCorpo');
+        const termoBusca = (document.getElementById('searchMedidorRelatorio')?.value || '').trim().toUpperCase();
+        if (!corpo) return;
+
+        const dadosRegistro = (relatorioRazoesDb && relatorioRazoesDb[razaoSelecionada]) ? relatorioRazoesDb[razaoSelecionada] : null;
+
+        if (!dadosRegistro || !dadosRegistro.medidores) {
+            corpo.innerHTML = `
+                <div style="grid-column: 1 / -1; text-align: center; color: var(--text-p); padding: 30px; font-weight: 700; font-size: 12px;">
+                    Nenhum arquivo TXT carregado para esta razão. Clique em "Importar".
+                </div>`;
+            return;
+        }
+
+        if (termoBusca) {
+            const medidoresLista = dadosRegistro.medidores || [];
+            
+            const mapaPassagens = {};
+            medidoresLista.forEach(item => {
+                if (item.medidor.includes(termoBusca)) {
+                    if (!mapaPassagens[item.medidor]) {
+                        mapaPassagens[item.medidor] = [];
+                    }
+                    mapaPassagens[item.medidor].push(item);
+                }
+            });
+
+            const chavesMedidores = Object.keys(mapaPassagens);
+
+            if (chavesMedidores.length === 0) {
+                corpo.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; color: var(--text-p); padding: 30px; font-weight: 700; font-size: 12px;">
+                        Nenhum medidor encontrado com o número "${termoBusca}" nesta razão.
+                    </div>`;
+                return;
+            }
+
+            corpo.innerHTML = chavesMedidores.map(medKey => {
+                const passagens = mapaPassagens[medKey];
+
+                let ultimoNL = "N/A";
+                for (let i = passagens.length - 1; i >= 0; i--) {
+                    if (passagens[i].oc && passagens[i].oc !== "N/A") {
+                        ultimoNL = passagens[i].oc;
+                        break;
+                    }
+                }
+
+                let leiturasPorRg = {};
+                passagens.forEach(p => {
+                    let rg = p.tipoRgZ3 || "03";
+                    leiturasPorRg[rg] = p.leit;
+                });
+
+                if (!leiturasPorRg["03"] && passagens.length > 0) {
+                    leiturasPorRg["03"] = passagens[0].leit;
+                }
+
+                const rgsKeys = Object.keys(leiturasPorRg);
+                
+                const linhasRgsHtml = rgsKeys.map(rg => {
+                    let leitVal = leiturasPorRg[rg];
+                    return `
+                        <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border); border-radius: 8px; padding: 8px; margin-bottom: 6px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; flex-wrap: wrap; gap: 4px;">
+                                <span style="background: rgba(156, 39, 176, 0.25); color: #e1bee7; border: 1px solid var(--purple); padding: 2px 8px; border-radius: 6px; font-size: 10px; font-weight: 900;">RG ${rg}</span>
+                                <span style="font-weight: 900; color: var(--success); font-size: 11px;">Leitura: ${leitVal.toLocaleString()}</span>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                const infoNL = notasDeLeitura.find(n => n.numero === ultimoNL) || { status: 'Ocorrência', detalhe: ultimoNL };
+                const isComLeitura = infoNL.status.toLowerCase().includes('com');
+
+                return `
+                    <div class="medidor-card" style="max-width: 100%;">
+                        <div class="oc-card-header" style="border-bottom: 1px solid var(--border); padding-bottom: 4px; margin-bottom: 6px;">
+                            <span class="oc-code" style="font-size: 1rem; color: var(--success);">Medidor: ${medKey}</span>
+                            <span style="font-size: 9.5px; font-weight: bold; color: var(--text-p);">Razão: ${razaoSelecionada}</span>
+                        </div>
+                        
+                        <div style="margin-bottom: 6px; background: rgba(0, 112, 243, 0.08); border: 1px solid var(--accent); border-radius: 8px; padding: 8px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                                <span style="font-weight: 900; color: var(--warning); font-size: 11.5px;">NL: ${ultimoNL}</span>
+                                <span class="oc-status" style="background: ${isComLeitura ? 'rgba(0,255,136,0.1)' : 'rgba(255,204,0,0.1)'}; color: ${isComLeitura ? 'var(--success)' : 'var(--warning)'}; border: 1px solid ${isComLeitura ? 'var(--success)' : 'var(--warning)'};">
+                                    ${infoNL.status}
+                                </span>
+                            </div>
+                            <div style="font-size: 10px; color: var(--text-h); font-weight: 600;">
+                                ${infoNL.detalhe}
+                            </div>
+                        </div>
+
+                        <div>
+                            ${linhasRgsHtml}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            return;
+        }
+
+        const resumoOC = dadosRegistro.resumoOC || {};
+        const chavesOC = Object.keys(resumoOC);
+        chavesOC.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+
+        if (chavesOC.length === 0) {
+            corpo.innerHTML = `
+                <div style="grid-column: 1 / -1; text-align: center; color: var(--text-p); padding: 30px; font-weight: 700; font-size: 12px;">
+                    Nenhuma ocorrência registrada nesta razão.
+                </div>`;
+            return;
+        }
+
+        corpo.innerHTML = chavesOC.map(oc => {
+            const qtd = resumoOC[oc];
+            const infoNL = notasDeLeitura.find(item => item.numero === oc) || { status: 'Desconhecido', detalhe: 'Nota de Leitura mapeada' };
+            const isComLeitura = infoNL.status.toLowerCase().includes('com');
+
+            return `
+                <div class="oc-card">
+                    <div class="oc-card-header">
+                        <span class="oc-code">NL ${oc}</span>
+                        <span class="oc-count">${typeof qtd === 'number' ? qtd.toLocaleString() : qtd}</span>
+                    </div>
+                    <div class="oc-desc">${infoNL.detalhe}</div>
+                    <div>
+                        <span class="oc-status" style="background: ${isComLeitura ? 'rgba(0,255,136,0.1)' : 'rgba(255,204,0,0.1)'}; color: ${isComLeitura ? 'var(--success)' : 'var(--warning)'}; border: 1px solid ${isComLeitura ? 'var(--success)' : 'var(--warning)'};">
+                            ${isComLeitura ? 'Com leitura' : 'Sem Leitura'}
+                        </span>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function renderizarCalendario(filtro = '') {
+        const termo = filtro.toUpperCase();
+        const corpo = document.getElementById('calCorpo');
+        if(!corpo) return;
+
+        const html = lista18Razoes
+            .filter(razao => razao.includes(termo))
+            .map(razao => {
+                const dataSalva = calendarioDb[razao] || '';
+                let dataFormatadaExibicao = "Não definida";
+                if (dataSalva) {
+                    const [ano, mes, dia] = dataSalva.split('-');
+                    dataFormatadaExibicao = `${dia}/${mes}/${ano}`;
+                }
+
+                return `
+                    <tr>
+                        <td style="font-weight: bold; color: var(--accent);">${razao}</td>
+                        <td>
+                            ${currentIsAdmin ? `
+                                <input type="date" value="${dataSalva}" onchange="salvarDataCalendario('${razao}', this.value)" style="margin-bottom:0; font-size:11px;">
+                            ` : `
+                                <div style="font-weight: bold; color: ${dataSalva ? 'var(--text-h)' : 'var(--text-p)'}; font-size: 12px; padding: 6px;">
+                                    ${dataFormatadaExibicao}
+                                </div>
+                            `}
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+        corpo.innerHTML = html;
+    }
+
+    function salvarDataCalendario(razao, data) {
+        if (!currentIsAdmin) return;
+        calendarioDb[razao] = data;
+        if (currentUser && window.cloudSaveCalendario) {
+            window.cloudSaveCalendario(currentUser, calendarioDb);
+        }
+        verificarSabadosAlertas();
+    }
+
+    function verificarSabadosAlertas() {
+        const alertaContainer = document.getElementById('saturdayAlertContainer');
+        if(!alertaContainer) return;
+
+        let alertas = [];
+        for (const [razao, dataStr] of Object.entries(calendarioDb)) {
+            if (dataStr) {
+                const [ano, mes, dia] = dataStr.split('-');
+                const dataObj = new Date(ano, mes - 1, dia);
+                
+                if (dataObj.getDay() === 6) {
+                    const dataFormatada = `${dia}/${mes}/${ano}`;
+                    alertas.push(`⚠️ Alerta: ${razao} está marcada para Sábado, dia ${dataFormatada}!`);
+                }
+            }
+        }
+
+        if (alertas.length > 0) {
+            alertaContainer.style.display = 'flex';
+            alertaContainer.innerHTML = `<div style="display:flex; flex-direction:column; gap:4px; width:100%;">` + 
+                alertas.map(a => `<div class="alert-saturday-box"><span>${a}</span></div>`).join('') + 
+                `</div>`;
+        } else {
+            alertaContainer.style.display = 'none';
+            alertaContainer.innerHTML = '';
+        }
+    }
+
+    function renderizarNL(lista = notasDeLeitura) {
+        const htmlContent = lista.map(item => `
+            <tr>
+                <td style="font-weight: bold; color: var(--accent); text-align: center;">${item.numero}</td>
+                <td style="text-align: center;"><span style="color: ${item.status === 'Com leitura' ? 'var(--success)' : 'var(--warning)'}; font-weight: bold;">${item.status}</span></td>
+                <td style="text-align: left; font-size: 11.5px; padding-left: 8px;">${item.detalhe}</td>
+            </tr>
+        `).join('');
+
+        const el = document.getElementById('nlCorpo');
+        if(el) el.innerHTML = htmlContent;
+    }
+
+    function filtrarNL(val) {
+        const termo = val.toUpperCase();
+        const filtrado = notasDeLeitura.filter(i => i.numero.includes(termo) || i.detalhe.includes(termo));
+        renderizarNL(filtrado);
+    }
+
+    function animarContagem(id, final, isMoeda = false) { 
+        const el = document.getElementById(id); 
+        if(!el) return; 
+        let start = 0; 
+        const timer = setInterval(() => { 
+            start += final / 15; 
+            if(start >= final) { 
+                if(id === 'totMeta') { 
+                    el.innerText = final.toFixed(2) + "%"; 
+                    el.style.color = final <= 0.5 ? 'var(--success)' : 'var(--danger)'; 
+                } else { 
+                    el.innerText = isMoeda ? fM(final) : Math.floor(final).toLocaleString(); 
+                } 
+                clearInterval(timer); 
+            } else { 
+                el.innerText = isMoeda ? fM(start) : Math.floor(start).toLocaleString(); 
+            } 
+        }, 20); 
+    } 
+
+    window.handleLogin = async function() {
+        const u = document.getElementById('loginUser').value.trim();
+        const p = document.getElementById('loginPass').value;
+
+        if(!u || !p) return alert("Preencha Utilizador e Senha.");
+
+        const resultadoLogin = await window.cloudVerificarLogin(u, p);
+        if (!resultadoLogin.sucesso) {
+            return alert(resultadoLogin.erro);
+        }
+
+        const cloudData = resultadoLogin.dados;
+        const isAdminUser = (u.toUpperCase() === "ADMIN" || cloudData.isAdmin === true);
+        
+        if (!isAdminUser && cloudData.ativo !== true) {
+            return alert("⚠️ Acesso bloqueado por falta de pagamento. Efetue o pagamento para ter acesso à conta.");
+        }
+
+        currentUser = u.toUpperCase();
+        currentIsAdmin = isAdminUser;
+        
+        sessionStorage.setItem('gpl_user', currentUser);
+        sessionStorage.setItem('gpl_is_admin', currentIsAdmin);
+
+        document.getElementById('loginScreen').style.display = 'none';
+        initSystem();
+    }
+
+    window.handleCreateAccount = async function() {
+        const u = document.getElementById('regUser').value.trim();
+        const p = document.getElementById('regPass').value;
+        const pConf = document.getElementById('regPassConfirm').value;
+        const r = document.getElementById('regRecovery').value.trim();
+
+        if(!u || !p || !pConf || !r) return alert("Preencha todos os campos do cadastro.");
+        if(p !== pConf) return alert("As senhas não coincidem! Verifique e tente novamente.");
+
+        let cloudData = window.cloudLoadAll ? await window.cloudLoadAll(u) : null;
+        if (cloudData && cloudData.senha) {
+            return alert("Este nome de utilizador já existe! Escolha outro nome.");
+        }
+
+        let criado = await window.cloudSaveNewUserAuth(u, p, r);
+        if (!criado) return alert("Erro ao criar utilizador.");
+
+        alert("Conta criada com sucesso! Efetue o PIX de R$ 10,00 e informe o comprovante ao Administrador para ativação.");
+        
+        document.getElementById('regUser').value = "";
+        document.getElementById('regPass').value = "";
+        document.getElementById('regPassConfirm').value = "";
+        document.getElementById('regRecovery').value = "";
+        switchLoginPane('loginPane');
+    }
+
+    window.recoverPass = function() { 
+        const u = document.getElementById('loginUser').value.trim(); 
+        if(!u) return alert("Digite o seu nome de utilizador no campo 'Utilizador' para recuperar a senha.");
+        
+        window.cloudLoadAll(u).then(cloudData => {
+            if(cloudData && cloudData.dica) {
+                alert("Palavra/Dica de segurança cadastrada: " + cloudData.dica);
+            } else {
+                alert("Utilizador não encontrado na nuvem ou sem dica de recuperação cadastrada.");
+            }
+        });
+    }
+
+    async function initSystem() { 
+        document.getElementById('loginScreen').style.display = 'none'; 
+        document.getElementById('headerUserDisplay').innerText = currentUser;
+        
+        const btnAdmin = document.getElementById('btnTabAdmin');
+        if (currentIsAdmin) {
+            btnAdmin.style.display = 'flex';
+            window.escutarNovosCadastrosAdmin((qtdPendentes) => {
+                const badge = document.getElementById('adminNotificationBadge');
+                if (badge) {
+                    if (qtdPendentes > 0) {
+                        badge.innerText = qtdPendentes;
+                        badge.style.display = 'block';
+                    } else {
+                        badge.style.display = 'none';
+                    }
+                }
+            });
+        } else {
+            btnAdmin.style.display = 'none';
+        }
+
+        let nomeMes = msNomesCompletos[viewDate.getMonth()];
+        document.getElementById('currentMonthDisplay').innerText = nomeMes; 
+        document.getElementById('printSubHeader').innerText = `Utilizador: ${currentUser}  |  Período: ${nomeMes}/2026`;
+        
+        const cloudData = await window.cloudLoadAll(currentUser);
+        if (cloudData) {
+            db = cloudData.dados || [];
+            calendarioDb = cloudData.calendario || {};
+            relatorioRazoesDb = cloudData.relatorios || {};
+        }
+
+        renderMonths(); 
+        renderizarNL();
+        switchMobileTab('tabDashboard', document.getElementById('btnTabDashboard'));
+        atualizarTabela(); 
+        renderizarCalendario();
+        popularSelectRazoesRelatorio();
+        renderizarTabelaRelatorioAtual();
+        verificarSabadosAlertas();
+        if(currentIsAdmin) carregarListaUtilizadoresPendentes();
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+        if (currentUser) {
+            handleLoginAuto();
+        }
+    });
+
+    async function handleLoginAuto() {
+        initSystem();
+    }
+
+    function renderMonths() { 
+        const ms = ["JAN", "FEV", "MAR", "ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ"]; 
+        document.getElementById('monthGrid').innerHTML = ms.map((m, i) => `<div class="month-item" onclick="selectMonth(${i})">${m}</div>`).join(''); 
+    } 
+
+    window.toggleMonthGrid = function(event) { 
+        if (event) event.stopPropagation();
+        document.getElementById('monthGrid').classList.toggle('active'); 
+    } 
+     
+    window.selectMonth = function(m) { 
+        viewDate.setMonth(m); 
+        let nomeMes = msNomesCompletos[m];
+        document.getElementById('currentMonthDisplay').innerText = nomeMes; 
+        document.getElementById('printSubHeader').innerText = `Utilizador: ${currentUser}  |  Período: ${nomeMes}/2026`;
+        document.getElementById('monthGrid').classList.remove('active'); 
+        atualizarTabela();
+    } 
+
+    window.addEventListener('click', (e) => {
+        const monthGrid = document.getElementById('monthGrid');
+        const btnMes = document.getElementById('currentMonthDisplay');
+        if (monthGrid && monthGrid.classList.contains('active')) {
+            if (!monthGrid.contains(e.target) && !btnMes.contains(e.target)) {
+                monthGrid.classList.remove('active');
+            }
+        }
+    });
+
+    function atualizarTabela() { 
+        const mesF = "2026-" + String(viewDate.getMonth() + 1).padStart(2, '0'); 
+        const busca = document.getElementById('searchRazao').value.toUpperCase(); 
+        const regs = db.filter(i => i.data.startsWith(mesF) && i.razao.includes(busca)).sort((a,b) => new Date(a.data) - new Date(b.data)); 
+         
+        let sL=0, sI=0; 
+
+        const htmlRegistros = regs.map(i => { 
+            const calcPercentual = i.leituras > 0 ? (i.imped / i.leituras) * 100 : 0; 
+            sL += i.leituras; sI += i.imped; 
+            return `<tr>
+                <td>${i.data.split('-').reverse().slice(0,2).join('/')}</td>
+                <td>${i.localidade}</td>
+                <td>${i.razao}</td>
+                <td>${i.rotas}</td>
+                <td>${i.leituras.toLocaleString()}</td>
+                <td>${i.imped}</td>
+                <td><span style="color:${calcPercentual <= 0.5 ? 'var(--success)' : 'var(--danger)'}; font-weight:900;">${calcPercentual.toFixed(2)}%</span></td>
+                <td class="no-print">
+                    <button type="button" onclick="editar(${i.id})" title="Editar" style="background:none; border:none; color:var(--accent); cursor:pointer; font-size:13px; padding:2px;">✏️</button>
+                </td>
+            </tr>`; 
+        }).join('');
+
+        document.getElementById('tabelaCorpo').innerHTML = htmlRegistros; 
+
+        const sB = sL > 8000 ? (sL - 8000) * 0.20 : 0; 
+        const sD = sI * 1.50; 
+        const net = sB - sD; 
+
+        animarContagem('totL', sL); animarContagem('totI', sI); 
+        animarContagem('totMeta', sL > 0 ? (sI/sL*100) : 0); 
+        animarContagem('totB', sB, true); animarContagem('totD', sD, true); 
+        animarContagem('totNet', net < 0 ? 0 : net, true); 
+
+        const perc = Math.min((sL/8000)*100, 100); 
+        document.getElementById('barFill').style.width = perc + "%"; 
+        document.getElementById('barPerc').innerText = Math.floor(perc) + "%"; 
+        document.getElementById('barTxt').innerText = `Progresso Meta: ${sL.toLocaleString()} / 8.000`; 
+
+        let acum = 0; 
+        for(let m=0; m<12; m++) { 
+            const f = "2026-" + String(m+1).padStart(2,'0'); 
+            const r = db.filter(x => x.data.startsWith(f)); 
+            const tl = r.reduce((a,c) => a+c.leituras, 0); 
+            const ti = r.reduce((a,c) => a+c.imped, 0); 
+            const bonusMes = tl > 8000 ? (tl - 8000) * 0.20 : 0; 
+            const descMes = ti * 1.50; 
+            const liquidoMes = bonusMes - descMes; 
+            if(liquidoMes > 0) acum += liquidoMes;
+        } 
+        animarContagem('totAcumulado', acum, true); 
+    } 
+
+    document.getElementById('gplForm').onsubmit = (e) => { 
+        e.preventDefault(); 
+        const editId = document.getElementById('editId').value;
+        const dadosForm = {
+            data: document.getElementById('data').value, 
+            localidade: document.getElementById('localidade').value.toUpperCase(), 
+            razao: document.getElementById('razao').value.toUpperCase(), 
+            rotas: document.getElementById('rotas').value.toUpperCase(), 
+            leituras: Number(document.getElementById('leituras').value), 
+            imped: Number(document.getElementById('imped').value)
+        };
+
+        if (editId) {
+            const index = db.findIndex(i => i.id == editId);
+            if (index !== -1) {
+                db[index] = { id: Number(editId), ...dadosForm };
+            }
+        } else {
+            db.push({ 
+                id: Date.now(), 
+                ...dadosForm
+            }); 
+        }
+
+        dispararSalvamentoRegistros();
+
+        limparFormulario();
+        atualizarTabela(); 
+        switchMobileTab('tabTabela', document.getElementById('btnTabTabela'));
+    }; 
+
+    window.editar = function(id) {
+        if (!confirm("Deseja realmente editar este registro?")) return;
+        const item = db.find(i => i.id === id);
+        if (!item) return;
+
+        document.getElementById('editId').value = item.id;
+        document.getElementById('data').value = item.data;
+        document.getElementById('localidade').value = item.localidade;
+        document.getElementById('razao').value = item.razao;
+        document.getElementById('rotas').value = item.rotas;
+        document.getElementById('leituras').value = item.leituras;
+        document.getElementById('imped').value = item.imped;
+
+        document.getElementById('btnSalvarRegistro').innerText = "Atualizar Registro";
+        document.getElementById('btnCancelarEdicao').style.display = "block";
+
+        switchMobileTab('tabFormulario', document.getElementById('btnTabFormulario'));
+    }
+
+    window.limparFormulario = function() {
+        document.getElementById('gplForm').reset();
+        document.getElementById('editId').value = "";
+        document.getElementById('btnSalvarRegistro').innerText = "Salvar Registro";
+        document.getElementById('btnCancelarEdicao').style.display = "none";
+    }
+
+    window.limparTudo = function() { 
+        if(confirm("Deseja limpar todos os registros deste mês?")) { 
+            const mesF = "2026-" + String(viewDate.getMonth() + 1).padStart(2, '0'); 
+            db = db.filter(i => !i.data.startsWith(mesF)); 
+            dispararSalvamentoRegistros();
+            atualizarTabela(); 
+        } 
+    } 
+     
+    window.limparAno = function() { 
+        if(confirm("ATENÇÃO: Você está prestes a apagar TODOS os registros de 2026!")) { 
+            if(confirm("Tem certeza absoluta?")) { 
+                db = []; 
+                dispararSalvamentoRegistros();
+                atualizarTabela(); 
+                alert("Dados de 2026 removidos da nuvem."); 
+            } 
+        } 
+    } 
+
+    window.exportarBackup = function() {
+        if ((!db || db.length === 0) && Object.keys(calendarioDb).length === 0 && Object.keys(relatorioRazoesDb).length === 0) {
+            return alert("Sem dados para exportar.");
+        }
+        
+        const dadosBackup = {
+            registros: db,
+            calendario: calendarioDb,
+            relatorios: relatorioRazoesDb
+        };
+
+        const dataStr = JSON.stringify(dadosBackup, null, 2);
+        const blob = new Blob([dataStr], { type: 'application/json;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        
+        const dl = document.createElement('a');
+        dl.href = url;
+        dl.download = `backup_gpl_${currentUser.toLowerCase()}_2026.json`;
+        document.body.appendChild(dl); 
+        dl.click(); 
+        dl.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+
+        alert("💾 Backup salvo com sucesso no seu dispositivo!");
+    }
+
+    window.dispararImportacao = function() { 
+        const fileInput = document.getElementById('importFile');
+        fileInput.value = '';
+        fileInput.click(); 
+    }
+
+    window.importarBackup = function(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = async function(e) {
+            try {
+                const importedData = JSON.parse(e.target.result);
+                if (confirm(`Substituir dados atuais pelo arquivo "${file.name}"?`)) {
+                    if (Array.isArray(importedData)) {
+                        db = importedData;
+                    } else if (importedData && typeof importedData === 'object') {
+                        db = Array.isArray(importedData.registros) ? importedData.registros : [];
+                        if (importedData.calendario) calendarioDb = importedData.calendario;
+                        if (importedData.relatorios) {
+                            relatorioRazoesDb = importedData.relatorios;
+                            for (const [raz, conteudoRaz] of Object.entries(relatorioRazoesDb)) {
+                                if (currentUser && window.cloudSaveRelatorioRazao) {
+                                    window.cloudSaveRelatorioRazao(currentUser, raz, conteudoRaz);
+                                }
+                            }
+                        }
+                    } else {
+                        return alert("Arquivo de backup inválido.");
+                    }
+
+                    if (currentUser && window.cloudSaveRegistros) {
+                        window.cloudSaveRegistros(currentUser, db);
+                    }
+                    
+                    atualizarTabela();
+                    renderizarCalendario();
+                    popularSelectRazoesRelatorio();
+                    renderizarTabelaRelatorioAtual();
+                    verificarSabadosAlertas();
+                    
+                    alert("Backup restaurado e sincronizado com a nuvem com sucesso! ✨");
+                }
+            } catch (err) { 
+                alert("Erro ao ler o arquivo JSON."); 
+            }
+            event.target.value = "";
+        };
+        reader.readAsText(file);
+    }
+
+    window.onload = function() {
+        window.addEventListener("keydown", (e) => {
+            if (e.key === "F5") {
+                e.preventDefault();
+                if (currentUser) {
+                    atualizarDadosManualmente();
+                } else {
+                    location.reload();
+                }
+            }
+        });
+
+        const loginPassEl = document.getElementById('loginPass');
+        if(loginPassEl) {
+            loginPassEl.addEventListener("keydown", (e) => {
+                if (e.key === "Enter") {
+                    e.preventDefault();
+                    handleLogin();
+                }
+            });
+        }
+
+        const form = document.getElementById("gplForm");
+        if (form) {
+            const inputs = Array.from(form.querySelectorAll("input"));
+            inputs.forEach((input, index) => {
+                input.addEventListener("keydown", (e) => {
+                    if (e.key === "Enter") {
+                        e.preventDefault();
+                        const nextInput = inputs[index + 1];
+                        if (nextInput) {
+                            nextInput.focus();
+                        } else {
+                            form.requestSubmit();
+                        }
+                    }
+                });
+            });
+        }
+    };
+</script> 
+</body> 
+</html>
