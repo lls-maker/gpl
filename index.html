@@ -1947,24 +1947,16 @@
             }
         });
 
-        // Filtrar apenas as razões que possuem leituras ou impedimentos maiores que zero
-        const rotulosCompletos = Object.keys(dadosPorRazao);
-        const rotulosAtivos = rotulosCompletos.filter(r => dadosPorRazao[r].leituras > 0 || dadosPorRazao[r].imped > 0);
-        
-        // Se nenhuma razão foi feita ainda no mês, exibimos uma vazia ou mensagem implícita para o gráfico não quebrar
-        const rotulosFinal = rotulosAtivos.length > 0 ? rotulosAtivos : ["NENHUMA"];
-        const dadosLeiturasFinal = rotulosAtivos.length > 0 ? rotulosAtivos.map(r => dadosPorRazao[r].leituras) : [0];
-        const dadosImpedFinal = rotulosAtivos.length > 0 ? rotulosAtivos.map(r => dadosPorRazao[r].imped) : [0];
-
+        const rotulos = Object.keys(dadosPorRazao);
         if (meuGraficoGPL) meuGraficoGPL.destroy();
 
         meuGraficoGPL = new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: rotulosFinal.map(r => r === "NENHUMA" ? "Nenhuma" : r.replace('RAZÃO ', 'Rz')),
+                labels: rotulos.map(r => r.replace('RAZÃO ', 'Rz')),
                 datasets: [
-                    { label: 'Leituras', data: dadosLeiturasFinal, backgroundColor: '#0070f3', borderRadius: 3 },
-                    { label: 'Impedimentos', data: dadosImpedFinal, backgroundColor: '#ff4d4d', borderRadius: 3 }
+                    { label: 'Leituras', data: rotulos.map(r => dadosPorRazao[r].leituras), backgroundColor: '#0070f3', borderRadius: 3 },
+                    { label: 'Impedimentos', data: rotulos.map(r => dadosPorRazao[r].imped), backgroundColor: '#ff4d4d', borderRadius: 3 }
                 ]
             },
             options: {
@@ -1974,6 +1966,10 @@
                     tooltip: {
                         mode: 'index',
                         intersect: false,
+                        filter: function(tooltipItem) {
+                            // Oculta do balão/tooltip se o valor for zero
+                            return tooltipItem.parsed.y > 0;
+                        },
                         callbacks: {
                             label: function(context) {
                                 let label = context.dataset.label || '';
