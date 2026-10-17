@@ -592,7 +592,7 @@
                 <div class="summary-card neon-acumulado"><p>Acumulado Ano</p><h2 id="totAcumulado">R$ 0,00</h2></div> 
             </div>
 
-            <!-- Gráfico Interativo com Leituras e Impedimentos -->
+            <!-- Gráfico Interativo com Leituras e Impedimentos no Tooltip -->
             <div class="chart-container-box">
                 <div class="chart-header-title">📊 Desempenho de Leituras e Impedimentos por Razão</div>
                 <div style="position: relative; height: 135px; width: 100%;">
@@ -666,14 +666,15 @@
         </div>
 
         <div class="mobile-tab-content" id="tabCal" style="flex-direction: column;">
-            <div class="mobile-search-area">
-                <input type="text" id="searchCal" placeholder="Pesquisar razão..." oninput="renderizarCalendario(this.value)" style="border-color: var(--success); margin-bottom: 0;">
+            <div class="mobile-search-area" style="display: flex; gap: 8px; align-items: center;">
+                <input type="text" id="searchCal" placeholder="Pesquisar razão..." oninput="renderizarCalendario(this.value)" style="border-color: var(--success); margin-bottom: 0; flex: 1;">
+                <button type="button" id="btnLimparCalendario" onclick="apagarCalendarioMes()" class="header-btn" style="background: var(--danger); display: none; white-space: nowrap; padding: 8px 12px; font-size: 10px;">🗑️ Apagar Calendário</button>
             </div>
-            <div class="main-view">
+            <div class="main-view" style="margin-top: 4px;">
                 <div class="table-container">
                     <table>
                         <thead>
-                            <tr><th>Razão</th><th>Data da Próxima Leitura</th></tr>
+                            <tr><th>Razão</th><th>Data da Próxima Leitura</th><th>Status</th></tr>
                         </thead>
                         <tbody id="calCorpo"></tbody>
                     </table>
@@ -1620,7 +1621,14 @@
     function renderizarCalendario(filtro = '') {
         const termo = filtro.toUpperCase();
         const corpo = document.getElementById('calCorpo');
+        const btnApagarCal = document.getElementById('btnLimparCalendario');
         if(!corpo) return;
+
+        if (currentIsAdmin) {
+            btnApagarCal.style.display = 'block';
+        } else {
+            btnApagarCal.style.display = 'none';
+        }
 
         const html = lista18Razoes
             .filter(razao => razao.includes(termo))
@@ -1656,6 +1664,19 @@
             }).join('');
 
         corpo.innerHTML = html;
+    }
+
+    window.apagarCalendarioMes = function() {
+        if (!currentIsAdmin) return;
+        if (confirm("Deseja realmente apagar todas as datas do calendário para iniciar um novo mês?")) {
+            calendarioDb = {};
+            if (currentUser && window.cloudSaveCalendario) {
+                window.cloudSaveCalendario(currentUser, calendarioDb);
+            }
+            renderizarCalendario(document.getElementById('searchCal')?.value || '');
+            verificarSabadosAlertas();
+            alert("📅 Calendário apagado com sucesso!");
+        }
     }
 
     function salvarDataCalendario(razao, data) {
@@ -1915,8 +1936,8 @@
             data: {
                 labels: rotulos.map(r => r.replace('RAZÃO ', 'Rz')),
                 datasets: [
-                    { label: 'Leit.', data: rotulos.map(r => dadosPorRazao[r].leituras), backgroundColor: '#0070f3', borderRadius: 3 },
-                    { label: 'Imp.', data: rotulos.map(r => dadosPorRazao[r].imped), backgroundColor: '#ff4d4d', borderRadius: 3 }
+                    { label: 'Leituras', data: rotulos.map(r => dadosPorRazao[r].leituras), backgroundColor: '#0070f3', borderRadius: 3 },
+                    { label: 'Impedimentos', data: rotulos.map(r => dadosPorRazao[r].imped), backgroundColor: '#ff4d4d', borderRadius: 3 }
                 ]
             },
             options: {
@@ -1924,6 +1945,8 @@
                 plugins: { 
                     legend: { labels: { color: '#8899a6', font: { size: 8 } } },
                     tooltip: {
+                        mode: 'index',
+                        intersect: false,
                         callbacks: {
                             label: function(context) {
                                 let label = context.dataset.label || '';
