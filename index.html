@@ -338,7 +338,7 @@
 
         .cards-container {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 8px;
             padding: 10px;
             overflow-y: auto;
@@ -375,7 +375,7 @@
             flex-direction: column;
             gap: 8px;
             box-shadow: 0 4px 15px rgba(0,255,136,0.15);
-            max-width: 420px;
+            max-width: 440px;
             margin: 6px auto;
             width: 100%;
         }
@@ -728,7 +728,7 @@
                 <input type="text" id="searchMedidorRelatorio" placeholder="Pesquisar por número do medidor..." oninput="buscarMedidorNoRelatorio()" style="border-color: var(--success); margin-bottom: 0;">
             </div>
             <div class="main-view" style="margin-top: 6px; position: relative; display: flex; flex-direction: column; overflow: hidden;">
-                <!-- Botão de Voltar Discreto e Fixo no Topo (Sem Bloco Azul) -->
+                <!-- Botão de Voltar Discreto e Fixo no Topo -->
                 <div id="relatorioBarraFicaTopo" style="display: none; flex-shrink: 0; z-index: 10; justify-content: flex-end; align-items: center; background: var(--surface); padding: 8px 12px; border-bottom: 1px solid var(--border);">
                     <button type="button" onclick="renderizarTabelaRelatorioAtual()" class="header-btn" style="background: #1e2633; color: #fff; padding: 6px 14px; font-size: 10.5px; border-color: var(--grey-border);">⬅ Voltar</button>
                 </div>
@@ -1572,17 +1572,88 @@
             return;
         }
 
+        const mesesDisponiveis = Object.keys(razaoMeses).sort();
+        const indiceAtual = mesesDisponiveis.indexOf(mesAnoKey);
+        const mesAnteriorKey = indiceAtual > 0 ? mesesDisponiveis[indiceAtual - 1] : null;
+        const dadosMesAnterior = mesAnteriorKey ? razaoMeses[mesAnteriorKey] : null;
+
         corpo.innerHTML = chaves.map(medKey => {
             let dados = mapaUnificadoFinal[medKey];
             let infoNL = notasDeLeitura.find(n => n.numero === dados.oc) || { status: 'Ocorrência', detalhe: dados.oc };
             let isComLeitura = infoNL.status.toLowerCase().includes('com');
             
-            let rgsHtml = dados.listaRgs.map(r => `
-                <div style="display: flex; justify-content: space-between; background: rgba(255,255,255,0.03); padding: 5px 8px; border-radius: 6px; margin-top: 3px; font-size: 10px;">
-                    <span style="color: #e1bee7; font-weight: bold;">RG ${r.rg}</span>
-                    <span style="color: var(--success); font-weight: bold;">Leitura: ${r.leit.toLocaleString()}</span>
-                </div>
-            `).join('');
+            let rgsHtml = dados.listaRgs.map(objRg => {
+                let rgAtual = objRg.rg;
+                let leituraAtualVal = objRg.leit;
+
+                let leituraAnteriorVal = null;
+                if (dadosMesAnterior && dadosMesAnterior.medidores) {
+                    let achadoAnt = dadosMesAnterior.medidores.find(m => {
+                        let mKeyAnt = String(m.medidor || "").trim().toUpperCase();
+                        let rgAnt = String(m.tipoRgZ3 || "03").trim().toUpperCase();
+                        return mKeyAnt === medKey && rgAnt === rgAtual;
+                    });
+                    if (achadoAnt) leituraAnteriorVal = Number(achadoAnt.leit) || 0;
+                }
+
+                let consumoAnteriorCalculado = (leituraAnteriorVal !== null && leituraAtualVal >= leituraAnteriorVal) ? (leituraAtualVal - leituraAnteriorVal) : "N/A";
+
+                let somaConsumosHistoricos = 0;
+                let qtdMesesConsumo = 0;
+
+                for (let i = 0; i < mesesDisponiveis.length; i++) {
+                    let mKey = mesesDisponiveis[i];
+                    if (mKey < mesAnoKey) {
+                        let relM = razaoMeses[mKey];
+                        let mKeySeguinte = mesesDisponiveis[i + 1];
+                        let relMSeguinte = mKeySeguinte ? razaoMeses[mKeySeguinte] : null;
+
+                        if (relM && relMSeguinte && relM.medidores && relMSeguinte.medidores) {
+                            let leitMesAtual = relM.medidores.find(m => String(m.medidor || "").trim().toUpperCase() === medKey && String(m.tipoRgZ3 || "03").trim().toUpperCase() === rgAtual);
+                            let leitMesSeguinte = relMSeguinte.medidores.find(m => String(m.medidor || "").trim().toUpperCase() === medKey && String(m.tipoRgZ3 || "03").trim().toUpperCase() === rgAtual);
+
+                            if (leitMesAtual && leitMesSeguinte) {
+                                let lAnt = Number(leitMesAtual.leit) || 0;
+                                let lAtu = Number(leitMesSeguinte.leit) || 0;
+                                if (lAtu >= lAnt) {
+                                    somaConsumosHistoricos += (lAtu - lAnt);
+                                    qtdMesesConsumo++;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (typeof consumoAnteriorCalculado === 'number') {
+                    somaConsumosHistoricos += consumoAnteriorCalculado;
+                    qtdMesesConsumo++;
+                }
+
+                let mediaConsumoDinamica = qtdMesesConsumo > 0 ? Math.round(somaConsumosHistoricos / qtdMesesConsumo) : 0;
+
+                return `
+                    <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border); border-radius: 8px; padding: 8px; margin-top: 4px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; flex-wrap: wrap; gap: 4px;">
+                            <span style="background: rgba(156, 39, 176, 0.25); color: #e1bee7; border: 1px solid var(--purple); padding: 2px 8px; border-radius: 6px; font-size: 10px; font-weight: 900;">RG ${rgAtual}</span>
+                            <span style="font-weight: 900; color: var(--success); font-size: 11px;">Leitura Atual: ${objRg.leit.toLocaleString()}</span>
+                        </div>
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; margin-top: 6px; text-align: center; background: rgba(0,0,0,0.3); padding: 6px; border-radius: 6px;">
+                            <div>
+                                <span style="font-size: 8px; color: var(--text-p); display: block; font-weight: 800;">LEIT. ANTERIOR</span>
+                                <span style="font-size: 10px; color: #fff; font-weight: bold;">${leituraAnteriorVal !== null ? leituraAnteriorVal.toLocaleString() : 'N/A (1º Mês)'}</span>
+                            </div>
+                            <div>
+                                <span style="font-size: 8px; color: var(--text-p); display: block; font-weight: 800;">CONSUMO ANT.</span>
+                                <span style="font-size: 10px; color: var(--warning); font-weight: bold;">${typeof consumoAnteriorCalculado === 'number' ? consumoAnteriorCalculado.toLocaleString() : consumoAnteriorCalculado}</span>
+                            </div>
+                            <div>
+                                <span style="font-size: 8px; color: var(--text-p); display: block; font-weight: 800;">MÉDIA CONSUMO (${qtdMesesConsumo}M)</span>
+                                <span style="font-size: 10px; color: var(--accent); font-weight: bold;">${mediaConsumoDinamica > 0 ? mediaConsumoDinamica.toLocaleString() : 'N/A (1º Mês)'}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
 
             return `
                 <div class="medidor-card" style="max-width: 100%;">
@@ -1590,7 +1661,7 @@
                         <span class="oc-code" style="font-size: 0.95rem; color: var(--success);">Medidor: ${dados.medidor}</span>
                         <span style="font-size: 9.5px; font-weight: bold; color: var(--text-p);">${razaoSelecionada}</span>
                     </div>
-                    <div style="background: rgba(0, 112, 243, 0.08); border: 1px solid var(--accent); border-radius: 8px; padding: 8px; margin-bottom: 6px;">
+                    <div style="background: rgba(0, 112, 243, 0.08); border: 1px solid var(--accent); border-radius: 8px; padding: 8px; margin-bottom: 4px;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px;">
                             <span style="font-weight: 900; color: var(--warning); font-size: 11px;">NL: ${dados.oc}</span>
                             <span class="oc-status" style="background: ${isComLeitura ? 'rgba(0,255,136,0.1)' : 'rgba(255,204,0,0.1)'}; color: ${isComLeitura ? 'var(--success)' : 'var(--warning)'}; border: 1px solid ${isComLeitura ? 'var(--success)' : 'var(--warning)'};">${infoNL.status}</span>
