@@ -856,6 +856,13 @@
             
             mesesMap[mesAnoKey] = JSON.parse(JSON.stringify(dadosRelatorioMes));
 
+            // Filtrar e manter apenas os últimos 12 meses
+            let chavesMeses = Object.keys(mesesMap).sort();
+            if (chavesMeses.length > 12) {
+                let mesesParaRemover = chavesMeses.slice(0, chavesMeses.length - 12);
+                mesesParaRemover.forEach(mKey => delete mesesMap[mKey]);
+            }
+
             await setDoc(docRef, {
                 usuario: userUpper,
                 razao: razao,
@@ -1464,6 +1471,13 @@
 
         relatorioRazoesDb[razaoSelecionada][mesAnoKey] = dadosNovoRelatorio;
 
+        // Limpeza local mantendo apenas 12 meses
+        let chavesMeses = Object.keys(relatorioRazoesDb[razaoSelecionada]).sort();
+        if (chavesMeses.length > 12) {
+            let mesesRemover = chavesMeses.slice(0, chavesMeses.length - 12);
+            mesesRemover.forEach(mKey => delete relatorioRazoesDb[razaoSelecionada][mKey]);
+        }
+
         if (currentUser && window.cloudSaveRelatorioRazao) {
             window.cloudSaveRelatorioRazao(currentUser, razaoSelecionada, mesAnoKey, dadosNovoRelatorio);
         }
@@ -1642,7 +1656,6 @@
                 return;
             }
 
-            // Encontrar mês anterior ordenado para cruzar histórico
             const mesesDisponiveis = Object.keys(razaoMeses).sort();
             const indiceAtual = mesesDisponiveis.indexOf(mesAnoKey);
             const mesAnteriorKey = indiceAtual > 0 ? mesesDisponiveis[indiceAtual - 1] : null;
@@ -1652,14 +1665,12 @@
                 const dados = mapaUnificado[medKey];
                 let ultimoNL = dados.oc;
 
-                // Buscar leitura anterior do mesmo medidor no mês anterior
                 let leituraAnteriorVal = null;
                 if (dadosMesAnterior && dadosMesAnterior.medidores) {
                     let achadoAnt = dadosMesAnterior.medidores.find(m => String(m.medidor || "").trim().toUpperCase() === medKey);
                     if (achadoAnt) leituraAnteriorVal = Number(achadoAnt.leit) || 0;
                 }
 
-                // Calcular média dos últimos meses salvos para este medidor
                 let somaHistorica = 0;
                 let qtdMesesHistorico = 0;
                 mesesDisponiveis.forEach(mKey => {
@@ -1696,7 +1707,7 @@
                                     <span style="font-size: 10px; color: var(--warning); font-weight: bold;">${typeof consumoAnteriorCalculado === 'number' ? consumoAnteriorCalculado.toLocaleString() : consumoAnteriorCalculado}</span>
                                 </div>
                                 <div>
-                                    <span style="font-size: 8px; color: var(--text-p); display: block; font-weight: 800;">MÉDIA</span>
+                                    <span style="font-size: 8px; color: var(--text-p); display: block; font-weight: 800;">MÉDIA (12M)</span>
                                     <span style="font-size: 10px; color: var(--accent); font-weight: bold;">${mediaHistoricaVal > 0 ? mediaHistoricaVal.toLocaleString() : 'N/A'}</span>
                                 </div>
                             </div>
@@ -2302,6 +2313,12 @@
                             relatorioRazoesDb = importedData.relatorios;
                             for (const [raz, mesesObj] of Object.entries(relatorioRazoesDb)) {
                                 if (mesesObj && typeof mesesObj === 'object') {
+                                    // Limpar mantendo 12 meses
+                                    let chavesM = Object.keys(mesesObj).sort();
+                                    if (chavesM.length > 12) {
+                                        let rem = chavesM.slice(0, chavesM.length - 12);
+                                        rem.forEach(k => delete mesesObj[k]);
+                                    }
                                     for (const [mKey, conteudoMes] of Object.entries(mesesObj)) {
                                         if (currentUser && window.cloudSaveRelatorioRazao) {
                                             window.cloudSaveRelatorioRazao(currentUser, raz, mKey, conteudoMes);
