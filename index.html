@@ -14,29 +14,27 @@
 
     <style> 
         :root { 
-            --bg: #020408; 
-            --surface: #0c111a;
-            --surface-hover: #131b2c;
+            --bg: #030508; 
+            --surface: #0b0f15;
             --accent: #0070f3;
-            --accent-glow: rgba(0, 112, 243, 0.5);
             --success: #00ff88; 
-            --success-glow: rgba(0, 255, 136, 0.35);
             --danger: #ff4d4d;
             --warning: #ffcc00; 
-            --border: #1e293b; 
-            --text-p: #94a3b8; 
+            --border: #1e2633; 
+            --text-p: #8899a6; 
             --text-h: #ffffff; 
-            --grey-border: #334155; 
-            --purple: #a855f7; 
-            --orange-neon: #fb923c; 
-            --white-neon: #f8fafc; 
+            --grey-border: #333c4d; 
+            --brown-border: #5d4037; 
+            --purple: #9c27b0; 
+            --orange-neon: #ff8c00; 
+            --white-neon: #f8f9fa; 
         } 
         * { box-sizing: border-box; } 
 
         html, body {
             width: 100%;
             height: 100vh;
-            font-family: 'Inter', system-ui, -apple-system, sans-serif; 
+            font-family: 'Inter', system-ui, sans-serif; 
             background-color: var(--bg); 
             color: var(--text-p); 
             margin: 0; 
@@ -52,7 +50,7 @@
             content: '';
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at 20% 20%, #0d1b31 0%, #020408 75%);
+            background: radial-gradient(circle at center, #111a2c 0%, #030508 100%);
             z-index: -1;
         }
 
@@ -65,7 +63,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: rgba(12, 17, 26, 0.95);
+            background: rgba(11, 15, 21, 0.95);
             color: var(--success);
             font-weight: 900;
             font-size: 11px;
@@ -74,44 +72,21 @@
             transition: transform 0.2s ease;
         }
 
-        /* Modal Customizado Unificado */
-        #gplCustomModal {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(2, 4, 8, 0.85); backdrop-filter: blur(8px);
-            z-index: 999999; display: none; align-items: center; justify-content: center;
-        }
-        .gpl-modal-box {
-            background: rgba(12, 17, 26, 0.98); border: 1.5px solid var(--accent);
-            border-radius: 16px; padding: 25px; width: 340px; text-align: center;
-            box-shadow: 0 25px 60px rgba(0,0,0,0.9), 0 0 25px rgba(0, 112, 243, 0.3);
-        }
-        .gpl-modal-title {
-            font-size: 13px; font-weight: 900; color: var(--text-h); text-transform: uppercase; margin-bottom: 10px;
-            display: flex; align-items: center; justify-content: center; gap: 8px;
-        }
-        .gpl-modal-msg {
-            font-size: 12px; color: var(--text-p); margin-bottom: 20px; line-height: 1.4; font-weight: 600;
-        }
-        .gpl-modal-buttons {
-            display: flex; gap: 10px; justify-content: center;
-        }
-
         input, select { 
-            background: #05080f; 
+            background: #000; 
             color: white; 
             border: 1px solid var(--border); 
-            padding: 10px 14px; 
-            border-radius: 10px; 
+            padding: 8px 10px; 
+            border-radius: 9px; 
             outline: none; 
             width: 100%; 
             font-size: 12px; 
-            margin-bottom: 6px; 
-            transition: all 0.25s ease; 
+            margin-bottom: 5px; 
+            transition: 0.3s; 
         } 
         input:focus, select:focus { 
             border-color: var(--accent) !important; 
-            box-shadow: 0 0 15px rgba(0, 112, 243, 0.5); 
-            background: #090e18;
+            box-shadow: 0 0 15px rgba(0, 112, 243, 0.4); 
         } 
         input[type="date"]::-webkit-calendar-picker-indicator { 
             filter: invert(1); 
@@ -130,25 +105,25 @@
 
         #loginScreen { 
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; 
-            background: radial-gradient(circle at center, #0c111a 0%, #020408 100%); 
+            background: radial-gradient(circle at center, #0b0f15 0%, #030508 100%); 
             z-index: 99999; display: flex; align-items: center; justify-content: center; 
         } 
         .login-box { 
-            background: rgba(12, 17, 26, 0.96); padding: 35px; border-radius: 20px; 
+            background: rgba(11, 15, 21, 0.95); padding: 30px; border-radius: 24px; 
             border: 1px solid var(--border); border-top: 4px solid var(--success); 
-            width: 380px; text-align: center; backdrop-filter: blur(16px); 
-            box-shadow: 0 30px 70px rgba(0,0,0,0.85); 
+            width: 360px; text-align: center; backdrop-filter: blur(10px); 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8), 0 0 15px rgba(0,255,136,0.1); 
             max-height: 95vh; overflow-y: auto;
         } 
 
         .login-tabs-header {
             display: flex;
-            background: #05080f;
+            background: #000;
             border: 1px solid var(--border);
             border-radius: 10px;
-            margin-bottom: 18px;
-            padding: 4px;
-            gap: 4px;
+            margin-bottom: 15px;
+            padding: 3px;
+            gap: 3px;
         }
         .login-tab-btn {
             background: transparent;
@@ -159,14 +134,14 @@
             text-transform: uppercase;
             cursor: pointer;
             flex: 1;
-            padding: 9px;
+            padding: 8px;
             border-radius: 8px;
             transition: 0.3s;
         }
         .login-tab-btn.active {
             background: var(--accent);
             color: #fff;
-            box-shadow: 0 0 15px rgba(0, 112, 243, 0.5);
+            box-shadow: 0 0 10px rgba(0, 112, 243, 0.4);
         }
         .login-form-pane {
             display: none;
@@ -177,238 +152,132 @@
         }
 
         .auth-btn { 
-            background: var(--success); color: #020408; width: 100%; padding: 12px; 
-            border-radius: 10px; font-weight: 900; cursor: pointer; border: none; 
-            text-transform: uppercase; margin-top: 10px; transition: 0.25s; 
-            box-shadow: 0 0 20px rgba(0, 255, 136, 0.25);
+            background: var(--success); color: black; width: 100%; padding: 12px; 
+            border-radius: 12px; font-weight: 900; cursor: pointer; border: none; 
+            text-transform: uppercase; margin-top: 10px; transition: 0.3s; 
+            box-shadow: 0 0 12px rgba(0,255,136,0.25);
         } 
-        .auth-btn:hover {
-            filter: brightness(1.15);
-            box-shadow: 0 0 25px rgba(0, 255, 136, 0.45);
-        }
         .auth-link { 
             color: var(--accent); font-size: 11px; cursor: pointer; 
             font-weight: 700; margin-top: 12px; display: inline-block; text-transform: uppercase; text-align: center; width: 100%;
         } 
 
         .container { 
-            max-width: 1240px; 
-            width: 98vw; 
-            height: 94vh;
-            max-height: 880px;
-            display: grid; 
-            grid-template-columns: 220px 1fr;
-            grid-template-rows: auto 1fr;
-            gap: 12px; 
+            max-width: 480px; 
+            width: 100%; 
+            height: 100vh;
+            max-height: 900px;
+            display: flex; 
+            flex-direction: column; 
+            gap: 5px; 
             overflow: hidden;
             background: var(--bg);
-            border-radius: 18px;
+            border-radius: 24px;
             border: 1px solid var(--grey-border);
-            box-shadow: 0 35px 70px rgba(0,0,0,0.85), 0 0 35px rgba(0, 112, 243, 0.12);
-            padding: 14px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6), 0 0 25px rgba(0, 112, 243, 0.15);
+            padding: 8px;
         } 
 
         header { 
-            grid-column: 2 / 3;
-            grid-row: 1 / 2;
-            background: var(--surface); 
-            padding: 12px 18px; 
-            border-radius: 14px; 
-            border: 1px solid var(--border); 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            position: relative; 
-            box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
+            background: var(--surface); padding: 8px 12px; border-radius: 16px; 
+            border: 1px solid var(--border); display: flex; justify-content: space-between; 
+            align-items: center; flex-shrink: 0; position: relative; 
         } 
-
-        .mobile-nav-tabs {
-            grid-column: 1 / 2;
-            grid-row: 1 / 3;
-            display: flex; 
-            flex-direction: column; 
-            background: var(--surface); 
-            border: 1px solid var(--border);
-            border-radius: 14px; 
-            padding: 12px 8px;
-            gap: 8px; 
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.4);
-            justify-content: flex-start;
-        }
-
-        .mob-tab-btn {
-            background: rgba(255, 255, 255, 0.02); 
-            border: 1px solid var(--grey-border); 
-            color: var(--text-p); 
-            font-size: 11px;
-            font-weight: 900; 
-            text-transform: uppercase; 
-            cursor: pointer; 
-            padding: 12px 14px;
-            border-radius: 10px; 
-            text-align: left; 
-            transition: all 0.25s ease;
-            position: relative;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            width: 100%;
-        }
-        .mob-tab-btn:hover {
-            background: rgba(0, 112, 243, 0.12);
-            color: #fff;
-            border-color: var(--accent);
-            transform: translateX(3px);
-        }
-        .mob-tab-btn.active { 
-            background: var(--accent); 
-            border-color: #fff; 
-            color: #fff; 
-            box-shadow: 0 0 18px rgba(0, 112, 243, 0.6);
-        }
-
-        .admin-badge {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            right: 12px;
-            background: var(--danger);
-            color: #fff;
-            font-size: 8px;
-            font-weight: 900;
-            padding: 3px 6px;
-            border-radius: 50%;
-            display: none;
-        }
-
         .prog-area { width: 100%; flex-shrink: 0; padding: 0 2px; } 
         
         .top-dashboard {
-            display: flex; flex-direction: column; gap: 8px; flex-shrink: 0;
-            overflow-y: auto; max-height: calc(100vh - 120px); padding-bottom: 4px;
+            display: flex; flex-direction: column; gap: 5px; flex-shrink: 0;
+            overflow-y: auto; max-height: calc(100vh - 130px); padding-bottom: 4px;
         }
         
         .observations { 
-            background: var(--surface); padding: 12px 18px; border-radius: 12px; 
-            border: 1.5px solid rgba(255,255,255,0.15); display: flex; flex-direction: column; 
-            justify-content: center; gap: 6px; flex-shrink: 0;
+            background: var(--surface); padding: 10px 14px; border-radius: 12px; 
+            border: 1.5px solid #ffffff; display: flex; flex-direction: column; 
+            justify-content: center; gap: 4px; flex-shrink: 0;
             white-space: nowrap; overflow-x: auto;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+            box-shadow: 0 0 10px rgba(255,255,255,0.06);
         } 
-        .obs-item { font-size: 12px; color: #ffffff; display: flex; align-items: center; gap: 8px; font-weight: 700; } 
-        .dot { height: 8px; width: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; } 
+        .obs-item { font-size: 11px; color: #ffffff; display: flex; align-items: center; gap: 8px; font-weight: 700; } 
+        .dot { height: 8px; width: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; box-shadow: 0 0 6px currentColor; } 
 
         .alert-saturday-box {
-            background: rgba(255, 204, 0, 0.12);
+            background: rgba(255, 204, 0, 0.15);
             border: 1.5px solid var(--warning);
-            padding: 10px 14px;
+            padding: 8px 12px;
             border-radius: 10px;
             color: var(--warning);
-            font-size: 11.5px;
+            font-size: 11px;
             font-weight: 800;
             display: flex;
             align-items: center;
             gap: 8px;
-            width: 100%;
-            animation: pulseAlert 2s infinite;
-        }
-        @keyframes pulseAlert {
-            0% { opacity: 0.8; }
-            50% { opacity: 1; border-color: #fff; }
-            100% { opacity: 0.8; }
+            box-shadow: 0 0 10px rgba(255,204,0,0.25);
+            flex-shrink: 0;
         }
         .saturday-scroll-container {
-            max-height: 95px;
+            max-height: 85px;
             overflow-y: auto;
-            overflow-x: hidden;
             display: flex;
             flex-direction: column;
             gap: 4px;
-            width: 100%;
+            padding-right: 2px;
         }
 
         .summary-grid { 
             display: grid; 
-            grid-template-columns: repeat(7, 1fr); 
-            gap: 6px; 
+            grid-template-columns: repeat(2, 1fr); 
+            gap: 5px; 
             height: auto; 
         } 
         .summary-card { 
-            background: linear-gradient(180deg, #131b2c 0%, var(--surface) 100%); 
-            padding: 10px 4px; 
-            border-radius: 12px; 
-            border: 2px solid; 
-            display: flex; 
-            flex-direction: column; 
-            justify-content: center; 
-            text-align: center; 
-            height: 88px; 
-            transition: all 0.25s ease;
+            background: var(--surface); padding: 8px 6px; border-radius: 12px; 
+            border: 1.5px solid var(--grey-border); border-top: 5px solid; 
+            display: flex; flex-direction: column; justify-content: center; text-align: center; height: 70px; 
+            transition: 0.3s;
         } 
         .summary-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+            transform: translateY(-2px);
         }
-        .summary-card p { font-size: 8.5px; font-weight: 900; text-transform: uppercase; margin: 0; letter-spacing: 0.2px; white-space: nowrap; } 
-        .summary-card h2 { margin: 6px 0 0; font-size: 1.05rem; color: var(--text-h); font-weight: 900; } 
+        .summary-card p { font-size: 9.5px; font-weight: 800; text-transform: uppercase; margin: 0; } 
+        .summary-card h2 { margin: 3px 0 0; font-size: 1.05rem; color: var(--text-h); font-weight: 900; } 
 
-        .neon-leituras { 
-            border-color: rgba(255, 255, 255, 0.95); 
-            box-shadow: inset 0 0 16px rgba(255, 255, 255, 0.2), 0 0 12px rgba(255, 255, 255, 0.3); 
-        } 
-        .neon-impedimentos { 
-            border-color: rgba(255, 40, 40, 0.95); 
-            box-shadow: inset 0 0 16px rgba(255, 40, 40, 0.25), 0 0 12px rgba(255, 40, 40, 0.4); 
-        } 
-        .neon-meta { 
-            border-color: rgba(255, 190, 0, 0.95); 
-            box-shadow: inset 0 0 16px rgba(255, 190, 0, 0.25), 0 0 12px rgba(255, 190, 0, 0.4); 
-        } 
-        .neon-bonus { 
-            border-color: rgba(0, 140, 255, 0.95); 
-            box-shadow: inset 0 0 18px rgba(0, 140, 255, 0.3), 0 0 15px rgba(0, 140, 255, 0.45); 
-        } 
-        .neon-descontos { 
-            border-color: rgba(255, 120, 0, 0.95); 
-            box-shadow: inset 0 0 16px rgba(255, 120, 0, 0.25), 0 0 12px rgba(255, 120, 0, 0.4); 
-        } 
-        .neon-receber { 
-            border-color: rgba(0, 255, 136, 0.95); 
-            box-shadow: inset 0 0 18px rgba(0, 255, 136, 0.3), 0 0 15px rgba(0, 255, 136, 0.45); 
-        } 
-        .neon-acumulado { 
-            border-color: var(--purple); 
-            box-shadow: inset 0 0 16px rgba(168, 85, 247, 0.3), 0 0 15px rgba(168, 85, 247, 0.45); 
+        .neon-acumulado {
+            grid-column: span 2;
+            height: 65px;
         }
+
+        .neon-leituras { border-top-color: var(--white-neon); box-shadow: 0 0 15px rgba(248,249,250,0.18), inset 0 0 8px rgba(248,249,250,0.04); } 
+        .neon-impedimentos { border-top-color: var(--orange-neon); box-shadow: 0 0 15px rgba(255,140,0,0.22), inset 0 0 8px rgba(255,140,0,0.04); } 
+        .neon-meta { border-top-color: var(--warning); box-shadow: 0 0 15px rgba(255,204,0,0.22), inset 0 0 8px rgba(255,204,0,0.04); } 
+        .neon-bonus { border-top-color: var(--accent); box-shadow: 0 0 15px rgba(0,112,243,0.28), inset 0 0 8px rgba(0,112,243,0.06); } 
+        .neon-descontos { border-top-color: var(--danger); box-shadow: 0 0 15px rgba(255,77,77,0.28), inset 0 0 8px rgba(255,77,77,0.06); } 
+        .neon-receber { border-top-color: var(--success); box-shadow: 0 0 18px rgba(0,255,136,0.32), inset 0 0 10px rgba(0,255,136,0.08); } 
+        .neon-acumulado { border-top-color: var(--purple); box-shadow: 0 0 18px rgba(156,39,176,0.32), inset 0 0 10px rgba(156,39,176,0.08); } 
 
         .chart-container-box {
             background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            padding: 12px 16px;
-            margin-top: 4px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+            border: 1.5px solid var(--grey-border);
+            border-radius: 12px;
+            padding: 8px 10px;
             flex-grow: 1;
             display: flex;
             flex-direction: column;
             justify-content: center;
+            margin-top: 1px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
         }
         .chart-header-title {
-            font-size: 11px;
+            font-size: 9.5px;
             font-weight: 900;
             color: var(--text-h);
             text-transform: uppercase;
-            margin-bottom: 6px;
+            margin-bottom: 4px;
             letter-spacing: 0.5px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
         }
 
         .content-wrap { 
-            grid-column: 2 / 3;
-            grid-row: 2 / 3;
             display: block; 
+            flex-grow: 1; 
             min-height: 0; 
             overflow: hidden; 
         } 
@@ -425,55 +294,34 @@
             flex-direction: column;
             justify-content: space-between;
             overflow: hidden; 
-            padding: 14px;
-            background: linear-gradient(180deg, rgba(0, 112, 243, 0.1) 0%, var(--surface) 100%);
-            border-radius: 14px;
+            padding: 10px;
+            background: linear-gradient(180deg, rgba(0, 112, 243, 0.08) 0%, var(--surface) 100%);
+            border-radius: 16px;
             border: 1.5px solid var(--accent);
-            box-shadow: inset 0 0 20px rgba(0,112,243,0.05);
+            box-shadow: inset 0 0 15px rgba(0,112,243,0.1);
         } 
         .form-content-area { overflow-y: auto; flex-grow: 1; min-height: 0; padding-right: 2px; }
-        .form-group { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
-        .form-group label { width: 95px; flex-shrink: 0; font-size: 11px; font-weight: 800; color: var(--accent); text-transform: uppercase; }
+        .form-group { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
+        .form-group label { width: 80px; flex-shrink: 0; font-size: 10.5px; font-weight: 800; color: var(--accent); text-transform: uppercase; text-shadow: 0 0 8px rgba(0,112,243,0.3); }
         
-        .actions-footer { display: flex; flex-direction: column; gap: 7px; margin-top: 10px; flex-shrink: 0; } 
-        .btn-add { 
-            background: linear-gradient(135deg, #0070f3, #00c6ff); 
-            color: #fff; width: 100%; padding: 11px; border-radius: 10px; font-weight: 900; cursor: pointer; border: none; text-transform: uppercase; font-size: 11px; box-shadow: 0 0 15px rgba(0, 112, 243, 0.45); transition: 0.25s; 
-        } 
-        .btn-add:hover { filter: brightness(1.15); box-shadow: 0 0 22px rgba(0, 112, 243, 0.7); }
-        
-        .btn-clear { 
-            background: rgba(255, 77, 77, 0.08); color: var(--danger); width: 100%; padding: 9px; border-radius: 10px; font-weight: 800; cursor: pointer; border: 1.5px solid var(--danger); text-transform: uppercase; font-size: 10px; transition: 0.2s; 
-        } 
-        .btn-clear:hover { background: rgba(255, 77, 77, 0.2); box-shadow: 0 0 10px rgba(255, 77, 77, 0.3); }
-        
-        .btn-clear-year { 
-            background: rgba(168, 85, 247, 0.08); color: var(--purple); width: 100%; padding: 9px; border-radius: 10px; font-weight: 800; cursor: pointer; border: 1.5px solid var(--purple); text-transform: uppercase; font-size: 10px; transition: 0.2s; 
-        } 
-        .btn-clear-year:hover { background: rgba(168, 85, 247, 0.2); box-shadow: 0 0 10px rgba(168, 85, 247, 0.3); }
-        
-        .backup-row { display: flex; gap: 8px; width: 100%; }
-        .btn-backup { 
-            background: rgba(0, 255, 136, 0.08); color: var(--success); width: 50%; padding: 9px 4px; border-radius: 10px; font-weight: 800; cursor: pointer; border: 1.5px solid var(--success); text-transform: uppercase; font-size: 10px; text-align: center; transition: 0.2s; 
-        } 
-        .btn-backup:hover { background: rgba(0, 255, 136, 0.2); box-shadow: 0 0 10px rgba(0, 255, 136, 0.3); }
-        
-        .btn-import { 
-            background: rgba(255, 204, 0, 0.08); color: var(--warning); width: 50%; padding: 9px 4px; border-radius: 10px; font-weight: 800; cursor: pointer; border: 1.5px solid var(--warning); text-transform: uppercase; font-size: 10px; text-align: center; transition: 0.2s; 
-        } 
-        .btn-import:hover { background: rgba(255, 204, 0, 0.2); box-shadow: 0 0 10px rgba(255, 204, 0, 0.3); }
+        .actions-footer { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; flex-shrink: 0; } 
+        .btn-add { background: var(--accent); color: #fff; width: 100%; padding: 12px; border-radius: 12px; font-weight: 900; cursor: pointer; border: none; text-transform: uppercase; font-size: 11.5px; box-shadow: 0 0 15px rgba(0,112,243,0.4); } 
+        .btn-clear { background: transparent; color: var(--danger); width: 100%; padding: 8px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--danger); text-transform: uppercase; font-size: 10px; box-shadow: 0 0 8px rgba(255,77,77,0.15); } 
+        .btn-clear-year { background: transparent; color: var(--purple); width: 100%; padding: 8px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--purple); text-transform: uppercase; font-size: 10px; box-shadow: 0 0 8px rgba(156,39,176,0.15); } 
+        .backup-row { display: flex; gap: 6px; width: 100%; }
+        .btn-backup { background: transparent; color: var(--success); width: 50%; padding: 8px 4px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--success); text-transform: uppercase; font-size: 10px; text-align: center; box-shadow: 0 0 8px rgba(0,255,136,0.15); } 
+        .btn-import { background: transparent; color: var(--warning); width: 50%; padding: 8px 4px; border-radius: 12px; font-weight: 800; cursor: pointer; border: 1px solid var(--warning); text-transform: uppercase; font-size: 10px; text-align: center; box-shadow: 0 0 8px rgba(255,204,0,0.15); } 
 
         .main-view { 
-            background: var(--surface); border-radius: 14px; border: 1px solid var(--grey-border); 
+            background: var(--surface); border-radius: 16px; border: 1.5px solid var(--brown-border); 
             display: flex; flex-direction: column; flex-grow: 1; min-height: 0; overflow: hidden; 
-            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
         } 
         .table-container { flex-grow: 1; min-height: 0; overflow-y: auto; overflow-x: auto; overscroll-behavior-y: contain; } 
 
         table { width: 100%; border-collapse: collapse; table-layout: fixed; } 
-        th, td { padding: 9px 6px; text-align: center; border-bottom: 1px solid var(--border); font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } 
-        th { background: #05080f; color: var(--accent); font-size: 9.5px; text-transform: uppercase; position: sticky; top: 0; z-index: 5; letter-spacing: 0.5px; border-bottom: 2px solid var(--grey-border); } 
-        tr:hover td { background: rgba(255, 255, 255, 0.025); }
+        th, td { padding: 6px 3px; text-align: center; border-bottom: 1px solid var(--border); font-size: 10.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } 
+        th { background: #0d1117; color: var(--accent); font-size: 9px; text-transform: uppercase; position: sticky; top: 0; z-index: 5; text-shadow: 0 0 6px rgba(0,112,243,0.4); } 
 
         #tabTabela th:nth-child(1), #tabTabela td:nth-child(1) { width: 12%; } 
         #tabTabela th:nth-child(2), #tabTabela td:nth-child(2) { width: 15%; } 
@@ -486,17 +334,13 @@
 
         #tabNL th:nth-child(1), #tabNL td:nth-child(1) { width: 15%; text-align: center; } 
         #tabNL th:nth-child(2), #tabNL td:nth-child(2) { width: 20%; text-align: center; } 
-        #tabNL th:nth-child(3), #tabNL td:nth-child(3) { width: 65%; text-align: left; padding-left: 10px; } 
-
-        #tabCal table th:nth-child(1), #tabCal table td:nth-child(1) { width: 30%; }
-        #tabCal table th:nth-child(2), #tabCal table td:nth-child(2) { width: 40%; }
-        #tabCal table th:nth-child(3), #tabCal table td:nth-child(3) { width: 30%; }
+        #tabNL th:nth-child(3), #tabNL td:nth-child(3) { width: 65%; text-align: left; padding-left: 8px; } 
 
         .cards-container {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 12px;
-            padding: 14px;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 8px;
+            padding: 10px;
             overflow-y: auto;
             flex-grow: 1;
             height: 100%;
@@ -504,102 +348,148 @@
             overscroll-behavior-y: contain;
         }
         .oc-card {
-            background: linear-gradient(145deg, #131b2c, var(--surface));
+            background: linear-gradient(145deg, #0d121a, var(--surface));
             border: 1px solid var(--border);
             border-left: 4px solid var(--accent);
             border-radius: 12px;
-            padding: 12px;
+            padding: 10px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-            min-height: 105px;
-            gap: 6px;
+            height: 95px;
+            cursor: pointer;
+            transition: 0.2s;
         }
         .oc-card:hover {
-            transform: translateY(-2px);
             border-color: var(--accent);
+            box-shadow: 0 0 15px rgba(0,112,243,0.3);
         }
         .medidor-card {
-            background: linear-gradient(145deg, #131b2c, var(--surface));
+            background: linear-gradient(145deg, #0d121a, var(--surface));
             border: 1px solid var(--success);
             border-left: 5px solid var(--success);
             border-radius: 12px;
-            padding: 16px;
+            padding: 12px;
             display: flex;
             flex-direction: column;
             gap: 8px;
-            box-shadow: 0 6px 22px rgba(0,255,136,0.15);
-            max-width: 460px;
+            box-shadow: 0 4px 15px rgba(0,255,136,0.15);
+            max-width: 420px;
             margin: 6px auto;
             width: 100%;
         }
         .oc-card-header {
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
-            gap: 10px;
+            align-items: center;
             margin-bottom: 4px;
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 6px;
         }
         .oc-code {
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 900;
             color: var(--text-h);
+            text-shadow: 0 0 8px rgba(255,255,255,0.4);
         }
         .oc-count {
-            background: rgba(0, 255, 136, 0.15);
+            background: rgba(0, 255, 136, 0.12);
             color: var(--success);
             border: 1px solid var(--success);
-            padding: 3px 10px;
+            padding: 3px 8px;
             border-radius: 8px;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: 900;
+            box-shadow: 0 0 8px rgba(0,255,136,0.2);
         }
         .oc-desc {
-            font-size: 11.5px;
+            font-size: 10.5px;
             color: var(--text-p);
-            margin-bottom: 6px;
-            line-height: 1.35;
+            margin-bottom: 4px;
+            line-height: 1.25;
             font-weight: 600;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
-            line-clamp: 2;
             overflow: hidden;
         }
         .oc-status {
-            font-size: 10px;
+            font-size: 9.5px;
             font-weight: 800;
             text-transform: uppercase;
-            padding: 3px 8px;
-            border-radius: 6px;
+            padding: 2px 6px;
+            border-radius: 4px;
             display: inline-block;
             width: fit-content;
         }
 
-        .month-grid { display: none; position: absolute; top: 55px; right: 15px; background: #05080f; border: 1px solid var(--accent); padding: 12px; border-radius: 12px; grid-template-columns: repeat(3, 1fr); gap: 6px; z-index: 1000; box-shadow: 0 15px 35px rgba(0,0,0,0.85); } 
+        .month-grid { display: none; position: absolute; top: 50px; right: 15px; background: #0d1117; border: 1px solid var(--accent); padding: 12px; border-radius: 12px; grid-template-columns: repeat(3, 1fr); gap: 6px; z-index: 1000; box-shadow: 0 10px 25px rgba(0,0,0,0.8), 0 0 15px rgba(0,112,243,0.3); } 
         .month-grid.active { display: grid; } 
-        .month-item { background: #000; color: white; border: 1px solid var(--border); padding: 10px; border-radius: 6px; cursor: pointer; font-size: 10px; font-weight: bold; text-align: center; transition: 0.2s; }
-        .month-item:hover { background: var(--accent); border-color: #fff; box-shadow: 0 0 10px rgba(0,112,243,0.5); }
+        .month-item { background: #000; color: white; border: 1px solid var(--border); padding: 8px; border-radius: 6px; cursor: pointer; font-size: 10px; font-weight: bold; text-align: center; transition: 0.2s; }
+        .month-item:hover { border-color: var(--accent); color: var(--accent); box-shadow: 0 0 10px rgba(0,112,243,0.4); }
         
         .header-btn {
-            background: #1e293b; border: 1px solid var(--border); color: white;
-            padding: 9px 14px; border-radius: 9px; cursor: pointer; font-weight: 800; font-size: 11px; text-transform: uppercase;
-            transition: all 0.2s ease;
+            background: #1e2633; border: 1px solid var(--border); color: white;
+            padding: 8px 12px; border-radius: 9px; cursor: pointer; font-weight: 800; font-size: 11px; text-transform: uppercase;
+            transition: 0.2s;
         }
         .header-btn:hover {
-            background: var(--accent);
-            border-color: #fff;
-            box-shadow: 0 0 12px rgba(0, 112, 243, 0.5);
+            border-color: var(--accent);
+            box-shadow: 0 0 10px rgba(0,112,243,0.4);
         }
 
         .desktop-sync-btn {
-            display: inline-block;
+            display: none;
         }
 
-        .mobile-search-area { display: block; margin-bottom: 6px; flex-shrink: 0; }
+        @media (min-width: 768px) {
+            .desktop-sync-btn {
+                display: inline-block;
+            }
+        }
+
+        .mobile-nav-tabs {
+            display: flex; width: 100%; background: var(--surface); border: 1px solid var(--border);
+            border-radius: 10px; z-index: 9; justify-content: space-between; padding: 4px;
+            gap: 3px; flex-shrink: 0;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+        .mob-tab-btn {
+            background: rgba(255, 255, 255, 0.03); 
+            border: 1.5px solid var(--grey-border); 
+            color: var(--text-p); 
+            font-size: 7.5px;
+            font-weight: 900; 
+            text-transform: uppercase; 
+            cursor: pointer; 
+            flex: 1; 
+            padding: 8px 1px;
+            border-radius: 8px; 
+            text-align: center; 
+            transition: 0.3s;
+            position: relative;
+        }
+        .mob-tab-btn.active { 
+            background: var(--accent); 
+            border-color: #fff; 
+            color: #fff; 
+            box-shadow: 0 0 12px rgba(0, 112, 243, 0.6);
+        }
+
+        .admin-badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background: var(--danger);
+            color: #fff;
+            font-size: 7px;
+            font-weight: 900;
+            padding: 2px 4px;
+            border-radius: 50%;
+            display: none;
+            box-shadow: 0 0 8px rgba(255,77,77,0.6);
+        }
+
+        .mobile-search-area { display: block; margin-bottom: 4px; flex-shrink: 0; }
         .print-header { display: none; }
 
         @media print {
@@ -637,7 +527,7 @@
             .main-view { background: white !important; border: none !important; overflow: visible !important; height: auto !important; margin: 0 !important; }
             .table-container { overflow: visible !important; height: auto !important; }
             table { width: 100% !important; border-collapse: collapse !important; }
-            th, td { border: 1px solid #999 !important; color: black !important; padding: 6px !important; font-size: 10px !important; }
+            th, td { border: 1px solid #999 !important; color: black !important; padding: 5px !important; font-size: 10px !important; }
             th { background: #eee !important; color: black !important; }
         }
     </style> 
@@ -646,20 +536,9 @@
 
 <div id="pullToRefreshIndicator">🔄 Puxe mais para atualizar...</div>
 
-<!-- Modal Customizado Global Unificado -->
-<div id="gplCustomModal">
-    <div class="gpl-modal-box">
-        <div class="gpl-modal-title" id="gplModalTitle">⚠️ AVISO GPL</div>
-        <div class="gpl-modal-msg" id="gplModalMsg">Mensagem do sistema</div>
-        <div class="gpl-modal-buttons" id="gplModalButtons">
-            <button type="button" onclick="fecharModalGPL(true)" class="auth-btn" style="margin-top:0; padding:9px;">OK</button>
-        </div>
-    </div>
-</div>
-
 <div id="loginScreen"> 
     <div class="login-box"> 
-        <div style="background:var(--success); color:black; padding:10px; border-radius:12px; font-weight:900; margin-bottom:15px;">GPL</div> 
+        <div style="background:var(--success); color:black; padding:10px; border-radius:12px; font-weight:900; margin-bottom:15px; box-shadow: 0 0 15px rgba(0,255,136,0.4);">GPL</div> 
         
         <div class="login-tabs-header">
             <button class="login-tab-btn active" id="btnPaneLogin" onclick="switchLoginPane('loginPane')">Acessar</button>
@@ -681,7 +560,7 @@
             <input type="password" id="regPass" placeholder="Senha"> 
             <input type="password" id="regPassConfirm" placeholder="Confirmar Senha"> 
             <input type="text" id="regRecovery" placeholder="Palavra/Dica de recuperar senha"> 
-            <button onclick="handleCreateAccount()" class="auth-btn" style="background: var(--accent); color: white;">REGISTRAR</button> 
+            <button onclick="handleCreateAccount()" class="auth-btn" style="background: var(--accent); color: white; box-shadow: 0 0 15px rgba(0,112,243,0.4);">REGISTRAR</button> 
         </div>
     </div> 
 </div>
@@ -689,36 +568,44 @@
 <div class="container"> 
     <header> 
         <div style="display: flex; align-items: center; gap: 12px;">
-            <div style="background:var(--success); color:black; padding:8px 14px; border-radius:10px; font-weight:900; font-size:13px;">GPL</div> 
-            <span style="font-size: 13px; font-weight: 800; color: var(--success); text-transform: uppercase;" id="headerUserDisplay"></span>
+            <div style="background:var(--success); color:black; padding:8px 14px; border-radius:10px; font-weight:900; font-size:13px; box-shadow: 0 0 12px rgba(0,255,136,0.4);">GPL</div> 
+            <span style="font-size: 13px; font-weight: 800; color: var(--success); text-shadow: 0 0 8px rgba(0,255,136,0.3); text-transform: uppercase;" id="headerUserDisplay"></span>
         </div>
         <div style="display: flex; gap: 8px; align-items: center; position: relative;"> 
-            <button class="header-btn" onclick="toggleMonthGrid(event)" id="currentMonthDisplay" style="background: var(--accent); border-color: var(--accent);">MÊS</button> 
+            <button class="header-btn" onclick="toggleMonthGrid(event)" id="currentMonthDisplay" style="background: var(--accent); border-color: var(--accent); box-shadow: 0 0 10px rgba(0,112,243,0.4);">MÊS</button> 
             <div id="monthGrid" class="month-grid"></div> 
             
             <button class="header-btn" onclick="window.print()">IMPRIMIR</button> 
-            <button class="header-btn desktop-sync-btn" onclick="atualizarDadosManualmente(this)" title="Atualizar dados da nuvem" style="background: var(--success); color: black;">🔄</button>
+            <button class="header-btn desktop-sync-btn" onclick="atualizarDadosManualmente(this)" title="Atualizar dados da nuvem" style="background: var(--success); color: black; box-shadow: 0 0 10px rgba(0,255,136,0.3);">🔄</button>
         </div> 
     </header> 
+
+    <div id="progArea" class="prog-area"> 
+        <div style="width:100%; background:#1e2633; height:8px; border-radius:10px; overflow:hidden; border:1px solid var(--border); margin-bottom:3px; box-shadow: inset 0 0 6px rgba(0,0,0,0.5);"> 
+            <div id="barFill" style="height:100%; width:0%; background:linear-gradient(90deg, var(--accent), var(--success)); transition:0.8s; box-shadow: 0 0 10px var(--success);"></div> 
+        </div> 
+        <div style="display:flex; justify-content:space-between; font-size:10px; font-weight:bold; color:var(--text-p); text-transform: uppercase;"> 
+            <span id="barTxt">Progresso Meta: 0 / 8.000</span> 
+            <span id="barPerc" style="color:var(--success); text-shadow: 0 0 8px rgba(0,255,136,0.4)">0%</span> 
+        </div> 
+    </div> 
 
     <nav class="mobile-nav-tabs no-print" id="mainNavTabs">
         <button class="mob-tab-btn active" id="btnTabDashboard" onclick="switchMobileTab('tabDashboard', this)">📊 Dash</button>
         <button class="mob-tab-btn" id="btnTabFormulario" onclick="switchMobileTab('tabFormulario', this)">➕ Novo</button>
-        <button class="mob-tab-btn" id="btnTabTabela" onclick="switchMobileTab('tabTabela', this)">📋 Registros</button>
-        <button class="mob-tab-btn" id="btnTabNL" onclick="switchMobileTab('tabNL', this)">🔍 Notas (NL)</button>
-        <button class="mob-tab-btn" id="btnTabCal" onclick="switchMobileTab('tabCal', this)">📅 Calendário</button>
-        <button class="mob-tab-btn" id="btnTabRelatorio" onclick="switchMobileTab('tabRelatorio', this)">📑 Relatório</button>
-        <button class="mob-tab-btn" id="btnTabAdmin" onclick="switchMobileTab('tabAdmin', this)" style="display:none;">👑 Admin <span id="adminNotificationBadge" class="admin-badge">0</span></button>
-        
-        <button class="mob-tab-btn" onclick="fazerLogoutApp()" style="margin-top: auto; border-color: rgba(255,77,77,0.4); color: var(--danger);">🚪 Sair</button>
+        <button class="mob-tab-btn" id="btnTabTabela" onclick="switchMobileTab('tabTabela', this)">📋 Reg</button>
+        <button class="mob-tab-btn" id="btnTabNL" onclick="switchMobileTab('tabNL', this)">🔍 NL</button>
+        <button class="mob-tab-btn" id="btnTabCal" onclick="switchMobileTab('tabCal', this)">📅 Cal</button>
+        <button class="mob-tab-btn" id="btnTabRelatorio" onclick="switchMobileTab('tabRelatorio', this)">📑 Relat.</button>
+        <button class="mob-tab-btn" id="btnTabAdmin" onclick="switchMobileTab('tabAdmin', this)" style="display:none;">👑 Adm<span id="adminNotificationBadge" class="admin-badge">0</span></button>
     </nav>
 
     <div class="content-wrap" id="mainContentWrap"> 
         <div class="top-dashboard mobile-tab-content active-tab" id="tabDashboard">
             <div class="observations no-print"> 
-                <div class="obs-item"><span class="dot" style="background:var(--success)"></span> Bônus de R$ 0,20 por cada leitura excedente a 8000 leituras</div> 
-                <div class="obs-item"><span class="dot" style="background:var(--danger)"></span> Desconto: R$ 1,50 p/ impedimento</div> 
-                <div class="obs-item"><span class="dot" style="background:var(--warning)"></span> Qualidade: Meta ≤ 0,50%</div> 
+                <div class="obs-item"><span class="dot" style="background:var(--success); color:var(--success);"></span> Bônus de R$ 0,20 por cada leitura excedente a 8000 leituras</div> 
+                <div class="obs-item"><span class="dot" style="background:var(--danger); color:var(--danger);"></span> Desconto: R$ 1,50 p/ impedimento</div> 
+                <div class="obs-item"><span class="dot" style="background:var(--warning); color:var(--warning);"></span> Qualidade: Meta ≤ 0,50%</div> 
             </div> 
 
             <div id="saturdayAlertContainer" style="display:none;" class="no-print"></div>
@@ -730,24 +617,15 @@
                 <div class="summary-card neon-bonus"><p>Bônus</p><h2 id="totB">R$ 0,00</h2></div> 
                 <div class="summary-card neon-descontos"><p>Descontos</p><h2 id="totD">R$ 0,00</h2></div> 
                 <div class="summary-card neon-receber"><p>Receber Mês</p><h2 id="totNet">R$ 0,00</h2></div> 
-                <div class="summary-card neon-acumulado"><p>Acumulado</p><h2 id="totAcumulado">R$ 0,00</h2></div> 
+                <div class="summary-card neon-acumulado"><p>Acumulado Ano</p><h2 id="totAcumulado">R$ 0,00</h2></div> 
             </div>
 
+            <!-- Gráfico Interativo com Leituras e Impedimentos no Tooltip -->
             <div class="chart-container-box">
-                <div class="chart-header-title">📊 Desempenho de Leituras e Impedimentos por Razão (Mês Atual)</div>
-                <div style="position: relative; height: 190px; width: 100%;">
+                <div class="chart-header-title">📊 Desempenho de Leituras e Impedimentos por Razão</div>
+                <div style="position: relative; height: 125px; width: 100%;">
                     <canvas id="gplChart"></canvas>
                 </div>
-            </div>
-
-            <div id="progArea" class="prog-area" style="margin-top: 2px;"> 
-                <div style="width:100%; background:#1e2633; height:8px; border-radius:10px; overflow:hidden; border:1px solid var(--border); margin-bottom:3px;"> 
-                    <div id="barFill" style="height:100%; width:0%; background:linear-gradient(90deg, var(--accent), var(--success)); transition:0.8s;"></div> 
-                </div> 
-                <div style="display:flex; justify-content:space-between; font-size:10px; font-weight:bold; color:var(--text-p); text-transform: uppercase;"> 
-                    <span id="barTxt">Progresso Meta: 0 / 8.000</span> 
-                    <span id="barPerc" style="color:var(--success)">0%</span> 
-                </div> 
             </div>
         </div>
 
@@ -771,8 +649,8 @@
                     <button type="button" onclick="limparAno()" class="btn-clear-year">Limpar todos os dados</button> 
                     <div class="backup-row">
                         <button type="button" onclick="exportarBackup()" class="btn-backup">Backup</button>
-                        <button type="button" onclick="document.getElementById('inputRestaurarBackup').click()" class="btn-import">Restaurar</button>
-                        <input type="file" id="inputRestaurarBackup" accept=".json" style="display: none;" onchange="restaurarBackup(event)">
+                        <button type="button" onclick="dispararImportacao()" class="btn-import">Restaurar</button>
+                        <input type="file" id="importFile" accept="application/json,.json,.txt" style="display:none;" onchange="importarBackup(event)">
                     </div>
                 </div> 
             </div> 
@@ -816,20 +694,16 @@
         </div>
 
         <div class="mobile-tab-content" id="tabCal" style="flex-direction: column;">
-            <div class="mobile-search-area">
-                <input type="text" id="searchCal" placeholder="Pesquisar razão no calendário..." oninput="renderizarCalendario(this.value)" style="border-color: var(--success); margin-bottom: 0;">
+            <div class="mobile-search-area" style="display: flex; gap: 6px; align-items: center; margin-bottom: 4px;">
+                <input type="text" id="searchCal" placeholder="Pesquisar razão..." oninput="renderizarCalendario(this.value)" style="border-color: var(--success); margin-bottom: 0; flex: 1;">
             </div>
             <div class="main-view">
                 <div class="table-container">
-                    <table> 
-                        <thead> 
-                            <tr>
-                                <th style="text-align: left; padding-left: 14px;">Razão</th>
-                                <th style="text-align: left;">Data da Próxima Leitura</th>
-                                <th style="text-align: center;">Status</th>
-                            </tr> 
-                        </thead> 
-                        <tbody id="calCorpo"></tbody> 
+                    <table>
+                        <thead>
+                            <tr><th style="text-align: left; padding-left: 10px; width: 30%;">Razão</th><th style="text-align: left; width: 45%;">Data da Próxima Leitura</th><th style="text-align: center; width: 25%;">Status</th></tr>
+                        </thead>
+                        <tbody id="calCorpo"></tbody>
                     </table>
                 </div>
             </div>
@@ -845,16 +719,23 @@
                 <div>
                     <span style="font-weight: 800; color: transparent; font-size: 10.5px; display: block; margin-bottom: 4px;">AÇÃO</span>
                     <input type="file" id="inputTxtOcorrencia" accept=".txt,.csv" style="display:none" onchange="processarArquivoTxtSelecionado(this)">
-                    <button type="button" onclick="document.getElementById('inputTxtOcorrencia').click()" class="header-btn" style="background: var(--success); color: #000; padding: 10px 14px; font-weight: 900;">📂 Importar</button>
+                    <button type="button" onclick="document.getElementById('inputTxtOcorrencia').click()" class="auth-btn" style="width: auto; margin-top: 0; padding: 8px 14px; font-size: 11px; background: var(--purple); color: #fff; box-shadow: 0 0 12px rgba(156,39,176,0.4);">
+                        📂 Importar
+                    </button>
                 </div>
             </div>
             <div class="mobile-search-area" style="margin-top: 4px;">
                 <input type="text" id="searchMedidorRelatorio" placeholder="Pesquisar por número do medidor..." oninput="buscarMedidorNoRelatorio()" style="border-color: var(--success); margin-bottom: 0;">
             </div>
-            <div class="main-view" style="margin-top: 6px;">
-                <div id="relatorioCardsCorpo" class="cards-container">
+            <div class="main-view" style="margin-top: 6px; position: relative; display: flex; flex-direction: column; overflow: hidden;">
+                <!-- Botão de Voltar Discreto e Fixo no Topo (Sem Bloco Azul) -->
+                <div id="relatorioBarraFicaTopo" style="display: none; flex-shrink: 0; z-index: 10; justify-content: flex-end; align-items: center; background: var(--surface); padding: 8px 12px; border-bottom: 1px solid var(--border);">
+                    <button type="button" onclick="renderizarTabelaRelatorioAtual()" class="header-btn" style="background: #1e2633; color: #fff; padding: 6px 14px; font-size: 10.5px; border-color: var(--grey-border);">⬅ Voltar</button>
+                </div>
+                <!-- Container de Scroll dos Cards -->
+                <div id="relatorioCardsCorpo" class="cards-container" style="flex-grow: 1; overflow-y: auto; height: 100%;">
                     <div style="grid-column: 1 / -1; text-align: center; color: var(--text-p); padding: 30px; font-weight: 700; font-size: 12px;">
-                        Carregue um arquivo TXT ou digite o número do medidor para visualizar as leituras e correções.
+                        Carregue um arquivo TXT ou digite o número do medidor para visualizar as leituras e histórico.
                     </div>
                 </div>
             </div>
@@ -942,7 +823,6 @@
 
             return { sucesso: true, dados: dadosUsuario };
         } catch (e) {
-            console.error("Erro no login:", e);
             return { sucesso: false, erro: "Erro de conexão com a nuvem." };
         }
     };
@@ -952,19 +832,20 @@
         const userTrim = user.trim();
         const userUpper = userTrim.toUpperCase();
         const docRef = doc(dbCloud, "usuarios", userUpper);
-        setDoc(docRef, { dados: dataRegistros }, { merge: true }).catch(e => console.error("Erro ao salvar registros:", e));
+        setDoc(docRef, { dados: dataRegistros }, { merge: true }).catch(() => {});
     };
 
     window.cloudSaveCalendario = function(user, calendario) {
         if (!user) return;
         const userTrim = user.trim();
         const userUpper = userTrim.toUpperCase();
-        const docRef = doc(dbCloud, "usuarios", userUpper);
-        setDoc(docRef, { calendario: calendario }, { merge: true }).catch(e => console.error("Erro ao salvar calendário:", e));
-
-        if (userUpper === "ADMIN") {
+        
+        if (userUpper === "ADMIN" || currentIsAdmin) {
             setDoc(doc(dbCloud, "config", "calendarioGlobal"), { calendario: calendario }, { merge: true }).catch(() => {});
         }
+        
+        const docRef = doc(dbCloud, "usuarios", userUpper);
+        setDoc(docRef, { calendario: calendario }, { merge: true }).catch(() => {});
     };
 
     window.cloudSaveRelatorioRazao = async function(user, razao, mesAnoKey, dadosRelatorioMes) {
@@ -992,9 +873,7 @@
                 meses: mesesMap,
                 atualizadoEm: new Date()
             });
-        } catch (e) {
-            console.error("Erro ao salvar relatório:", e);
-        }
+        } catch (e) {}
     };
 
     window.cloudLoadAllRelatoriosTxt = async function(user) {
@@ -1007,15 +886,10 @@
                 const data = docSnap.data();
                 if (data.usuario === userUpper && data.razao && data.meses) {
                     relatoriosMap[data.razao] = data.meses;
-                } else if (data.usuario === userUpper && data.razao && data.conteudo) {
-                    if (!relatoriosMap[data.razao]) relatoriosMap[data.razao] = {};
-                    let mesAnoKey = `${viewDate.getFullYear()}-${String(viewDate.getMonth() + 1).padStart(2, '0')}`;
-                    relatoriosMap[data.razao][mesAnoKey] = data.conteudo;
                 }
             });
             return relatoriosMap;
         } catch (e) {
-            console.error("Erro ao carregar relatórios:", e);
             return {};
         }
     };
@@ -1042,9 +916,7 @@
                 userData.relatorios = relatoriosTxtMap;
             }
             return userData;
-        } catch (e) {
-            console.error("Erro ao carregar tudo:", e);
-        }
+        } catch (e) {}
         return null;
     };
 
@@ -1070,7 +942,6 @@
             });
             return true;
         } catch (e) {
-            console.error("Erro ao salvar credenciais:", e);
             return false;
         }
     };
@@ -1084,7 +955,6 @@
             });
             return lista;
         } catch (e) {
-            console.error("Erro ao listar utilizadores:", e);
             return [];
         }
     };
@@ -1099,7 +969,6 @@
             await setDoc(docRef, { ativo: statusAtivo }, { merge: true });
             return true;
         } catch (e) {
-            console.error("Erro ao atualizar status do utilizador:", e);
             return false;
         }
     };
@@ -1245,60 +1114,6 @@
     const msNomesCompletos = ["JANEIRO", "FEVEREIRO", "MARÇO", "ABRIL", "MAIO", "JUNHO", "JULHO", "AGOSTO", "SETEMBRO", "OUTUBRO", "NOVEMBRO", "DEZEMBRO"]; 
     const fM = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); 
 
-    /* Sistema de Alerta Customizado Unificado */
-    function mostrarAvisoGPL(mensagem, titulo = "⚠️ AVISO GPL", tipo = "aviso") {
-        return new Promise((resolve) => {
-            const modal = document.getElementById('gplCustomModal');
-            const titleEl = document.getElementById('gplModalTitle');
-            const msgEl = document.getElementById('gplModalMsg');
-            const btnContainer = document.getElementById('gplModalButtons');
-
-            titleEl.innerText = titulo;
-            msgEl.innerText = mensagem;
-
-            let corBtn = tipo === 'sucesso' ? 'var(--success)' : tipo === 'erro' ? 'var(--danger)' : 'var(--accent)';
-            let corTextoBtn = tipo === 'sucesso' ? '#020408' : '#fff';
-
-            btnContainer.innerHTML = `<button type="button" id="gplModalOkBtn" class="auth-btn" style="background: ${corBtn}; color: ${corTextoBtn}; margin-top:0; padding:9px;">OK</button>`;
-            
-            modal.style.display = 'flex';
-
-            document.getElementById('gplModalOkBtn').onclick = () => {
-                modal.style.display = 'none';
-                resolve(true);
-            };
-        });
-    }
-
-    function mostrarConfirmacaoGPL(mensagem, titulo = "❓ CONFIRMAÇÃO") {
-        return new Promise((resolve) => {
-            const modal = document.getElementById('gplCustomModal');
-            const titleEl = document.getElementById('gplModalTitle');
-            const msgEl = document.getElementById('gplModalMsg');
-            const btnContainer = document.getElementById('gplModalButtons');
-
-            titleEl.innerText = titulo;
-            msgEl.innerText = mensagem;
-
-            btnContainer.innerHTML = `
-                <button type="button" id="gplModalNaoBtn" class="auth-btn" style="background: rgba(255,77,77,0.15); color: var(--danger); border: 1.5px solid var(--danger); margin-top:0; padding:9px;">NÃO</button>
-                <button type="button" id="gplModalSimBtn" class="auth-btn" style="background: var(--success); color: #020408; margin-top:0; padding:9px;">SIM</button>
-            `;
-            
-            modal.style.display = 'flex';
-
-            document.getElementById('gplModalSimBtn').onclick = () => {
-                modal.style.display = 'none';
-                resolve(true);
-            };
-
-            document.getElementById('gplModalNaoBtn').onclick = () => {
-                modal.style.display = 'none';
-                resolve(false);
-            };
-        });
-    }
-
     function dispararSalvamentoRegistros() {
         if (currentUser && window.cloudSaveRegistros) {
             window.cloudSaveRegistros(currentUser, db);
@@ -1357,10 +1172,7 @@
     }
 
     async function atualizarDadosManualmente(btnElement = null) {
-        if (!currentUser) {
-            await mostrarAvisoGPL("Nenhum utilizador logado.");
-            return;
-        }
+        if (!currentUser) return alert("Nenhum utilizador logado.");
         
         let iconeOriginal = "";
         if (btnElement) {
@@ -1384,12 +1196,11 @@
                 
                 return true;
             } else {
-                await mostrarAvisoGPL("Nenhum dado encontrado na nuvem para este utilizador.");
+                alert("Nenhum dado encontrado na nuvem para este utilizador.");
                 return false;
             }
         } catch (error) {
-            console.error("Erro ao atualizar:", error);
-            await mostrarAvisoGPL("Erro de conexão com a nuvem. Verifique a conexão.", "❌ ERRO", "erro");
+            alert("Erro de conexão com a nuvem. Verifique a conexão.");
             return false;
         } finally {
             if (btnElement) {
@@ -1496,15 +1307,14 @@
     }
 
     async function alternarAtivacaoUsuario(nomeUsuario, novoStatus) {
-        const confirmar = await mostrarConfirmacaoGPL(`Deseja realmente ${novoStatus ? 'APROVAR' : 'BLOQUEAR'} o acesso do utilizador ${nomeUsuario}?`);
-        if (!confirmar) return;
+        if (!confirm(`Deseja realmente ${novoStatus ? 'APROVAR' : 'BLOQUEAR'} o acesso do utilizador ${nomeUsuario}?`)) return;
 
         let sucesso = await window.cloudSetUserActive(nomeUsuario, novoStatus);
         if (sucesso) {
-            await mostrarAvisoGPL(`Utilizador ${nomeUsuario} atualizado com sucesso!`, "✅ SUCESSO", "sucesso");
+            alert(`Utilizador ${nomeUsuario} atualizado com sucesso!`);
             carregarListaUtilizadoresPendentes(document.getElementById('searchAdminUsers').value);
         } else {
-            await mostrarAvisoGPL("Erro ao atualizar status do utilizador.", "❌ ERRO", "erro");
+            alert("Erro ao atualizar status do utilizador.");
         }
     }
 
@@ -1682,9 +1492,123 @@
         renderizarTabelaRelatorioAtual();
     }
 
-    window.renderizarTabelaRelatorioAtual = function(filtroForçadoNL = null) {
+    window.filtrarRelatorioPorNL = function(numeroNL) {
+        const razaoSelecionada = document.getElementById('selectRazaoRelatorio').value;
+        const mesAnoKey = `${viewDate.getFullYear()}-${String(viewDate.getMonth() + 1).padStart(2, '0')}`;
+        
+        const razaoMeses = (relatorioRazoesDb && relatorioRazoesDb[razaoSelecionada]) ? relatorioRazoesDb[razaoSelecionada] : {};
+        const dadosRegistro = razaoMeses[mesAnoKey] ? razaoMeses[mesAnoKey] : null;
+
+        if (!dadosRegistro || !dadosRegistro.medidores) return;
+        
+        const corpo = document.getElementById('relatorioCardsCorpo');
+        const barraTopo = document.getElementById('relatorioBarraFicaTopo');
+        if(barraTopo) barraTopo.style.display = 'flex';
+        
+        let mapaUnificado = {};
+        dadosRegistro.medidores.forEach(item => {
+            let medKey = String(item.medidor || "").trim().toUpperCase();
+            if (!medKey) return;
+
+            if (!mapaUnificado[medKey]) {
+                mapaUnificado[medKey] = {
+                    medidor: medKey,
+                    oc: item.oc || "N/A",
+                    listaRgs: []
+                };
+            }
+            if (item.oc && item.oc !== "N/A") {
+                mapaUnificado[medKey].oc = item.oc;
+            }
+            let rgNome = String(item.tipoRgZ3 || "03").trim().toUpperCase();
+            let leituraVal = Number(item.leit) || 0;
+
+            let rgExistente = mapaUnificado[medKey].listaRgs.find(r => r.rg === rgNome);
+            if (rgExistente) {
+                if (leituraVal > 0) rgExistente.leit = leituraVal;
+            } else {
+                mapaUnificado[medKey].listaRgs.push({ rg: rgNome, leit: leituraVal });
+            }
+        });
+
+        let medidoresFiltradosDestaNL = [];
+        Object.values(mapaUnificado).forEach(dados => {
+            if (String(dados.oc).trim() === String(numeroNL).trim()) {
+                dados.listaRgs.forEach(rgObj => {
+                    medidoresFiltradosDestaNL.push({
+                        medidor: dados.medidor,
+                        oc: dados.oc,
+                        leit: rgObj.leit,
+                        tipoRgZ3: rgObj.rg
+                    });
+                });
+                if (dados.listaRgs.length === 0) {
+                    medidoresFiltradosDestaNL.push({
+                        medidor: dados.medidor,
+                        oc: dados.oc,
+                        leit: 0,
+                        tipoRgZ3: "03"
+                    });
+                }
+            }
+        });
+
+        let mapaUnificadoFinal = {};
+        medidoresFiltradosDestaNL.forEach(item => {
+            let med = String(item.medidor || "").trim().toUpperCase();
+            if (!med) return;
+            if (!mapaUnificadoFinal[med]) mapaUnificadoFinal[med] = { medidor: med, oc: item.oc || "N/A", listaRgs: [] };
+            if (item.oc && item.oc !== "N/A") mapaUnificadoFinal[med].oc = item.oc;
+            let rg = String(item.tipoRgZ3 || "03").trim().toUpperCase();
+            let leit = Number(item.leit) || 0;
+            let rgEx = mapaUnificadoFinal[med].listaRgs.find(r => r.rg === rg);
+            if (rgEx) { if (leit > 0) rgEx.leit = leit; } 
+            else mapaUnificadoFinal[med].listaRgs.push({ rg: rg, leit: leit });
+        });
+
+        const chaves = Object.keys(mapaUnificadoFinal);
+        if (chaves.length === 0) {
+            corpo.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; color: var(--text-p); padding: 30px;">Nenhum medidor para a NL ${numeroNL}.</div>`;
+            return;
+        }
+
+        corpo.innerHTML = chaves.map(medKey => {
+            let dados = mapaUnificadoFinal[medKey];
+            let infoNL = notasDeLeitura.find(n => n.numero === dados.oc) || { status: 'Ocorrência', detalhe: dados.oc };
+            let isComLeitura = infoNL.status.toLowerCase().includes('com');
+            
+            let rgsHtml = dados.listaRgs.map(r => `
+                <div style="display: flex; justify-content: space-between; background: rgba(255,255,255,0.03); padding: 5px 8px; border-radius: 6px; margin-top: 3px; font-size: 10px;">
+                    <span style="color: #e1bee7; font-weight: bold;">RG ${r.rg}</span>
+                    <span style="color: var(--success); font-weight: bold;">Leitura: ${r.leit.toLocaleString()}</span>
+                </div>
+            `).join('');
+
+            return `
+                <div class="medidor-card" style="max-width: 100%;">
+                    <div class="oc-card-header" style="border-bottom: 1px solid var(--border); padding-bottom: 4px; margin-bottom: 6px;">
+                        <span class="oc-code" style="font-size: 0.95rem; color: var(--success);">Medidor: ${dados.medidor}</span>
+                        <span style="font-size: 9.5px; font-weight: bold; color: var(--text-p);">${razaoSelecionada}</span>
+                    </div>
+                    <div style="background: rgba(0, 112, 243, 0.08); border: 1px solid var(--accent); border-radius: 8px; padding: 8px; margin-bottom: 6px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px;">
+                            <span style="font-weight: 900; color: var(--warning); font-size: 11px;">NL: ${dados.oc}</span>
+                            <span class="oc-status" style="background: ${isComLeitura ? 'rgba(0,255,136,0.1)' : 'rgba(255,204,0,0.1)'}; color: ${isComLeitura ? 'var(--success)' : 'var(--warning)'}; border: 1px solid ${isComLeitura ? 'var(--success)' : 'var(--warning)'};">${infoNL.status}</span>
+                        </div>
+                        <div style="font-size: 10px; color: var(--text-h); font-weight: 600;">${infoNL.detalhe}</div>
+                    </div>
+                    <div>${rgsHtml}</div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function renderizarTabelaRelatorioAtual() {
         const razaoSelecionada = document.getElementById('selectRazaoRelatorio').value;
         const corpo = document.getElementById('relatorioCardsCorpo');
+        const barraTopo = document.getElementById('relatorioBarraFicaTopo');
+        if(barraTopo) barraTopo.style.display = 'none';
+
         const termoBusca = (document.getElementById('searchMedidorRelatorio')?.value || '').trim().toUpperCase();
         if (!corpo) return;
 
@@ -1700,39 +1624,33 @@
             return;
         }
 
-        let mapaUnificado = {};
-        dadosRegistro.medidores.forEach(item => {
-            let med = String(item.medidor || "").trim().toUpperCase();
-            if (!med) return;
-            if (!mapaUnificado[med]) {
-                mapaUnificado[med] = { medidor: med, oc: item.oc || "N/A", listaRgs: [] };
-            }
-            if (item.oc && item.oc !== "N/A") {
-                mapaUnificado[med].oc = item.oc;
-            }
-            let rg = String(item.tipoRgZ3 || "03").trim().toUpperCase();
-            let leit = Number(item.leit) || 0;
-            let rgEx = mapaUnificado[med].listaRgs.find(r => r.rg === rg);
-            if (rgEx) {
-                if (leit > 0) rgEx.leit = leit;
-            } else {
-                mapaUnificado[med].listaRgs.push({ rg: rg, leit: leit });
-            }
-        });
+        if (termoBusca) {
+            let mapaUnificado = {};
+            dadosRegistro.medidores.forEach(item => {
+                let med = String(item.medidor || "").trim().toUpperCase();
+                if (!med) return;
+                if (!mapaUnificado[med]) {
+                    mapaUnificado[med] = { medidor: med, oc: item.oc || "N/A", listaRgs: [] };
+                }
+                if (item.oc && item.oc !== "N/A") {
+                    mapaUnificado[med].oc = item.oc;
+                }
+                let rg = String(item.tipoRgZ3 || "03").trim().toUpperCase();
+                let leit = Number(item.leit) || 0;
+                let rgEx = mapaUnificado[med].listaRgs.find(r => r.rg === rg);
+                if (rgEx) {
+                    if (leit > 0) rgEx.leit = leit;
+                } else {
+                    mapaUnificado[med].listaRgs.push({ rg: rg, leit: leit });
+                }
+            });
 
-        let chavesMedidores = [];
+            const chavesMedidores = Object.keys(mapaUnificado).filter(med => med.includes(termoBusca));
 
-        if (filtroForçadoNL !== null) {
-            chavesMedidores = Object.keys(mapaUnificado).filter(med => String(mapaUnificado[med].oc).trim() === String(filtroForçadoNL).trim());
-        } else if (termoBusca) {
-            chavesMedidores = Object.keys(mapaUnificado).filter(med => med.includes(termoBusca));
-        }
-
-        if (filtroForçadoNL !== null || termoBusca !== '') {
             if (chavesMedidores.length === 0) {
                 corpo.innerHTML = `
                     <div style="grid-column: 1 / -1; text-align: center; color: var(--text-p); padding: 30px; font-weight: 700; font-size: 12px;">
-                        ${filtroForçadoNL !== null ? `Nenhum medidor encontrado para a NL ${filtroForçadoNL}.` : `Nenhum medidor encontrado com o número "${termoBusca}".`}
+                        Nenhum medidor encontrado com o número "${termoBusca}" nesta razão.
                     </div>`;
                 return;
             }
@@ -1742,21 +1660,9 @@
             const mesAnteriorKey = indiceAtual > 0 ? mesesDisponiveis[indiceAtual - 1] : null;
             const dadosMesAnterior = mesAnteriorKey ? razaoMeses[mesAnteriorKey] : null;
 
-            let cabecalhoFixoHtml = '';
-            if (filtroForçadoNL !== null) {
-                cabecalhoFixoHtml = `
-                    <div style="grid-column: 1 / -1; position: sticky; top: 0; z-index: 10; display: flex; justify-content: space-between; align-items: center; background: rgba(0,112,243,0.95); backdrop-filter: blur(6px); padding: 10px 14px; border-radius: 10px; border: 1px solid var(--accent); margin-bottom: 6px; box-shadow: 0 4px 15px rgba(0,0,0,0.6);">
-                        <span style="font-weight: 900; font-size: 11.5px; color: #fff;">Filtrado pela NL ${filtroForçadoNL} (${chavesMedidores.length} medidores)</span>
-                        <button type="button" onclick="renderizarTabelaRelatorioAtual()" class="header-btn" style="background: #05080f; color: #fff; padding: 5px 12px; font-size: 10px; border-color: #fff;">⬅ Voltar</button>
-                    </div>
-                `;
-            }
-
-            corpo.innerHTML = cabecalhoFixoHtml + chavesMedidores.map(medKey => {
+            corpo.innerHTML = chavesMedidores.map(medKey => {
                 const dados = mapaUnificado[medKey];
                 let ultimoNL = dados.oc;
-                const infoNL = notasDeLeitura.find(n => n.numero === ultimoNL) || { status: 'Ocorrência', detalhe: ultimoNL };
-                const isComLeitura = infoNL.status.toLowerCase().includes('com');
 
                 const linhasRgsHtml = dados.listaRgs.map(objRg => {
                     let rgAtual = objRg.rg;
@@ -1831,6 +1737,9 @@
                     `;
                 }).join('');
 
+                const infoNL = notasDeLeitura.find(n => n.numero === ultimoNL) || { status: 'Ocorrência', detalhe: ultimoNL };
+                const isComLeitura = infoNL.status.toLowerCase().includes('com');
+
                 return `
                     <div class="medidor-card" style="max-width: 100%;">
                         <div class="oc-card-header" style="border-bottom: 1px solid var(--border); padding-bottom: 4px; margin-bottom: 6px;">
@@ -1877,7 +1786,7 @@
             const isComLeitura = infoNL.status.toLowerCase().includes('com');
 
             return `
-                <div class="oc-card" onclick="renderizarTabelaRelatorioAtual('${oc}')" style="cursor: pointer;" title="Clique para ver os medidores desta NL">
+                <div class="oc-card" onclick="filtrarRelatorioPorNL('${oc}')">
                     <div class="oc-card-header">
                         <span class="oc-code">NL ${oc}</span>
                         <span class="oc-count">${typeof qtd === 'number' ? qtd.toLocaleString() : qtd}</span>
@@ -1903,34 +1812,35 @@
             .map(razao => {
                 const dataSalva = calendarioDb[razao] || '';
                 let dataFormatadaExibicao = "Não definida";
-                let statusBadge = `<span style="background: rgba(255,255,255,0.06); color: var(--text-p); padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: bold;">Pendente</span>`;
-                
+                let badgeStatus = `<span style="color: var(--text-p); font-size: 10px;">-</span>`;
+
                 if (dataSalva) {
                     const [ano, mes, dia] = dataSalva.split('-');
                     const dataObj = new Date(ano, mes - 1, dia);
                     dataFormatadaExibicao = `${dia}/${mes}/${ano}`;
-                    
                     if (dataObj.getDay() === 6) {
-                        statusBadge = `<span style="background: rgba(255, 204, 0, 0.15); color: var(--warning); border: 1px solid var(--warning); padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: bold;">⚠️ Sábado</span>`;
+                        badgeStatus = `<span style="background: rgba(255,204,0,0.15); color: var(--warning); padding: 2px 6px; border-radius: 4px; font-size: 9.5px; font-weight: bold;">⚠️ Sábado</span>`;
                     } else {
-                        statusBadge = `<span style="background: rgba(0, 255, 136, 0.15); color: var(--success); border: 1px solid var(--success); padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: bold;">Definida</span>`;
+                        badgeStatus = `<span style="background: rgba(0,255,136,0.15); color: var(--success); padding: 2px 6px; border-radius: 4px; font-size: 9.5px; font-weight: bold;">Definida</span>`;
                     }
                 }
 
                 return `
                     <tr>
-                        <td style="font-weight: 900; color: var(--accent); text-align: left; padding-left: 14px;">${razao}</td>
-                        <td style="text-align: left;">
-                            ${currentIsAdmin ? `
-                                <input type="date" value="${dataSalva}" onchange="salvarDataCalendario('${razao}', this.value)" style="margin-bottom:0; font-size:11px; max-width: 170px;">
-                            ` : `
-                                <div style="font-weight: bold; color: ${dataSalva ? 'var(--text-h)' : 'var(--text-p)'}; font-size: 11.5px;">
-                                    📅 ${dataFormatadaExibicao}
-                                </div>
-                            `}
+                        <td style="font-weight: bold; color: var(--accent); text-align: left; padding-left: 10px; width: 30%;">
+                            ${razao}
                         </td>
-                        <td style="text-align: center;">
-                            ${statusBadge}
+                        <td style="text-align: left; width: 45%; padding: 4px 6px;">
+                            <div style="display: flex; align-items: center; min-height: 28px; width: 100%;">
+                                ${currentIsAdmin ? `
+                                    <input type="date" value="${dataSalva}" onchange="salvarDataCalendario('${razao}', this.value)" style="margin-bottom:0; font-size:10px; padding:4px; width: 100%; max-width: 150px;">
+                                ` : `
+                                    <span style="font-weight: bold; font-size: 11px; white-space: nowrap;">📅 ${dataFormatadaExibicao}</span>
+                                `}
+                            </div>
+                        </td>
+                        <td style="text-align: center; width: 25%;">
+                            ${badgeStatus}
                         </td>
                     </tr>
                 `;
@@ -1975,7 +1885,7 @@
         }
 
         if (alertas.length > 0) {
-            alertaContainer.style.display = 'flex';
+            alertaContainer.style.display = 'block';
             let conteudoInterno = alertas.map(a => `<div class="alert-saturday-box"><span>${a}</span></div>`).join('');
             
             if (alertas.length > 2) {
@@ -2032,23 +1942,18 @@
         const u = document.getElementById('loginUser').value.trim();
         const p = document.getElementById('loginPass').value;
 
-        if(!u || !p) {
-            await mostrarAvisoGPL("Preencha Utilizador e Senha.", "⚠️ ATENÇÃO", "aviso");
-            return;
-        }
+        if(!u || !p) return alert("Preencha Utilizador e Senha.");
 
         const resultadoLogin = await window.cloudVerificarLogin(u, p);
         if (!resultadoLogin.sucesso) {
-            await mostrarAvisoGPL(resultadoLogin.erro, "❌ ERRO NO LOGIN", "erro");
-            return;
+            return alert(resultadoLogin.erro);
         }
 
         const cloudData = resultadoLogin.dados;
         const isAdminUser = (u.toUpperCase() === "ADMIN" || cloudData.isAdmin === true);
         
         if (!isAdminUser && cloudData.ativo !== true) {
-            await mostrarAvisoGPL("⚠️ Acesso bloqueado por falta de pagamento. Efetue o pagamento para ter acesso à conta.", "🔒 CONTA BLOQUEADA", "erro");
-            return;
+            return alert("⚠️ Acesso bloqueado por falta de pagamento. Efetue o pagamento para ter acesso à conta.");
         }
 
         currentUser = u.toUpperCase();
@@ -2067,28 +1972,18 @@
         const pConf = document.getElementById('regPassConfirm').value;
         const r = document.getElementById('regRecovery').value.trim();
 
-        if(!u || !p || !pConf || !r) {
-            await mostrarAvisoGPL("Preencha todos os campos do cadastro.", "⚠️ ATENÇÃO", "aviso");
-            return;
-        }
-        if(p !== pConf) {
-            await mostrarAvisoGPL("As senhas não coincidem! Verifique e tente novamente.", "❌ SENHAS DIFERENTES", "erro");
-            return;
-        }
+        if(!u || !p || !pConf || !r) return alert("Preencha todos os campos do cadastro.");
+        if(p !== pConf) return alert("As senhas não coincidem! Verifique e tente novamente.");
 
         let cloudData = window.cloudLoadAll ? await window.cloudLoadAll(u) : null;
         if (cloudData && cloudData.senha) {
-            await mostrarAvisoGPL("Este nome de utilizador já existe! Escolha outro nome.", "⚠️ UTILIZADOR EXISTENTE", "aviso");
-            return;
+            return alert("Este nome de utilizador já existe! Escolha outro nome.");
         }
 
         let criado = await window.cloudSaveNewUserAuth(u, p, r);
-        if (!criado) {
-            await mostrarAvisoGPL("Erro ao criar utilizador.", "❌ ERRO", "erro");
-            return;
-        }
+        if (!criado) return alert("Erro ao criar utilizador.");
 
-        await mostrarAvisoGPL("Conta criada com sucesso! Efetue o PIX de R$ 10,00 e informe o comprovante ao Administrador para ativação.", "✨ CONTA CRIADA", "sucesso");
+        alert("Conta criada com sucesso! Efetue o PIX de R$ 10,00 e informe o comprovante ao Administrador para ativação.");
         
         document.getElementById('regUser').value = "";
         document.getElementById('regPass').value = "";
@@ -2099,32 +1994,15 @@
 
     window.recoverPass = function() { 
         const u = document.getElementById('loginUser').value.trim(); 
-        if(!u) {
-            mostrarAvisoGPL("Digite o seu nome de utilizador no campo 'Utilizador' para recuperar a senha.", "⚠️ ATENÇÃO", "aviso");
-            return;
-        }
+        if(!u) return alert("Digite o seu nome de utilizador no campo 'Utilizador' para recuperar a senha.");
         
-        window.cloudLoadAll(u).then(async (cloudData) => {
+        window.cloudLoadAll(u).then(cloudData => {
             if(cloudData && cloudData.dica) {
-                await mostrarAvisoGPL("Palavra/Dica de segurança cadastrada: " + cloudData.dica, "🔑 RECUPERAÇÃO", "aviso");
+                alert("Palavra/Dica de segurança cadastrada: " + cloudData.dica);
             } else {
-                await mostrarAvisoGPL("Utilizador não encontrado na nuvem ou sem dica de recuperação cadastrada.", "❌ NÃO ENCONTRADO", "erro");
+                alert("Utilizador não encontrado na nuvem ou sem dica de recuperação cadastrada.");
             }
         });
-    }
-
-    window.fazerLogoutApp = async function() {
-        const sair = await mostrarConfirmacaoGPL("Deseja realmente sair da sua conta?");
-        if (sair) {
-            sessionStorage.removeItem('gpl_user');
-            sessionStorage.removeItem('gpl_is_admin');
-            currentUser = "";
-            currentIsAdmin = false;
-            
-            viewDate = new Date(dataAtualDoSistema.getFullYear(), dataAtualDoSistema.getMonth(), 1);
-
-            document.getElementById('loginScreen').style.display = 'flex';
-        }
     }
 
     async function initSystem() { 
@@ -2212,123 +2090,64 @@
     });
 
     let meuGraficoGPL = null;
-
     function renderizarGraficoDashboard() {
         const ctx = document.getElementById('gplChart');
         if (!ctx) return;
-
         const mesF = "2026-" + String(viewDate.getMonth() + 1).padStart(2, '0');
         const regsMes = db.filter(i => i.data.startsWith(mesF));
 
         let dadosPorRazao = {};
         for (let i = 1; i <= 18; i++) {
-            let rNome = `RAZÃO ${String(i).padStart(2, '0')}`;
-            dadosPorRazao[rNome] = { leituras: 0, imped: 0, temDados: false };
+            dadosPorRazao[`RAZÃO ${String(i).padStart(2, '0')}`] = { leituras: 0, imped: 0 };
         }
 
         regsMes.forEach(item => {
-            let razBruta = String(item.razao || "").trim().toUpperCase();
-            let numeroRazao = razBruta.replace(/\D/g, ''); 
-            let razNormalizada = "";
-            
-            if (numeroRazao) {
-                let numInt = parseInt(numeroRazao, 10);
-                if (numInt >= 1 && numInt <= 18) {
-                    razNormalizada = `RAZÃO ${String(numInt).padStart(2, '0')}`;
-                }
-            } else if (razBruta.startsWith('RAZÃO')) {
-                razNormalizada = razBruta;
-            }
-
-            if (razNormalizada && dadosPorRazao[razNormalizada]) {
-                let l = Number(item.leituras) || 0;
-                let imp = Number(item.imped) || 0;
-                dadosPorRazao[razNormalizada].leituras += l;
-                dadosPorRazao[razNormalizada].imped += imp;
-                if (l > 0 || imp > 0) {
-                    dadosPorRazao[razNormalizada].temDados = true;
-                }
+            let raz = String(item.razao || "").trim().toUpperCase();
+            let num = raz.replace(/\D/g, '');
+            let norm = num ? `RAZÃO ${String(parseInt(num, 10)).padStart(2, '0')}` : (raz.startsWith('RAZÃO') ? raz : '');
+            if (norm && dadosPorRazao[norm]) {
+                dadosPorRazao[norm].leituras += Number(item.leituras) || 0;
+                dadosPorRazao[norm].imped += Number(item.imped) || 0;
             }
         });
 
         const rotulos = Object.keys(dadosPorRazao);
-        const valoresLeituras = rotulos.map(r => dadosPorRazao[r].leituras);
-        const valoresImped = rotulos.map(r => dadosPorRazao[r].imped);
-
-        const maxLeituras = Math.max(...valoresLeituras, 800);
-        const tetoEixoY = maxLeituras > 800 ? Math.ceil(maxLeituras / 100) * 100 : 800;
-
-        if (meuGraficoGPL) {
-            meuGraficoGPL.destroy();
-        }
+        if (meuGraficoGPL) meuGraficoGPL.destroy();
 
         meuGraficoGPL = new Chart(ctx, {
             type: 'bar',
             data: {
                 labels: rotulos.map(r => r.replace('RAZÃO ', 'Rz')),
                 datasets: [
-                    {
-                        label: 'Leituras',
-                        data: valoresLeituras,
-                        backgroundColor: '#0070f3',
-                        borderRadius: 4,
-                        barPercentage: 0.6,
-                        categoryPercentage: 0.7
-                    },
-                    {
-                        label: 'Impedimentos',
-                        data: valoresImped,
-                        backgroundColor: '#ff4d4d',
-                        borderRadius: 4,
-                        barPercentage: 0.6,
-                        categoryPercentage: 0.7
-                    }
+                    { label: 'Leituras', data: rotulos.map(r => dadosPorRazao[r].leituras), backgroundColor: '#0070f3', borderRadius: 3 },
+                    { label: 'Impedimentos', data: rotulos.map(r => dadosPorRazao[r].imped), backgroundColor: '#ff4d4d', borderRadius: 3 }
                 ]
             },
             options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                interaction: {
-                    mode: 'index',
-                    intersect: false,
-                },
-                plugins: {
-                    legend: {
-                        labels: { color: '#94a3b8', font: { size: 9, weight: 'bold' } }
-                    },
+                responsive: true, maintainAspectRatio: false,
+                plugins: { 
+                    legend: { labels: { color: '#8899a6', font: { size: 8 } } },
                     tooltip: {
+                        mode: 'index',
+                        intersect: false,
                         filter: function(tooltipItem) {
-                            const index = tooltipItem.dataIndex;
-                            const rKey = rotulos[index];
-                            return dadosPorRazao[rKey].temDados === true;
+                            return tooltipItem.parsed.y > 0;
                         },
                         callbacks: {
                             label: function(context) {
                                 let label = context.dataset.label || '';
-                                if (label) {
-                                    label += ': ';
+                                if (label) { label += ': '; }
+                                if (context.parsed.y !== null) {
+                                    label += context.parsed.y.toLocaleString();
                                 }
-                                label += context.parsed.y.toLocaleString();
                                 return label;
                             }
                         }
                     }
                 },
                 scales: {
-                    x: {
-                        ticks: { color: '#94a3b8', font: { size: 8 } },
-                        grid: { color: 'rgba(255,255,255,0.03)' }
-                    },
-                    y: {
-                        beginAtZero: true,
-                        max: tetoEixoY,
-                        ticks: { 
-                            color: '#94a3b8', 
-                            font: { size: 8 },
-                            stepSize: 100 
-                        },
-                        grid: { color: 'rgba(255,255,255,0.05)' }
-                    }
+                    x: { ticks: { color: '#8899a6', font: { size: 7 } }, grid: { color: 'rgba(255,255,255,0.03)' } },
+                    y: { beginAtZero: true, ticks: { color: '#8899a6', font: { size: 7 } }, grid: { color: 'rgba(255,255,255,0.03)' } }
                 }
             }
         });
@@ -2386,7 +2205,6 @@
             if(liquidoMes > 0) acum += liquidoMes;
         } 
         animarContagem('totAcumulado', acum, true); 
-
         renderizarGraficoDashboard();
     } 
 
@@ -2410,7 +2228,7 @@
         } else {
             db.push({ 
                 id: Date.now(), 
-                ...dadosForm
+                ...dadosForm 
             }); 
         }
 
@@ -2421,9 +2239,8 @@
         switchMobileTab('tabTabela', document.getElementById('btnTabTabela'));
     }; 
 
-    window.editar = async function(id) {
-        const confirmar = await mostrarConfirmacaoGPL("Deseja realmente editar este registro?");
-        if (!confirmar) return;
+    window.editar = function(id) {
+        if (!confirm("Deseja realmente editar este registro?")) return;
         const item = db.find(i => i.id === id);
         if (!item) return;
 
@@ -2448,9 +2265,8 @@
         document.getElementById('btnCancelarEdicao').style.display = "none";
     }
 
-    window.limparTudo = async function() { 
-        const confirmar = await mostrarConfirmacaoGPL("Deseja limpar todos os registros deste mês?");
-        if(confirmar) { 
+    window.limparTudo = function() { 
+        if(confirm("Deseja limpar todos os registros deste mês?")) { 
             const mesF = "2026-" + String(viewDate.getMonth() + 1).padStart(2, '0'); 
             db = db.filter(i => !i.data.startsWith(mesF)); 
             dispararSalvamentoRegistros();
@@ -2458,23 +2274,20 @@
         } 
     } 
      
-    window.limparAno = async function() { 
-        const confirmar1 = await mostrarConfirmacaoGPL("ATENÇÃO: Você está prestes a apagar TODOS os registros de 2026!", "⚠️ CUIDADO");
-        if(confirmar1) { 
-            const confirmar2 = await mostrarConfirmacaoGPL("Tem certeza absoluta?", "⚠️ CONFIRMAÇÃO FINAL");
-            if(confirmar2) { 
+    window.limparAno = function() { 
+        if(confirm("ATENÇÃO: Você está prestes a apagar TODOS os registros de 2026!")) { 
+            if(confirm("Tem certeza absoluta?")) { 
                 db = []; 
                 dispararSalvamentoRegistros();
                 atualizarTabela(); 
-                await mostrarAvisoGPL("Dados de 2026 removidos da nuvem.", "🗑️ APAGADO", "sucesso"); 
+                alert("Dados de 2026 removidos da nuvem."); 
             } 
         } 
     } 
 
-    window.exportarBackup = async function() {
+    window.exportarBackup = function() {
         if ((!db || db.length === 0) && Object.keys(calendarioDb).length === 0 && Object.keys(relatorioRazoesDb).length === 0) {
-            await mostrarAvisoGPL("Sem dados para exportar.", "⚠️ AVISO", "aviso");
-            return;
+            return alert("Sem dados para exportar.");
         }
         
         const dadosBackup = {
@@ -2484,119 +2297,79 @@
         };
 
         const dataStr = JSON.stringify(dadosBackup, null, 2);
+        const blob = new Blob([dataStr], { type: 'application/json;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        
+        const dl = document.createElement('a');
+        dl.href = url;
+        dl.download = `backup_gpl_${currentUser.toLowerCase()}_2026.json`;
+        document.body.appendChild(dl); 
+        dl.click(); 
+        dl.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
 
-        if ('showSaveFilePicker' in window) {
-            try {
-                const options = {
-                    suggestedName: `backup_gpl_${currentUser.toLowerCase()}_2026.json`,
-                    types: [{
-                        description: 'Arquivo JSON',
-                        accept: { 'application/json': ['.json'] },
-                    }],
-                };
-                const handle = await window.showSaveFilePicker(options);
-                const writable = await handle.createWritable();
-                await writable.write(dataStr);
-                await writable.close();
-                await mostrarAvisoGPL("💾 Backup salvo com sucesso!", "✅ SUCESSO", "sucesso");
-                return;
-            } catch (err) {
-                if (err.name !== 'AbortError') {
-                    console.log("Fallback para o método padrão de download.");
-                } else {
-                    return;
-                }
-            }
-        }
-
-        try {
-            const blob = new Blob([dataStr], { type: 'application/json;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const dl = document.createElement('a');
-            dl.href = url;
-            dl.download = `backup_gpl_${currentUser.toLowerCase()}_2026.json`;
-            dl.style.display = 'none';
-            document.body.appendChild(dl);
-            dl.click();
-            
-            setTimeout(() => {
-                document.body.removeChild(dl);
-                URL.revokeObjectURL(url);
-            }, 500);
-
-            await mostrarAvisoGPL("💾 Backup salvo com sucesso no seu dispositivo!", "✅ SUCESSO", "sucesso");
-        } catch (e) {
-            await mostrarAvisoGPL("Erro ao gerar o arquivo de backup.", "❌ ERRO", "erro");
-        }
+        alert("💾 Backup salvo com sucesso no seu dispositivo!");
     }
 
-    window.restaurarBackup = function(event) {
-        const arquivo = event.target.files[0];
-        if (!arquivo) return;
+    window.dispararImportacao = function() { 
+        const fileInput = document.getElementById('importFile');
+        fileInput.value = '';
+        fileInput.click(); 
+    }
 
-        const reader = new FileReader();
+    window.importarBackup = function(event) {
+        const file = event.target.files[0];
+        if (!file) return;
         
+        const reader = new FileReader();
         reader.onload = async function(e) {
             try {
-                const conteudo = e.target.result;
-                const dadosRestaurados = JSON.parse(conteudo);
-
-                if (!dadosRestaurados || typeof dadosRestaurados !== 'object') {
-                    await mostrarAvisoGPL("O arquivo selecionado não é um JSON de backup válido.", "❌ ERRO", "erro");
-                    return;
-                }
-
-                if (dadosRestaurados.registros) {
-                    db = dadosRestaurados.registros;
-                }
-                if (dadosRestaurados.calendario) {
-                    calendarioDb = dadosRestaurados.calendario;
-                }
-                if (dadosRestaurados.relatorios) {
-                    relatorioRazoesDb = dadosRestaurados.relatorios;
-                    for (const [raz, mesesObj] of Object.entries(relatorioRazoesDb)) {
-                        if (mesesObj && typeof mesesObj === 'object') {
-                            let chavesM = Object.keys(mesesObj).sort();
-                            if (chavesM.length > 12) {
-                                let rem = chavesM.slice(0, chavesM.length - 12);
-                                rem.forEach(k => delete mesesObj[k]);
-                            }
-                            for (const [mKey, conteudoMes] of Object.entries(mesesObj)) {
-                                if (currentUser && window.cloudSaveRelatorioRazao) {
-                                    window.cloudSaveRelatorioRazao(currentUser, raz, mKey, conteudoMes);
+                const importedData = JSON.parse(e.target.result);
+                if (confirm(`Substituir dados atuais pelo arquivo "${file.name}"?`)) {
+                    if (Array.isArray(importedData)) {
+                        db = importedData;
+                    } else if (importedData && typeof importedData === 'object') {
+                        db = Array.isArray(importedData.registros) ? importedData.registros : [];
+                        if (importedData.calendario) calendarioDb = importedData.calendario;
+                        if (importedData.relatorios) {
+                            relatorioRazoesDb = importedData.relatorios;
+                            for (const [raz, mesesObj] of Object.entries(relatorioRazoesDb)) {
+                                if (mesesObj && typeof mesesObj === 'object') {
+                                    let chavesM = Object.keys(mesesObj).sort();
+                                    if (chavesM.length > 12) {
+                                        let rem = chavesM.slice(0, chavesM.length - 12);
+                                        rem.forEach(k => delete mesesObj[k]);
+                                    }
+                                    for (const [mKey, conteudoMes] of Object.entries(mesesObj)) {
+                                        if (currentUser && window.cloudSaveRelatorioRazao) {
+                                            window.cloudSaveRelatorioRazao(currentUser, raz, mKey, conteudoMes);
+                                        }
+                                    }
                                 }
                             }
                         }
+                    } else {
+                        return alert("Arquivo de backup inválido.");
                     }
+
+                    if (currentUser && window.cloudSaveRegistros) {
+                        window.cloudSaveRegistros(currentUser, db);
+                    }
+                    
+                    atualizarTabela();
+                    renderizarCalendario();
+                    popularSelectRazoesRelatorio();
+                    renderizarTabelaRelatorioAtual();
+                    verificarSabadosAlertas();
+                    
+                    alert("Backup restaurado e sincronizado com a nuvem com sucesso! ✨");
                 }
-
-                if (currentUser && window.cloudSaveRegistros) {
-                    window.cloudSaveRegistros(currentUser, db);
-                }
-                if (currentUser && window.cloudSaveCalendario) {
-                    window.cloudSaveCalendario(currentUser, calendarioDb);
-                }
-
-                atualizarTabela();
-                renderizarCalendario();
-                renderizarTabelaRelatorioAtual();
-                verificarSabadosAlertas();
-
-                await mostrarAvisoGPL("🔄 Backup restaurado e sincronizado com sucesso!", "✅ SUCESSO", "sucesso");
-
-            } catch (erro) {
-                console.error("Erro ao ler JSON:", erro);
-                await mostrarAvisoGPL("Erro ao processar o arquivo de backup.", "❌ ERRO", "erro");
-            } finally {
-                event.target.value = '';
+            } catch (err) { 
+                alert("Erro ao ler o arquivo JSON."); 
             }
+            event.target.value = "";
         };
-
-        reader.onerror = async function() {
-            await mostrarAvisoGPL("Erro ao ler o arquivo no dispositivo.", "❌ ERRO", "erro");
-        };
-
-        reader.readAsText(arquivo);
+        reader.readAsText(file);
     }
 
     window.onload = function() {
