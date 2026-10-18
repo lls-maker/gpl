@@ -1336,7 +1336,7 @@
             mapValidosNL[String(item.numero).trim()] = true;
         });
 
-        let listaMedidores = [];
+        let mapaConsolidado = {};
 
         linhas.forEach(linha => {
             let linhaLimpa = linha.trim();
@@ -1395,25 +1395,49 @@
                 }
 
                 if (medidorEncontrado) {
-                    listaMedidores.push({
-                        medidor: medidorEncontrado.toUpperCase(),
-                        oc: ocEncontrada || "N/A",
-                        leit: Number(leitEncontrada) || 0,
-                        tipoRgZ3: tagRgDetectada
-                    });
+                    let medKey = medidorEncontrado.toUpperCase();
+                    
+                    if (!mapaConsolidado[medKey]) {
+                        mapaConsolidado[medKey] = {
+                            medidor: medKey,
+                            oc: ocEncontrada || "N/A",
+                            listaRgs: []
+                        };
+                    }
+
+                    if (ocEncontrada && ocEncontrada !== "N/A") {
+                        mapaConsolidado[medKey].oc = ocEncontrada;
+                    }
+
+                    let rgNome = String(tagRgDetectada).trim().toUpperCase();
+                    let leituraVal = Number(leitEncontrada) || 0;
+
+                    let rgExistente = mapaConsolidado[medKey].listaRgs.find(r => r.rg === rgNome);
+                    if (rgExistente) {
+                        if (leituraVal > 0) rgExistente.leit = leituraVal;
+                    } else {
+                        mapaConsolidado[medKey].listaRgs.push({ rg: rgNome, leit: leituraVal });
+                    }
                 }
             }
         });
 
-        let mapUltimoPorMedidor = {};
-        listaMedidores.forEach(item => {
-            mapUltimoPorMedidor[item.medidor] = item;
+        let listaMedidoresLimpa = [];
+        Object.values(mapaConsolidado).forEach(obj => {
+            if (obj.listaRgs.length === 0) {
+                listaMedidoresLimpa.push({ medidor: obj.medidor, oc: obj.oc, leit: 0, tipoRgZ3: "03" });
+            } else {
+                obj.listaRgs.forEach(r => {
+                    listaMedidoresLimpa.push({ medidor: obj.medidor, oc: obj.oc, leit: r.leit, tipoRgZ3: r.rg });
+                });
+            }
         });
 
         let contagemOC = {};
-        Object.values(mapUltimoPorMedidor).forEach(item => {
-            if (mapValidosNL[item.oc]) {
-                contagemOC[item.oc] = (contagemOC[item.oc] || 0) + 1;
+        Object.values(mapaConsolidado).forEach(obj => {
+            let ocVal = obj.oc;
+            if (mapValidosNL[ocVal]) {
+                contagemOC[ocVal] = (contagemOC[ocVal] || 0) + 1;
             }
         });
 
@@ -1423,7 +1447,7 @@
 
         const dadosNovoRelatorio = {
             resumoOC: contagemOC,
-            medidores: listaMedidores
+            medidores: listaMedidoresLimpa
         };
 
         relatorioRazoesDb[razaoSelecionada] = dadosNovoRelatorio;
@@ -1445,22 +1469,69 @@
         if (!dadosRegistro || !dadosRegistro.medidores) return;
         
         const corpo = document.getElementById('relatorioCardsCorpo');
-        const medidoresFiltrados = dadosRegistro.medidores.filter(item => String(item.oc).trim() === String(numeroNL).trim());
-
+        
         let mapaUnificado = {};
-        medidoresFiltrados.forEach(item => {
-            let med = String(item.medidor || "").trim().toUpperCase();
-            if (!med) return;
-            if (!mapaUnificado[med]) mapaUnificado[med] = { medidor: med, oc: item.oc || "N/A", listaRgs: [] };
-            if (item.oc && item.oc !== "N/A") mapaUnificado[med].oc = item.oc;
-            let rg = String(item.tipoRgZ3 || "03").trim().toUpperCase();
-            let leit = Number(item.leit) || 0;
-            let rgEx = mapaUnificado[med].listaRgs.find(r => r.rg === rg);
-            if (rgEx) { if (leit > 0) rgEx.leit = leit; } 
-            else mapaUnificado[med].listaRgs.push({ rg: rg, leit: leit });
+        dadosRegistro.medidores.forEach(item => {
+            let medKey = String(item.medidor || "").trim().toUpperCase();
+            if (!medKey) return;
+
+            if (!mapaUnificado[medKey]) {
+                mapaUnificado[medKey] = {
+                    medidor: medKey,
+                    oc: item.oc || "N/A",
+                    listaRgs: []
+                };
+            }
+            if (item.oc && item.oc !== "N/A") {
+                mapaUnificado[medKey].oc = item.oc;
+            }
+            let rgNome = String(item.tipoRgZ3 || "03").trim().toUpperCase();
+            let leituraVal = Number(item.leit) || 0;
+
+            let rgExistente = mapaUnificado[medKey].listaRgs.find(r => r.rg === rgNome);
+            if (rgExistente) {
+                if (leituraVal > 0) rgExistente.leit = leituraVal;
+            } else {
+                mapaUnificado[medKey].listaRgs.push({ rg: rgNome, leit: leituraVal });
+            }
         });
 
-        const chaves = Object.keys(mapaUnificado);
+        let medidoresFiltradosDestaNL = [];
+        Object.values(mapaUnificado).forEach(dados => {
+            if (String(dados.oc).trim() === String(numeroNL).trim()) {
+                dados.listaRgs.forEach(rgObj => {
+                    medidoresFiltradosDestaNL.push({
+                        medidor: dados.medidor,
+                        oc: dados.oc,
+                        leit: rgObj.leit,
+                        tipoRgZ3: rgObj.rg
+                    });
+                });
+                if (dados.listaRgs.length === 0) {
+                    medidoresFiltradosDestaNL.push({
+                        medidor: dados.medidor,
+                        oc: dados.oc,
+                        leit: 0,
+                        tipoRgZ3: "03"
+                    });
+                }
+            }
+        });
+
+        let mapaUnificadoFinal = {};
+        medidoresFiltradosDestaNL.forEach(item => {
+            let med = String(item.medidor || "").trim().toUpperCase();
+            if (!med) return;
+            if (!mapaUnificadoFinal[med]) mapaUnificadoFinal[med] = { medidor: med, oc: item.oc || "N/A", listaRgs: [] };
+            if (item.oc && item.oc !== "N/A") mapaUnificadoFinal[med].oc = item.oc;
+            let rg = String(item.tipoRgZ3 || "03").trim().toUpperCase();
+            let leit = Number(item.leit) || 0;
+            let rgEx = mapaUnificadoFinal[med].listaRgs.find(r => r.rg === rg);
+            if (rgEx) { if (leit > 0) rgEx.leit = leit; } 
+            else mapaUnificadoFinal[med].listaRgs.push({ rg: rg, leit: leit });
+        });
+
+        const chaves = Object.keys(mapaUnificadoFinal);
         if (chaves.length === 0) {
             corpo.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; color: var(--text-p); padding: 30px;">Nenhum medidor para a NL ${numeroNL}.</div>`;
             return;
@@ -1474,7 +1545,7 @@
         `;
 
         htmlCards += chaves.map(medKey => {
-            let dados = mapaUnificado[medKey];
+            let dados = mapaUnificadoFinal[medKey];
             let infoNL = notasDeLeitura.find(n => n.numero === dados.oc) || { status: 'Ocorrência', detalhe: dados.oc };
             let isComLeitura = infoNL.status.toLowerCase().includes('com');
             
@@ -1523,19 +1594,27 @@
         }
 
         if (termoBusca) {
-            const medidoresLista = dadosRegistro.medidores || [];
-            
-            const mapaPassagens = {};
-            medidoresLista.forEach(item => {
-                if (item.medidor.includes(termoBusca)) {
-                    if (!mapaPassagens[item.medidor]) {
-                        mapaPassagens[item.medidor] = [];
-                    }
-                    mapaPassagens[item.medidor].push(item);
+            let mapaUnificado = {};
+            dadosRegistro.medidores.forEach(item => {
+                let med = String(item.medidor || "").trim().toUpperCase();
+                if (!med) return;
+                if (!mapaUnificado[med]) {
+                    mapaUnificado[med] = { medidor: med, oc: item.oc || "N/A", listaRgs: [] };
+                }
+                if (item.oc && item.oc !== "N/A") {
+                    mapaUnificado[med].oc = item.oc;
+                }
+                let rg = String(item.tipoRgZ3 || "03").trim().toUpperCase();
+                let leit = Number(item.leit) || 0;
+                let rgEx = mapaUnificado[med].listaRgs.find(r => r.rg === rg);
+                if (rgEx) {
+                    if (leit > 0) rgEx.leit = leit;
+                } else {
+                    mapaUnificado[med].listaRgs.push({ rg: rg, leit: leit });
                 }
             });
 
-            const chavesMedidores = Object.keys(mapaPassagens);
+            const chavesMedidores = Object.keys(mapaUnificado).filter(med => med.includes(termoBusca));
 
             if (chavesMedidores.length === 0) {
                 corpo.innerHTML = `
@@ -1546,35 +1625,15 @@
             }
 
             corpo.innerHTML = chavesMedidores.map(medKey => {
-                const passagens = mapaPassagens[medKey];
+                const dados = mapaUnificado[medKey];
+                let ultimoNL = dados.oc;
 
-                let ultimoNL = "N/A";
-                for (let i = passagens.length - 1; i >= 0; i--) {
-                    if (passagens[i].oc && passagens[i].oc !== "N/A") {
-                        ultimoNL = passagens[i].oc;
-                        break;
-                    }
-                }
-
-                let leiturasPorRg = {};
-                passagens.forEach(p => {
-                    let rg = p.tipoRgZ3 || "03";
-                    leiturasPorRg[rg] = p.leit;
-                });
-
-                if (!leiturasPorRg["03"] && passagens.length > 0) {
-                    leiturasPorRg["03"] = passagens[0].leit;
-                }
-
-                const rgsKeys = Object.keys(leiturasPorRg);
-                
-                const linhasRgsHtml = rgsKeys.map(rg => {
-                    let leitVal = leiturasPorRg[rg];
+                const linhasRgsHtml = dados.listaRgs.map(objRg => {
                     return `
                         <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border); border-radius: 8px; padding: 8px; margin-bottom: 6px;">
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; flex-wrap: wrap; gap: 4px;">
-                                <span style="background: rgba(156, 39, 176, 0.25); color: #e1bee7; border: 1px solid var(--purple); padding: 2px 8px; border-radius: 6px; font-size: 10px; font-weight: 900;">RG ${rg}</span>
-                                <span style="font-weight: 900; color: var(--success); font-size: 11px;">Leitura: ${leitVal.toLocaleString()}</span>
+                                <span style="background: rgba(156, 39, 176, 0.25); color: #e1bee7; border: 1px solid var(--purple); padding: 2px 8px; border-radius: 6px; font-size: 10px; font-weight: 900;">RG ${objRg.rg}</span>
+                                <span style="font-weight: 900; color: var(--success); font-size: 11px;">Leitura: ${objRg.leit.toLocaleString()}</span>
                             </div>
                         </div>
                     `;
