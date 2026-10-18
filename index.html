@@ -856,7 +856,6 @@
             
             mesesMap[mesAnoKey] = JSON.parse(JSON.stringify(dadosRelatorioMes));
 
-            // Filtrar e manter apenas os últimos 12 meses
             let chavesMeses = Object.keys(mesesMap).sort();
             if (chavesMeses.length > 12) {
                 let mesesParaRemover = chavesMeses.slice(0, chavesMeses.length - 12);
@@ -1471,7 +1470,6 @@
 
         relatorioRazoesDb[razaoSelecionada][mesAnoKey] = dadosNovoRelatorio;
 
-        // Limpeza local mantendo apenas 12 meses
         let chavesMeses = Object.keys(relatorioRazoesDb[razaoSelecionada]).sort();
         if (chavesMeses.length > 12) {
             let mesesRemover = chavesMeses.slice(0, chavesMeses.length - 12);
@@ -1665,50 +1663,75 @@
                 const dados = mapaUnificado[medKey];
                 let ultimoNL = dados.oc;
 
-                let leituraAnteriorVal = null;
-                if (dadosMesAnterior && dadosMesAnterior.medidores) {
-                    let achadoAnt = dadosMesAnterior.medidores.find(m => String(m.medidor || "").trim().toUpperCase() === medKey);
-                    if (achadoAnt) leituraAnteriorVal = Number(achadoAnt.leit) || 0;
-                }
+                const linhasRgsHtml = dados.listaRgs.map(objRg => {
+                    let rgAtual = objRg.rg;
+                    let leituraAtualVal = objRg.leit;
 
-                let somaHistorica = 0;
-                let qtdMesesHistorico = 0;
-                mesesDisponiveis.forEach(mKey => {
-                    if (mKey <= mesAnoKey) {
-                        let relM = razaoMeses[mKey];
-                        if (relM && relM.medidores) {
-                            let medM = relM.medidores.find(m => String(m.medidor || "").trim().toUpperCase() === medKey);
-                            if (medM && Number(medM.leit) > 0) {
-                                somaHistorica += Number(medM.leit);
-                                qtdMesesHistorico++;
+                    let leituraAnteriorVal = null;
+                    if (dadosMesAnterior && dadosMesAnterior.medidores) {
+                        let achadoAnt = dadosMesAnterior.medidores.find(m => {
+                            let mKeyAnt = String(m.medidor || "").trim().toUpperCase();
+                            let rgAnt = String(m.tipoRgZ3 || "03").trim().toUpperCase();
+                            return mKeyAnt === medKey && rgAnt === rgAtual;
+                        });
+                        if (achadoAnt) leituraAnteriorVal = Number(achadoAnt.leit) || 0;
+                    }
+
+                    let consumoAnteriorCalculado = (leituraAnteriorVal !== null && leituraAtualVal >= leituraAnteriorVal) ? (leituraAtualVal - leituraAnteriorVal) : "N/A";
+
+                    // Cálculo da Média Dinâmica com base no CONSUMO dos meses anteriores disponíveis (até 12 meses)
+                    let somaConsumosHistoricos = 0;
+                    let qtdMesesConsumo = 0;
+
+                    for (let i = 0; i < mesesDisponiveis.length; i++) {
+                        let mKey = mesesDisponiveis[i];
+                        if (mKey < mesAnoKey) {
+                            let relM = razaoMeses[mKey];
+                            let mKeySeguinte = mesesDisponiveis[i + 1];
+                            let relMSeguinte = mKeySeguinte ? razaoMeses[mKeySeguinte] : null;
+
+                            if (relM && relMSeguinte && relM.medidores && relMSeguinte.medidores) {
+                                let leitMesAtual = relM.medidores.find(m => String(m.medidor || "").trim().toUpperCase() === medKey && String(m.tipoRgZ3 || "03").trim().toUpperCase() === rgAtual);
+                                let leitMesSeguinte = relMSeguinte.medidores.find(m => String(m.medidor || "").trim().toUpperCase() === medKey && String(m.tipoRgZ3 || "03").trim().toUpperCase() === rgAtual);
+
+                                if (leitMesAtual && leitMesSeguinte) {
+                                    let lAnt = Number(leitMesAtual.leit) || 0;
+                                    let lAtu = Number(leitMesSeguinte.leit) || 0;
+                                    if (lAtu >= lAnt) {
+                                        somaConsumosHistoricos += (lAtu - lAnt);
+                                        qtdMesesConsumo++;
+                                    }
+                                }
                             }
                         }
                     }
-                });
-                let mediaHistoricaVal = qtdMesesHistorico > 0 ? Math.round(somaHistorica / qtdMesesHistorico) : 0;
 
-                const linhasRgsHtml = dados.listaRgs.map(objRg => {
-                    let leituraAtualVal = objRg.leit;
-                    let consumoAnteriorCalculado = (leituraAnteriorVal !== null && leituraAtualVal >= leituraAnteriorVal) ? (leituraAtualVal - leituraAnteriorVal) : "N/A";
+                    // Se estivemos no mês atual e temos consumo calculado, podemos incluir também o consumo atual na média dinâmica progressiva
+                    if (typeof consumoAnteriorCalculado === 'number') {
+                        somaConsumosHistoricos += consumoAnteriorCalculado;
+                        qtdMesesConsumo++;
+                    }
+
+                    let mediaConsumoDinamica = qtdMesesConsumo > 0 ? Math.round(somaConsumosHistoricos / qtdMesesConsumo) : 0;
 
                     return `
                         <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border); border-radius: 8px; padding: 8px; margin-bottom: 6px;">
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; flex-wrap: wrap; gap: 4px;">
-                                <span style="background: rgba(156, 39, 176, 0.25); color: #e1bee7; border: 1px solid var(--purple); padding: 2px 8px; border-radius: 6px; font-size: 10px; font-weight: 900;">RG ${objRg.rg}</span>
+                                <span style="background: rgba(156, 39, 176, 0.25); color: #e1bee7; border: 1px solid var(--purple); padding: 2px 8px; border-radius: 6px; font-size: 10px; font-weight: 900;">RG ${rgAtual}</span>
                                 <span style="font-weight: 900; color: var(--success); font-size: 11px;">Leitura Atual: ${objRg.leit.toLocaleString()}</span>
                             </div>
                             <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; margin-top: 6px; text-align: center; background: rgba(0,0,0,0.3); padding: 6px; border-radius: 6px;">
                                 <div>
                                     <span style="font-size: 8px; color: var(--text-p); display: block; font-weight: 800;">LEIT. ANTERIOR</span>
-                                    <span style="font-size: 10px; color: #fff; font-weight: bold;">${leituraAnteriorVal !== null ? leituraAnteriorVal.toLocaleString() : 'N/A'}</span>
+                                    <span style="font-size: 10px; color: #fff; font-weight: bold;">${leituraAnteriorVal !== null ? leituraAnteriorVal.toLocaleString() : 'N/A (1º Mês)'}</span>
                                 </div>
                                 <div>
                                     <span style="font-size: 8px; color: var(--text-p); display: block; font-weight: 800;">CONSUMO ANT.</span>
                                     <span style="font-size: 10px; color: var(--warning); font-weight: bold;">${typeof consumoAnteriorCalculado === 'number' ? consumoAnteriorCalculado.toLocaleString() : consumoAnteriorCalculado}</span>
                                 </div>
                                 <div>
-                                    <span style="font-size: 8px; color: var(--text-p); display: block; font-weight: 800;">MÉDIA (12M)</span>
-                                    <span style="font-size: 10px; color: var(--accent); font-weight: bold;">${mediaHistoricaVal > 0 ? mediaHistoricaVal.toLocaleString() : 'N/A'}</span>
+                                    <span style="font-size: 8px; color: var(--text-p); display: block; font-weight: 800;">MÉDIA CONSUMO (${qtdMesesConsumo}M)</span>
+                                    <span style="font-size: 10px; color: var(--accent); font-weight: bold;">${mediaConsumoDinamica > 0 ? mediaConsumoDinamica.toLocaleString() : 'N/A (1º Mês)'}</span>
                                 </div>
                             </div>
                         </div>
@@ -2313,7 +2336,6 @@
                             relatorioRazoesDb = importedData.relatorios;
                             for (const [raz, mesesObj] of Object.entries(relatorioRazoesDb)) {
                                 if (mesesObj && typeof mesesObj === 'object') {
-                                    // Limpar mantendo 12 meses
                                     let chavesM = Object.keys(mesesObj).sort();
                                     if (chavesM.length > 12) {
                                         let rem = chavesM.slice(0, chavesM.length - 12);
