@@ -554,7 +554,7 @@
 
         <div class="login-form-pane" id="createPane">
             <div style="background: rgba(0, 255, 136, 0.1); border: 1px solid var(--success); padding: 8px; border-radius: 8px; margin-bottom: 8px; font-size: 10px; color: var(--success); font-weight: bold;">
-                💡 Depósito/PIX de R$ 10,00 necessário para liberação após criar a conta.
+                💡 Depósito/PIX de R$ 20,00 necessário para liberação após criar a conta.
             </div>
             <input type="text" id="regUser" placeholder="Utilizador"> 
             <input type="password" id="regPass" placeholder="Senha"> 
@@ -2054,7 +2054,7 @@
         let criado = await window.cloudSaveNewUserAuth(u, p, r);
         if (!criado) return alert("Erro ao criar utilizador.");
 
-        alert("Conta criada com sucesso! Efetue o PIX de R$ 10,00 e informe o comprovante ao Administrador para ativação.");
+        alert("Conta criada com sucesso! Efetue o PIX de R$ 20,00 e informe o comprovante ao Administrador para ativação.");
         
         document.getElementById('regUser').value = "";
         document.getElementById('regPass').value = "";
