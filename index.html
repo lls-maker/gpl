@@ -585,7 +585,7 @@
             <div id="barFill" style="height:100%; width:0%; background:linear-gradient(90deg, var(--accent), var(--success)); transition:0.8s; box-shadow: 0 0 10px var(--success);"></div> 
         </div> 
         <div style="display:flex; justify-content:space-between; font-size:10px; font-weight:bold; color:var(--text-p); text-transform: uppercase;"> 
-            <span id="barTxt">Progresso Meta: 0 / 8.000</span> 
+            <span id="barTxt">Progresso Bônus: 0 / 8.000</span> 
             <span id="barPerc" style="color:var(--success); text-shadow: 0 0 8px rgba(0,255,136,0.4)">0%</span> 
         </div> 
     </div> 
@@ -2262,7 +2262,7 @@
         const perc = Math.min((sL/8000)*100, 100); 
         document.getElementById('barFill').style.width = perc + "%"; 
         document.getElementById('barPerc').innerText = Math.floor(perc) + "%"; 
-        document.getElementById('barTxt').innerText = `Progresso Meta: ${sL.toLocaleString()} / 8.000`; 
+        document.getElementById('barTxt').innerText = `Progresso Bônus: ${sL.toLocaleString()} / 8.000`; 
 
         let acum = 0; 
         for(let m=0; m<12; m++) { 
