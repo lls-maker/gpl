@@ -761,7 +761,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, doc, setDoc, getDoc, getDocs, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, doc, setDoc, getDoc, getDocs, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyBCyO4flW7U20t2Lh4HQRy5hGBIzxahjp4",
@@ -773,7 +773,10 @@
     };
 
     const app = initializeApp(firebaseConfig);
-    const dbCloud = getFirestore(app);
+    // Ativado cache persistente offline para o Firestore
+    const dbCloud = initializeFirestore(app, {
+        localCache: persistentLocalCache({tabManager: persistentMultipleTabManager()})
+    });
 
     async function hashSenha(senha) {
         const encoder = new TextEncoder();
@@ -1115,15 +1118,16 @@
     const fM = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); 
 
     function dispararSalvamentoRegistros() {
-        if (currentUser && window.cloudSaveRegistros) {
-            window.cloudSaveRegistros(currentUser, db);
+        if (currentUser) {
+            localStorage.setItem(`gpl_db_${currentUser}`, JSON.stringify(db));
+            if (window.cloudSaveRegistros) {
+                window.cloudSaveRegistros(currentUser, db);
+            }
         }
     }
 
     window.addEventListener('beforeunload', () => {
-        if (currentUser && window.cloudSaveRegistros) {
-            window.cloudSaveRegistros(currentUser, db);
-        }
+        dispararSalvamentoRegistros();
     });
 
     function switchLoginPane(paneId) {
@@ -1188,6 +1192,10 @@
                 calendarioDb = cloudData.calendario || {};
                 relatorioRazoesDb = cloudData.relatorios || {};
 
+                localStorage.setItem(`gpl_db_${currentUser}`, JSON.stringify(db));
+                localStorage.setItem(`gpl_cal_${currentUser}`, JSON.stringify(calendarioDb));
+                localStorage.setItem(`gpl_rel_${currentUser}`, JSON.stringify(relatorioRazoesDb));
+
                 atualizarTabela();
                 renderizarCalendario();
                 renderizarTabelaRelatorioAtual();
@@ -1200,7 +1208,7 @@
                 return false;
             }
         } catch (error) {
-            alert("Erro de conexão com a nuvem. Verifique a conexão.");
+            alert("Sem conexão com a nuvem. Usando dados locais salvos.");
             return false;
         } finally {
             if (btnElement) {
@@ -1480,6 +1488,8 @@
             let mesesRemover = chavesMeses.slice(0, chavesMeses.length - 12);
             mesesRemover.forEach(mKey => delete relatorioRazoesDb[razaoSelecionada][mKey]);
         }
+
+        localStorage.setItem(`gpl_rel_${currentUser}`, JSON.stringify(relatorioRazoesDb));
 
         if (currentUser && window.cloudSaveRelatorioRazao) {
             window.cloudSaveRelatorioRazao(currentUser, razaoSelecionada, mesAnoKey, dadosNovoRelatorio);
@@ -1923,6 +1933,7 @@
     function salvarDataCalendario(razao, data) {
         if (!currentIsAdmin) return;
         calendarioDb[razao] = data;
+        localStorage.setItem(`gpl_cal_${currentUser}`, JSON.stringify(calendarioDb));
         if (currentUser && window.cloudSaveCalendario) {
             window.cloudSaveCalendario(currentUser, calendarioDb);
         }
@@ -2017,6 +2028,18 @@
 
         const resultadoLogin = await window.cloudVerificarLogin(u, p);
         if (!resultadoLogin.sucesso) {
+            // Fallback para login offline se houver cache salvo
+            const localUserKey = u.toUpperCase();
+            const savedLocalData = localStorage.getItem(`gpl_db_${localUserKey}`);
+            if (savedLocalData) {
+                currentUser = localUserKey;
+                currentIsAdmin = (localUserKey === "ADMIN");
+                sessionStorage.setItem('gpl_user', currentUser);
+                sessionStorage.setItem('gpl_is_admin', currentIsAdmin);
+                document.getElementById('loginScreen').style.display = 'none';
+                initSystem();
+                return;
+            }
             return alert(resultadoLogin.erro);
         }
 
@@ -2102,11 +2125,26 @@
         document.getElementById('currentMonthDisplay').innerText = nomeMes; 
         document.getElementById('printSubHeader').innerText = `Utilizador: ${currentUser}  |  Período: ${nomeMes}/2026`;
         
-        const cloudData = await window.cloudLoadAll(currentUser);
-        if (cloudData) {
+        // Tenta carregar da nuvem, se falhar ou estiver offline, carrega do localStorage
+        let cloudData = null;
+        try {
+            cloudData = await window.cloudLoadAll(currentUser);
+        } catch (e) {}
+
+        if (cloudData && (cloudData.dados || cloudData.calendario || cloudData.relatorios)) {
             db = cloudData.dados || [];
             calendarioDb = cloudData.calendario || {};
             relatorioRazoesDb = cloudData.relatorios || {};
+
+            // Atualiza o cache local
+            localStorage.setItem(`gpl_db_${currentUser}`, JSON.stringify(db));
+            localStorage.setItem(`gpl_cal_${currentUser}`, JSON.stringify(calendarioDb));
+            localStorage.setItem(`gpl_rel_${currentUser}`, JSON.stringify(relatorioRazoesDb));
+        } else {
+            // Modo offline: recupera do aparelho
+            db = JSON.parse(localStorage.getItem(`gpl_db_${currentUser}`) || '[]');
+            calendarioDb = JSON.parse(localStorage.getItem(`gpl_cal_${currentUser}`) || '{}');
+            relatorioRazoesDb = JSON.parse(localStorage.getItem(`gpl_rel_${currentUser}`) || '{}');
         }
 
         renderMonths(); 
@@ -2351,7 +2389,7 @@
                 db = []; 
                 dispararSalvamentoRegistros();
                 atualizarTabela(); 
-                alert("Dados de 2026 removidos da nuvem."); 
+                alert("Dados de 2026 removidos."); 
             } 
         } 
     } 
@@ -2423,9 +2461,9 @@
                         return alert("Arquivo de backup inválido.");
                     }
 
-                    if (currentUser && window.cloudSaveRegistros) {
-                        window.cloudSaveRegistros(currentUser, db);
-                    }
+                    dispararSalvamentoRegistros();
+                    localStorage.setItem(`gpl_cal_${currentUser}`, JSON.stringify(calendarioDb));
+                    localStorage.setItem(`gpl_rel_${currentUser}`, JSON.stringify(relatorioRazoesDb));
                     
                     atualizarTabela();
                     renderizarCalendario();
@@ -2433,7 +2471,7 @@
                     renderizarTabelaRelatorioAtual();
                     verificarSabadosAlertas();
                     
-                    alert("Backup restaurado e sincronizado com a nuvem com sucesso! ✨");
+                    alert("Backup restaurado com sucesso! ✨");
                 }
             } catch (err) { 
                 alert("Erro ao ler o arquivo JSON."); 
