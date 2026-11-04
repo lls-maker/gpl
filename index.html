@@ -2300,7 +2300,15 @@
         const perc = Math.min((sL/8000)*100, 100); 
         document.getElementById('barFill').style.width = perc + "%"; 
         document.getElementById('barPerc').innerText = Math.floor(perc) + "%"; 
-        document.getElementById('barTxt').innerText = `Progresso Bônus: ${sL.toLocaleString()} / 8.000`; 
+        
+        // --- ATUALIZAÇÃO DA CONTAGEM DE LEITURAS RESTANTES PARA A META ---
+        const restante = 8000 - sL;
+        if (restante > 0) {
+            document.getElementById('barTxt').innerText = `Progresso: ${sL.toLocaleString()} / 8.000 (Faltam ${restante.toLocaleString()})`;
+        } else {
+            document.getElementById('barTxt').innerText = `Meta Atingida! (+${(sL - 8000).toLocaleString()} em bônus)`;
+        }
+        // -----------------------------------------------------------------
 
         let acum = 0; 
         for(let m=0; m<12; m++) { 
