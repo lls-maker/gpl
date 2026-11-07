@@ -2028,7 +2028,6 @@
 
         const resultadoLogin = await window.cloudVerificarLogin(u, p);
         if (!resultadoLogin.sucesso) {
-            // Fallback para login offline se houver cache salvo
             const localUserKey = u.toUpperCase();
             const savedLocalData = localStorage.getItem(`gpl_db_${localUserKey}`);
             if (savedLocalData) {
@@ -2125,7 +2124,6 @@
         document.getElementById('currentMonthDisplay').innerText = nomeMes; 
         document.getElementById('printSubHeader').innerText = `Utilizador: ${currentUser}  |  Período: ${nomeMes}/2026`;
         
-        // Tenta carregar da nuvem, se falhar ou estiver offline, carrega do localStorage
         let cloudData = null;
         try {
             cloudData = await window.cloudLoadAll(currentUser);
@@ -2136,12 +2134,10 @@
             calendarioDb = cloudData.calendario || {};
             relatorioRazoesDb = cloudData.relatorios || {};
 
-            // Atualiza o cache local
             localStorage.setItem(`gpl_db_${currentUser}`, JSON.stringify(db));
             localStorage.setItem(`gpl_cal_${currentUser}`, JSON.stringify(calendarioDb));
             localStorage.setItem(`gpl_rel_${currentUser}`, JSON.stringify(relatorioRazoesDb));
         } else {
-            // Modo offline: recupera do aparelho
             db = JSON.parse(localStorage.getItem(`gpl_db_${currentUser}`) || '[]');
             calendarioDb = JSON.parse(localStorage.getItem(`gpl_cal_${currentUser}`) || '{}');
             relatorioRazoesDb = JSON.parse(localStorage.getItem(`gpl_rel_${currentUser}`) || '{}');
@@ -2300,15 +2296,7 @@
         const perc = Math.min((sL/8000)*100, 100); 
         document.getElementById('barFill').style.width = perc + "%"; 
         document.getElementById('barPerc').innerText = Math.floor(perc) + "%"; 
-        
-        // --- ATUALIZAÇÃO DA CONTAGEM DE LEITURAS RESTANTES PARA A META ---
-        const restante = 8000 - sL;
-        if (restante > 0) {
-            document.getElementById('barTxt').innerText = `Progresso: ${sL.toLocaleString()} / 8.000 (Faltam ${restante.toLocaleString()})`;
-        } else {
-            document.getElementById('barTxt').innerText = `Meta Atingida! (+${(sL - 8000).toLocaleString()} em bônus)`;
-        }
-        // -----------------------------------------------------------------
+        document.getElementById('barTxt').innerText = `Progresso Bônus: ${sL.toLocaleString()} / 8.000`; 
 
         let acum = 0; 
         for(let m=0; m<12; m++) { 
