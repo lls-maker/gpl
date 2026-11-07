@@ -11,7 +11,7 @@
 
     <!-- Biblioteca Chart.js para o Gráfico da Dashboard -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Biblioteca Canvas Confetti para efeitos visuais de meta batida -->
+    <!-- Biblioteca Canvas Confetti para efeitos visuais -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
     <style> 
@@ -587,7 +587,7 @@
             <div id="barFill" style="height:100%; width:0%; background:linear-gradient(90deg, var(--accent), var(--success)); transition:0.8s; box-shadow: 0 0 10px var(--success);"></div> 
         </div> 
         <div style="display:flex; justify-content:space-between; font-size:10px; font-weight:bold; color:var(--text-p); text-transform: uppercase;"> 
-            <span id="barTxt">Faltam 8.000 leituras para a atingir o bônus</span> 
+            <span id="barTxt">Faltam 8.000 leituras para o bônus</span> 
             <span id="barPerc" style="color:var(--success); text-shadow: 0 0 8px rgba(0,255,136,0.4)">0%</span> 
         </div> 
     </div> 
@@ -2298,16 +2298,16 @@
         document.getElementById('barFill').style.width = perc + "%"; 
         document.getElementById('barPerc').innerText = Math.floor(perc) + "%"; 
 
-        // --- CONTADOR DINÂMICO DE QUANTAS LEITURAS FALTAM ---
+        // --- CONTADOR DINÂMICO DE QUANTAS LEITURAS FALTAM PARA O BÔNUS ---
         const faltamLeituras = 8000 - sL;
         if (sL < 8000) {
-            document.getElementById('barTxt').innerText = `Faltam ${faltamLeituras.toLocaleString()} leituras para a meta`;
+            document.getElementById('barTxt').innerText = `Faltam ${faltamLeituras.toLocaleString()} leituras para o bônus`;
         } else {
-            document.getElementById('barTxt').innerText = `Meta de 8.000 atingida com sucesso! 🎉`;
+            document.getElementById('barTxt').innerText = `Bonificação de 8.000 leituras atingida com sucesso! 🎉`;
         }
-        // ----------------------------------------------------
+        // -----------------------------------------------------------------
 
-        // --- SISTEMA DE ALERTA INTERATIVO E CONFETES DE META BATIDA ---
+        // --- SISTEMA DE ALERTA INTERATIVO E CONFETES DE BÔNUS ALCANÇADO ---
         const chaveMetaStorage = `gpl_meta_batida_${currentUser}_${mesF}`;
         const metaJaCelebrada = sessionStorage.getItem(chaveMetaStorage);
 
@@ -2333,7 +2333,7 @@
                         <div style="font-size: 50px; margin-bottom: 10px;">🎉🚀</div>
                         <h2 style="color: var(--success); font-size: 1.25rem; margin: 0 0 8px 0; text-transform: uppercase; font-weight: 900;">Parabéns!</h2>
                         <p style="color: var(--text-h); font-size: 11.5px; font-weight: 600; line-height: 1.4; margin-bottom: 18px;">
-                            Você alcançou a meta de <strong style="color: var(--success);">8.000 leituras</strong> neste mês!<br>Continue com esse excelente trabalho! 👏
+                            Você ultrapassou as <strong style="color: var(--success);">8.000 leituras</strong> neste mês e garantiu a sua bonificação!<br>Continue com esse excelente trabalho! 👏
                         </p>
                         <button onclick="document.getElementById('metaModalConquista').remove()" style="background: var(--success); color: #000; border: none; padding: 10px 20px; border-radius: 10px; font-weight: 900; font-size: 11px; cursor: pointer; text-transform: uppercase; width: 100%; box-shadow: 0 0 15px rgba(0,255,136,0.5);">Continuar</button>
                     </div>
