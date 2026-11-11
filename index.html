@@ -1076,7 +1076,7 @@
       { numero: '3300', status: 'Sem leitura', detalhe: 'MEDIDOR TROCADO/DISPLAY APAGADO' },
       { numero: '3311', status: 'Sem Leitura', detalhe: 'MEDIDOR ELETRÔNICO APAGADO/CHAVE DISJUNTOR DESLIGADA' },
       { numero: '3312', status: 'Com leitura', detalhe: 'MEDIDOR DISCO GIRANDO AO CONTRÁRIO' },
-      { numero: '3313', status: 'Sem Leitura', detalhe: 'INSETOS DENTRO DA CAIXA OU ENVOLVENDO O MEDIDOR' },
+      { numero: '3313', status: 'Sem Leitura', detalhe: 'INSETOS/VESPEIRO DENTRO DA CAIXA OU ENVOLVENDO O MEDIDOR' },
       { numero: '3369', status: 'Sem Leitura', detalhe: 'MEDIDOR EMBAÇADO' },
       { numero: '3370', status: 'Sem Leitura', detalhe: 'TAMPA ACRÍLICA EMBAÇADA' },
       { numero: '3374', status: 'Sem Leitura', detalhe: 'VIDRO VISOR DA CAIXA EMBAÇADO' },
@@ -1099,7 +1099,7 @@
       { numero: '3908', status: 'Sem Leitura', detalhe: 'OBSTÁCULO/IMPEDIMENTO DE LEITURA NO POSTE' },
       { numero: '5101', status: 'Sem Leitura', detalhe: 'MEDIÇÃO/QUADRO SEM A POSSIBILIDADE DE ABRIR' },
       { numero: '5102', status: 'Sem Leitura', detalhe: 'MEDIDOR OBSTRUÍDO SEM A POSSIBILIDADE LEITURA' },
-      { numero: '5103', status: 'Sem Leitura', detalhe: 'INSETOS NA CAIXA DO MEDIDOR EXTERNAMENTE' },
+      { numero: '5103', status: 'Sem Leitura', detalhe: 'INSETOS/VESPEIRO NA CAIXA DO MEDIDOR EXTERNAMENTE' },
       { numero: '5104', status: 'Sem Leitura', detalhe: 'CASA FECHADA/PORTÃO FECHADO/FALTA ACESSO A MEDIÇÃO' },
       { numero: '5105', status: 'Sem Leitura', detalhe: 'CLIENTE NÃO PERMITIU ACESSO DO LEITURISTA AO MEDIDOR' },
       { numero: '5106', status: 'Sem Leitura', detalhe: 'MED LOCAL IMPRÓPRIO PERIGOSO/CX MED ALTURA ANORMAL' },
@@ -1949,7 +1949,7 @@
         const hoje = new Date();
         hoje.setHours(0, 0, 0, 0);
 
-        let alertas = [];
+        let listaAlertasTemp = [];
         for (const [razao, dataStr] of Object.entries(calendarioDb)) {
             if (dataStr) {
                 const [ano, mes, dia] = dataStr.split('-');
@@ -1962,16 +1962,22 @@
 
                 if (dataObj.getDay() === 6) {
                     const dataFormatada = `${dia}/${mes}/${ano}`;
-                    alertas.push(`⚠️ Alerta: ${razao} está marcada para Sábado, dia ${dataFormatada}!`);
+                    listaAlertasTemp.push({
+                        dataObj: dataObj,
+                        texto: `⚠️ Alerta: ${razao} está marcada para Sábado, dia ${dataFormatada}!`
+                    });
                 }
             }
         }
 
-        if (alertas.length > 0) {
+        // ORDENA OS ALERTAS CRONOLOGICAMENTE (DA DATA MAIS PRÓXIMA PARA A MAIS DISTANTE)
+        listaAlertasTemp.sort((a, b) => a.dataObj - b.dataObj);
+
+        if (listaAlertasTemp.length > 0) {
             alertaContainer.style.display = 'block';
-            let conteudoInterno = alertas.map(a => `<div class="alert-saturday-box"><span>${a}</span></div>`).join('');
+            let conteudoInterno = listaAlertasTemp.map(item => `<div class="alert-saturday-box"><span>${item.texto}</span></div>`).join('');
             
-            if (alertas.length > 2) {
+            if (listaAlertasTemp.length > 2) {
                 alertaContainer.innerHTML = `<div class="saturday-scroll-container">${conteudoInterno}</div>`;
             } else {
                 alertaContainer.innerHTML = `<div style="display:flex; flex-direction:column; gap:4px; width:100%;">${conteudoInterno}</div>`;
@@ -2298,23 +2304,19 @@
         document.getElementById('barFill').style.width = perc + "%"; 
         document.getElementById('barPerc').innerText = Math.floor(perc) + "%"; 
 
-        // --- CONTADOR DINÂMICO DE QUANTAS LEITURAS FALTAM PARA O BÔNUS ---
         const faltamLeituras = 8000 - sL;
         if (sL < 8000) {
             document.getElementById('barTxt').innerText = `Faltam ${faltamLeituras.toLocaleString()} leituras para o bônus`;
         } else {
             document.getElementById('barTxt').innerText = `Bonificação de 8.000 leituras atingida com sucesso! 🎉`;
         }
-        // -----------------------------------------------------------------
 
-        // --- SISTEMA DE ALERTA INTERATIVO E CONFETES DE BÔNUS ALCANÇADO ---
         const chaveMetaStorage = `gpl_meta_batida_${currentUser}_${mesF}`;
         const metaJaCelebrada = sessionStorage.getItem(chaveMetaStorage);
 
         if (sL >= 8000 && !metaJaCelebrada) {
             sessionStorage.setItem(chaveMetaStorage, 'true');
             
-            // Dispara chuva de confetes festiva
             if (typeof confetti === 'function') {
                 confetti({
                     particleCount: 120,
@@ -2341,7 +2343,6 @@
             `;
             document.body.insertAdjacentHTML('beforeend', modalHtml);
         }
-        // -------------------------------------------------------------
 
         let acum = 0; 
         for(let m=0; m<12; m++) { 
@@ -2522,7 +2523,6 @@
         reader.readAsText(file);
     }
 
-    // Registro automático do Service Worker para suporte offline do PWA
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('./sw.js').catch(() => {});
